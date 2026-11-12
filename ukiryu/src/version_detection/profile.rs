@@ -7,8 +7,8 @@
 //! are owned by the models module; integration replaces these views with a
 //! conversion from them.
 use super::detector::{
-    detect_info, detect_with_methods, DetectedVersion, DetectionMethod, InfoRequest, MethodSpec, MethodsRequest,
-    PatternSpec,
+    detect_info, detect_with_methods, DetectedVersion, DetectionMethod, InfoRequest, MethodSpec,
+    MethodsRequest, PatternSpec,
 };
 use super::pattern::PatternError;
 use super::runner::{CommandRunner, ManPageDates};
@@ -116,7 +116,12 @@ fn method_spec(method: &DetectionMethodView) -> MethodSpec {
         }
     } else {
         MethodSpec::Command {
-            command: Some(method.command.clone().unwrap_or_else(|| vec!["--version".to_string()])),
+            command: Some(
+                method
+                    .command
+                    .clone()
+                    .unwrap_or_else(|| vec!["--version".to_string()]),
+            ),
             pattern: Some(match &method.pattern {
                 Some(pattern) => PatternSpec::Source(pattern.clone()),
                 None => PatternSpec::DefaultLiteral,

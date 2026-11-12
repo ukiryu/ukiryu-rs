@@ -33,7 +33,10 @@ pub enum IndexProbe {
     NotDetected,
     /// The implementation is present. `version` is `match[1]`, or `None` for a
     /// presence-only pattern or no pattern (the loader then uses its default spec).
-    Detected { output: String, version: Option<String> },
+    Detected {
+        output: String,
+        version: Option<String>,
+    },
 }
 
 /// `try_execute_command`'s choice of text: scrubbed stdout on success,
@@ -51,12 +54,17 @@ pub fn detection_output(output: &CommandOutput) -> Option<String> {
 
 /// `extract_version_from_pattern`: `match[1]`. Unlike profile detection, a
 /// pattern Ruby rejects propagates (`RegexpError`), so it is an `Err` here.
-pub fn extract_version_from_pattern(output: Option<&str>, pattern: Option<&str>) -> Result<Option<String>, PatternError> {
+pub fn extract_version_from_pattern(
+    output: Option<&str>,
+    pattern: Option<&str>,
+) -> Result<Option<String>, PatternError> {
     let (Some(output), Some(pattern)) = (output, pattern) else {
         return Ok(None);
     };
     let pattern = RubyPattern::new(pattern)?;
-    Ok(pattern.captures(output)?.and_then(|m| m.group1.map(str::to_string)))
+    Ok(pattern
+        .captures(output)?
+        .and_then(|m| m.group1.map(str::to_string)))
 }
 
 /// `run_detection_command` + `try_implementation`'s extraction and presence check.
@@ -81,7 +89,11 @@ pub fn probe_index_detection(
             timeout_secs: INDEX_DETECTION_TIMEOUT_SECS,
             allow_failure: true,
         };
-        runner.run(&request).ok().as_ref().and_then(detection_output)
+        runner
+            .run(&request)
+            .ok()
+            .as_ref()
+            .and_then(detection_output)
     };
     let output = match &detection.executables {
         Some(executables) => executables.iter().find_map(|e| attempt(e)),
@@ -102,7 +114,10 @@ pub fn probe_index_detection(
     // source compiles it twice). It is compiled only once output exists, as
     // in the source.
     let Some(pattern) = detection.pattern.as_deref() else {
-        return Ok(IndexProbe::Detected { output, version: None });
+        return Ok(IndexProbe::Detected {
+            output,
+            version: None,
+        });
     };
     let pattern = RubyPattern::new(pattern)?;
     let version = match pattern.captures(&output)? {

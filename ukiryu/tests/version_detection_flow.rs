@@ -5,9 +5,10 @@ use std::collections::{BTreeMap, VecDeque};
 
 use serde_json::{json, Value};
 use ukiryu::version_detection::{
-    detect_info, detect_profile_version, detect_with_methods, probe_index_detection, CommandOutput, CommandRequest,
-    CommandRunner, DetectedVersion, DetectionMethodView, IndexDetection, IndexProbe, InfoRequest, ManPageDates,
-    MethodSpec, MethodsRequest, PatternError, PatternSpec, RunnerError, ToolContext, VersionDetectionView,
+    detect_info, detect_profile_version, detect_with_methods, probe_index_detection, CommandOutput,
+    CommandRequest, CommandRunner, DetectedVersion, DetectionMethodView, IndexDetection,
+    IndexProbe, InfoRequest, ManPageDates, MethodSpec, MethodsRequest, PatternError, PatternSpec,
+    RunnerError, ToolContext, VersionDetectionView,
 };
 
 fn golden() -> Value {
@@ -29,7 +30,10 @@ struct Scripted {
 impl CommandRunner for Scripted {
     fn run(&mut self, request: &CommandRequest) -> Result<CommandOutput, RunnerError> {
         self.calls.push(request.clone());
-        let response = self.responses.pop_front().expect("runner called more often than Ruby executed");
+        let response = self
+            .responses
+            .pop_front()
+            .expect("runner called more often than Ruby executed");
         if let Some(message) = response["raise"].as_str() {
             return Err(RunnerError::new(message));
         }
@@ -62,7 +66,12 @@ fn command_list(v: &Value) -> Option<Vec<String>> {
     match v {
         Value::Null => None,
         Value::String(s) => Some(vec![s.clone()]),
-        Value::Array(items) => Some(items.iter().map(|i| i.as_str().unwrap().to_string()).collect()),
+        Value::Array(items) => Some(
+            items
+                .iter()
+                .map(|i| i.as_str().unwrap().to_string())
+                .collect(),
+        ),
         other => panic!("unexpected command {other}"),
     }
 }
@@ -105,7 +114,10 @@ fn expected_calls(case: &Value) -> Vec<CommandRequest> {
         .map(|c| CommandRequest {
             executable: c["executable"].as_str().unwrap().to_string(),
             args: command_list(&c["args"]).unwrap(),
-            shell: c["shell"].as_str().filter(|s| *s != "detected_shell").map(str::to_string),
+            shell: c["shell"]
+                .as_str()
+                .filter(|s| *s != "detected_shell")
+                .map(str::to_string),
             timeout_secs: c["timeout"].as_u64().unwrap(),
             allow_failure: c["allow_failure"].as_bool().unwrap(),
         })
@@ -142,7 +154,9 @@ fn run_case(case: &Value, runner: &mut Scripted, dates: &mut Dates) -> Actual {
                         command: command_list(&m["command"]),
                         pattern: pattern_spec(&m["pattern"]),
                     },
-                    "man_page" => MethodSpec::ManPage { paths: paths(&m["paths"]) },
+                    "man_page" => MethodSpec::ManPage {
+                        paths: paths(&m["paths"]),
+                    },
                     other => MethodSpec::Other(other.to_string()),
                 })
                 .collect();
@@ -208,13 +222,22 @@ fn run_case(case: &Value, runner: &mut Scripted, dates: &mut Dates) -> Actual {
 fn captured_detection_cases_match_ruby() {
     let golden = golden();
     let cases = golden["cases"].as_array().unwrap();
-    assert_eq!(cases.len(), 252, "case count changed: regenerate deliberately");
+    assert_eq!(
+        cases.len(),
+        252,
+        "case count changed: regenerate deliberately"
+    );
     let mut counts: BTreeMap<String, usize> = BTreeMap::new();
     for case in cases {
         let id = case["id"].as_str().unwrap();
         let expected = &case["expected"];
         let mut runner = Scripted {
-            responses: case["responses"].as_array().unwrap().iter().cloned().collect(),
+            responses: case["responses"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .cloned()
+                .collect(),
             calls: Vec::new(),
         };
         let mut dates = Dates {
@@ -249,7 +272,8 @@ fn captured_detection_cases_match_ruby() {
                     };
                     assert_eq!(got, want["outcome"], "{id}: outcome");
                 }
-                (raised, Err(PatternError::RubyInvalid { .. })) if raised["class"] == "RegexpError" => {}
+                (raised, Err(PatternError::RubyInvalid { .. }))
+                    if raised["class"] == "RegexpError" => {}
                 (raised, other) => panic!("{id}: Ruby raised {raised}, port gave {other:?}"),
             },
         }
@@ -266,7 +290,9 @@ fn captured_detection_cases_match_ruby() {
             .map(|p| p.as_str().unwrap().to_string())
             .collect();
         assert_eq!(dates.calls, man_calls, "{id}: man page lookups");
-        *counts.entry(case["api"].as_str().unwrap().to_string()).or_default() += 1;
+        *counts
+            .entry(case["api"].as_str().unwrap().to_string())
+            .or_default() += 1;
     }
     eprintln!("flow cases: {counts:?}");
 }
@@ -281,5 +307,8 @@ fn unsupported_pattern_is_an_error_not_a_miss() {
     request.pattern = PatternSpec::Source(r"(?<=v)(\d+)".to_string());
     let result = detect_info(&request, &mut runner);
     assert!(matches!(result, Err(PatternError::Unsupported { .. })));
-    assert!(runner.calls.is_empty(), "nothing runs for a pattern the port cannot reproduce");
+    assert!(
+        runner.calls.is_empty(),
+        "nothing runs for a pattern the port cannot reproduce"
+    );
 }

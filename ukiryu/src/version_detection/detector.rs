@@ -64,7 +64,9 @@ enum Compiled<'p> {
 
 fn compile(spec: &PatternSpec) -> Result<Compiled<'static>, PatternError> {
     match spec {
-        PatternSpec::DefaultLiteral => Ok(Compiled::Ready(std::borrow::Cow::Borrowed(RubyPattern::default_literal()))),
+        PatternSpec::DefaultLiteral => Ok(Compiled::Ready(std::borrow::Cow::Borrowed(
+            RubyPattern::default_literal(),
+        ))),
         PatternSpec::Source(source) => match RubyPattern::new(source) {
             Ok(pattern) => Ok(Compiled::Ready(std::borrow::Cow::Owned(pattern))),
             Err(PatternError::RubyInvalid { .. }) => Ok(Compiled::RubyInvalid),
@@ -108,7 +110,10 @@ pub const MAN_TAIL_CHARS: usize = 500;
 /// Every failure the source rescues (runner error, non-zero exit, a pattern
 /// Ruby rejects) yields `Ok(None)`. `Err` is reserved for patterns this port
 /// cannot reproduce.
-pub fn detect_info(request: &InfoRequest, runner: &mut dyn CommandRunner) -> Result<Option<DetectedVersion>, PatternError> {
+pub fn detect_info(
+    request: &InfoRequest,
+    runner: &mut dyn CommandRunner,
+) -> Result<Option<DetectedVersion>, PatternError> {
     let Some(executable) = request.executable.as_deref().filter(|e| !e.is_empty()) else {
         return Ok(None);
     };
@@ -136,7 +141,10 @@ pub fn detect_info(request: &InfoRequest, runner: &mut dyn CommandRunner) -> Res
         let joined = format!("{stdout}{stderr}");
         let tail = text::tail_chars(&joined, MAN_TAIL_CHARS);
         if let Some(found) = pattern.captures(tail)? {
-            return Ok(Some(DetectedVersion::single(found.group1, DetectionMethod::ManPage)));
+            return Ok(Some(DetectedVersion::single(
+                found.group1,
+                DetectionMethod::ManPage,
+            )));
         }
     }
 
@@ -157,7 +165,9 @@ pub enum MethodSpec {
         pattern: Option<PatternSpec>,
     },
     /// `{type: :man_page, paths:}` with platform name keys.
-    ManPage { paths: Option<Vec<(String, String)>> },
+    ManPage {
+        paths: Option<Vec<(String, String)>>,
+    },
     /// Any other `type`: never run, but listed in `available_methods`.
     Other(String),
 }
@@ -204,7 +214,9 @@ pub fn detect_with_methods(
                 let info = detect_info(
                     &InfoRequest {
                         executable: request.executable.clone(),
-                        command: command.clone().unwrap_or_else(|| vec!["--version".to_string()]),
+                        command: command
+                            .clone()
+                            .unwrap_or_else(|| vec!["--version".to_string()]),
                         pattern: pattern.clone().unwrap_or(PatternSpec::DefaultLiteral),
                         shell: request.shell.clone(),
                         source: Some("command".to_string()),
@@ -224,7 +236,9 @@ pub fn detect_with_methods(
                     .find(|(platform, _)| *platform == request.platform)
                     .map(|(_, path)| path.as_str());
                 let Some(man_path) = man_path else { continue };
-                let Some(date) = man_pages.parse_date(man_path) else { continue };
+                let Some(date) = man_pages.parse_date(man_path) else {
+                    continue;
+                };
                 return Ok(Some(DetectedVersion {
                     value: Some(date),
                     method_used: DetectionMethod::ManPage,

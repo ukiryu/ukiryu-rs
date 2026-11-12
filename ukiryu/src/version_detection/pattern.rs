@@ -32,7 +32,8 @@ pub enum PatternError {
 impl PatternError {
     pub fn pattern(&self) -> &str {
         match self {
-            PatternError::RubyInvalid { pattern, .. } | PatternError::Unsupported { pattern, .. } => pattern,
+            PatternError::RubyInvalid { pattern, .. }
+            | PatternError::Unsupported { pattern, .. } => pattern,
         }
     }
 }
@@ -84,7 +85,10 @@ impl RubyPattern {
         };
         let regex = regex::Regex::new(&translated.out).map_err(|e| PatternError::Unsupported {
             pattern: source.to_string(),
-            construct: format!("a form the regex crate rejects ({})", e.to_string().lines().last().unwrap_or("")),
+            construct: format!(
+                "a form the regex crate rejects ({})",
+                e.to_string().lines().last().unwrap_or("")
+            ),
         })?;
         Ok(RubyPattern {
             source: source.to_string(),
@@ -96,7 +100,9 @@ impl RubyPattern {
     /// The source's `/(\d+\.\d+)/` literal, compiled once per process.
     pub fn default_literal() -> &'static RubyPattern {
         static DEFAULT: OnceLock<RubyPattern> = OnceLock::new();
-        DEFAULT.get_or_init(|| RubyPattern::new(DEFAULT_PATTERN_SOURCE).expect("default pattern is supported"))
+        DEFAULT.get_or_init(|| {
+            RubyPattern::new(DEFAULT_PATTERN_SOURCE).expect("default pattern is supported")
+        })
     }
 
     /// The Ruby pattern text.
@@ -110,7 +116,10 @@ impl RubyPattern {
     /// `"\n"`, while the `regex` crate's multi-line `^` does. When that one
     /// position could decide the result, this returns
     /// [`PatternError::Unsupported`] instead of guessing.
-    pub fn captures<'h>(&self, haystack: &'h str) -> Result<Option<PatternMatch<'h>>, PatternError> {
+    pub fn captures<'h>(
+        &self,
+        haystack: &'h str,
+    ) -> Result<Option<PatternMatch<'h>>, PatternError> {
         let Some(caps) = self.regex.captures(haystack) else {
             return Ok(None);
         };
@@ -118,7 +127,8 @@ impl RubyPattern {
         if self.has_line_start && haystack.ends_with('\n') && whole.end() == haystack.len() {
             return Err(PatternError::Unsupported {
                 pattern: self.source.clone(),
-                construct: "`^` that may match after a trailing newline (Ruby never matches there)".to_string(),
+                construct: "`^` that may match after a trailing newline (Ruby never matches there)"
+                    .to_string(),
             });
         }
         Ok(Some(PatternMatch {
@@ -322,11 +332,16 @@ impl<'a> Translator<'a> {
                         self.pos += 2;
                         char::from_u32(hi * 16 + lo).expect("ASCII")
                     }
-                    _ => return self.unsupported("a \\x escape other than \\x00-\\x7F with two digits"),
+                    _ => {
+                        return self
+                            .unsupported("a \\x escape other than \\x00-\\x7F with two digits")
+                    }
                 }
             }
             'u' => {
-                let digits: Option<Vec<u32>> = (0..4).map(|i| self.peek(i).and_then(|d| d.to_digit(16))).collect();
+                let digits: Option<Vec<u32>> = (0..4)
+                    .map(|i| self.peek(i).and_then(|d| d.to_digit(16)))
+                    .collect();
                 let Some(digits) = digits else {
                     return self.unsupported("a \\u escape other than \\uHHHH");
                 };
@@ -363,7 +378,9 @@ impl<'a> Translator<'a> {
                 self.prev = Prev::Nothing;
                 Ok(())
             }
-            Some('<') if matches!(self.peek(1), Some('=') | Some('!')) => self.unsupported("a look-behind group"),
+            Some('<') if matches!(self.peek(1), Some('=') | Some('!')) => {
+                self.unsupported("a look-behind group")
+            }
             Some('<') => self.named_group('>'),
             Some('\'') => self.named_group('\''),
             Some('=') | Some('!') => self.unsupported("a look-ahead group"),
@@ -401,7 +418,9 @@ impl<'a> Translator<'a> {
             }
         }
         let mut chars = name.chars();
-        let valid_start = chars.next().is_some_and(|c| c.is_ascii_alphabetic() || c == '_');
+        let valid_start = chars
+            .next()
+            .is_some_and(|c| c.is_ascii_alphabetic() || c == '_');
         if !name.is_ascii() {
             return self.unsupported("a non-ASCII group name");
         }
@@ -474,7 +493,9 @@ impl<'a> Translator<'a> {
                 Ok(())
             }
             (Prev::Greedy, '+') => self.unsupported("a possessive quantifier"),
-            (Prev::Exact, '?') => self.unsupported("`?` after an exact `{n}` (Ruby reads it as optional)"),
+            (Prev::Exact, '?') => {
+                self.unsupported("`?` after an exact `{n}` (Ruby reads it as optional)")
+            }
             _ => self.unsupported("a repeated quantifier"),
         }
     }
@@ -498,7 +519,8 @@ impl<'a> Translator<'a> {
             upper = Some(u);
         }
         let closed = self.peek(0) == Some('}');
-        let is_interval = closed && !(lower.is_empty() && upper.as_deref().is_none_or(str::is_empty));
+        let is_interval =
+            closed && !(lower.is_empty() && upper.as_deref().is_none_or(str::is_empty));
         if !is_interval {
             // Ruby reads a brace that is not a complete interval (`x{a}`,
             // `x{`, `x{,}`) as a literal.
@@ -514,7 +536,11 @@ impl<'a> Translator<'a> {
                 (n, n)
             }
             Some(u) => (
-                if lower.is_empty() { Some(0) } else { parse(&lower) },
+                if lower.is_empty() {
+                    Some(0)
+                } else {
+                    parse(&lower)
+                },
                 if u.is_empty() { None } else { parse(u) },
             ),
         };
@@ -572,7 +598,9 @@ impl<'a> Translator<'a> {
                     return Ok(out);
                 }
                 '[' => return self.unsupported("a nested set or POSIX bracket"),
-                '&' if self.peek(0) == Some('&') => return self.unsupported("class intersection (&&)"),
+                '&' if self.peek(0) == Some('&') => {
+                    return self.unsupported("class intersection (&&)")
+                }
                 '\\' => {
                     let Some(e) = self.peek(0) else {
                         return self.invalid("premature end of char-class");

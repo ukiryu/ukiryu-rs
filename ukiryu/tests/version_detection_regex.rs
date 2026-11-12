@@ -58,6 +58,10 @@ const KNOWN_GAPS: &[&str] = &[
     r"\u{41}",
 ];
 
+/// Rows (pattern, input) where a `^` may have matched after a trailing
+/// newline: refused at match time instead of guessed.
+const LINE_START_ROWS: &[(&str, &str)] = &[(r"\n(^)", "a\n"), (r"^(\d*)$", "x\n"), (r"\n^", "a\n")];
+
 /// Ruby-invalid patterns the port reports as `Unsupported` rather than
 /// `RubyInvalid` because the exact Ruby classification was not needed.
 const INVALID_REPORTED_UNSUPPORTED: &[&str] = &[r"\8"];
@@ -80,8 +84,13 @@ fn expected(row: &Value) -> Value {
 fn captured_rows_match_or_are_listed_gaps() {
     let golden = golden();
     let rows = golden["rows"].as_array().unwrap();
-    assert_eq!(rows.len(), 997, "row count changed: regenerate deliberately");
+    assert_eq!(
+        rows.len(),
+        997,
+        "row count changed: regenerate deliberately"
+    );
     let (mut matched, mut invalid, mut gaps) = (0, 0, 0);
+    let mut line_start_rows: Vec<(String, String)> = Vec::new();
     for row in rows {
         let source = row["pattern"].as_str().unwrap();
         let input = row["input"].as_str().unwrap();
@@ -90,26 +99,54 @@ fn captured_rows_match_or_are_listed_gaps() {
         if !ruby_ok {
             match compiled {
                 Err(PatternError::RubyInvalid { .. }) => invalid += 1,
-                Err(PatternError::Unsupported { .. }) if INVALID_REPORTED_UNSUPPORTED.contains(&source) => gaps += 1,
-                other => panic!("/{source}/: Ruby raises {}, port gave {other:?}", row["compile"]["message"]),
+                Err(PatternError::Unsupported { .. })
+                    if INVALID_REPORTED_UNSUPPORTED.contains(&source) =>
+                {
+                    gaps += 1
+                }
+                other => panic!(
+                    "/{source}/: Ruby raises {}, port gave {other:?}",
+                    row["compile"]["message"]
+                ),
             }
             continue;
         }
         let actual = compiled.and_then(|p| {
             let found = outcome(&p, input)?;
-            assert_eq!(p.is_match(input)?, row["match_p"].as_bool().unwrap(), "match? /{source}/ on {input:?}");
+            assert_eq!(
+                p.is_match(input)?,
+                row["match_p"].as_bool().unwrap(),
+                "match? /{source}/ on {input:?}"
+            );
             Ok(found)
         });
         match actual {
             Ok(found) => {
-                assert!(!KNOWN_GAPS.contains(&source), "/{source}/ is listed as a gap but is supported");
+                assert!(
+                    !KNOWN_GAPS.contains(&source),
+                    "/{source}/ is listed as a gap but is supported"
+                );
                 assert_eq!(found, expected(row), "/{source}/ on {input:?}");
                 matched += 1;
             }
             Err(PatternError::Unsupported { .. }) if KNOWN_GAPS.contains(&source) => gaps += 1,
+            Err(PatternError::Unsupported { construct, .. })
+                if construct.contains("trailing newline") =>
+            {
+                line_start_rows.push((source.to_string(), input.to_string()));
+                gaps += 1;
+            }
             Err(error) => panic!("/{source}/ on {input:?}: Ruby accepts it, port gave {error:?}"),
         }
     }
+    let listed: Vec<(String, String)> = LINE_START_ROWS
+        .iter()
+        .map(|(p, i)| (p.to_string(), i.to_string()))
+        .collect();
+    assert_eq!(
+        line_start_rows, listed,
+        "rows refused for `^` after a trailing newline"
+    );
     eprintln!("regex rows: {matched} matched, {invalid} Ruby-invalid, {gaps} explicit gaps");
     assert!(matched > 900);
 }
@@ -143,6 +180,9 @@ fn default_literal_matches_ruby() {
 fn line_start_after_trailing_newline_is_refused_not_guessed() {
     // Ruby: `^` never matches at the end of "a\n" (captured: /\n^/ =~ "a\n" is nil).
     let p = RubyPattern::new(r"\n^").unwrap();
-    assert!(matches!(p.captures("a\n"), Err(PatternError::Unsupported { .. })));
+    assert!(matches!(
+        p.captures("a\n"),
+        Err(PatternError::Unsupported { .. })
+    ));
     assert_eq!(p.captures("a\nb").unwrap().unwrap().whole, "\n");
 }

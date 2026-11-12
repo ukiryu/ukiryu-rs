@@ -17,15 +17,16 @@ mod runner;
 pub mod text;
 
 pub use detector::{
-    detect_info, detect_with_methods, DetectedVersion, DetectionMethod, InfoRequest, MethodSpec, MethodsRequest,
-    PatternSpec, MAN_TAIL_CHARS,
+    detect_info, detect_with_methods, DetectedVersion, DetectionMethod, InfoRequest, MethodSpec,
+    MethodsRequest, PatternSpec, MAN_TAIL_CHARS,
 };
 pub use index::{
-    detection_output, extract_version_from_pattern, probe_index_detection, IndexDetection, IndexProbe,
-    INDEX_DETECTION_TIMEOUT_SECS,
+    detection_output, extract_version_from_pattern, probe_index_detection, IndexDetection,
+    IndexProbe, INDEX_DETECTION_TIMEOUT_SECS,
 };
 pub use pattern::{PatternError, PatternMatch, RubyPattern, DEFAULT_PATTERN_SOURCE};
 pub use profile::{
-    detect_profile_version, DetectionMethodView, ToolContext, VersionDetectionView, PROFILE_DETECTION_TIMEOUT_SECS,
+    detect_profile_version, DetectionMethodView, ToolContext, VersionDetectionView,
+    PROFILE_DETECTION_TIMEOUT_SECS,
 };
 pub use runner::{CommandOutput, CommandRequest, CommandRunner, ManPageDates, RunnerError};
