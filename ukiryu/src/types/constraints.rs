@@ -95,7 +95,12 @@ impl Constraint {
 
     /// `Constraint#validate(value, context)`. `accessor` is
     /// `context[:options_accessor]`.
-    pub fn validate(&self, value: &Value, accessor: Option<Accessor<'_>>, host: &dyn Host) -> Result<()> {
+    pub fn validate(
+        &self,
+        value: &Value,
+        accessor: Option<Accessor<'_>>,
+        host: &dyn Host,
+    ) -> Result<()> {
         match self {
             Constraint::Required { attribute, min } => {
                 let zero = match min {
@@ -122,7 +127,11 @@ impl Constraint {
                 }
                 Ok(())
             }
-            Constraint::Range { attribute, min, max } => {
+            Constraint::Range {
+                attribute,
+                min,
+                max,
+            } => {
                 if value.is_nil() {
                     return Ok(());
                 }
@@ -278,7 +287,9 @@ impl Constraint {
                 }
                 if implies.truthy() {
                     let Value::Hash(pairs) = implies else {
-                        return Err(Error::unsupported("implies given as a non-Hash is not ported"));
+                        return Err(Error::unsupported(
+                            "implies given as a non-Hash is not ported",
+                        ));
                     };
                     for (implied, definition) in pairs {
                         if !matches!(definition, Value::Hash(_)) {

@@ -217,8 +217,8 @@ fn is_ident(s: &str) -> bool {
 }
 
 const OPERATOR_SYMBOLS: &[&str] = &[
-    "+", "-", "*", "**", "/", "%", "==", "===", "=~", "!~", "!", "!=", "<", "<=", ">", ">=",
-    "<=>", "<<", ">>", "&", "|", "^", "~", "+@", "-@", "[]", "[]=", "`",
+    "+", "-", "*", "**", "/", "%", "==", "===", "=~", "!~", "!", "!=", "<", "<=", ">", ">=", "<=>",
+    "<<", ">>", "&", "|", "^", "~", "+@", "-@", "[]", "[]=", "`",
 ];
 
 fn symbol_needs_no_quotes(s: &str) -> bool {
@@ -298,20 +298,39 @@ fn regexp_flags(options: u32, set: bool) -> String {
     out
 }
 
+/// The source with unescaped `/` written as `\/`, as `Regexp#to_s` and
+/// `#inspect` print it (`Regexp#source` itself keeps a bare `/`).
+fn regexp_source_escaped(source: &str) -> String {
+    let mut out = String::with_capacity(source.len());
+    let mut escaped = false;
+    for c in source.chars() {
+        if c == '/' && !escaped {
+            out.push('\\');
+        }
+        escaped = c == '\\' && !escaped;
+        out.push(c);
+    }
+    out
+}
+
 /// `Regexp#to_s`, e.g. `(?-mix:\A[a-z]+\z)`.
 pub fn regexp_to_s(r: &Regexp) -> String {
     let on = regexp_flags(r.options, true);
     let off = regexp_flags(r.options, false);
     if off.is_empty() {
-        format!("(?{on}:{})", r.source)
+        format!("(?{on}:{})", regexp_source_escaped(&r.source))
     } else {
-        format!("(?{on}-{off}:{})", r.source)
+        format!("(?{on}-{off}:{})", regexp_source_escaped(&r.source))
     }
 }
 
 /// `Regexp#inspect`, e.g. `/a\/b/i`.
 pub fn regexp_inspect(r: &Regexp) -> String {
-    format!("/{}/{}", r.source, regexp_flags(r.options, true))
+    format!(
+        "/{}/{}",
+        regexp_source_escaped(&r.source),
+        regexp_flags(r.options, true)
+    )
 }
 
 /// Civil date from days since 1970-01-01 (proleptic Gregorian).

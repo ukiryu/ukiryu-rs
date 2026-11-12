@@ -127,7 +127,10 @@ fn validate_file(value: &Value, options: &dyn OptionSource, host: &dyn Host) -> 
     }
     if options.option("require_existing").truthy() {
         if path.contains('\0') {
-            return Err(Error::new(ErrorClass::Argument, "string contains null byte"));
+            return Err(Error::new(
+                ErrorClass::Argument,
+                "string contains null byte",
+            ));
         }
         if !host.file_exists(&path) {
             return Err(Error::validation(format!("File not found: {path}")));
@@ -243,7 +246,9 @@ fn kernel_float(value: &Value) -> Result<Option<f64>> {
         Value::String(s) => parse_float(s)?,
         Value::Time(t) => {
             if t.nanos != 0 || t.seconds.unsigned_abs() >= 1 << 53 {
-                return Err(Error::unsupported("Float(Time) with sub-second part is not ported"));
+                return Err(Error::unsupported(
+                    "Float(Time) with sub-second part is not ported",
+                ));
             }
             Some(t.seconds as f64)
         }
@@ -284,7 +289,9 @@ fn validate_symbol(value: &Value, options: &dyn OptionSource) -> Result<Value> {
         let items = match &values {
             Value::Array(items) => items,
             Value::Hash(_) => {
-                return Err(Error::unsupported("symbol values given as a Hash are not ported"))
+                return Err(Error::unsupported(
+                    "symbol values given as a Hash are not ported",
+                ))
             }
             other => return Err(super::ruby::no_method("map", other)),
         };
@@ -407,14 +414,12 @@ fn validate_array(
         )));
     }
     match options.option("size") {
-        Value::Integer(n) => {
-            if Value::Integer(n.clone()) != size {
-                return Err(Error::validation(format!(
-                    "Array has {} elements, expected {}",
-                    array.len(),
-                    n
-                )));
-            }
+        Value::Integer(n) if Value::Integer(n.clone()) != size => {
+            return Err(Error::validation(format!(
+                "Array has {} elements, expected {}",
+                array.len(),
+                n
+            )));
         }
         sizes @ Value::Array(_) => {
             let Value::Array(items) = &sizes else {

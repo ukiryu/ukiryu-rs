@@ -103,7 +103,9 @@ impl Value {
 
     /// `Hash#[]` with a Symbol key, `nil` when absent.
     pub fn sym_get(&self, key: &str) -> Value {
-        self.hash_get(&Value::sym(key)).cloned().unwrap_or(Value::Nil)
+        self.hash_get(&Value::sym(key))
+            .cloned()
+            .unwrap_or(Value::Nil)
     }
 
     /// `Hash#key?` with a Symbol key.

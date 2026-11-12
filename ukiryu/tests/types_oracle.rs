@@ -322,7 +322,10 @@ fn type_file_real_filesystem() {
         tally.record(id, &row["expect"], &actual, is_unsupported(&r));
     }
     let _ = std::fs::remove_dir_all(&dir);
-    println!("type_file_fs: {skipped} rows not applicable on {}", current_platform());
+    println!(
+        "type_file_fs: {skipped} rows not applicable on {}",
+        current_platform()
+    );
     tally.finish("type_file_fs");
 }
 
@@ -410,12 +413,20 @@ fn constraint_matrix() {
     for row in rows("constraints.jsonl") {
         let id = row["id"].as_str().unwrap();
         let input = &row["input"];
-        let c = build_constraint(input["constraint"].as_str().unwrap(), &decode(&input["ctor"]));
+        let c = build_constraint(
+            input["constraint"].as_str().unwrap(),
+            &decode(&input["ctor"]),
+        );
         let ctx = input.get("context_values").map(decode);
         let accessor = |name: &Value| -> Result<Value, Error> {
-            Ok(ctx.as_ref().unwrap().hash_get(name).cloned().unwrap_or(Value::Nil))
+            Ok(ctx
+                .as_ref()
+                .unwrap()
+                .hash_get(name)
+                .cloned()
+                .unwrap_or(Value::Nil))
         };
-        let acc: Option<&dyn Fn(&Value) -> Result<Value, Error>> =
+        let acc: Option<ukiryu::types::constraints::Accessor<'_>> =
             if ctx.is_some() { Some(&accessor) } else { None };
         let r = c
             .validate(&decode(&input["value"]), acc, &OracleHost)
@@ -464,7 +475,8 @@ fn validator_matrix() {
             let errors = v
                 .errors()
                 .map(|es| Value::Array(es.into_iter().map(Value::String).collect()));
-            unsupported |= is_unsupported(&validate) || is_unsupported(&valid) || is_unsupported(&errors);
+            unsupported |=
+                is_unsupported(&validate) || is_unsupported(&valid) || is_unsupported(&errors);
             actual["validate"] = outcome(&validate);
             actual["valid"] = outcome(&valid);
             actual["errors"] = outcome(&errors);
@@ -529,7 +541,11 @@ fn nonprintable_table_matches_capture() {
         for cp in [lo, hi] {
             if let Some(c) = char::from_u32(cp as u32) {
                 let s = c.to_string();
-                assert_ne!(ruby::string_inspect(&s), format!("\"{s}\""), "U+{cp:X} must be escaped");
+                assert_ne!(
+                    ruby::string_inspect(&s),
+                    format!("\"{s}\""),
+                    "U+{cp:X} must be escaped"
+                );
             }
         }
         for cp in [lo.wrapping_sub(1), hi + 1] {
@@ -538,8 +554,24 @@ fn nonprintable_table_matches_capture() {
                     continue;
                 }
                 let s = c.to_string();
-                if !matches!(c, '"' | '\\' | '\n' | '\r' | '\t' | '\x0C' | '\x0B' | '\x08' | '\x07' | '\x1B' | '#') {
-                    assert_eq!(ruby::string_inspect(&s), format!("\"{s}\""), "U+{cp:X} is printable");
+                if !matches!(
+                    c,
+                    '"' | '\\'
+                        | '\n'
+                        | '\r'
+                        | '\t'
+                        | '\x0C'
+                        | '\x0B'
+                        | '\x08'
+                        | '\x07'
+                        | '\x1B'
+                        | '#'
+                ) {
+                    assert_eq!(
+                        ruby::string_inspect(&s),
+                        format!("\"{s}\""),
+                        "U+{cp:X} is printable"
+                    );
                 }
             }
         }

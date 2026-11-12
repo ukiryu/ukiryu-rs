@@ -49,7 +49,7 @@ pub fn parse_float(s: &str) -> Result<Option<f64>> {
         Some(b'-') => (true, &s[1..]),
         _ => (false, s),
     };
-    let value = if body.len() >= 2 && body[..2].eq_ignore_ascii_case("0x") {
+    let value = if body.len() >= 2 && body.as_bytes()[..2].eq_ignore_ascii_case(b"0x") {
         match parse_hex_float(&body[2..])? {
             Some(v) => v,
             None => return Ok(None),

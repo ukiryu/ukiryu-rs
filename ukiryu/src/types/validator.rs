@@ -133,7 +133,9 @@ fn bounds(range: &Value) -> (Value, Value) {
 /// `Validator#build_constraints`.
 pub fn build_constraints(command_def: &Value) -> Result<Vec<Constraint>> {
     if !matches!(command_def, Value::Hash(_)) {
-        return Err(Error::unsupported("a non-Hash command definition is not ported"));
+        return Err(Error::unsupported(
+            "a non-Hash command definition is not ported",
+        ));
     }
     let mut out = Vec::new();
     for arg in definitions(&command_def.sym_get("arguments"))? {

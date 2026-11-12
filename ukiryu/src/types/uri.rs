@@ -215,9 +215,24 @@ fn ipv6_pattern() -> P {
         P::Seq(vec![P::Rep(Box::new(hc()), 6, 6), ls32()]),
         P::Seq(vec![P::Lit("::"), P::Rep(Box::new(hc()), 5, 5), ls32()]),
         // `\h{1,4}?::` is a lazy (not optional) quantifier in Onigmo.
-        P::Seq(vec![P::H16, P::Lit("::"), P::Rep(Box::new(hc()), 4, 4), ls32()]),
-        P::Seq(vec![pre(1), P::Lit("::"), P::Rep(Box::new(hc()), 3, 3), ls32()]),
-        P::Seq(vec![pre(2), P::Lit("::"), P::Rep(Box::new(hc()), 2, 2), ls32()]),
+        P::Seq(vec![
+            P::H16,
+            P::Lit("::"),
+            P::Rep(Box::new(hc()), 4, 4),
+            ls32(),
+        ]),
+        P::Seq(vec![
+            pre(1),
+            P::Lit("::"),
+            P::Rep(Box::new(hc()), 3, 3),
+            ls32(),
+        ]),
+        P::Seq(vec![
+            pre(2),
+            P::Lit("::"),
+            P::Rep(Box::new(hc()), 2, 2),
+            ls32(),
+        ]),
         P::Seq(vec![pre(3), P::Lit("::"), hc(), ls32()]),
         P::Seq(vec![pre(4), P::Lit("::"), ls32()]),
         P::Seq(vec![pre(5), P::Lit("::"), P::H16]),
@@ -295,7 +310,12 @@ fn authority(s: &[u8], start: usize, relative: bool) -> Option<Split> {
         pos = h_end;
     }
     if s.get(pos) == Some(&b':') {
-        let d_end = pos + 1 + s[pos + 1..].iter().take_while(|b| b.is_ascii_digit()).count();
+        let d_end = pos
+            + 1
+            + s[pos + 1..]
+                .iter()
+                .take_while(|b| b.is_ascii_digit())
+                .count();
         sp.port = Some(text(s, pos + 1, d_end));
         pos = d_end;
     }
@@ -442,7 +462,10 @@ impl Scheme {
 
 /// `URI::Generic#query=`: drop TAB/CR/LF, reject `%\H\H`, escape the rest.
 fn set_query(v: &str) -> Result<String, UriError> {
-    let b: Vec<u8> = v.bytes().filter(|c| !matches!(c, b'\t' | b'\r' | b'\n')).collect();
+    let b: Vec<u8> = v
+        .bytes()
+        .filter(|c| !matches!(c, b'\t' | b'\r' | b'\n'))
+        .collect();
     for i in 0..b.len() {
         if b[i] == b'%' && i + 2 < b.len() && !is_hex(b[i + 1]) && !is_hex(b[i + 2]) {
             return Err(UriError::Invalid(format!(
@@ -451,9 +474,8 @@ fn set_query(v: &str) -> Result<String, UriError> {
             )));
         }
     }
-    let keep = |c: u8| {
-        matches!(c, b'!' | b'$'..=b'&' | b'('..=b';' | b'=' | b'?'..=b'_' | b'a'..=b'~')
-    };
+    let keep =
+        |c: u8| matches!(c, b'!' | b'$'..=b'&' | b'('..=b';' | b'=' | b'?'..=b'_' | b'a'..=b'~');
     Ok(escape_bytes(&b, keep))
 }
 
@@ -471,7 +493,10 @@ fn escape_bytes(b: &[u8], keep: impl Fn(u8) -> bool) -> String {
 
 /// `URI::Generic#fragment=`.
 fn set_fragment(v: &str) -> String {
-    let b: Vec<u8> = v.bytes().filter(|c| !matches!(c, b'\t' | b'\r' | b'\n')).collect();
+    let b: Vec<u8> = v
+        .bytes()
+        .filter(|c| !matches!(c, b'\t' | b'\r' | b'\n'))
+        .collect();
     escape_bytes(&b, |c| (b'!'..=b'~').contains(&c))
 }
 
@@ -601,10 +626,8 @@ pub fn parse_to_s(value: &str) -> Result<String, UriError> {
             }
             return Ok(out);
         }
-        Scheme::Ldap | Scheme::Ldaps => {
-            if fragment.is_some() || path.is_none() {
-                return Err(UriError::Invalid("bad LDAP URL".into()));
-            }
+        Scheme::Ldap | Scheme::Ldaps if fragment.is_some() || path.is_none() => {
+            return Err(UriError::Invalid("bad LDAP URL".into()));
         }
         _ => {}
     }

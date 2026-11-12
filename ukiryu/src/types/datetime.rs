@@ -199,7 +199,10 @@ fn has_month_name(input: &str) -> bool {
         "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec",
     ];
     let kept = |c: char| c.is_alphanumeric() || "-+',./:@[]".contains(c);
-    let chars: Vec<char> = input.chars().map(|c| if kept(c) { c } else { ' ' }).collect();
+    let chars: Vec<char> = input
+        .chars()
+        .map(|c| if kept(c) { c } else { ' ' })
+        .collect();
     (0..chars.len()).any(|i| {
         let boundary = i == 0 || !chars[i - 1].is_alphanumeric();
         boundary
