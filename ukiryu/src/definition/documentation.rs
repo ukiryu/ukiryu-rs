@@ -925,13 +925,10 @@ fn sort(mut items: Vec<Rv<'_>>) -> Result<Vec<Rv<'_>>> {
     let mut out = Vec::with_capacity(left.len() + right.len());
     let mut l = left.into_iter().peekable();
     let mut r = right.into_iter().peekable();
-    loop {
-        let order = match (l.peek(), r.peek()) {
-            (Some(x), Some(y)) => match cmp(x, y) {
-                Some(order) => order,
-                None => return Err(cmp_error(x, y)),
-            },
-            _ => break,
+    while let (Some(x), Some(y)) = (l.peek(), r.peek()) {
+        let order = match cmp(x, y) {
+            Some(order) => order,
+            None => return Err(cmp_error(x, y)),
         };
         if order == Ordering::Greater {
             out.extend(r.next());
