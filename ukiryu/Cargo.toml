@@ -1,0 +1,21 @@
+[package]
+name = "ukiryu"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Shared Ukiryu command execution core"
+# Initial development scaffold; publication is owner-gated.
+publish = false
+
+[features]
+default = []
+c = []
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+num-bigint.workspace = true
+yeptris.workspace = true
