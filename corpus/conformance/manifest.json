@@ -7,7 +7,7 @@
     "commit": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
     "ruby": "4.0.1",
     "psych": "5.3.1",
-    "libyaml": "0.2.2",
+    "libyaml": "0.2.5",
     "captured_on": "linux",
     "gemfile_lock_sha256": "fc3b12f2ede259028b638d2f26c65ddf9506d142c20a8bf0c1b151741078b65e",
     "gems": {
@@ -41,7 +41,7 @@
       "cases/cli-output.jsonl": "ae8e27cd686497192ad06de48648ebf41b7e0e62b5f0db9e93e35dec3632bb14",
       "cases/escape.jsonl": "ae7a4e0612ba4d52353501d8a110430d040aec3a090545e1200f700fa2a7857b",
       "cases/lint.jsonl": "c60cd99cfcc5f78ff3c0971d1e9e6483246a028afb800c867d2ab486a80bdd4b",
-      "cases/resolve.jsonl": "5c91cc56d51e16a7ac350d60e77f1c686411d631810b1db6e4c6db80066f8a92",
+      "cases/resolve.jsonl": "c8bae384e964e3125e844f20a6cf608d43b63a69efdba9d1c8a2c73ddf2ee331",
       "cases/schema.jsonl": "c0e5b3c13ee43a661a145c2e6124dd8fc91c304b206261a6809b380a2f5e042e",
       "cases/validate.jsonl": "8a300851af13fa2693fa2f66dcc0538fc5b2deb653c5d6d8c2ffce5a5e43d825",
       "cases/yaml.jsonl": "444c3e2fe21ed093ead4b9a85936b0cd49e03e44a53064a3a69510a40e255cf8"

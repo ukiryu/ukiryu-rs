@@ -44,6 +44,17 @@ module UkiryuOracle
       end
     end
 
+    # Shell diagnostics embed the host Ruby platform. Canonicalize only its
+    # exact runtime value in the verified diagnostic field; a wrong value must
+    # remain visible and fail byte comparison.
+    def scrub_error(error, op:)
+      message = scrub(error.message)
+      return message unless op == 'resolve.shell_detect' && error.is_a?(Ukiryu::Errors::UnknownShellError)
+
+      message.sub("\nCurrent environment:\n  Platform: #{RUBY_PLATFORM}\n",
+                  "\nCurrent environment:\n  Platform: ${RUBY_PLATFORM}\n")
+    end
+
     # Process-wide state every op starts from.
     module Sandbox
       class << self

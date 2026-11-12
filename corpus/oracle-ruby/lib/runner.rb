@@ -92,7 +92,7 @@ module UkiryuOracle
       value = Ops.run(row['op'], Codec.decode(row['input']))
       { 'ok' => Codec.encode(Ops.scrub(value)) }
     rescue StandardError, ScriptError => e
-      { 'error' => { 'class' => e.class.name, 'message' => Ops.scrub(e.message) } }
+      { 'error' => { 'class' => e.class.name, 'message' => Ops.scrub_error(e, op: row['op']) } }
     end
 
     # Returns nil when the outcome matches the expectation, else a reason.

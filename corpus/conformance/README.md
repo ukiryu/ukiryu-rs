@@ -12,6 +12,14 @@ is awaiting an owner decision or that is plainly a defect. A row is not a
 statement that the behaviour is desired; rows that wait on a decision say so
 in their `decision` field.
 
+The initial seed used Ruby 4.0.1, Psych 5.3.1 and libyaml 0.2.2. The
+strict regeneration gate recaptured the same case/input bytes with the
+GitHub Actions Ruby 4.0.1 distribution's libyaml 0.2.5; the manifest now
+records that verified recapture environment. Source and Gemfile lock pins
+are unchanged. A local `capture.rb --check` requires the matching runtime
+fingerprint as well as matching values; a different libyaml version is
+reported as a provenance mismatch rather than silently ignored.
+
 ## The rules
 
 Adopted from the parsanol corpus:
@@ -120,7 +128,7 @@ exact text the model writes.
 `error_match` is `class_and_message` (the default) or `class`. Messages that
 embed Ruby `inspect` output are still pinned exactly in this version.
 
-Two substitutions apply before comparison: the absolute path of `inputs/`
+Host substitutions apply before comparison: the absolute path of `inputs/`
 becomes `${INPUTS}` and the sandbox home directory becomes `${HOME}`. Each
 case runs with `TZ=UTC`, `LANG=LC_ALL=C.UTF-8`, `SHELL=/bin/bash`,
 `UKIRYU_REGISTER=inputs/register`, an empty temporary `HOME`, and with
@@ -128,6 +136,13 @@ case runs with `TZ=UTC`, `LANG=LC_ALL=C.UTF-8`, `SHELL=/bin/bash`,
 `MINGW_PREFIX` and `WSL_DISTRO` unset unless the row sets them. CLI
 subprocesses use `THOR_COLUMNS=COLUMNS=100` and `TERM=dumb`, which keep
 Thor help independent of the parent terminal.
+
+The two `resolve.shell_detect` UnknownShell diagnostics also substitute
+`${RUBY_PLATFORM}` for the exact actual `RUBY_PLATFORM` value in their
+`Current environment` / `Platform` field. Every other error byte and the
+full error class remain exact. A different platform value is not
+normalized; negative controls require that wrong field to fail. This is
+host-context normalization and does not settle decision D2.
 
 ## Applicability
 

@@ -57,6 +57,14 @@ CONTROLS = {
     edit_rows(d, 'validate') { |rs| i = first_err(rs); rs[i]['expect']['error']['message'] += '!'; rs }
     reseal(d)
   }],
+  'wrong-host-platform-field' => [/error message differs/, lambda { |d|
+    edit_rows(d, 'resolve') do |rs|
+      row = rs.find { |r| r['id'] == 'resolve.shell_detect.shell-env.empty' }
+      row['expect']['error']['message'] = row['expect']['error']['message'].sub('${RUBY_PLATFORM}', 'wrong-platform')
+      rs
+    end
+    reseal(d)
+  }],
   'expected-error-got-ok' => [/expected error/, lambda { |d|
     edit_rows(d, 'escape') { |rs| i = first_ok(rs); rs[i]['expect'] = { 'error' => { 'class' => 'X', 'message' => 'x' } }; rs }
     reseal(d)
@@ -108,6 +116,14 @@ Dir.mktmpdir('ukiryu-selftest') do |tmp|
   ok, why = verify(base)
   puts "control clean-copy: #{ok ? 'PASS (verifies)' : "FAILED: #{why.lines.first(5).join}"}"
   failures += 1 unless ok
+  # A bad actual diagnostic must not be erased by a broad Platform regexp.
+  row = R.load_rows(base).first.find { |r| r['id'] == 'resolve.shell_detect.shell-env.empty' }
+  wrong = row['expect']['error']['message'].sub('${RUBY_PLATFORM}', '__CORPUS_WRONG_PLATFORM__')
+  message = UkiryuOracle::Ops.scrub_error(Ukiryu::Errors::UnknownShellError.new(wrong), op: row['op'])
+  reason = R.mismatch(row, { 'error' => { 'class' => row['expect']['error']['class'], 'message' => message } })
+  bound = message.include?('__CORPUS_WRONG_PLATFORM__') && reason&.match?(/error message differs/)
+  failures += 1 unless bound
+  puts "control normalizer-bound-to-runtime-platform: #{bound ? 'PASS (wrong actual value rejected)' : 'FAILED'}"
   CONTROLS.each do |name, (pattern, mutate)|
     d = File.join(tmp, name)
     FileUtils.cp_r(SRC, d)
@@ -118,5 +134,5 @@ Dir.mktmpdir('ukiryu-selftest') do |tmp|
     puts "control #{name}: #{good ? 'PASS (rejected)' : "NOT REJECTED as expected (passed=#{ok}) #{why.lines.first(3).join.strip}"}"
   end
 end
-puts "selftest: #{CONTROLS.size + 1} controls, #{failures} failures"
+puts "selftest: #{CONTROLS.size + 2} controls, #{failures} failures"
 exit(failures.zero? ? 0 : 1)
