@@ -3,6 +3,7 @@
 pub mod command_builder;
 pub mod config;
 pub mod definition;
+pub mod executable;
 pub mod extractors;
 pub mod routing;
 pub mod schema;
