@@ -72,9 +72,8 @@ pub fn yaml_value(text: &str) -> yeptris::Value {
     yeptris::from_str::<yeptris::Value>(text).unwrap_or_else(|e| panic!("yaml {text:?}: {e}"))
 }
 
-/// Integral floats the Yeptris 0.6.63 emitter wrote as integers
-/// (`Number::F64(x) => x.to_string()` gives `0` for `0.0`). Counted, not hidden:
-/// the tests print the total as a known Yeptris emitter gap.
+/// Integral floats emitted as integers (`0.0` written as `0`). Yeptris 0.6.63
+/// did this; yeptris-rs#57 fixed it, so any occurrence is now a regression.
 pub static INTEGRAL_FLOAT_EMISSIONS: std::sync::atomic::AtomicUsize =
     std::sync::atomic::AtomicUsize::new(0);
 
@@ -109,10 +108,8 @@ pub fn yaml_equiv(expected: &str, actual: &str) -> bool {
 }
 
 pub fn report_integral_floats() {
-    println!(
-        "known Yeptris emitter gap: integral floats written as integers: {}",
-        INTEGRAL_FLOAT_EMISSIONS.load(std::sync::atomic::Ordering::Relaxed)
-    );
+    let n = INTEGRAL_FLOAT_EMISSIONS.load(std::sync::atomic::Ordering::Relaxed);
+    assert_eq!(n, 0, "Yeptris wrote {n} integral floats as integers");
 }
 
 pub fn opt_text(v: &Option<Text>) -> Json {
