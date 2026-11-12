@@ -162,6 +162,18 @@ fn expected_stdout(args: &[String]) -> String {
     args.iter().map(|a| format!("{a}\n")).collect()
 }
 
+/// `echo` (Write-Output) with no arguments prompts for its mandatory
+/// InputObject parameter, so its output says nothing about the formatting.
+/// The bytes of these cases are still compared with the oracle.
+fn not_run_without_arguments(label: &str, args: &[String]) -> bool {
+    if args.is_empty() {
+        eprintln!(
+            "NOT-RUN {label} input=[]: Write-Output with no arguments prompts for InputObject"
+        );
+    }
+    args.is_empty()
+}
+
 #[derive(Default)]
 struct Tally {
     asserted: usize,
@@ -216,6 +228,9 @@ fn echo_cases_run_through_real_powershell() {
         let args = strings(&r["args"]);
         let argv = sh.command_argv("echo", &args, host);
         assert_eq!(argv, strings(&r["argv"]), "oracle bytes for {args:?}");
+        if not_run_without_arguments("command_argv", &args) {
+            continue;
+        }
         let assert = args
             .iter()
             .all(|a| !has_smart_quote(a) && (executor_quotes(a, host) || plain_unquoted(a)));
@@ -236,6 +251,9 @@ fn echo_cases_run_through_real_powershell() {
             r["out"].as_str().expect("out"),
             "oracle bytes for {args:?}"
         );
+        if not_run_without_arguments("join", &args) {
+            continue;
+        }
         let assert = !args.iter().any(|a| a == "-Command" || a == "-File")
             && args
                 .iter()
