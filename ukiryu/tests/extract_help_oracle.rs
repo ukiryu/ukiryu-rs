@@ -126,14 +126,34 @@ fn outcome<T>(result: Result<T, ExtractError>, ok: impl FnOnce(T) -> Json) -> Js
     }
 }
 
+/// The capture tags Ruby values once more when they sit inside a strategy
+/// result hash (`ordered` applied to an already ordered view); mirror that.
+fn retag(value: Json) -> Json {
+    match value {
+        Json::Object(object) => {
+            let inner = object
+                .into_iter()
+                .map(|(k, v)| json!([k, retag(v)]))
+                .collect::<Vec<_>>();
+            json!({ "map": inner })
+        }
+        Json::Array(items) => Json::Array(items.into_iter().map(retag).collect()),
+        other => other,
+    }
+}
+
 /// The Psych text and our YAML must both read back as the captured data.
-fn yaml_matches(id: &str, ours: &str, expected: &Json) {
+fn yaml_matches(id: &str, ours: &str, expected: &Json, tag: fn(Json) -> Json) {
     let data = &expected["data"];
     let reread: Value =
         yeptris::from_str(ours).unwrap_or_else(|e| panic!("{id}: our YAML does not parse: {e}"));
-    assert_eq!(&ordered(&reread), data, "{id}: our YAML data");
+    assert_eq!(&tag(ordered(&reread)), data, "{id}: our YAML data");
     let psych: Value = yeptris::from_str(expected["text"].as_str().unwrap()).unwrap();
-    assert_eq!(&ordered(&psych), data, "{id}: Psych text read by yeptris");
+    assert_eq!(
+        &tag(ordered(&psych)),
+        data,
+        "{id}: Psych text read by yeptris"
+    );
 }
 
 fn result_json(id: &str, result: ExtractionResult, expected: &Json) -> Json {
@@ -145,9 +165,23 @@ fn result_json(id: &str, result: ExtractionResult, expected: &Json) -> Json {
         .find(|p| p[0] == "yaml")
         .map(|p| p[1].clone())
         .unwrap();
-    let yaml = match (&result.yaml, expected_yaml.get("data")) {
-        (Some(ours), Some(_)) => {
-            yaml_matches(id, ours, &expected_yaml);
+    // Inside the result hash the capture's {text, data} view is itself an
+    // ordered map.
+    let view: Option<Json> = expected_yaml.get("map").map(|pairs| {
+        let field = |name: &str| {
+            pairs
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|p| p[0] == name)
+                .map(|p| p[1].clone())
+                .unwrap()
+        };
+        json!({"text": field("text"), "data": field("data")})
+    });
+    let yaml = match (&result.yaml, view) {
+        (Some(ours), Some(view)) => {
+            yaml_matches(id, ours, &view, retag);
             expected_yaml.clone()
         }
         (Some(ours), None) => json!(ours),
@@ -238,7 +272,7 @@ fn extraction_flows_match_the_source() {
                 HelpParser::new(tool, &mut host).extract(),
                 |yaml| match yaml {
                     Some(ours) => {
-                        yaml_matches(id, &ours, &expected["ok"]);
+                        yaml_matches(id, &ours, &expected["ok"], |v| v);
                         expected["ok"].clone()
                     }
                     None => Json::Null,
