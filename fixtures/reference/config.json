@@ -1,0 +1,609 @@
+{
+  "schema": "ukiryu-config-reference/1",
+  "source": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+  "ruby": "4.0.1",
+  "profile": "JSON transport; Ruby symbols have textual wire values",
+  "conversions": [
+    {
+      "id": "convert.timeout.0",
+      "attribute": "timeout",
+      "input": null,
+      "expect": {
+        "ok": null
+      }
+    },
+    {
+      "id": "convert.timeout.1",
+      "attribute": "timeout",
+      "input": "",
+      "expect": {
+        "ok": null
+      }
+    },
+    {
+      "id": "convert.timeout.2",
+      "attribute": "timeout",
+      "input": "0",
+      "expect": {
+        "ok": 0
+      }
+    },
+    {
+      "id": "convert.timeout.3",
+      "attribute": "timeout",
+      "input": "010",
+      "expect": {
+        "ok": 8
+      }
+    },
+    {
+      "id": "convert.timeout.4",
+      "attribute": "timeout",
+      "input": "08",
+      "expect": {
+        "error": {
+          "class": "ArgumentError",
+          "message": "Invalid integer value: 08"
+        }
+      }
+    },
+    {
+      "id": "convert.timeout.5",
+      "attribute": "timeout",
+      "input": "0x10",
+      "expect": {
+        "ok": 16
+      }
+    },
+    {
+      "id": "convert.timeout.6",
+      "attribute": "timeout",
+      "input": "0x_ff",
+      "expect": {
+        "error": {
+          "class": "ArgumentError",
+          "message": "Invalid integer value: 0x_ff"
+        }
+      }
+    },
+    {
+      "id": "convert.timeout.7",
+      "attribute": "timeout",
+      "input": "0o17",
+      "expect": {
+        "ok": 15
+      }
+    },
+    {
+      "id": "convert.timeout.8",
+      "attribute": "timeout",
+      "input": "0b10",
+      "expect": {
+        "ok": 2
+      }
+    },
+    {
+      "id": "convert.timeout.9",
+      "attribute": "timeout",
+      "input": "0d10",
+      "expect": {
+        "ok": 10
+      }
+    },
+    {
+      "id": "convert.timeout.10",
+      "attribute": "timeout",
+      "input": "1_000",
+      "expect": {
+        "ok": 1000
+      }
+    },
+    {
+      "id": "convert.timeout.11",
+      "attribute": "timeout",
+      "input": "1__0",
+      "expect": {
+        "error": {
+          "class": "ArgumentError",
+          "message": "Invalid integer value: 1__0"
+        }
+      }
+    },
+    {
+      "id": "convert.timeout.12",
+      "attribute": "timeout",
+      "input": "+12",
+      "expect": {
+        "ok": 12
+      }
+    },
+    {
+      "id": "convert.timeout.13",
+      "attribute": "timeout",
+      "input": "  -12 ",
+      "expect": {
+        "ok": -12
+      }
+    },
+    {
+      "id": "convert.timeout.14",
+      "attribute": "timeout",
+      "input": "0_10",
+      "expect": {
+        "ok": 8
+      }
+    },
+    {
+      "id": "convert.timeout.15",
+      "attribute": "timeout",
+      "input": "0x1_0",
+      "expect": {
+        "ok": 16
+      }
+    },
+    {
+      "id": "convert.timeout.16",
+      "attribute": "timeout",
+      "input": "-0x10",
+      "expect": {
+        "ok": -16
+      }
+    },
+    {
+      "id": "convert.timeout.17",
+      "attribute": "timeout",
+      "input": "0_9",
+      "expect": {
+        "error": {
+          "class": "ArgumentError",
+          "message": "Invalid integer value: 0_9"
+        }
+      }
+    },
+    {
+      "id": "convert.timeout.18",
+      "attribute": "timeout",
+      "input": " 1",
+      "expect": {
+        "error": {
+          "class": "ArgumentError",
+          "message": "Invalid integer value:  1"
+        }
+      }
+    },
+    {
+      "id": "convert.timeout.19",
+      "attribute": "timeout",
+      "input": "999999999999999999999999999999999999999",
+      "expect": {
+        "ok": 999999999999999999999999999999999999999
+      }
+    },
+    {
+      "id": "convert.debug.0",
+      "attribute": "debug",
+      "input": null,
+      "expect": {
+        "ok": null
+      }
+    },
+    {
+      "id": "convert.debug.1",
+      "attribute": "debug",
+      "input": "",
+      "expect": {
+        "ok": null
+      }
+    },
+    {
+      "id": "convert.debug.2",
+      "attribute": "debug",
+      "input": "true",
+      "expect": {
+        "ok": true
+      }
+    },
+    {
+      "id": "convert.debug.3",
+      "attribute": "debug",
+      "input": "TRUE",
+      "expect": {
+        "ok": true
+      }
+    },
+    {
+      "id": "convert.debug.4",
+      "attribute": "debug",
+      "input": "1",
+      "expect": {
+        "ok": true
+      }
+    },
+    {
+      "id": "convert.debug.5",
+      "attribute": "debug",
+      "input": "yes",
+      "expect": {
+        "ok": true
+      }
+    },
+    {
+      "id": "convert.debug.6",
+      "attribute": "debug",
+      "input": "YES",
+      "expect": {
+        "ok": true
+      }
+    },
+    {
+      "id": "convert.debug.7",
+      "attribute": "debug",
+      "input": "false",
+      "expect": {
+        "ok": false
+      }
+    },
+    {
+      "id": "convert.debug.8",
+      "attribute": "debug",
+      "input": "0",
+      "expect": {
+        "ok": false
+      }
+    },
+    {
+      "id": "convert.debug.9",
+      "attribute": "debug",
+      "input": "No",
+      "expect": {
+        "ok": false
+      }
+    },
+    {
+      "id": "convert.debug.10",
+      "attribute": "debug",
+      "input": "off",
+      "expect": {
+        "error": {
+          "class": "ArgumentError",
+          "message": "Invalid boolean value: off. Valid values: true, 1, yes, false, 0, no"
+        }
+      }
+    },
+    {
+      "id": "convert.debug.11",
+      "attribute": "debug",
+      "input": " true ",
+      "expect": {
+        "error": {
+          "class": "ArgumentError",
+          "message": "Invalid boolean value:  true . Valid values: true, 1, yes, false, 0, no"
+        }
+      }
+    },
+    {
+      "id": "convert.shell.0",
+      "attribute": "shell",
+      "input": null,
+      "expect": {
+        "ok": null
+      }
+    },
+    {
+      "id": "convert.shell.1",
+      "attribute": "shell",
+      "input": "",
+      "expect": {
+        "ok": null
+      }
+    },
+    {
+      "id": "convert.shell.2",
+      "attribute": "shell",
+      "input": "bash",
+      "expect": {
+        "ok": "bash"
+      }
+    },
+    {
+      "id": "convert.shell.3",
+      "attribute": "shell",
+      "input": "BASH",
+      "expect": {
+        "ok": "BASH"
+      }
+    },
+    {
+      "id": "convert.shell.4",
+      "attribute": "shell",
+      "input": " strange shell ",
+      "expect": {
+        "ok": " strange shell "
+      }
+    },
+    {
+      "id": "convert.format.0",
+      "attribute": "format",
+      "input": null,
+      "expect": {
+        "ok": null
+      }
+    },
+    {
+      "id": "convert.format.1",
+      "attribute": "format",
+      "input": "",
+      "expect": {
+        "ok": null
+      }
+    },
+    {
+      "id": "convert.format.2",
+      "attribute": "format",
+      "input": "json",
+      "expect": {
+        "ok": "json"
+      }
+    },
+    {
+      "id": "convert.format.3",
+      "attribute": "format",
+      "input": "YAML",
+      "expect": {
+        "ok": "YAML"
+      }
+    },
+    {
+      "id": "convert.output.0",
+      "attribute": "output",
+      "input": null,
+      "expect": {
+        "ok": null
+      }
+    },
+    {
+      "id": "convert.output.1",
+      "attribute": "output",
+      "input": "",
+      "expect": {
+        "ok": null
+      }
+    },
+    {
+      "id": "convert.output.2",
+      "attribute": "output",
+      "input": " ",
+      "expect": {
+        "ok": " "
+      }
+    },
+    {
+      "id": "convert.output.3",
+      "attribute": "output",
+      "input": "a b/Ω",
+      "expect": {
+        "ok": "a b/Ω"
+      }
+    },
+    {
+      "id": "convert.future.0",
+      "attribute": "future",
+      "input": null,
+      "expect": {
+        "ok": null
+      }
+    },
+    {
+      "id": "convert.future.1",
+      "attribute": "future",
+      "input": "",
+      "expect": {
+        "ok": null
+      }
+    },
+    {
+      "id": "convert.future.2",
+      "attribute": "future",
+      "input": "123",
+      "expect": {
+        "ok": "123"
+      }
+    }
+  ],
+  "environments": [
+    {
+      "id": "environment.0",
+      "input": {},
+      "expect": {
+        "ok": {}
+      }
+    },
+    {
+      "id": "environment.1",
+      "input": {
+        "UKIRYU_DEBUG": ""
+      },
+      "expect": {
+        "ok": {
+          "debug": null
+        }
+      }
+    },
+    {
+      "id": "environment.2",
+      "input": {
+        "UKIRYU_TIMEOUT": "010"
+      },
+      "expect": {
+        "ok": {
+          "timeout": 8
+        }
+      }
+    },
+    {
+      "id": "environment.3",
+      "input": {
+        "UKIRYU_TIMEOUT": "08"
+      },
+      "expect": {
+        "error": {
+          "class": "ArgumentError",
+          "message": "Invalid integer value: 08"
+        }
+      }
+    },
+    {
+      "id": "environment.4",
+      "input": {
+        "UKIRYU_DEBUG": "false"
+      },
+      "expect": {
+        "ok": {
+          "debug": false
+        }
+      }
+    },
+    {
+      "id": "environment.5",
+      "input": {
+        "UKIRYU_USE_COLOR": "true",
+        "NO_COLOR": ""
+      },
+      "expect": {
+        "ok": {
+          "use_color": false
+        }
+      }
+    },
+    {
+      "id": "environment.6",
+      "input": {
+        "UKIRYU_USE_COLOR": "invalid",
+        "NO_COLOR": ""
+      },
+      "expect": {
+        "error": {
+          "class": "ArgumentError",
+          "message": "Invalid boolean value: invalid. Valid values: true, 1, yes, false, 0, no"
+        }
+      }
+    },
+    {
+      "id": "environment.7",
+      "input": {
+        "UKIRYU_UNKNOWN": "true",
+        "UKIRYU_SHELL": "BASH"
+      },
+      "expect": {
+        "ok": {
+          "shell": "BASH"
+        }
+      }
+    }
+  ],
+  "resolvers": [
+    {
+      "id": "resolver.0",
+      "input": {
+        "defaults": {
+          "x": true
+        },
+        "programmatic": {
+          "x": false
+        }
+      },
+      "key": "x",
+      "expect": {
+        "value": false,
+        "source": "programmatic"
+      }
+    },
+    {
+      "id": "resolver.1",
+      "input": {
+        "defaults": {
+          "x": true
+        },
+        "programmatic": {
+          "x": false
+        },
+        "env": {
+          "x": null
+        }
+      },
+      "key": "x",
+      "expect": {
+        "value": null,
+        "source": "env"
+      }
+    },
+    {
+      "id": "resolver.2",
+      "input": {
+        "defaults": {
+          "x": 1
+        },
+        "programmatic": {
+          "x": 2
+        },
+        "env": {
+          "x": 3
+        },
+        "cli": {
+          "x": false
+        }
+      },
+      "key": "x",
+      "expect": {
+        "value": false,
+        "source": "cli"
+      }
+    },
+    {
+      "id": "resolver.3",
+      "input": {
+        "defaults": {
+          "x": null
+        }
+      },
+      "key": "x",
+      "expect": {
+        "value": null,
+        "source": "default"
+      }
+    },
+    {
+      "id": "resolver.4",
+      "input": {},
+      "key": "x",
+      "expect": {
+        "value": null,
+        "source": null
+      }
+    },
+    {
+      "id": "resolver.5",
+      "input": {
+        "env": {
+          "x": ""
+        }
+      },
+      "key": "x",
+      "expect": {
+        "value": "",
+        "source": "env"
+      }
+    }
+  ],
+  "defaults": {
+    "timeout": null,
+    "debug": false,
+    "dry_run": false,
+    "metrics": false,
+    "shell": null,
+    "format": "yaml",
+    "output": null,
+    "register": null,
+    "use_color": null
+  }
+}
