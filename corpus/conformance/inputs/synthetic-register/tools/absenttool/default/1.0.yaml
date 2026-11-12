@@ -1,0 +1,47 @@
+---
+ukiryu_schema: '1.0'
+name: absenttool
+display_name: Absent Tool (corpus control)
+version: '1.0'
+aliases: []
+version_detection:
+  command: "--version"
+  pattern: absenttool ([d.]+)
+search_paths:
+  macos:
+  - "/nonexistent/ukiryu-corpus/bin/ukiryu-corpus-absent-tool"
+  linux:
+  - "/nonexistent/ukiryu-corpus/bin/ukiryu-corpus-absent-tool"
+  windows:
+  - "C:/nonexistent/ukiryu-corpus/ukiryu-corpus-absent-tool.exe"
+implements: absenttool/1.0
+execution_profiles:
+- name: default
+  platforms:
+  - macos
+  - linux
+  - windows
+  shells:
+  - bash
+  - zsh
+  - sh
+  - fish
+  - powershell
+  - cmd
+  option_style: double_dash_equals
+  executable_name: ukiryu-corpus-absent-tool
+  commands:
+  - name: process
+    description: Process input
+    arguments:
+    - name: input
+      type: file
+      position: last
+      required: true
+    options:
+    - name: level
+      cli: "--level"
+      type: integer
+    flags:
+    - name: verbose
+      cli: "--verbose"
