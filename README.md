@@ -16,6 +16,9 @@ integers are checked against a regenerated pinned-source reference.
 All YAML reading uses vendored Yeptris and serde through `from_yaml` or
 `from_yaml_slice`. The initial JSON transport offers version/configuration and
 JSON-compatible YAML diagnostics; it is not the complete typed-model interface.
+Diagnostics reject non-finite numbers, non-string mapping keys and YAML tags rather
+than silently changing their values to fit JSON. The typed YAML API remains
+available to the core without that JSON profile restriction.
 Only `--version` exists in the CLI foundation. Full models, loaders, schema/type
 validation, shells, process execution, authoring and runtime bindings remain
 tracked migration work; this increment does not complete issue17 or the product.
