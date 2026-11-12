@@ -8,6 +8,7 @@ pub mod environment;
 pub mod executable;
 pub mod execution_context;
 pub mod extractors;
+pub mod models;
 pub mod options;
 pub mod render;
 pub mod routing;
