@@ -1,0 +1,20 @@
+---
+ukiryu_schema: '1.0'
+name: absenttool
+version: '1.0'
+display_name: Absent Tool Interface
+actions:
+- name: process
+  description: Process input
+  signature:
+    inputs:
+      inputs:
+      - name: input
+        type: file
+        required: true
+      options:
+      - name: level
+        type: integer
+      flags:
+      - name: verbose
+        type: boolean

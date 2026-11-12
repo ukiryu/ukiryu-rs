@@ -1,0 +1,20 @@
+# frozen_string_literal: true
+
+# The Ruby oracle: the original ukiryu gem pinned to the commit the corpus
+# was captured from. The extra gems mirror the runtime part of that commit's
+# own Gemfile (paint changes CLI colouring; the XML/JSON gems are loaded by
+# the schema and model paths). Gemfile.lock is committed: dependency
+# resolution is part of the oracle's provenance.
+source 'https://rubygems.org'
+
+gem 'ukiryu', git: 'https://github.com/ukiryu/ukiryu.git', ref: 'ab6df353c6dc2d7faf7817a86aafcafa82579896'
+
+gem 'bigdecimal'
+gem 'json-schema', '>= 4.0'
+gem 'nokogiri'
+gem 'oga'
+gem 'paint'
+
+# The baseline suite resolved diff-lcs 1.6.2 (rspec caps it below 2.0); pin
+# the same version so the oracle's runtime set matches the baseline run.
+gem 'diff-lcs', '1.6.2'
