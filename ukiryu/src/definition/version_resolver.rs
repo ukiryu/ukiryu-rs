@@ -117,7 +117,7 @@ fn space_then_rest(rest: &str) -> Option<&str> {
 /// Ruby `String#to_i` (base 10): leading whitespace, optional sign, digits
 /// with single underscores between digits; anything else ends the number.
 pub(crate) fn ruby_to_i(s: &str) -> BigInt {
-    let s = s.trim_start_matches(|c: char| matches!(c, ' ' | '\t' | '\n' | '\x0b' | '\x0c' | '\r'));
+    let s = s.trim_start_matches([' ', '\t', '\n', '\x0b', '\x0c', '\r']);
     let (negative, body) = match s.as_bytes().first() {
         Some(b'-') => (true, &s[1..]),
         Some(b'+') => (false, &s[1..]),
@@ -197,17 +197,21 @@ impl VersionResolver {
             let version = space_then_rest(rest).unwrap_or("");
             return Constraint::pessimistic(ruby_strip(version));
         }
-        let ordered: [(&str, fn(&str) -> Constraint); 5] = [
-            (">=", |v| Constraint::min(v)),
-            (">", |v| Constraint::new(Operator::Gt, v, None)),
-            ("<=", |v| Constraint::max(v)),
-            ("<", |v| Constraint::new(Operator::Lt, v, None)),
-            ("==", |v| Constraint::exact(v)),
-        ];
-        for (prefix, build) in ordered {
-            if let Some(version) = part.strip_prefix(prefix).and_then(space_then_rest) {
-                return build(version);
-            }
+        let tail = |prefix: &str| part.strip_prefix(prefix).and_then(space_then_rest);
+        if let Some(v) = tail(">=") {
+            return Constraint::min(v);
+        }
+        if let Some(v) = tail(">") {
+            return Constraint::new(Operator::Gt, v, None);
+        }
+        if let Some(v) = tail("<=") {
+            return Constraint::max(v);
+        }
+        if let Some(v) = tail("<") {
+            return Constraint::new(Operator::Lt, v, None);
+        }
+        if let Some(v) = tail("==") {
+            return Constraint::exact(v);
         }
         Constraint::exact(ruby_strip(part))
     }

@@ -57,7 +57,13 @@ impl TempRoot {
             std::env::temp_dir().join(format!("ukiryu-defcore-{tag}-{}-{n}", std::process::id()));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(&dir).unwrap();
-        TempRoot(std::fs::canonicalize(&dir).unwrap())
+        // Symlinked temp dirs (macOS) are resolved so expanded paths match;
+        // Windows canonical paths carry a `\\?\` prefix, so keep them as-is.
+        if cfg!(unix) {
+            TempRoot(std::fs::canonicalize(&dir).unwrap())
+        } else {
+            TempRoot(dir)
+        }
     }
     fn path(&self) -> String {
         self.0.to_string_lossy().into_owned()
@@ -125,6 +131,7 @@ struct TDef {
     version: Option<String>,
     profiles: Option<Vec<TProfile>>,
     #[serde(skip)]
+    #[cfg_attr(not(unix), allow(dead_code))]
     composite: bool,
     #[serde(skip)]
     inherits: Option<Vec<Yaml>>,
@@ -225,6 +232,7 @@ fn tdef(yaml: &str) -> TDef {
     TDef::parse_definition(yaml).unwrap()
 }
 
+#[cfg(unix)]
 fn json_to_yaml(v: &Json) -> Yaml {
     match v {
         Json::Null => Yaml::Null,
@@ -402,6 +410,7 @@ fn lint_issue_and_validation_result_match_oracle() {
 
 // ---------------------------------------------------------------- metadata
 
+#[cfg(unix)]
 fn kind(name: &str) -> SourceKind {
     match name {
         "user" => SourceKind::User,
@@ -413,6 +422,7 @@ fn kind(name: &str) -> SourceKind {
     }
 }
 
+#[cfg(unix)]
 fn md_json(m: &DefinitionMetadata, root: &TempRoot) -> Json {
     json!({
         "name": m.name, "version": m.version, "path": root.scrub(&m.path), "source_type": m.source_type.as_str(),
@@ -420,6 +430,8 @@ fn md_json(m: &DefinitionMetadata, root: &TempRoot) -> Json {
     })
 }
 
+// The captures use POSIX paths; native Windows path rendering is unverified.
+#[cfg(unix)]
 #[test]
 fn metadata_matches_oracle() {
     let doc = fixture!("metadata");
@@ -514,8 +526,8 @@ fn string_source_matches_oracle() {
                     false // Ruby compares against a plain String; not a Source here.
                 ]))
             }
-            // Non-String arguments (ArgumentError) are excluded by the Rust signature.
-            "string_source_non_string" | "string_source_nil" => continue,
+            // Non-String arguments (ArgumentError) are excluded by the Rust
+            // signature; file cases are covered by `file_source_matches_oracle`.
             _ => continue,
         };
         assert_eq!(actual, case["result"], "{case}");
@@ -742,6 +754,7 @@ fn loader_matches_oracle() {
                     .unwrap();
                 ok(json!([Arc::ptr_eq(&a, &b), Arc::ptr_eq(&a, &c)]))
             }
+            "load_from_file" if !cfg!(unix) => continue,
             "load_from_file" => {
                 let path = s(&case["path"]).replace("<ROOT>", &root.path());
                 if path.ends_with("t.yaml") {
@@ -915,6 +928,7 @@ fn discovery_matches_oracle() {
 
 // ---------------------------------------------------------------- composer
 
+#[cfg(unix)]
 fn cdef_json(d: &TDef) -> Json {
     json!({
         "class": if d.composite { "Composite" } else { "ToolDefinition" },
@@ -1104,6 +1118,7 @@ fn definition_cache_matches_oracle() {
                 ]);
                 ok(Json::Array(r))
             }
+            "metadata_entries" | "metadata_without_mtime" if !cfg!(unix) => continue,
             "metadata_entries" | "metadata_without_mtime" => {
                 let root = TempRoot::new("ca");
                 let p = root.write(
@@ -1155,6 +1170,7 @@ fn error_classes_and_suggestions() {
     assert_eq!(e.suggestions()[0], "Validate YAML syntax");
     let nf = FileSource::new("/nonexistent/ukiryu/defcore/x.yaml").unwrap_err();
     assert_eq!(nf.kind, DefinitionErrorKind::NotFound);
+    #[cfg(unix)]
     assert_eq!(
         nf.message,
         "Definition file not found: /nonexistent/ukiryu/defcore/x.yaml"
