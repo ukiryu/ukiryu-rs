@@ -1,0 +1,11 @@
+[package]
+name = "ukiryu-dependency-probe"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+# This private build sentinel has no product release version or MSRV contract.
+# Product metadata is an owner decision under ukiryu/ukiryu#29.
+[dependencies]
+yeptris = { version = "=0.6.63", features = ["vendored"] }
+serde_json = "1"
