@@ -1,0 +1,12 @@
+{
+  "corpus_build": {
+    "capture": "handoffs/batch-03/K19-BUILD/capture_build.rb",
+    "corpus_build_sha256": "3e1d05bcffa4cc8411a60c9d4b461b9e915ec7374d0793f5f0a246aaa9373112",
+    "corpus_commit": "f543c81a7e5fbc1b8cf090d6a91c9bfde4e5a5a2",
+    "oracle": "ukiryu/ukiryu ab6df353c6dc2d7faf7817a86aafcafa82579896 lib/ukiryu/command_builder.rb CommandBuilder#build_args via corpus oracle-ruby Ops.load_tool"
+  },
+  "synthetic": {
+    "capture": "handoffs/batch-03/K19-BUILD/capture_synthetic.rb",
+    "oracle": "ukiryu/ukiryu ab6df353c6dc2d7faf7817a86aafcafa82579896 lib/ukiryu/command_builder.rb CommandBuilder#build_args and #build_env_vars over authored definitions"
+  }
+}
