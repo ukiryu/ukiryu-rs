@@ -432,6 +432,7 @@ fn expect_result<T: PartialEq + std::fmt::Debug>(
     }
 }
 
+type CoercerFor<'a, C, V> = &'a dyn Fn(&J, &str) -> Box<dyn Coercer<C, V>>;
 type BuildArgs<'a, C, V> = &'a dyn Fn(&Options<C, V>) -> Result<Vec<String>, OptionsError>;
 
 /// Replays every class case through one value/definition/coercer stack.
@@ -439,7 +440,7 @@ type BuildArgs<'a, C, V> = &'a dyn Fn(&Options<C, V>) -> Result<Vec<String>, Opt
 fn run_class_cases<C: CommandDef, V: OptionValue + PartialEq + std::fmt::Debug>(
     make_def: &dyn Fn(&J) -> C,
     conv: &dyn Fn(&J) -> V,
-    coercer_for: &dyn Fn(&J, &str) -> Box<dyn Coercer<C, V>>,
+    coercer_for: CoercerFor<'_, C, V>,
     build_args: Option<BuildArgs<'_, C, V>>,
 ) -> (usize, usize) {
     let g = golden();
