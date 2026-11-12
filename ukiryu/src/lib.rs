@@ -1,5 +1,6 @@
 //! Ukiryu's shared core. Runtime adapters call this crate rather than
 //! reimplementing configuration or maintaining another YAML stack.
+pub mod cache;
 pub mod command_builder;
 pub mod config;
 pub mod definition;
