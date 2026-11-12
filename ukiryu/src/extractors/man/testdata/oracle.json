@@ -1,0 +1,5221 @@
+{
+ "provenance": {
+  "oracle": "ukiryu ab6df353c6dc2d7faf7817a86aafcafa82579896",
+  "source": "lib/ukiryu/man_page_parser.rb (Ukiryu::ManPageParser.parse_date, parse_from_fallback, resolve_man_page_path, extract_date_from_dd_line)",
+  "ruby": "ruby 4.0.1 (2026-01-13 revision e04267a14b) +PRISM [x86_64-linux]",
+  "date_gem": "3.6.0",
+  "captured_today": "2026-11-12",
+  "capture_script": "handoffs/batch-02/K21-MAN/capture.rb",
+  "host_dd_lines": "first .Dd line of each /usr/share/man/man*/*.gz on the capture host (Ubuntu 22.04)"
+ },
+ "today": {
+  "year": 2026,
+  "mon": 11,
+  "mday": 12
+ },
+ "date_cases": [
+  {
+   "origin": "host",
+   "date_str": "$Mdocdate: December 21 2019 $",
+   "fragments": {
+    "ok": {
+     "year": "2019",
+     "mon": "12",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2019-12-21"
+   },
+   "dd_line": ".Dd $Mdocdate: December 21 2019 $\n",
+   "extract": {
+    "ok": "2019-12-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420244d646f63646174653a20446563656d626572203231203230313920240a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2019-12-21"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "$Mdocdate: February 10 2022 $",
+   "fragments": {
+    "ok": {
+     "year": "2022",
+     "mon": "2",
+     "mday": "10"
+    }
+   },
+   "date_parse": {
+    "ok": "2022-02-10"
+   },
+   "dd_line": ".Dd $Mdocdate: February 10 2022 $\n",
+   "extract": {
+    "ok": "2022-02-10"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420244d646f63646174653a204665627275617279203130203230323220240a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2022-02-10"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "$Mdocdate: February 15 2022 $",
+   "fragments": {
+    "ok": {
+     "year": "2022",
+     "mon": "2",
+     "mday": "15"
+    }
+   },
+   "date_parse": {
+    "ok": "2022-02-15"
+   },
+   "dd_line": ".Dd $Mdocdate: February 15 2022 $\n",
+   "extract": {
+    "ok": "2022-02-15"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420244d646f63646174653a204665627275617279203135203230323220240a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2022-02-15"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "$Mdocdate: February 4 2022 $",
+   "fragments": {
+    "ok": {
+     "year": "2022",
+     "mon": "2",
+     "mday": "4"
+    }
+   },
+   "date_parse": {
+    "ok": "2022-02-04"
+   },
+   "dd_line": ".Dd $Mdocdate: February 4 2022 $\n",
+   "extract": {
+    "ok": "2022-02-04"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420244d646f63646174653a2046656272756172792034203230323220240a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2022-02-04"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "$Mdocdate: February 6 2022 $",
+   "fragments": {
+    "ok": {
+     "year": "2022",
+     "mon": "2",
+     "mday": "6"
+    }
+   },
+   "date_parse": {
+    "ok": "2022-02-06"
+   },
+   "dd_line": ".Dd $Mdocdate: February 6 2022 $\n",
+   "extract": {
+    "ok": "2022-02-06"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420244d646f63646174653a2046656272756172792036203230323220240a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2022-02-06"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "$Mdocdate: July 2 2021 $",
+   "fragments": {
+    "ok": {
+     "year": "2021",
+     "mon": "7",
+     "mday": "2"
+    }
+   },
+   "date_parse": {
+    "ok": "2021-07-02"
+   },
+   "dd_line": ".Dd $Mdocdate: July 2 2021 $\n",
+   "extract": {
+    "ok": "2021-07-02"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420244d646f63646174653a204a756c792032203230323120240a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2021-07-02"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "$Mdocdate: June 17 2010 $",
+   "fragments": {
+    "ok": {
+     "year": "2010",
+     "mon": "6",
+     "mday": "17"
+    }
+   },
+   "date_parse": {
+    "ok": "2010-06-17"
+   },
+   "dd_line": ".Dd $Mdocdate: June 17 2010 $\n",
+   "extract": {
+    "ok": "2010-06-17"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420244d646f63646174653a204a756e65203137203230313020240a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2010-06-17"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "$Mdocdate: June 22 2020 $",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "6",
+     "mday": "22"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-06-22"
+   },
+   "dd_line": ".Dd $Mdocdate: June 22 2020 $\n",
+   "extract": {
+    "ok": "2020-06-22"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420244d646f63646174653a204a756e65203232203230323020240a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-06-22"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "$Mdocdate: March 31 2021 $",
+   "fragments": {
+    "ok": {
+     "year": "2021",
+     "mon": "3",
+     "mday": "31"
+    }
+   },
+   "date_parse": {
+    "ok": "2021-03-31"
+   },
+   "dd_line": ".Dd $Mdocdate: March 31 2021 $\n",
+   "extract": {
+    "ok": "2021-03-31"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420244d646f63646174653a204d61726368203331203230323120240a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2021-03-31"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "$Mdocdate: November 30 2019 $",
+   "fragments": {
+    "ok": {
+     "year": "2019",
+     "mon": "11",
+     "mday": "30"
+    }
+   },
+   "date_parse": {
+    "ok": "2019-11-30"
+   },
+   "dd_line": ".Dd $Mdocdate: November 30 2019 $\n",
+   "extract": {
+    "ok": "2019-11-30"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420244d646f63646174653a204e6f76656d626572203330203230313920240a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2019-11-30"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "2018",
+   "fragments": {
+    "ok": {
+     "mon": "20",
+     "mday": "18"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd 2018\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323031380a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "2018-08-01",
+   "fragments": {
+    "ok": {
+     "year": "2018",
+     "mon": "8",
+     "mday": "1"
+    }
+   },
+   "date_parse": {
+    "ok": "2018-08-01"
+   },
+   "dd_line": ".Dd 2018-08-01\n",
+   "extract": {
+    "ok": "2018-08-01"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323031382d30382d30310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2018-08-01"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "April 14, 2018",
+   "fragments": {
+    "ok": {
+     "year": "2018",
+     "mon": "4",
+     "mday": "14"
+    }
+   },
+   "date_parse": {
+    "ok": "2018-04-14"
+   },
+   "dd_line": ".Dd April 14, 2018\n",
+   "extract": {
+    "ok": "2018-04-14"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420417072696c2031342c20323031380a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2018-04-14"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "April 20, 2017",
+   "fragments": {
+    "ok": {
+     "year": "2017",
+     "mon": "4",
+     "mday": "20"
+    }
+   },
+   "date_parse": {
+    "ok": "2017-04-20"
+   },
+   "dd_line": ".Dd April 20, 2017\n",
+   "extract": {
+    "ok": "2017-04-20"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420417072696c2032302c20323031370a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2017-04-20"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "April 22, 2000",
+   "fragments": {
+    "ok": {
+     "year": "2000",
+     "mon": "4",
+     "mday": "22"
+    }
+   },
+   "date_parse": {
+    "ok": "2000-04-22"
+   },
+   "dd_line": ".Dd April 22, 2000\n",
+   "extract": {
+    "ok": "2000-04-22"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420417072696c2032322c20323030300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2000-04-22"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "April 25, 2021",
+   "fragments": {
+    "ok": {
+     "year": "2021",
+     "mon": "4",
+     "mday": "25"
+    }
+   },
+   "date_parse": {
+    "ok": "2021-04-25"
+   },
+   "dd_line": ".Dd April 25, 2021\n",
+   "extract": {
+    "ok": "2021-04-25"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420417072696c2032352c20323032310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2021-04-25"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "August 11, 2019",
+   "fragments": {
+    "ok": {
+     "year": "2019",
+     "mon": "8",
+     "mday": "11"
+    }
+   },
+   "date_parse": {
+    "ok": "2019-08-11"
+   },
+   "dd_line": ".Dd August 11, 2019\n",
+   "extract": {
+    "ok": "2019-08-11"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204175677573742031312c20323031390a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2019-08-11"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "August 15, 1999",
+   "fragments": {
+    "ok": {
+     "year": "1999",
+     "mon": "8",
+     "mday": "15"
+    }
+   },
+   "date_parse": {
+    "ok": "1999-08-15"
+   },
+   "dd_line": ".Dd August 15, 1999\n",
+   "extract": {
+    "ok": "1999-08-15"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204175677573742031352c20313939390a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "1999-08-15"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "August 30, 2019",
+   "fragments": {
+    "ok": {
+     "year": "2019",
+     "mon": "8",
+     "mday": "30"
+    }
+   },
+   "date_parse": {
+    "ok": "2019-08-30"
+   },
+   "dd_line": ".Dd August 30, 2019\n",
+   "extract": {
+    "ok": "2019-08-30"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204175677573742033302c20323031390a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2019-08-30"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "August 5, 2019",
+   "fragments": {
+    "ok": {
+     "year": "2019",
+     "mon": "8",
+     "mday": "5"
+    }
+   },
+   "date_parse": {
+    "ok": "2019-08-05"
+   },
+   "dd_line": ".Dd August 5, 2019\n",
+   "extract": {
+    "ok": "2019-08-05"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642041756775737420352c20323031390a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2019-08-05"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "December 14, 1987",
+   "fragments": {
+    "ok": {
+     "year": "1987",
+     "mon": "12",
+     "mday": "14"
+    }
+   },
+   "date_parse": {
+    "ok": "1987-12-14"
+   },
+   "dd_line": ".Dd December 14, 1987\n",
+   "extract": {
+    "ok": "1987-12-14"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420446563656d6265722031342c20313938370a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "1987-12-14"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "December 16, 2010",
+   "fragments": {
+    "ok": {
+     "year": "2010",
+     "mon": "12",
+     "mday": "16"
+    }
+   },
+   "date_parse": {
+    "ok": "2010-12-16"
+   },
+   "dd_line": ".Dd December 16, 2010\n",
+   "extract": {
+    "ok": "2010-12-16"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420446563656d6265722031362c20323031300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2010-12-16"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "December 16, 2018",
+   "fragments": {
+    "ok": {
+     "year": "2018",
+     "mon": "12",
+     "mday": "16"
+    }
+   },
+   "date_parse": {
+    "ok": "2018-12-16"
+   },
+   "dd_line": ".Dd December 16, 2018\n",
+   "extract": {
+    "ok": "2018-12-16"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420446563656d6265722031362c20323031380a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2018-12-16"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "February 15, 2008",
+   "fragments": {
+    "ok": {
+     "year": "2008",
+     "mon": "2",
+     "mday": "15"
+    }
+   },
+   "date_parse": {
+    "ok": "2008-02-15"
+   },
+   "dd_line": ".Dd February 15, 2008\n",
+   "extract": {
+    "ok": "2008-02-15"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642046656272756172792031352c20323030380a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2008-02-15"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "February 16, 1988",
+   "fragments": {
+    "ok": {
+     "year": "1988",
+     "mon": "2",
+     "mday": "16"
+    }
+   },
+   "date_parse": {
+    "ok": "1988-02-16"
+   },
+   "dd_line": ".Dd February 16, 1988\n",
+   "extract": {
+    "ok": "1988-02-16"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642046656272756172792031362c20313938380a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "1988-02-16"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "February 5, 2021",
+   "fragments": {
+    "ok": {
+     "year": "2021",
+     "mon": "2",
+     "mday": "5"
+    }
+   },
+   "date_parse": {
+    "ok": "2021-02-05"
+   },
+   "dd_line": ".Dd February 5, 2021\n",
+   "extract": {
+    "ok": "2021-02-05"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420466562727561727920352c20323032310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2021-02-05"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "January 19, 2003",
+   "fragments": {
+    "ok": {
+     "year": "2003",
+     "mon": "1",
+     "mday": "19"
+    }
+   },
+   "date_parse": {
+    "ok": "2003-01-19"
+   },
+   "dd_line": ".Dd January 19, 2003\n",
+   "extract": {
+    "ok": "2003-01-19"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204a616e756172792031392c20323030330a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2003-01-19"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "January 19, 2022",
+   "fragments": {
+    "ok": {
+     "year": "2022",
+     "mon": "1",
+     "mday": "19"
+    }
+   },
+   "date_parse": {
+    "ok": "2022-01-19"
+   },
+   "dd_line": ".Dd January 19, 2022\n",
+   "extract": {
+    "ok": "2022-01-19"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204a616e756172792031392c20323032320a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2022-01-19"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "January 20, 2022",
+   "fragments": {
+    "ok": {
+     "year": "2022",
+     "mon": "1",
+     "mday": "20"
+    }
+   },
+   "date_parse": {
+    "ok": "2022-01-20"
+   },
+   "dd_line": ".Dd January 20, 2022\n",
+   "extract": {
+    "ok": "2022-01-20"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204a616e756172792032302c20323032320a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2022-01-20"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "January 24, 2011",
+   "fragments": {
+    "ok": {
+     "year": "2011",
+     "mon": "1",
+     "mday": "24"
+    }
+   },
+   "date_parse": {
+    "ok": "2011-01-24"
+   },
+   "dd_line": ".Dd January 24, 2011\n",
+   "extract": {
+    "ok": "2011-01-24"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204a616e756172792032342c20323031310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2011-01-24"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "January 25, 2011",
+   "fragments": {
+    "ok": {
+     "year": "2011",
+     "mon": "1",
+     "mday": "25"
+    }
+   },
+   "date_parse": {
+    "ok": "2011-01-25"
+   },
+   "dd_line": ".Dd January 25, 2011\n",
+   "extract": {
+    "ok": "2011-01-25"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204a616e756172792032352c20323031310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2011-01-25"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "January 26, 2010",
+   "fragments": {
+    "ok": {
+     "year": "2010",
+     "mon": "1",
+     "mday": "26"
+    }
+   },
+   "date_parse": {
+    "ok": "2010-01-26"
+   },
+   "dd_line": ".Dd January 26, 2010\n",
+   "extract": {
+    "ok": "2010-01-26"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204a616e756172792032362c20323031300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2010-01-26"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "July 29, 2018",
+   "fragments": {
+    "ok": {
+     "year": "2018",
+     "mon": "7",
+     "mday": "29"
+    }
+   },
+   "date_parse": {
+    "ok": "2018-07-29"
+   },
+   "dd_line": ".Dd July 29, 2018\n",
+   "extract": {
+    "ok": "2018-07-29"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204a756c792032392c20323031380a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2018-07-29"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "June 12, 2016",
+   "fragments": {
+    "ok": {
+     "year": "2016",
+     "mon": "6",
+     "mday": "12"
+    }
+   },
+   "date_parse": {
+    "ok": "2016-06-12"
+   },
+   "dd_line": ".Dd June 12, 2016\n",
+   "extract": {
+    "ok": "2016-06-12"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204a756e652031322c20323031360a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2016-06-12"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "March 23, 2002",
+   "fragments": {
+    "ok": {
+     "year": "2002",
+     "mon": "3",
+     "mday": "23"
+    }
+   },
+   "date_parse": {
+    "ok": "2002-03-23"
+   },
+   "dd_line": ".Dd March 23, 2002\n",
+   "extract": {
+    "ok": "2002-03-23"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204d617263682032332c20323030320a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2002-03-23"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "May 20, 2008",
+   "fragments": {
+    "ok": {
+     "year": "2008",
+     "mon": "5",
+     "mday": "20"
+    }
+   },
+   "date_parse": {
+    "ok": "2008-05-20"
+   },
+   "dd_line": ".Dd May 20, 2008\n",
+   "extract": {
+    "ok": "2008-05-20"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204d61792032302c20323030380a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2008-05-20"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "May 22, 2016",
+   "fragments": {
+    "ok": {
+     "year": "2016",
+     "mon": "5",
+     "mday": "22"
+    }
+   },
+   "date_parse": {
+    "ok": "2016-05-22"
+   },
+   "dd_line": ".Dd May 22, 2016\n",
+   "extract": {
+    "ok": "2016-05-22"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204d61792032322c20323031360a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2016-05-22"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "May 3, 1993",
+   "fragments": {
+    "ok": {
+     "year": "1993",
+     "mon": "5",
+     "mday": "3"
+    }
+   },
+   "date_parse": {
+    "ok": "1993-05-03"
+   },
+   "dd_line": ".Dd May 3, 1993\n",
+   "extract": {
+    "ok": "1993-05-03"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204d617920332c20313939330a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "1993-05-03"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "May 7, 1993",
+   "fragments": {
+    "ok": {
+     "year": "1993",
+     "mon": "5",
+     "mday": "7"
+    }
+   },
+   "date_parse": {
+    "ok": "1993-05-07"
+   },
+   "dd_line": ".Dd May 7, 1993\n",
+   "extract": {
+    "ok": "1993-05-07"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204d617920372c20313939330a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "1993-05-07"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "May 7, 2016",
+   "fragments": {
+    "ok": {
+     "year": "2016",
+     "mon": "5",
+     "mday": "7"
+    }
+   },
+   "date_parse": {
+    "ok": "2016-05-07"
+   },
+   "dd_line": ".Dd May 7, 2016\n",
+   "extract": {
+    "ok": "2016-05-07"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204d617920372c20323031360a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2016-05-07"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "May 9, 2021",
+   "fragments": {
+    "ok": {
+     "year": "2021",
+     "mon": "5",
+     "mday": "9"
+    }
+   },
+   "date_parse": {
+    "ok": "2021-05-09"
+   },
+   "dd_line": ".Dd May 9, 2021\n",
+   "extract": {
+    "ok": "2021-05-09"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204d617920392c20323032310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2021-05-09"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "November 16, 2018",
+   "fragments": {
+    "ok": {
+     "year": "2018",
+     "mon": "11",
+     "mday": "16"
+    }
+   },
+   "date_parse": {
+    "ok": "2018-11-16"
+   },
+   "dd_line": ".Dd November 16, 2018\n",
+   "extract": {
+    "ok": "2018-11-16"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204e6f76656d6265722031362c20323031380a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2018-11-16"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "November 17, 2000",
+   "fragments": {
+    "ok": {
+     "year": "2000",
+     "mon": "11",
+     "mday": "17"
+    }
+   },
+   "date_parse": {
+    "ok": "2000-11-17"
+   },
+   "dd_line": ".Dd November 17, 2000\n",
+   "extract": {
+    "ok": "2000-11-17"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204e6f76656d6265722031372c20323030300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2000-11-17"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "November 18, 2006",
+   "fragments": {
+    "ok": {
+     "year": "2006",
+     "mon": "11",
+     "mday": "18"
+    }
+   },
+   "date_parse": {
+    "ok": "2006-11-18"
+   },
+   "dd_line": ".Dd November 18, 2006\n",
+   "extract": {
+    "ok": "2006-11-18"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204e6f76656d6265722031382c20323030360a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2006-11-18"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "November 22, 1987",
+   "fragments": {
+    "ok": {
+     "year": "1987",
+     "mon": "11",
+     "mday": "22"
+    }
+   },
+   "date_parse": {
+    "ok": "1987-11-22"
+   },
+   "dd_line": ".Dd November 22, 1987\n",
+   "extract": {
+    "ok": "1987-11-22"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204e6f76656d6265722032322c20313938370a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "1987-11-22"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "November 8, 2018",
+   "fragments": {
+    "ok": {
+     "year": "2018",
+     "mon": "11",
+     "mday": "8"
+    }
+   },
+   "date_parse": {
+    "ok": "2018-11-08"
+   },
+   "dd_line": ".Dd November 8, 2018\n",
+   "extract": {
+    "ok": "2018-11-08"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204e6f76656d62657220382c20323031380a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2018-11-08"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "October 11, 2017",
+   "fragments": {
+    "ok": {
+     "year": "2017",
+     "mon": "10",
+     "mday": "11"
+    }
+   },
+   "date_parse": {
+    "ok": "2017-10-11"
+   },
+   "dd_line": ".Dd October 11, 2017\n",
+   "extract": {
+    "ok": "2017-10-11"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204f63746f6265722031312c20323031370a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2017-10-11"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "October 20, 2019",
+   "fragments": {
+    "ok": {
+     "year": "2019",
+     "mon": "10",
+     "mday": "20"
+    }
+   },
+   "date_parse": {
+    "ok": "2019-10-20"
+   },
+   "dd_line": ".Dd October 20, 2019\n",
+   "extract": {
+    "ok": "2019-10-20"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204f63746f6265722032302c20323031390a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2019-10-20"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "October 6, 1987",
+   "fragments": {
+    "ok": {
+     "year": "1987",
+     "mon": "10",
+     "mday": "6"
+    }
+   },
+   "date_parse": {
+    "ok": "1987-10-06"
+   },
+   "dd_line": ".Dd October 6, 1987\n",
+   "extract": {
+    "ok": "1987-10-06"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204f63746f62657220362c20313938370a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "1987-10-06"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "September 17, 2021",
+   "fragments": {
+    "ok": {
+     "year": "2021",
+     "mon": "9",
+     "mday": "17"
+    }
+   },
+   "date_parse": {
+    "ok": "2021-09-17"
+   },
+   "dd_line": ".Dd September 17, 2021\n",
+   "extract": {
+    "ok": "2021-09-17"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642053657074656d6265722031372c20323032310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2021-09-17"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "September 2, 2019",
+   "fragments": {
+    "ok": {
+     "year": "2019",
+     "mon": "9",
+     "mday": "2"
+    }
+   },
+   "date_parse": {
+    "ok": "2019-09-02"
+   },
+   "dd_line": ".Dd September 2, 2019\n",
+   "extract": {
+    "ok": "2019-09-02"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642053657074656d62657220322c20323031390a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2019-09-02"
+   }
+  },
+  {
+   "origin": "host",
+   "date_str": "September 7, 2001 ",
+   "fragments": {
+    "ok": {
+     "year": "2001",
+     "mon": "9",
+     "mday": "7"
+    }
+   },
+   "date_parse": {
+    "ok": "2001-09-07"
+   },
+   "dd_line": ".Dd September 7, 2001 \n",
+   "extract": {
+    "ok": "2001-09-07"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642053657074656d62657220372c2032303031200a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2001-09-07"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "September 21, 2020",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd September 21, 2020\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642053657074656d6265722032312c20323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "21 September 2020",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 21 September 2020\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642032312053657074656d62657220323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-09-21",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 2020-09-21\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d30392d32310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sep 21 2020",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd Sep 21 2020\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642053657020323120323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sept 21, 2020",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd Sept 21, 2020\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420536570742032312c20323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sept. 21, 2020",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd Sept. 21, 2020\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420536570742e2032312c20323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "sep 21, 2020",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd sep 21, 2020\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464207365702032312c20323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "SEPTEMBER 21, 2020",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd SEPTEMBER 21, 2020\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642053455054454d4245522032312c20323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "September 31, 2020",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "31"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd September 31, 2020\n",
+   "extract": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642053657074656d6265722033312c20323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sep 32 2020",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "32"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd Sep 32 2020\n",
+   "extract": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642053657020333220323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sep 0, 2020",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "0"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd Sep 0, 2020\n",
+   "extract": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642053657020302c20323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "February 29, 2021",
+   "fragments": {
+    "ok": {
+     "year": "2021",
+     "mon": "2",
+     "mday": "29"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd February 29, 2021\n",
+   "extract": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642046656272756172792032392c20323032310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "February 29, 2020",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "2",
+     "mday": "29"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-02-29"
+   },
+   "dd_line": ".Dd February 29, 2020\n",
+   "extract": {
+    "ok": "2020-02-29"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642046656272756172792032392c20323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-02-29"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "February 29, 1900",
+   "fragments": {
+    "ok": {
+     "year": "1900",
+     "mon": "2",
+     "mday": "29"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd February 29, 1900\n",
+   "extract": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642046656272756172792032392c20313930300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "February 29, 2000",
+   "fragments": {
+    "ok": {
+     "year": "2000",
+     "mon": "2",
+     "mday": "29"
+    }
+   },
+   "date_parse": {
+    "ok": "2000-02-29"
+   },
+   "dd_line": ".Dd February 29, 2000\n",
+   "extract": {
+    "ok": "2000-02-29"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642046656272756172792032392c20323030300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2000-02-29"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "February 29, 1500",
+   "fragments": {
+    "ok": {
+     "year": "1500",
+     "mon": "2",
+     "mday": "29"
+    }
+   },
+   "date_parse": {
+    "ok": "1500-02-29"
+   },
+   "dd_line": ".Dd February 29, 1500\n",
+   "extract": {
+    "ok": "1500-02-29"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642046656272756172792032392c20313530300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "1500-02-29"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "October 10, 1582",
+   "fragments": {
+    "ok": {
+     "year": "1582",
+     "mon": "10",
+     "mday": "10"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd October 10, 1582\n",
+   "extract": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204f63746f6265722031302c20313538320a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "October 4, 1582",
+   "fragments": {
+    "ok": {
+     "year": "1582",
+     "mon": "10",
+     "mday": "4"
+    }
+   },
+   "date_parse": {
+    "ok": "1582-10-04"
+   },
+   "dd_line": ".Dd October 4, 1582\n",
+   "extract": {
+    "ok": "1582-10-04"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204f63746f62657220342c20313538320a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "1582-10-04"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "October 15, 1582",
+   "fragments": {
+    "ok": {
+     "year": "1582",
+     "mon": "10",
+     "mday": "15"
+    }
+   },
+   "date_parse": {
+    "ok": "1582-10-15"
+   },
+   "dd_line": ".Dd October 15, 1582\n",
+   "extract": {
+    "ok": "1582-10-15"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204f63746f6265722031352c20313538320a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "1582-10-15"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "October 5, 1582",
+   "fragments": {
+    "ok": {
+     "year": "1582",
+     "mon": "10",
+     "mday": "5"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd October 5, 1582\n",
+   "extract": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204f63746f62657220352c20313538320a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "February 29, 1700",
+   "fragments": {
+    "ok": {
+     "year": "1700",
+     "mon": "2",
+     "mday": "29"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd February 29, 1700\n",
+   "extract": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642046656272756172792032392c20313730300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "February 29, 1600",
+   "fragments": {
+    "ok": {
+     "year": "1600",
+     "mon": "2",
+     "mday": "29"
+    }
+   },
+   "date_parse": {
+    "ok": "1600-02-29"
+   },
+   "dd_line": ".Dd February 29, 1600\n",
+   "extract": {
+    "ok": "1600-02-29"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642046656272756172792032392c20313630300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "1600-02-29"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "January 1, 1970",
+   "fragments": {
+    "ok": {
+     "year": "1970",
+     "mon": "1",
+     "mday": "1"
+    }
+   },
+   "date_parse": {
+    "ok": "1970-01-01"
+   },
+   "dd_line": ".Dd January 1, 1970\n",
+   "extract": {
+    "ok": "1970-01-01"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204a616e7561727920312c20313937300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "1970-01-01"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "December 31, 9999",
+   "fragments": {
+    "ok": {
+     "year": "9999",
+     "mon": "12",
+     "mday": "31"
+    }
+   },
+   "date_parse": {
+    "ok": "9999-12-31"
+   },
+   "dd_line": ".Dd December 31, 9999\n",
+   "extract": {
+    "ok": "9999-12-31"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420446563656d6265722033312c20393939390a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "9999-12-31"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Dec 31, 10000",
+   "fragments": {
+    "ok": {
+     "year": "10000",
+     "mon": "12",
+     "mday": "31"
+    }
+   },
+   "date_parse": {
+    "ok": "10000-12-31"
+   },
+   "dd_line": ".Dd Dec 31, 10000\n",
+   "extract": {
+    "ok": "10000-12-31"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204465632033312c2031303030300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "10000-12-31"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "1 Jan -4712",
+   "fragments": {
+    "ok": {
+     "year": "-4712",
+     "mon": "1",
+     "mday": "1"
+    }
+   },
+   "date_parse": {
+    "ok": "-4712-01-01"
+   },
+   "dd_line": ".Dd 1 Jan -4712\n",
+   "extract": {
+    "ok": "-4712-01-01"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642031204a616e202d343731320a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "-4712-01-01"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Jan 1, -4713",
+   "fragments": {
+    "ok": {
+     "year": "-4713",
+     "mon": "1",
+     "mday": "1"
+    }
+   },
+   "date_parse": {
+    "ok": "-4713-01-01"
+   },
+   "dd_line": ".Dd Jan 1, -4713\n",
+   "extract": {
+    "ok": "-4713-01-01"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204a616e20312c202d343731330a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "-4713-01-01"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "January 1, 0",
+   "fragments": {
+    "ok": {
+     "year": "2000",
+     "mon": "1",
+     "mday": "1"
+    }
+   },
+   "date_parse": {
+    "ok": "2000-01-01"
+   },
+   "dd_line": ".Dd January 1, 0\n",
+   "extract": {
+    "ok": "2000-01-01"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204a616e7561727920312c20300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2000-01-01"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Jan 1 0000",
+   "fragments": {
+    "ok": {
+     "year": "0",
+     "mon": "1",
+     "mday": "1"
+    }
+   },
+   "date_parse": {
+    "ok": "0000-01-01"
+   },
+   "dd_line": ".Dd Jan 1 0000\n",
+   "extract": {
+    "ok": "0000-01-01"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204a616e203120303030300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "0000-01-01"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "$Mdocdate$",
+   "fragments": {
+    "ok": {}
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd $Mdocdate$\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420244d646f6364617465240a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "$Mdocdate: February 6 2022 $",
+   "fragments": {
+    "ok": {
+     "year": "2022",
+     "mon": "2",
+     "mday": "6"
+    }
+   },
+   "date_parse": {
+    "ok": "2022-02-06"
+   },
+   "dd_line": ".Dd $Mdocdate: February 6 2022 $\n",
+   "extract": {
+    "ok": "2022-02-06"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420244d646f63646174653a2046656272756172792036203230323220240a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2022-02-06"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2018",
+   "fragments": {
+    "ok": {
+     "mon": "20",
+     "mday": "18"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd 2018\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323031380a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2018-08-01",
+   "fragments": {
+    "ok": {
+     "year": "2018",
+     "mon": "8",
+     "mday": "1"
+    }
+   },
+   "date_parse": {
+    "ok": "2018-08-01"
+   },
+   "dd_line": ".Dd 2018-08-01\n",
+   "extract": {
+    "ok": "2018-08-01"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323031382d30382d30310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2018-08-01"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "September 2020",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-01"
+   },
+   "dd_line": ".Dd September 2020\n",
+   "extract": {
+    "ok": "2020-09-01"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642053657074656d62657220323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-01"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "September 21",
+   "fragments": {
+    "ok": {
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-09-21"
+   },
+   "dd_line": ".Dd September 21\n",
+   "extract": {
+    "ok": "2026-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642053657074656d6265722032310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "September",
+   "fragments": {
+    "ok": {
+     "mon": "9"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-09-01"
+   },
+   "dd_line": ".Dd September\n",
+   "extract": {
+    "ok": "2026-09-01"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642053657074656d6265720a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-09-01"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Monday",
+   "fragments": {
+    "ok": {
+     "wday": "1"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-11-09"
+   },
+   "dd_line": ".Dd Monday\n",
+   "extract": {
+    "ok": "2026-11-09"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204d6f6e6461790a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-11-09"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Mon",
+   "fragments": {
+    "ok": {
+     "wday": "1"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-11-09"
+   },
+   "dd_line": ".Dd Mon\n",
+   "extract": {
+    "ok": "2026-11-09"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204d6f6e0a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-11-09"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sunday",
+   "fragments": {
+    "ok": {
+     "wday": "0"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-11-08"
+   },
+   "dd_line": ".Dd Sunday\n",
+   "extract": {
+    "ok": "2026-11-08"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642053756e6461790a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-11-08"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "21",
+   "fragments": {
+    "ok": {
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-11-21"
+   },
+   "dd_line": ".Dd 21\n",
+   "extract": {
+    "ok": "2026-11-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642032310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-11-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "21st",
+   "fragments": {
+    "ok": {
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-11-21"
+   },
+   "dd_line": ".Dd 21st\n",
+   "extract": {
+    "ok": "2026-11-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323173740a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-11-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "3rd",
+   "fragments": {
+    "ok": {
+     "mday": "3"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-11-03"
+   },
+   "dd_line": ".Dd 3rd\n",
+   "extract": {
+    "ok": "2026-11-03"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464203372640a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-11-03"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "today",
+   "fragments": {
+    "ok": {}
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd today\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420746f6461790a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "",
+   "fragments": {
+    "ok": {}
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44640a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "21-Sep-2020",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 21-Sep-2020\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642032312d5365702d323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sep-21-2020",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd Sep-21-2020\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464205365702d32312d323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "21-Sep",
+   "fragments": {
+    "ok": {
+     "mon": "9"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-09-01"
+   },
+   "dd_line": ".Dd 21-Sep\n",
+   "extract": {
+    "ok": "2026-09-01"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642032312d5365700a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-09-01"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sep-21",
+   "fragments": {
+    "ok": {
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-09-21"
+   },
+   "dd_line": ".Dd Sep-21\n",
+   "extract": {
+    "ok": "2026-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464205365702d32310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020/09/21",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 2020/09/21\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302f30392f32310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "09/21/2020",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "21",
+     "mday": "9"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd 09/21/2020\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642030392f32312f323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "9/21",
+   "fragments": {
+    "ok": {
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-09-21"
+   },
+   "dd_line": ".Dd 9/21\n",
+   "extract": {
+    "ok": "2026-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420392f32310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "21.09.2020",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 21.09.2020\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642032312e30392e323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020.09.21",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 2020.09.21\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302e30392e32310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "1.2.3",
+   "fragments": {
+    "ok": {
+     "year": "2001",
+     "mon": "2",
+     "mday": "3"
+    }
+   },
+   "date_parse": {
+    "ok": "2001-02-03"
+   },
+   "dd_line": ".Dd 1.2.3\n",
+   "extract": {
+    "ok": "2001-02-03"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420312e322e330a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2001-02-03"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "H32.04.30",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "4",
+     "mday": "30"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-04-30"
+   },
+   "dd_line": ".Dd H32.04.30\n",
+   "extract": {
+    "ok": "2020-04-30"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204833322e30342e33300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-04-30"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "R2.5.1",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "5",
+     "mday": "1"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-05-01"
+   },
+   "dd_line": ".Dd R2.5.1\n",
+   "extract": {
+    "ok": "2020-05-01"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642052322e352e310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-05-01"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "m45.7.30",
+   "fragments": {
+    "ok": {
+     "year": "1912",
+     "mon": "7",
+     "mday": "30"
+    }
+   },
+   "date_parse": {
+    "ok": "1912-07-30"
+   },
+   "dd_line": ".Dd m45.7.30\n",
+   "extract": {
+    "ok": "1912-07-30"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464206d34352e372e33300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "1912-07-30"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-W38-1",
+   "fragments": {
+    "ok": {
+     "cwyear": "2020",
+     "cweek": "38",
+     "cwday": "1"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-14"
+   },
+   "dd_line": ".Dd 2020-W38-1\n",
+   "extract": {
+    "ok": "2020-09-14"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d5733382d310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-14"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020W38",
+   "fragments": {
+    "ok": {
+     "cwyear": "2020",
+     "cweek": "38"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-14"
+   },
+   "dd_line": ".Dd 2020W38\n",
+   "extract": {
+    "ok": "2020-09-14"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032305733380a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-14"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "W38",
+   "fragments": {
+    "ok": {
+     "cweek": "38"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-09-14"
+   },
+   "dd_line": ".Dd W38\n",
+   "extract": {
+    "ok": "2026-09-14"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464205733380a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-09-14"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-w38",
+   "fragments": {
+    "ok": {
+     "cwyear": "2020",
+     "cweek": "38"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-14"
+   },
+   "dd_line": ".Dd 2020-w38\n",
+   "extract": {
+    "ok": "2020-09-14"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d7733380a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-14"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "-w-3",
+   "fragments": {
+    "ok": {
+     "cwday": "3"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-11-11"
+   },
+   "dd_line": ".Dd -w-3\n",
+   "extract": {
+    "ok": "2026-11-11"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464202d772d330a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-11-11"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "--09-21",
+   "fragments": {
+    "ok": {
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-09-21"
+   },
+   "dd_line": ".Dd --09-21\n",
+   "extract": {
+    "ok": "2026-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464202d2d30392d32310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "--0921",
+   "fragments": {
+    "ok": {
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-09-21"
+   },
+   "dd_line": ".Dd --0921\n",
+   "extract": {
+    "ok": "2026-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464202d2d303932310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "--09",
+   "fragments": {
+    "ok": {
+     "mon": "9"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-09-01"
+   },
+   "dd_line": ".Dd --09\n",
+   "extract": {
+    "ok": "2026-09-01"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464202d2d30390a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-09-01"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-265",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "yday": "265"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 2020-265\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d3236350a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "20-265",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "yday": "265"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 20-265\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642032302d3236350a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "-265",
+   "fragments": {
+    "ok": {
+     "yday": "265"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-09-22"
+   },
+   "dd_line": ".Dd -265\n",
+   "extract": {
+    "ok": "2026-09-22"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464202d3236350a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-09-22"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020265",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "yday": "265"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 2020265\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032303236350a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "20265",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "yday": "265"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 20265\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642032303236350a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "20200921",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 20200921\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642032303230303932310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "200921",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 200921\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464203230303932310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "0921",
+   "fragments": {
+    "ok": {
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-09-21"
+   },
+   "dd_line": ".Dd 0921\n",
+   "extract": {
+    "ok": "2026-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420303932310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "21 Sep 20",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 21 Sep 20\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464203231205365702032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "'20",
+   "fragments": {
+    "ok": {
+     "year": "2020"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-01-01"
+   },
+   "dd_line": ".Dd '20\n",
+   "extract": {
+    "ok": "2020-01-01"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464202732300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-01-01"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sep 21 '20",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd Sep 21 '20\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420536570203231202732300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "21 Sep '99",
+   "fragments": {
+    "ok": {
+     "year": "1999",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "1999-09-21"
+   },
+   "dd_line": ".Dd 21 Sep '99\n",
+   "extract": {
+    "ok": "1999-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323120536570202739390a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "1999-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "September 21, 0020",
+   "fragments": {
+    "ok": {
+     "year": "20",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "0020-09-21"
+   },
+   "dd_line": ".Dd September 21, 0020\n",
+   "extract": {
+    "ok": "0020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642053657074656d6265722032312c20303032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "0020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "September 21, 20",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd September 21, 20\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642053657074656d6265722032312c2032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "September 21, 69",
+   "fragments": {
+    "ok": {
+     "year": "1969",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "1969-09-21"
+   },
+   "dd_line": ".Dd September 21, 69\n",
+   "extract": {
+    "ok": "1969-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642053657074656d6265722032312c2036390a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "1969-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "September 21, 68",
+   "fragments": {
+    "ok": {
+     "year": "2068",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2068-09-21"
+   },
+   "dd_line": ".Dd September 21, 68\n",
+   "extract": {
+    "ok": "2068-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642053657074656d6265722032312c2036380a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2068-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "September 21, 100",
+   "fragments": {
+    "ok": {
+     "year": "100",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "0100-09-21"
+   },
+   "dd_line": ".Dd September 21, 100\n",
+   "extract": {
+    "ok": "0100-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642053657074656d6265722032312c203130300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "0100-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sep 21, 99999999999999999999999",
+   "fragments": {
+    "ok": {
+     "year": "99999999999999999999999",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "99999999999999999999999-09-21"
+   },
+   "dd_line": ".Dd Sep 21, 99999999999999999999999\n",
+   "extract": {
+    "ok": "99999999999999999999999-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464205365702032312c2039393939393939393939393939393939393939393939390a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "99999999999999999999999-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sep 21, 4611686018427387904",
+   "fragments": {
+    "ok": {
+     "year": "4611686018427387904",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "4611686018427387904-09-21"
+   },
+   "dd_line": ".Dd Sep 21, 4611686018427387904\n",
+   "extract": {
+    "ok": "4611686018427387904-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464205365702032312c20343631313638363031383432373338373930340a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "4611686018427387904-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sep 21, -99999999999999999999999",
+   "fragments": {
+    "ok": {
+     "year": "-99999999999999999999999",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "-99999999999999999999999-09-21"
+   },
+   "dd_line": ".Dd Sep 21, -99999999999999999999999\n",
+   "extract": {
+    "ok": "-99999999999999999999999-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464205365702032312c202d39393939393939393939393939393939393939393939390a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "-99999999999999999999999-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sep 99999999999, 2020",
+   "fragments": {
+    "ok": {
+     "year": "99999999999",
+     "mon": "9",
+     "mday": "2020"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd Sep 99999999999, 2020\n",
+   "extract": {
+    "error": {
+     "class": "RangeError",
+     "message": "integer 99999999999 too big to convert to 'int'"
+    }
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464205365702039393939393939393939392c20323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "error": {
+     "class": "RangeError",
+     "message": "integer 99999999999 too big to convert to 'int'"
+    }
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sep 99999999999999999999999, 2020",
+   "fragments": {
+    "ok": {
+     "year": "99999999999999999999999",
+     "mon": "9",
+     "mday": "2020"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd Sep 99999999999999999999999, 2020\n",
+   "extract": {
+    "error": {
+     "class": "RangeError",
+     "message": "bignum too big to convert into 'long'"
+    }
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464205365702039393939393939393939393939393939393939393939392c20323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "error": {
+     "class": "RangeError",
+     "message": "bignum too big to convert into 'long'"
+    }
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-99999999999-01",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "1",
+     "mday": "99999999999"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "RangeError",
+     "message": "integer 99999999999 too big to convert to 'int'"
+    }
+   },
+   "dd_line": ".Dd 2020-99999999999-01\n",
+   "extract": {
+    "error": {
+     "class": "RangeError",
+     "message": "integer 99999999999 too big to convert to 'int'"
+    }
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d39393939393939393939392d30310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "error": {
+     "class": "RangeError",
+     "message": "integer 99999999999 too big to convert to 'int'"
+    }
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sep 21, 2020 BC",
+   "fragments": {
+    "ok": {
+     "year": "-2019",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "-2019-09-21"
+   },
+   "dd_line": ".Dd Sep 21, 2020 BC\n",
+   "extract": {
+    "ok": "-2019-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464205365702032312c20323032302042430a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "-2019-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "21 Sep 2020 BC",
+   "fragments": {
+    "ok": {
+     "year": "-2019",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "-2019-09-21"
+   },
+   "dd_line": ".Dd 21 Sep 2020 BC\n",
+   "extract": {
+    "ok": "-2019-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642032312053657020323032302042430a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "-2019-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "21 Sep 300 b.c.",
+   "fragments": {
+    "ok": {
+     "year": "-299",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "-0299-09-21"
+   },
+   "dd_line": ".Dd 21 Sep 300 b.c.\n",
+   "extract": {
+    "ok": "-0299-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464203231205365702033303020622e632e0a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "-0299-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "21 Sep 300 bce",
+   "fragments": {
+    "ok": {
+     "year": "-299",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "-0299-09-21"
+   },
+   "dd_line": ".Dd 21 Sep 300 bce\n",
+   "extract": {
+    "ok": "-0299-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642032312053657020333030206263650a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "-0299-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sep 21 ad 2020",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd Sep 21 ad 2020\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642053657020323120616420323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "21 Sep ce 2020",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 21 Sep ce 2020\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642032312053657020636520323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020 BC",
+   "fragments": {
+    "ok": {
+     "mon": "20",
+     "mday": "20"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd 2020 BC\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302042430a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sep 21 -2020",
+   "fragments": {
+    "ok": {
+     "year": "-2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "-2020-09-21"
+   },
+   "dd_line": ".Dd Sep 21 -2020\n",
+   "extract": {
+    "ok": "-2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420536570203231202d323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "-2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "10:00",
+   "fragments": {
+    "ok": {
+     "hour": "10",
+     "min": "0"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd 10:00\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642031303a30300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "10:00 pm",
+   "fragments": {
+    "ok": {
+     "hour": "22",
+     "min": "0"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd 10:00 pm\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642031303a303020706d0a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "10pm",
+   "fragments": {
+    "ok": {
+     "hour": "22"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd 10pm\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464203130706d0a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "99999999999 pm",
+   "fragments": {
+    "error": {
+     "class": "RangeError",
+     "message": "integer 99999999999 too big to convert to 'int'"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "RangeError",
+     "message": "integer 99999999999 too big to convert to 'int'"
+    }
+   },
+   "dd_line": ".Dd 99999999999 pm\n",
+   "extract": {
+    "error": {
+     "class": "RangeError",
+     "message": "integer 99999999999 too big to convert to 'int'"
+    }
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420393939393939393939393920706d0a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "error": {
+     "class": "RangeError",
+     "message": "integer 99999999999 too big to convert to 'int'"
+    }
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "4294967296 am",
+   "fragments": {
+    "error": {
+     "class": "RangeError",
+     "message": "integer 4294967296 too big to convert to 'int'"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "RangeError",
+     "message": "integer 4294967296 too big to convert to 'int'"
+    }
+   },
+   "dd_line": ".Dd 4294967296 am\n",
+   "extract": {
+    "error": {
+     "class": "RangeError",
+     "message": "integer 4294967296 too big to convert to 'int'"
+    }
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464203432393439363732393620616d0a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "error": {
+     "class": "RangeError",
+     "message": "integer 4294967296 too big to convert to 'int'"
+    }
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sep 21, 2020 10:00 UTC",
+   "fragments": {
+    "ok": {
+     "zone": "UTC",
+     "hour": "10",
+     "min": "0",
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd Sep 21, 2020 10:00 UTC\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464205365702032312c20323032302031303a3030205554430a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-09-21T10:00:00Z",
+   "fragments": {
+    "ok": {
+     "zone": "Z",
+     "hour": "10",
+     "min": "0",
+     "sec": "0",
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 2020-09-21T10:00:00Z\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d30392d32315431303a30303a30305a0a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-09-21 10:00:00 +0900",
+   "fragments": {
+    "ok": {
+     "zone": "+0900",
+     "hour": "10",
+     "min": "0",
+     "sec": "0",
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 2020-09-21 10:00:00 +0900\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d30392d32312031303a30303a3030202b303930300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Mon, 21 Sep 2020 10:00:00 GMT",
+   "fragments": {
+    "ok": {
+     "wday": "1",
+     "zone": "GMT",
+     "hour": "10",
+     "min": "0",
+     "sec": "0",
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd Mon, 21 Sep 2020 10:00:00 GMT\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204d6f6e2c2032312053657020323032302031303a30303a303020474d540a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Mon Sep 21 10:00:00 UTC 2020",
+   "fragments": {
+    "ok": {
+     "wday": "1",
+     "zone": "UTC",
+     "hour": "10",
+     "min": "0",
+     "sec": "0",
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd Mon Sep 21 10:00:00 UTC 2020\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204d6f6e205365702032312031303a30303a30302055544320323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-09-21T10:00:00.123+09:00",
+   "fragments": {
+    "ok": {
+     "zone": "+09:00",
+     "hour": "10",
+     "min": "0",
+     "sec": "0",
+     "sec_fraction": "123/1000",
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 2020-09-21T10:00:00.123+09:00\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d30392d32315431303a30303a30302e3132332b30393a30300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "20200921T100000",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21",
+     "hour": "10",
+     "min": "0",
+     "sec": "0"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 20200921T100000\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464203230323030393231543130303030300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "20200921T100000.5Z",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21",
+     "sec": "0",
+     "min": "0",
+     "hour": "10",
+     "sec_fraction": "1/2",
+     "zone": "Z"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 20200921T100000.5Z\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464203230323030393231543130303030302e355a0a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "100000",
+   "fragments": {
+    "ok": {
+     "year": "2010",
+     "mon": "0",
+     "mday": "0"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd 100000\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464203130303030300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "10h30m",
+   "fragments": {
+    "ok": {
+     "hour": "10",
+     "min": "30"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd 10h30m\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642031306833306d0a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sep 21 2020 Eastern Standard Time",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd Sep 21 2020 Eastern Standard Time\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464205365702032312032303230204561737465726e205374616e646172642054696d650a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "21 Sep 2020 pst",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 21 Sep 2020 pst\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464203231205365702032303230207073740a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "20200921 [+9]",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21",
+     "zone": "+9"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 20200921 [+9]\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464203230323030393231205b2b395d0a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "20200921 [-5:EST]",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21",
+     "zone": "EST"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 20200921 [-5:EST]\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464203230323030393231205b2d353a4553545d0a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-09-21 12:00 am",
+   "fragments": {
+    "ok": {
+     "hour": "0",
+     "min": "0",
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 2020-09-21 12:00 am\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d30392d32312031323a303020616d0a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Monday 2020",
+   "fragments": {
+    "ok": {
+     "wday": "1",
+     "mon": "20",
+     "mday": "20"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd Monday 2020\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204d6f6e64617920323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sep 21 2020 foo bar",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd Sep 21 2020 foo bar\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420536570203231203230323020666f6f206261720a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "version 2020-09-21 rev 3",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd version 2020-09-21 rev 3\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642076657273696f6e20323032302d30392d32312072657620330a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sep 21, 2020 é",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd Sep 21, 2020 é\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464205365702032312c203230323020c3a90a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "ſeptember 21, 2020",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "13",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd ſeptember 21, 2020\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420c5bf657074656d6265722032312c20323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "21 ſep 2020",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "13",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd 21 ſep 2020\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323120c5bf657020323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Ⅻ 2020",
+   "fragments": {
+    "ok": {
+     "mon": "20",
+     "mday": "20"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd Ⅻ 2020\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420e285ab20323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "² Sep 2020",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-01"
+   },
+   "dd_line": ".Dd ² Sep 2020\n",
+   "extract": {
+    "ok": "2020-09-01"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420c2b22053657020323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-01"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sep ２１, 2020",
+   "fragments": {
+    "ok": {
+     "mon": "9"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-09-01"
+   },
+   "dd_line": ".Dd Sep ２１, 2020\n",
+   "extract": {
+    "ok": "2026-09-01"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642053657020efbc92efbc912c20323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-09-01"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sep\\t21,\\t2020",
+   "fragments": {
+    "ok": {
+     "mon": "9"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-09-01"
+   },
+   "dd_line": ".Dd Sep\\t21,\\t2020\n",
+   "extract": {
+    "ok": "2026-09-01"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464205365705c7432312c5c74323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-09-01"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sep 21 2020",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd Sep 21 2020\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420536570203231c2a0323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-02-30",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "2",
+     "mday": "30"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd 2020-02-30\n",
+   "extract": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d30322d33300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-13-01",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "13",
+     "mday": "1"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd 2020-13-01\n",
+   "extract": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d31332d30310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2021-02-29",
+   "fragments": {
+    "ok": {
+     "year": "2021",
+     "mon": "2",
+     "mday": "29"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd 2021-02-29\n",
+   "extract": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032312d30322d32390a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "0000-01-01",
+   "fragments": {
+    "ok": {
+     "year": "0",
+     "mon": "1",
+     "mday": "1"
+    }
+   },
+   "date_parse": {
+    "ok": "0000-01-01"
+   },
+   "dd_line": ".Dd 0000-01-01\n",
+   "extract": {
+    "ok": "0000-01-01"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420303030302d30312d30310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "0000-01-01"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "1582-10-10",
+   "fragments": {
+    "ok": {
+     "year": "1582",
+     "mon": "10",
+     "mday": "10"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd 1582-10-10\n",
+   "extract": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420313538322d31302d31300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "1582-10-04",
+   "fragments": {
+    "ok": {
+     "year": "1582",
+     "mon": "10",
+     "mday": "4"
+    }
+   },
+   "date_parse": {
+    "ok": "1582-10-04"
+   },
+   "dd_line": ".Dd 1582-10-04\n",
+   "extract": {
+    "ok": "1582-10-04"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420313538322d31302d30340a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "1582-10-04"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Feb 30 2020",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "2",
+     "mday": "30"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd Feb 30 2020\n",
+   "extract": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642046656220333020323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "foo 21, 2020",
+   "fragments": {
+    "ok": {
+     "sec": "21",
+     "sec_fraction": "0/1"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd foo 21, 2020\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420666f6f2032312c20323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "June 2020 21",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "6",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-06-21"
+   },
+   "dd_line": ".Dd June 2020 21\n",
+   "extract": {
+    "ok": "2020-06-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204a756e6520323032302032310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-06-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Jun 31 2021",
+   "fragments": {
+    "ok": {
+     "year": "2021",
+     "mon": "6",
+     "mday": "31"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd Jun 31 2021\n",
+   "extract": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204a756e20333120323032310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "31 June 2021",
+   "fragments": {
+    "ok": {
+     "year": "2021",
+     "mon": "6",
+     "mday": "31"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd 31 June 2021\n",
+   "extract": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464203331204a756e6520323032310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sep 21, 2020 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "fragments": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (133) exceeds the limit 128"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (133) exceeds the limit 128"
+    }
+   },
+   "dd_line": ".Dd Sep 21, 2020 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464205365702032312c2032303230207878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878780a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ September 21, 2020",
+   "fragments": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (139) exceeds the limit 128"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (139) exceeds the limit 128"
+    }
+   },
+   "dd_line": ".Dd ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ September 21, 2020\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464207e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e2053657074656d6265722032312c20323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 21 September 2020",
+   "fragments": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (138) exceeds the limit 128"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (138) exceeds the limit 128"
+    }
+   },
+   "dd_line": ".Dd ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 21 September 2020\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464207e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e2032312053657074656d62657220323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 2020-09-21",
+   "fragments": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (131) exceeds the limit 128"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (131) exceeds the limit 128"
+    }
+   },
+   "dd_line": ".Dd ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 2020-09-21\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464207e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e20323032302d30392d32310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Sept 31, 2020",
+   "fragments": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (134) exceeds the limit 128"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (134) exceeds the limit 128"
+    }
+   },
+   "dd_line": ".Dd ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Sept 31, 2020\n",
+   "extract": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464207e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e20536570742033312c20323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 2020-02-30",
+   "fragments": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (131) exceeds the limit 128"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (131) exceeds the limit 128"
+    }
+   },
+   "dd_line": ".Dd ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 2020-02-30\n",
+   "extract": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464207e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e20323032302d30322d33300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 21 Foo 2020",
+   "fragments": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (132) exceeds the limit 128"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (132) exceeds the limit 128"
+    }
+   },
+   "dd_line": ".Dd ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 21 Foo 2020\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464207e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e20323120466f6f20323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Foo 21, 2020",
+   "fragments": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (133) exceeds the limit 128"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (133) exceeds the limit 128"
+    }
+   },
+   "dd_line": ".Dd ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Foo 21, 2020\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464207e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e20466f6f2032312c20323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 20_2 9 2020",
+   "fragments": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (132) exceeds the limit 128"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (132) exceeds the limit 128"
+    }
+   },
+   "dd_line": ".Dd ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 20_2 9 2020\n",
+   "extract": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464207e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e2032305f32203920323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 2_20 9, 2020",
+   "fragments": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (133) exceeds the limit 128"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (133) exceeds the limit 128"
+    }
+   },
+   "dd_line": ".Dd ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 2_20 9, 2020\n",
+   "extract": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464207e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e20325f323020392c20323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Sept 99999999999 2020",
+   "fragments": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (142) exceeds the limit 128"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (142) exceeds the limit 128"
+    }
+   },
+   "dd_line": ".Dd ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Sept 99999999999 2020\n",
+   "extract": {
+    "error": {
+     "class": "RangeError",
+     "message": "integer 99999999999 too big to convert to 'int'"
+    }
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464207e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e205365707420393939393939393939393920323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "error": {
+     "class": "RangeError",
+     "message": "integer 99999999999 too big to convert to 'int'"
+    }
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 1 2 2020",
+   "fragments": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (129) exceeds the limit 128"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (129) exceeds the limit 128"
+    }
+   },
+   "dd_line": ".Dd ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 1 2 2020\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464207e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e2031203220323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 2020 Sep 2021",
+   "fragments": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (134) exceeds the limit 128"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (134) exceeds the limit 128"
+    }
+   },
+   "dd_line": ".Dd ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 2020 Sep 2021\n",
+   "extract": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464207e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e20323032302053657020323032310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ sep 21 2020",
+   "fragments": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (132) exceeds the limit 128"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (132) exceeds the limit 128"
+    }
+   },
+   "dd_line": ".Dd ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ sep 21 2020\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464207e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e2073657020323120323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SEPT 21 2020",
+   "fragments": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (133) exceeds the limit 128"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (133) exceeds the limit 128"
+    }
+   },
+   "dd_line": ".Dd ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SEPT 21 2020\n",
+   "extract": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464207e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e205345505420323120323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 2020 abc 21 2020",
+   "fragments": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (137) exceeds the limit 128"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (137) exceeds the limit 128"
+    }
+   },
+   "dd_line": ".Dd ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 2020 abc 21 2020\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464207e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e20323032302061626320323120323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ nothing here",
+   "fragments": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (133) exceeds the limit 128"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (133) exceeds the limit 128"
+    }
+   },
+   "dd_line": ".Dd ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ nothing here\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464207e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e206e6f7468696e6720686572650a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé Sep 21 2020",
+   "fragments": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (140) exceeds the limit 128"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (140) exceeds the limit 128"
+    }
+   },
+   "dd_line": ".Dd éééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééééé Sep 21 2020\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a9c3a92053657020323120323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "fragments": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (129) exceeds the limit 128"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "string length (129) exceeds the limit 128"
+    }
+   },
+   "dd_line": ".Dd xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464207878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878780a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx September 21, 2020",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx September 21, 2020\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464207878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878782053657074656d6265722032312c20323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  }
+ ],
+ "file_cases": [
+  {
+   "name": "mdoc_basic",
+   "content_hex": "2e44642053657074656d6265722032312c20323032300a2e447420584152475320310a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "name": "no_dd",
+   "content_hex": "2e544820584152475320312022323032302d30392d3231220a2e5348204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "name": "dd_no_args_eof",
+   "content_hex": "2e4464",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "name": "dd_no_args_newline",
+   "content_hex": "2e44640a2e4464204d617920312c20323030310a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "name": "dd_tab",
+   "content_hex": "2e4464094d617920312c20323030310a",
+   "parse_date": {
+    "ok": "2001-05-01"
+   }
+  },
+  {
+   "name": "dd_crlf",
+   "content_hex": "2e4464204d617920312c20323030310d0a2e4474205820310d0a",
+   "parse_date": {
+    "ok": "2001-05-01"
+   }
+  },
+  {
+   "name": "dd_cr_only_after_macro",
+   "content_hex": "2e44640d0a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "name": "dd_leading_space",
+   "content_hex": "202e4464204d617920312c20323030310a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "name": "dd_uppercase",
+   "content_hex": "2e4444204d617920312c20323030310a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "name": "dd_glued",
+   "content_hex": "2e44644d617920312c20323030310a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "name": "dd_bom",
+   "content_hex": "efbbbf2e4464204d617920312c20323030310a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "name": "dd_second_line_after_bom",
+   "content_hex": "efbbbf2e5c2220630a2e4464204d617920312c20323030310a",
+   "parse_date": {
+    "ok": "2001-05-01"
+   }
+  },
+  {
+   "name": "first_dd_wins",
+   "content_hex": "2e4464204d617920312c20323030310a2e4464204a756e6520322c20323030320a",
+   "parse_date": {
+    "ok": "2001-05-01"
+   }
+  },
+  {
+   "name": "first_dd_unparsable",
+   "content_hex": "2e446420244d646f6364617465240a2e4464204a756e6520322c20323030320a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "name": "dd_vertical_tab",
+   "content_hex": "2e44640b4d617920312c20323030310a",
+   "parse_date": {
+    "ok": "2001-05-01"
+   }
+  },
+  {
+   "name": "dd_formfeed",
+   "content_hex": "2e44640c4d617920312c20323030310a",
+   "parse_date": {
+    "ok": "2001-05-01"
+   }
+  },
+  {
+   "name": "dd_nul_padding",
+   "content_hex": "2e446420004d617920312c2032303031000a",
+   "parse_date": {
+    "ok": "2001-05-01"
+   }
+  },
+  {
+   "name": "dd_nbsp",
+   "content_hex": "2e4464c2a04d617920312c20323030310a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "name": "invalid_utf8_before_dd",
+   "content_hex": "fffe20676172626167650a2e4464204d617920312c20323030310a",
+   "parse_date": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "invalid byte sequence in UTF-8"
+    }
+   }
+  },
+  {
+   "name": "invalid_utf8_on_dd",
+   "content_hex": "2e4464204d617920312c203230303120ff0a",
+   "parse_date": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "invalid byte sequence in UTF-8"
+    }
+   }
+  },
+  {
+   "name": "invalid_utf8_after_dd",
+   "content_hex": "2e4464204d617920312c20323030310afffe0a",
+   "parse_date": {
+    "ok": "2001-05-01"
+   }
+  },
+  {
+   "name": "empty",
+   "content_hex": "",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "name": "only_newlines",
+   "content_hex": "0a0a0a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "name": "gzip_magic",
+   "content_hex": "1f8b08000000000000032e4464204d617920312c20323030310a",
+   "parse_date": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "invalid byte sequence in UTF-8"
+    }
+   }
+  },
+  {
+   "name": "fallback_invalid_date_raises",
+   "content_hex": "2e446420536570742033312c20323032300a",
+   "parse_date": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   }
+  },
+  {
+   "name": "fallback_range_error",
+   "content_hex": "2e4464207e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e205365707420393939393939393939393920323032300a",
+   "parse_date": {
+    "error": {
+     "class": "RangeError",
+     "message": "integer 99999999999 too big to convert to 'int'"
+    }
+   }
+  },
+  {
+   "name": "parse_range_error",
+   "content_hex": "2e446420393939393939393939393920706d0a",
+   "parse_date": {
+    "error": {
+     "class": "RangeError",
+     "message": "integer 99999999999 too big to convert to 'int'"
+    }
+   }
+  }
+ ],
+ "special": {
+  "nil_path": {
+   "ok": null
+  },
+  "empty_path": {
+   "ok": null
+  },
+  "missing_path": {
+   "ok": null
+  },
+  "directory": {
+   "error": {
+    "class": "Errno::EISDIR",
+    "message": "Is a directory @ io_fread - <capture-dir>/a_directory"
+   }
+  },
+  "unreadable": {
+   "ok": null
+  },
+  "unreadable_is_root": false
+ },
+ "fallback": {
+  "empty_list": {
+   "paths": [],
+   "result": {
+    "ok": null
+   }
+  },
+  "first_good": {
+   "paths": [
+    "good",
+    "second"
+   ],
+   "result": {
+    "ok": "2020-09-21"
+   }
+  },
+  "skip_missing_and_nodate": {
+   "paths": [
+    "missing",
+    "nodate",
+    "second"
+   ],
+   "result": {
+    "ok": "2002-06-02"
+   }
+  },
+  "all_fail": {
+   "paths": [
+    "missing",
+    "nodate"
+   ],
+   "result": {
+    "ok": null
+   }
+  },
+  "error_stops": {
+   "paths": [
+    "missing",
+    "bad",
+    "good"
+   ],
+   "result": {
+    "error": {
+     "class": "ArgumentError",
+     "message": "invalid byte sequence in UTF-8"
+    }
+   }
+  },
+  "good_before_error": {
+   "paths": [
+    "good",
+    "bad"
+   ],
+   "result": {
+    "ok": "2020-09-21"
+   }
+  }
+ },
+ "resolve_man_page_path": {
+  "with_paths": {
+   "error": {
+    "class": "NoMethodError",
+    "message": "undefined method 'current' for module Ukiryu::Platform"
+   }
+  },
+  "empty_paths": {
+   "error": {
+    "class": "NoMethodError",
+    "message": "undefined method 'current' for module Ukiryu::Platform"
+   }
+  }
+ }
+}
