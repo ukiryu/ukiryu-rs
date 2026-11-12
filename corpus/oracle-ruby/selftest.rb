@@ -49,6 +49,14 @@ CONTROLS = {
     edit_rows(d, 'escape') { |rs| i = first_ok(rs); rs[i]['expect']['ok'] += 'X'; rs }
     reseal(d)
   }],
+  'wrong-needs-quoting-boolean' => [/value differs/, lambda { |d|
+    edit_rows(d, 'escape') do |rs|
+      i = rs.index { |r| r['op'] == 'shell.needs_quoting' && r['expect']['ok'] == true }
+      rs[i]['expect']['ok'] = false
+      rs
+    end
+    reseal(d)
+  }],
   'wrong-error-class' => [/error class differs/, lambda { |d|
     edit_rows(d, 'validate') { |rs| i = first_err(rs); rs[i]['expect']['error']['class'] = 'RuntimeError'; rs }
     reseal(d)
