@@ -341,7 +341,7 @@ impl ContextSlot {
             }
         }
         let previous = self.current.replace(context);
-        let mut guard = Restore {
+        let guard = Restore {
             slot: self,
             previous: Some(previous),
         };
