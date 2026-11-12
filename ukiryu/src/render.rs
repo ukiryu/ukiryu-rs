@@ -230,12 +230,22 @@ pub fn output_response<R: Renderable + ?Sized>(
         return Ok(raw_writes(&response.view(), output_file));
     }
     let output = match format {
-        OutputFormat::Yaml => format_yaml_response(response, settings)?,
+        OutputFormat::Yaml => format_yaml_text(&to_yaml(response)?, settings),
         OutputFormat::Json => to_json_pretty(response)?,
         OutputFormat::Table => format_table_response(&response.view(), settings),
         OutputFormat::Raw => unreachable!("handled above"),
     };
-    Ok(match output_file {
+    Ok(emit_output(output, output_file, settings))
+}
+
+/// The non-raw tail of `output_response`: write `output` to the file and
+/// announce it, or `say` it on stdout.
+pub fn emit_output(
+    output: String,
+    output_file: Option<&str>,
+    settings: &RenderSettings,
+) -> Vec<OutputWrite> {
+    match output_file {
         Some(path) => vec![
             OutputWrite::File {
                 path: path.to_owned(),
@@ -248,7 +258,7 @@ pub fn output_response<R: Renderable + ?Sized>(
             )),
         ],
         None => vec![OutputWrite::Stdout(say(&output, None, settings))],
-    })
+    }
 }
 
 fn raw_writes(view: &ResponseView, output_file: Option<&str>) -> Vec<OutputWrite> {
@@ -273,19 +283,15 @@ fn raw_writes(view: &ResponseView, output_file: Option<&str>) -> Vec<OutputWrite
     writes
 }
 
-/// `format_yaml_response`: the response YAML, line-coloured with Paint when
-/// colours are on and the gem can be required.
-fn format_yaml_response<R: Serialize + ?Sized>(
-    response: &R,
-    settings: &RenderSettings,
-) -> Result<String, RenderError> {
-    let yaml = to_yaml(response)?;
+/// The colouring step of `format_yaml_response` over a YAML document:
+/// each line is painted by its key when colours are on and the gem can be
+/// required, otherwise the text is returned unchanged.
+pub fn format_yaml_text(yaml: &str, settings: &RenderSettings) -> String {
     if !settings.yaml_colors() || !settings.paint.available {
-        return Ok(yaml);
+        return yaml.to_owned();
     }
     let paint = Painter(settings.paint.enabled);
-    Ok(yaml
-        .split_inclusive('\n')
+    yaml.split_inclusive('\n')
         .map(|line| {
             let codes: &[u8] = if line.starts_with("status:") {
                 &[36, 1]
@@ -310,7 +316,7 @@ fn format_yaml_response<R: Serialize + ?Sized>(
                 paint.paint(line, codes)
             }
         })
-        .collect())
+        .collect()
 }
 
 /// `format_table_response`.

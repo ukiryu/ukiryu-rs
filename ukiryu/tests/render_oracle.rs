@@ -9,26 +9,26 @@
 //! process so the Paint load state is per case.
 //!
 //! The responses are the oracle's own `to_yaml` documents read back through
-//! Yeptris, so the YAML, JSON, table and raw bytes are compared against the
-//! same data the Ruby formatter saw.
+//! Yeptris, so every format renders the same data the Ruby formatter saw.
+//! JSON, table, raw and dry-run output are compared byte for byte. YAML is
+//! emitted by Yeptris with the pinned settings, not by Psych: the scalar
+//! styles differ (Yeptris writes plain or double-quoted scalars under
+//! YAML 1.2 resolution, never folds; Psych quotes by YAML 1.1 rules, uses
+//! literal blocks and folds at 80 columns), so the YAML document is
+//! compared as data, and the colouring/`say` layer around it is compared
+//! byte for byte by feeding it the oracle's own YAML text.
 use serde::{Serialize, Serializer};
 use serde_json::Value as Json;
 use std::collections::HashMap;
 use std::path::PathBuf;
 use ukiryu::render::{
-    output_response, render_dry_run, to_json_pretty, to_yaml, yaml_emit_options, DryRunStyle,
-    InspectValue, OutputFormat, OutputWrite, PaintSupport, RenderSettings, Renderable,
-    RequestSummary, ResponseView, SuccessView, OUTPUT_FORMATS,
+    emit_output, format_yaml_text, output_response, render_dry_run, to_json_pretty, to_yaml,
+    yaml_emit_options, DryRunStyle, InspectValue, OutputFormat, OutputWrite, PaintSupport,
+    RenderSettings, Renderable, RequestSummary, ResponseView, SuccessView, OUTPUT_FORMATS,
 };
 use yeptris::{LineWidth, Value};
 
 const ORACLE_SHA: &str = "ab6df353c6dc2d7faf7817a86aafcafa82579896";
-
-/// Responses whose Psych YAML folds a scalar at 80 columns. The pinned
-/// emitter settings (ukiryu#27: unbounded width, no block folding) keep
-/// those scalars on one line instead; the tests check that the only
-/// difference is that scalar and that both documents load to equal data.
-const FOLD_GAPS: &[&str] = &["success-long-line"];
 
 fn golden() -> Json {
     serde_json::from_str(include_str!("render_oracle/golden.json")).expect("golden json")
@@ -137,25 +137,6 @@ fn responses(g: &Json) -> Vec<(String, Oracle, String, String)> {
         .collect()
 }
 
-/// The lines where two texts differ, as (ruby, rust) fragments cut at line
-/// boundaries.
-fn line_diff<'a>(ruby: &'a str, rust: &'a str) -> (&'a str, &'a str) {
-    let rl: Vec<&str> = ruby.split_inclusive('\n').collect();
-    let tl: Vec<&str> = rust.split_inclusive('\n').collect();
-    let pre = rl.iter().zip(&tl).take_while(|(a, b)| a == b).count();
-    let suf = rl[pre..]
-        .iter()
-        .rev()
-        .zip(tl[pre..].iter().rev())
-        .take_while(|(a, b)| a == b)
-        .count();
-    let start_r: usize = rl[..pre].iter().map(|l| l.len()).sum();
-    let start_t: usize = tl[..pre].iter().map(|l| l.len()).sum();
-    let end_r = ruby.len() - rl[rl.len() - suf..].iter().map(|l| l.len()).sum::<usize>();
-    let end_t = rust.len() - tl[tl.len() - suf..].iter().map(|l| l.len()).sum::<usize>();
-    (&ruby[start_r..end_r], &rust[start_t..end_t])
-}
-
 #[test]
 fn golden_provenance_is_the_pinned_oracle() {
     let g = golden();
@@ -200,31 +181,79 @@ fn yaml_emitter_settings_are_pinned() {
 }
 
 #[test]
-fn yaml_matches_psych_except_recorded_fold_gaps() {
+fn yaml_is_the_pinned_yeptris_document_of_the_same_data() {
     let g = golden();
-    let mut diverged = Vec::new();
+    let mut byte_equal = Vec::new();
     for (id, oracle, ruby_yaml, _) in responses(&g) {
         let rust = to_yaml(&oracle).unwrap();
-        // Byte-stable across repeated renders.
+        // Byte-stable across repeated renders and equal to an independent
+        // emit with the settings spelled out here.
         assert_eq!(rust, to_yaml(&oracle).unwrap(), "{id}: repeat render");
-        if rust == ruby_yaml {
-            continue;
-        }
-        diverged.push(id.clone());
-        let (r, t) = line_diff(&ruby_yaml, &rust);
-        assert!(
-            r.lines().count() > t.lines().count(),
-            "{id}: only folding may differ\n--- ruby\n{r}--- rust\n{t}"
+        let pinned = yeptris::EmitOptions::new()
+            .canonical(false)
+            .indent(2)
+            .explicit_document_start(true)
+            .line_width(LineWidth::Unbounded)
+            .block_fold(false);
+        let tree = yeptris::to_value(&oracle).unwrap();
+        assert_eq!(
+            rust,
+            format!("{}\n", yeptris::to_string_with(&tree, &pinned).unwrap()),
+            "{id}: pinned settings"
         );
-        assert!(
-            !t.contains("\n    "),
-            "{id}: rust kept the scalar on one line: {t}"
-        );
+        assert!(rust.starts_with("---"), "{id}: explicit document start");
+        // The same data as Psych's document.
         let a: Value = yeptris::from_str(&ruby_yaml).unwrap();
         let b: Value = yeptris::from_str(&rust).unwrap();
-        assert_eq!(a, b, "{id}: same data");
+        assert_eq!(
+            a, b,
+            "{id}: same data\n--- ruby\n{ruby_yaml}--- rust\n{rust}"
+        );
+        if rust == ruby_yaml {
+            byte_equal.push(id);
+        }
     }
-    assert_eq!(diverged, FOLD_GAPS);
+    eprintln!("byte-identical to Psych: {byte_equal:?}");
+}
+
+/// Psych folds the 30-word stdout of `success-long-line` over three lines
+/// at 80 columns; the pinned settings keep every scalar on one line.
+#[test]
+fn yaml_never_folds_long_scalars() {
+    let g = golden();
+    let (_, oracle, ruby_yaml, _) = responses(&g)
+        .into_iter()
+        .find(|r| r.0 == "success-long-line")
+        .unwrap();
+    assert!(ruby_yaml.contains("word12\n    word13"), "psych folded");
+    let rust = to_yaml(&oracle).unwrap();
+    let line = rust
+        .lines()
+        .find(|l| l.starts_with("  stdout: "))
+        .expect("stdout line");
+    assert!(line.contains("word1 ") && line.contains("word30"), "{line}");
+}
+
+#[test]
+fn json_floats_match_the_json_gem_layout() {
+    let g = golden();
+    let mut gaps = Vec::new();
+    for row in g["json_floats"].as_array().unwrap() {
+        let bits = u64::from_str_radix(s(&row["bits"]), 16).unwrap();
+        let x = f64::from_bits(bits);
+        let got = to_json_pretty(&[x]).unwrap();
+        if got != s(&row["json"]) {
+            gaps.push((got, s(&row["json"]).to_owned()));
+        }
+    }
+    // fpconv's Grisu2 digits are not the shortest for this value.
+    assert_eq!(
+        gaps,
+        vec![(
+            "[\n  1.2345e+21\n]".to_owned(),
+            "[\n  1.2344999999999999e+21\n]".to_owned()
+        )]
+    );
 }
 
 #[test]
@@ -277,13 +306,32 @@ fn output_response_matches_every_captured_render() {
                 }
             }
         }
-        let mut want_out = s(&row["stdout"]).to_owned();
-        let mut want_file = row["file"].as_str().map(str::to_owned);
-        if FOLD_GAPS.contains(&id.as_str()) && format == OutputFormat::Yaml {
+        let want_out = s(&row["stdout"]).to_owned();
+        let want_file = row["file"].as_str().map(str::to_owned);
+        if format == OutputFormat::Yaml {
+            // The colouring and `say` layer, byte for byte over Psych's text.
+            let file = to_file.then_some("${OUT}");
+            let mut o = String::new();
+            let mut f = None;
+            for w in emit_output(format_yaml_text(ruby_yaml, &settings), file, &settings) {
+                match w {
+                    OutputWrite::Stdout(t) => o.push_str(&t),
+                    OutputWrite::File { contents, .. } => f = Some(contents),
+                    OutputWrite::Stderr(_) => panic!("yaml writes no stderr"),
+                }
+            }
+            assert_eq!(o, want_out, "yaml stdout {id} {row}");
+            assert_eq!(f, want_file, "yaml file {id} {row}");
+            // The real path: the same layer over the pinned Yeptris text.
             let rust_yaml = to_yaml(oracle).unwrap();
-            let (r, t) = line_diff(ruby_yaml, &rust_yaml);
-            want_out = want_out.replacen(r, t, 1);
-            want_file = want_file.map(|f| f.replacen(r, t, 1));
+            let expect = emit_output(format_yaml_text(&rust_yaml, &settings), file, &settings);
+            assert_eq!(
+                output_response(oracle, format, file, &settings).unwrap(),
+                expect
+            );
+            assert!(err.is_empty());
+            count += 1;
+            continue;
         }
         let ctx = format!("{id} {row}");
         assert_eq!(out, want_out, "stdout {ctx}");

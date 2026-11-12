@@ -8,7 +8,7 @@ use super::RenderError;
 use serde::Serialize;
 use serde_json::ser::{Formatter, PrettyFormatter};
 use std::io;
-use yeptris::{EmitOptions, LineWidth, Number, Value};
+use yeptris::{EmitOptions, LineWidth};
 
 /// The pinned emitter settings for the `yaml` format (ukiryu#27):
 /// fidelity (non-canonical) form, indent 2, the explicit `---` document
@@ -16,9 +16,13 @@ use yeptris::{EmitOptions, LineWidth, Number, Value};
 /// scalar always stays on one line. Every knob is set explicitly so engine
 /// default changes cannot move the output.
 ///
-/// Psych folds plain and single-quoted scalars at 80 columns; with these
-/// settings Yeptris keeps them on one line, a deliberate difference
-/// recorded by the oracle tests.
+/// The document carries the same data as Psych's but not Psych's bytes:
+/// Psych folds plain and single-quoted scalars at 80 columns and picks
+/// scalar styles by YAML 1.1 rules (quoting `.a`, `/usr/bin/jq`,
+/// timestamps; literal blocks for multi-line text), while the Yeptris
+/// value emitter writes plain or double-quoted scalars under YAML 1.2
+/// resolution and, with these settings, never folds. The oracle tests
+/// record this as a gap and compare the YAML as data.
 pub fn yaml_emit_options() -> EmitOptions {
     EmitOptions::new()
         .canonical(false)
@@ -37,9 +41,8 @@ pub fn to_yaml<T: Serialize + ?Sized>(value: &T) -> Result<String, RenderError> 
     Ok(text)
 }
 
-/// The pretty JSON text (two-space indent, `"key": value`), with floats in
-/// Ruby's `Float#to_s` shape (`2.0e-05`, `1.0e+16`) as the json gem writes
-/// them.
+/// The pretty JSON text (two-space indent, `"key": value`), with floats
+/// laid out as the json gem's generator writes them.
 pub fn to_json_pretty<T: Serialize + ?Sized>(value: &T) -> Result<String, RenderError> {
     let mut out = Vec::new();
     let mut ser =
@@ -50,21 +53,64 @@ pub fn to_json_pretty<T: Serialize + ?Sized>(value: &T) -> Result<String, Render
     String::from_utf8(out).map_err(|e| RenderError::new(e.to_string()))
 }
 
-/// `Float#to_s` text through the Yeptris engine's float printer (the same
-/// shape). `serde_json` writes non-finite floats as `null` before reaching
-/// the formatter, where the json gem raises `GeneratorError`; responses
-/// carry finite durations only.
-fn float_text(x: f64) -> io::Result<String> {
-    let text = yeptris::to_string(&Value::Number(Number::F64(x)))
-        .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e.to_string()))?;
-    Ok(text.lines().next().unwrap_or_default().to_owned())
+/// The float text of the json gem 3.1.0 generator: `fpconv_dtoa` in
+/// `ext/json/ext/vendor/fpconv.c`, whose `emit_digits` writes plain
+/// decimals (`0.00002`, `123456789.0`) inside its exponent window and
+/// `1e+16`/`1e-10` outside it. The digits are the shortest round-trip
+/// digits; fpconv's Grisu2 can return a longer digit string for a few
+/// values (the json gem writes `1.2345e21` as `1.2344999999999999e+21`),
+/// a recorded gap. `serde_json` turns non-finite floats into `null` before
+/// the formatter runs, where the json gem raises `GeneratorError`.
+fn json_float_text(x: f64) -> String {
+    let mut out = String::with_capacity(32);
+    if x.is_sign_negative() {
+        out.push('-');
+    }
+    if x == 0.0 {
+        out.push_str("0.0");
+        return out;
+    }
+    let sci = format!("{:e}", x.abs());
+    let (mantissa, exponent) = sci.split_once('e').unwrap_or((sci.as_str(), "0"));
+    let exponent: i32 = exponent.parse().unwrap_or(0);
+    let digits: String = mantissa.chars().filter(|c| *c != '.').collect();
+    let nd = digits.len() as i32;
+    // value = digits * 10^k
+    let k = exponent - (nd - 1);
+    let exp = (k + nd - 1).abs();
+    if k >= 0 && exp < 15 {
+        out.push_str(&digits);
+        out.extend(std::iter::repeat_n('0', k as usize));
+        out.push_str(".0");
+    } else if k < 0 && (k > -7 || exp < 10) {
+        let offset = nd + k;
+        if offset <= 0 {
+            out.push_str("0.");
+            out.extend(std::iter::repeat_n('0', (-offset) as usize));
+            out.push_str(&digits);
+        } else {
+            out.push_str(&digits[..offset as usize]);
+            out.push('.');
+            out.push_str(&digits[offset as usize..]);
+        }
+    } else {
+        out.push_str(&digits[..1]);
+        if nd > 1 {
+            out.push('.');
+            out.push_str(&digits[1..]);
+        }
+        out.push('e');
+        out.push(if k + nd - 1 < 0 { '-' } else { '+' });
+        out.push_str(&exp.to_string());
+    }
+    out
 }
 
 struct RubyFloats<'a>(PrettyFormatter<'a>);
 
 impl Formatter for RubyFloats<'_> {
     fn write_f64<W: ?Sized + io::Write>(&mut self, writer: &mut W, value: f64) -> io::Result<()> {
-        writer.write_all(float_text(value)?.as_bytes())
+        writer.write_all(json_float_text(value).as_bytes())
     }
 
     fn write_f32<W: ?Sized + io::Write>(&mut self, writer: &mut W, value: f32) -> io::Result<()> {

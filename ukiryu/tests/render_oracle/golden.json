@@ -4924,7 +4924,7 @@
       "arguments": [
         {
           "key": "stdin",
-          "inspect": "#<StringIO:0x00007afc68955ad0>",
+          "inspect": "#<StringIO:0x00007ca07b673fe8>",
           "string": null
         }
       ],
@@ -5318,7 +5318,7 @@
       "arguments": [
         {
           "key": "stdin",
-          "inspect": "#<StringIO:0x00007afc68955ad0>",
+          "inspect": "#<StringIO:0x00007ca07b673fe8>",
           "string": null
         }
       ],
@@ -5594,6 +5594,104 @@
       "stdout": "DRY RUN - Ukiryu Structured Execution Request:\n\nTool: \nCommand: \nArguments:\n",
       "stderr": "",
       "file": null
+    }
+  ],
+  "json_floats": [
+    {
+      "bits": "3ff0000000000000",
+      "json": "[\n  1.0\n]"
+    },
+    {
+      "bits": "3ff4000000000000",
+      "json": "[\n  1.25\n]"
+    },
+    {
+      "bits": "3fb999999999999a",
+      "json": "[\n  0.1\n]"
+    },
+    {
+      "bits": "3f5437c5692b3cc5",
+      "json": "[\n  0.001234\n]"
+    },
+    {
+      "bits": "3f1a36e2eb1c432d",
+      "json": "[\n  0.0001\n]"
+    },
+    {
+      "bits": "3ef4f8b588e368f1",
+      "json": "[\n  0.00002\n]"
+    },
+    {
+      "bits": "3ee4f8b588e368f1",
+      "json": "[\n  0.00001\n]"
+    },
+    {
+      "bits": "3e8421f5f40d8376",
+      "json": "[\n  0.00000015\n]"
+    },
+    {
+      "bits": "3ddb7cdfd9d7bdbb",
+      "json": "[\n  1e-10\n]"
+    },
+    {
+      "bits": "3cd63ad20f59e28c",
+      "json": "[\n  1.234e-15\n]"
+    },
+    {
+      "bits": "3c9cd2b297d889bc",
+      "json": "[\n  1e-16\n]"
+    },
+    {
+      "bits": "419d6f3454000000",
+      "json": "[\n  123456789.0\n]"
+    },
+    {
+      "bits": "42d6bcc41e900000",
+      "json": "[\n  100000000000000.0\n]"
+    },
+    {
+      "bits": "430c6bf526340000",
+      "json": "[\n  1e+15\n]"
+    },
+    {
+      "bits": "4341c37937e08000",
+      "json": "[\n  1e+16\n]"
+    },
+    {
+      "bits": "4415af1d78b58c40",
+      "json": "[\n  1e+20\n]"
+    },
+    {
+      "bits": "4450bb084255acee",
+      "json": "[\n  1.2344999999999999e+21\n]"
+    },
+    {
+      "bits": "54b249ad2594c37d",
+      "json": "[\n  1e+100\n]"
+    },
+    {
+      "bits": "0000000000000001",
+      "json": "[\n  5e-324\n]"
+    },
+    {
+      "bits": "8000000000000000",
+      "json": "[\n  -0.0\n]"
+    },
+    {
+      "bits": "0000000000000000",
+      "json": "[\n  0.0\n]"
+    },
+    {
+      "bits": "befa36e2eb1c432d",
+      "json": "[\n  -0.000025\n]"
+    },
+    {
+      "bits": "400921fb54442d11",
+      "json": "[\n  3.14159265358979\n]"
+    },
+    {
+      "bits": "7fefffffffffffff",
+      "json": "[\n  1.7976931348623157e+308\n]"
     }
   ],
   "output_formats": [
