@@ -149,7 +149,9 @@ fn yeptris_bytes_match_the_pinned_goldens() {
         Ok(t) => t,
         Err(_) => {
             dump(&current);
-            panic!("render_oracle/yeptris.json is missing; current values printed as YG| lines");
+            panic!(
+                "render_oracle/yeptris.json is missing; current values printed with the YG prefix"
+            );
         }
     };
     let want: Json = serde_json::from_str(&text).unwrap();
