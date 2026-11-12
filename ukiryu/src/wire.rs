@@ -54,7 +54,18 @@ pub fn process(input: &[u8]) -> Value {
                 env,
                 cli,
             };
-            let values = resolver.resolved();
+            // Config#to_h exposes the declared attributes; the underlying resolver
+            // remains usable for arbitrary keys through its own API.
+            let values: Values = config::Attribute::ALL
+                .into_iter()
+                .map(|attribute| {
+                    let key = attribute.name();
+                    (
+                        key.to_owned(),
+                        resolver.resolve(key).cloned().unwrap_or(Value::Null),
+                    )
+                })
+                .collect();
             let sources: std::collections::BTreeMap<_, _> = values
                 .keys()
                 .map(|key| (key.clone(), resolver.source_for(key)))
