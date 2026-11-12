@@ -10,9 +10,13 @@ description = "Shared Ukiryu command execution core"
 # Initial development scaffold; publication is owner-gated.
 publish = false
 
+[lib]
+crate-type = ["rlib", "cdylib"]
+
 [features]
 default = []
 c = []
+wasm = ["dep:wasm-bindgen"]
 
 [dependencies]
 serde.workspace = true
@@ -20,3 +24,5 @@ serde_json.workspace = true
 num-bigint.workspace = true
 yeptris.workspace = true
 regex = "1"
+# Match the already qualified Yeptris Rust/browser toolchain.
+wasm-bindgen = { version = "=0.2.105", optional = true }
