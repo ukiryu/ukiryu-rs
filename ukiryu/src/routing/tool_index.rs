@@ -226,14 +226,12 @@ impl ToolIndex {
                             push_unique(&mut self.aliases, &mut self.alias_slot, alias, &tool.name);
                         }
                     }
-                    Some(Value::Object(map)) => {
-                        if !map.is_empty() {
-                            // Hash#each yields [key, value] pairs.
-                            return Err(SourceFault::new(
-                                "NoMethodError",
-                                "undefined method 'to_sym' for an instance of Array",
-                            ));
-                        }
+                    // Hash#each yields [key, value] pairs.
+                    Some(Value::Object(map)) if !map.is_empty() => {
+                        return Err(SourceFault::new(
+                            "NoMethodError",
+                            "undefined method 'to_sym' for an instance of Array",
+                        ));
                     }
                     _ => {}
                 }

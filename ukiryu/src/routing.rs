@@ -4,21 +4,21 @@
 //! Port of the pure selection logic in the pinned Ruby source
 //! (`ukiryu/ukiryu` at `ab6df353`):
 //!
-//! - [`ToolIndex`]: `Ukiryu::ToolIndex` (lib/ukiryu/tool_index.rb), the
+//! - [`ToolIndex`], the port of `Ukiryu::ToolIndex` (lib/ukiryu/tool_index.rb):
 //!   interface and alias index over a register's `tools/<tool>/<impl>/*.yaml`
 //!   files, its "primary file" choice (`load_yaml_for_tool` and
 //!   `select_latest_version_by_content`) and its alias platform/shell
 //!   compatibility check.
-//! - [`interface_lookup_keys`]: the versioned-interface fallback keys of
+//! - [`interface_lookup_keys`], the versioned-interface fallback keys of
 //!   `Register.load_tool_metadata` (lib/ukiryu/register.rb).
 //! - [`detect_implementation_and_version`] and
-//!   [`find_implementation_for_platform`]: the implementation and version-file
+//!   [`find_implementation_for_platform`], the implementation and version-file
 //!   selection of `Ukiryu::Tool::Loader` (lib/ukiryu/tool/loader.rb), with
 //!   `build_implementation_spec`, `build_default_spec` and
 //!   `fallback_to_default`.
-//! - [`compatible_profile`]: `Models::ImplementationVersion#compatible_profile`
+//! - [`compatible_profile`], the port of `Models::ImplementationVersion#compatible_profile`
 //!   (exact platform and shell membership plus hash-level `inherits`).
-//! - [`build_tool_name`]: the implementation-suffixed tool name.
+//! - [`build_tool_name`], the implementation-suffixed tool name.
 //!
 //! Nothing here touches the filesystem, starts a process or detects the
 //! platform or shell. The register loader supplies the scanned files and
