@@ -19,6 +19,7 @@ require 'ukiryu'
 require_relative 'lib/codec'
 require_relative 'lib/ops'
 require_relative 'lib/runner'
+require_relative 'lib/shell_extras'
 
 module UkiryuOracle
   module Capture
@@ -153,12 +154,17 @@ module UkiryuOracle
       'sha256' => 'a269b860f7f6ce28e7c70ac02c1e80c3e843be466ebf40bfc090b7330ca43285'
     }.freeze
 
-    def copy_inputs(out)
+    # Read before generate clears inputs/, so regenerating in place keeps it.
+    def pinned_remote_schema_bytes
+      bytes = File.binread(File.expand_path("../conformance/inputs/#{PINNED_REMOTE_SCHEMA['path']}", __dir__))
+      raise 'pinned external schema bytes do not match their source digest' unless
+        Digest::SHA256.hexdigest(bytes) == PINNED_REMOTE_SCHEMA['sha256']
+
+      bytes
+    end
+
+    def copy_inputs(out, schema_bytes)
       rows = []
-      schema_bytes = File.binread(File.expand_path("../conformance/inputs/#{PINNED_REMOTE_SCHEMA['path']}", __dir__))
-      unless Digest::SHA256.hexdigest(schema_bytes) == PINNED_REMOTE_SCHEMA['sha256']
-        raise 'pinned external schema bytes do not match their source digest'
-      end
       schema_target = File.join(out, 'inputs', PINNED_REMOTE_SCHEMA['path'])
       FileUtils.mkdir_p(File.dirname(schema_target))
       File.binwrite(schema_target, schema_bytes)
@@ -233,14 +239,46 @@ module UkiryuOracle
     PATHS = [['unix-abs', '/usr/bin/x'], ['windows-abs', 'C:\\dir\\file.txt'], ['relative', 'relative/path'],
              ['space', 'with space/a b'], ['empty', '']].freeze
 
+    # Stable, injective ID label for an unlabelled extra input: ASCII letters
+    # and digits stay, every other character becomes _<hex codepoint>_.
+    # Long labels fall back to a digest of the exact input.
+    def extra_label(value)
+      return 'x-empty' if value.is_a?(String) && value.empty?
+
+      enc = value.is_a?(String) ? value.each_char.map { |c| c.match?(/\A[A-Za-z0-9]\z/) ? c : "_#{c.ord.to_s(16)}_" }.join : nil
+      return "x-#{enc}" if enc && enc.size <= 48
+
+      "xh-#{Digest::SHA256.hexdigest(JSON.generate(value))[0, 16]}"
+    end
+
     def escape_rows
       rows = []
+      extra_strings = ShellExtras::STRINGS - STRINGS.map(&:last)
+      extra_names = ShellExtras::ENV_NAMES - ENV_NAMES
+      extra_joins = ShellExtras::JOINS - JOINS.map { |_, e, a| [e, a] }
       Ops::SHELLS.each do |shell, klass|
         STRINGS.each do |label, s|
-          %w[escape quote].each do |m|
+          %w[escape quote needs_quoting].each do |m|
             rows << row(id: "escape.#{shell}.#{m}.#{label}", kind: 'escape', op: "shell.#{m}",
-                        api: "Ukiryu::Shell::#{klass}##{m}", input: { 'shell' => shell, 'string' => s })
+                        api: "Ukiryu::Shell::#{klass}##{m.sub('needs_quoting', 'needs_quoting?')}",
+                        input: { 'shell' => shell, 'string' => s })
           end
+        end
+        extra_strings.each do |s|
+          %w[escape quote needs_quoting].each do |m|
+            rows << row(id: "escape.#{shell}.#{m}.#{extra_label(s)}", kind: 'escape', op: "shell.#{m}",
+                        api: "Ukiryu::Shell::#{klass}##{m.sub('needs_quoting', 'needs_quoting?')}",
+                        input: { 'shell' => shell, 'string' => s })
+          end
+        end
+        extra_joins.each do |exe, args|
+          rows << row(id: "escape.#{shell}.join.#{extra_label([exe, args])}", kind: 'escape', op: 'shell.join',
+                      api: "Ukiryu::Shell::#{klass}#join",
+                      input: { 'shell' => shell, 'executable' => exe, 'args' => args })
+        end
+        extra_names.each do |n|
+          rows << row(id: "escape.#{shell}.env_var.#{extra_label(n)}", kind: 'escape', op: 'shell.env_var',
+                      api: "Ukiryu::Shell::#{klass}#env_var", input: { 'shell' => shell, 'name' => n })
         end
         JOINS.each do |label, exe, args|
           rows << row(id: "escape.#{shell}.join.#{label}", kind: 'escape', op: 'shell.join',
@@ -640,9 +678,10 @@ module UkiryuOracle
 
     def generate(out)
       ENV['UKIRYU_CONFORMANCE_DIR'] = out
+      schema_bytes = pinned_remote_schema_bytes
       FileUtils.rm_rf(File.join(out, 'inputs'))
       FileUtils.rm_rf(File.join(out, 'cases'))
-      inputs = copy_inputs(out)
+      inputs = copy_inputs(out, schema_bytes)
       Ops::Sandbox.setup!
       rows = GENERATORS.flat_map { |g| send(g).tap { |rs| warn "generated #{rs.size} rows by #{g}" } }
       rows.each_with_index do |r, n|
