@@ -1,0 +1,77 @@
+name: Core WebAssembly
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: wasm-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  floor:
+    name: WASM feature Rust 1.86 floor
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.86.0
+      - run: cargo test -p ukiryu --locked --features wasm
+  runtime:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.95.0
+          targets: wasm32-unknown-unknown
+          components: rustfmt, clippy
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 3.1.50
+      - name: Prepare pinned scalar C runtime
+        run: embuilder build libc
+      - name: Check native feature integration
+        run: |
+          cargo fmt --all -- --check
+          cargo test -p ukiryu --locked --features wasm
+          cargo clippy -p ukiryu --locked --features wasm -- -D warnings
+      - uses: actions/cache@v4
+        id: tools
+        with:
+          path: ${{ runner.temp }}/wasm-tools
+          key: wasm-pack-0.13.1-rust1.95.0-${{ runner.os }}
+      - name: Prepare pinned wasm-pack
+        run: |
+          if ! test -x "$RUNNER_TEMP/wasm-tools/bin/wasm-pack"; then
+            cargo install wasm-pack --version 0.13.1 --locked --root "$RUNNER_TEMP/wasm-tools"
+          fi
+          echo "$RUNNER_TEMP/wasm-tools/bin" >> "$GITHUB_PATH"
+      - name: Build actual core for Node and browser
+        run: |
+          wasm-pack build ukiryu --target nodejs --out-dir ../wasm-node --no-opt -- --locked --features wasm
+          wasm-pack build ukiryu --target web --out-dir ../wasm-web --no-opt -- --locked --features wasm
+          cp LICENSE wasm-node/LICENSE
+          cp LICENSE wasm-web/LICENSE
+          python3 scripts/stamp-wasm-build.py
+      - name: Execute Node core and audit imports
+        run: node tests/wasm-runtime/node.mjs
+      - name: Prepare real browser consumer
+        run: |
+          npm ci --prefix tests/wasm-runtime --ignore-scripts --no-audit --no-fund
+          tests/wasm-runtime/node_modules/.bin/playwright install chromium
+      - name: Execute actual Chromium core
+        run: node tests/wasm-runtime/browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: core-wasm-node-web
+          path: |
+            wasm-node
+            wasm-web

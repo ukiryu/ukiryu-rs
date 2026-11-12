@@ -98,6 +98,7 @@ module UkiryuOracle
 
     def op_shell_escape(i) = shell_instance(i['shell']).escape(i['string'])
     def op_shell_quote(i) = shell_instance(i['shell']).quote(i['string'])
+    def op_shell_needs_quoting(i) = shell_instance(i['shell']).needs_quoting?(i['string'])
     def op_shell_join(i) = shell_instance(i['shell']).join(i['executable'], *i['args'])
     def op_shell_env_var(i) = shell_instance(i['shell']).env_var(i['name'])
     def op_shell_format_path(i) = shell_instance(i['shell']).format_path(i['path'])
