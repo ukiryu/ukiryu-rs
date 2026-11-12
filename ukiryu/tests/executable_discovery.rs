@@ -1,12 +1,14 @@
 //! Executable discovery checked against data captured from the pinned Ruby
-//! oracle (see `executable_oracle.rs` for provenance). Cases marked
-//! "no oracle" cover behavior the Ruby code does not have.
+//! oracle (see `executable_oracle.rs` for provenance). The Windows-only test
+//! checks the host predicate, which is source-derived (CRuby win32.c) and not
+//! oracle-captured.
 
 #[path = "executable_oracle.rs"]
 mod oracle;
 
 #[cfg(unix)]
 use std::cell::RefCell;
+#[cfg(unix)]
 use std::collections::BTreeMap;
 #[cfg(unix)]
 use std::rc::Rc;
@@ -15,9 +17,8 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use serde_json::Value;
 use ukiryu::executable::{
     alias_target_command, candidate_paths, find, find_in_path, first_output_line, join_path,
-    path_extensions, probe_search_paths, resolve_executable_name, search_path_candidates,
-    split_search_path, DiscoveryContext, ExecutableInfo, ExecutableSource, NoAliases,
-    NoSystemCommands, Platform, SearchPathError,
+    path_extensions, resolve_executable_name, split_search_path, DiscoveryContext, ExecutableInfo,
+    ExecutableSource, NoAliases, NoSystemCommands, Platform,
 };
 #[cfg(unix)]
 use ukiryu::executable::{
@@ -467,106 +468,6 @@ fn explicit_no_op_strategies_leave_only_the_path_scan() {
             &mut NoSystemCommands
         ),
         None
-    );
-}
-
-// ---- search_paths probing: no oracle (Ruby ab6 never reads search_paths) ----
-
-fn search_map(entries: &[(&str, &[&str])]) -> BTreeMap<String, Vec<String>> {
-    entries
-        .iter()
-        .map(|(k, v)| (k.to_string(), v.iter().map(|s| s.to_string()).collect()))
-        .collect()
-}
-
-#[test]
-fn search_paths_use_exact_platform_key_only() {
-    let map = search_map(&[
-        (
-            "macos",
-            &["/Applications/Inkscape.app/Contents/MacOS/inkscape"],
-        ),
-        ("darwin", &["/never"]),
-        ("unix", &["/never"]),
-    ]);
-    assert_eq!(
-        search_path_candidates(Platform::Macos, &map).unwrap(),
-        vec!["/Applications/Inkscape.app/Contents/MacOS/inkscape".to_owned()]
-    );
-    assert!(search_path_candidates(Platform::Linux, &map)
-        .unwrap()
-        .is_empty());
-    assert!(search_path_candidates(Platform::Windows, &map)
-        .unwrap()
-        .is_empty());
-}
-
-#[test]
-fn search_path_globs_are_rejected_not_guessed() {
-    let map = search_map(&[(
-        "windows",
-        &[
-            "C:/Windows/System32/ping.exe",
-            "C:/Program Files/ImageMagick*/magick.exe",
-        ],
-    )]);
-    assert_eq!(
-        probe_search_paths(Platform::Windows, &map),
-        Err(SearchPathError::GlobPattern {
-            platform: Platform::Windows,
-            entry: "C:/Program Files/ImageMagick*/magick.exe".to_owned()
-        })
-    );
-}
-
-#[cfg(unix)]
-#[test]
-fn macos_app_bundle_layout_is_probed_in_listed_order() {
-    use std::os::unix::fs::PermissionsExt;
-    let root = TempRoot::new("bundle");
-    let bundle = root.0.join("Applications/Inkscape.app/Contents/MacOS");
-    std::fs::create_dir_all(&bundle).unwrap();
-    let exe = bundle.join("inkscape");
-    std::fs::write(&exe, "").unwrap();
-    std::fs::set_permissions(&exe, std::fs::Permissions::from_mode(0o755)).unwrap();
-    let app = root.sub("<ROOT>/Applications/Inkscape.app");
-    let inside = root.sub("<ROOT>/Applications/Inkscape.app/Contents/MacOS/inkscape");
-    let missing = root.sub("<ROOT>/opt/homebrew/bin/inkscape");
-    let map = search_map(&[("macos", &[missing.as_str(), app.as_str(), inside.as_str()])]);
-    // The bundle directory itself is not an executable; only the literal path is.
-    assert_eq!(
-        probe_search_paths(Platform::Macos, &map).unwrap(),
-        Some(inside.clone())
-    );
-    let map = search_map(&[("macos", &[app.as_str()])]);
-    assert_eq!(probe_search_paths(Platform::Macos, &map).unwrap(), None);
-}
-
-#[cfg(windows)]
-#[test]
-fn windows_program_files_layout_is_probed_in_listed_order() {
-    let root = TempRoot::new("progfiles");
-    let bin = root
-        .0
-        .join("Program Files")
-        .join("gs")
-        .join("gs10.02.1")
-        .join("bin");
-    std::fs::create_dir_all(&bin).unwrap();
-    std::fs::write(bin.join("gswin64c.exe"), "").unwrap();
-    std::fs::write(bin.join("gswin64c.txt"), "").unwrap();
-    let exe = bin.join("gswin64c.exe").to_str().unwrap().to_owned();
-    let txt = bin.join("gswin64c.txt").to_str().unwrap().to_owned();
-    let missing = root
-        .0
-        .join("Program Files (x86)")
-        .join("gs")
-        .join("gswin32c.exe");
-    let missing = missing.to_str().unwrap().to_owned();
-    let map = search_map(&[("windows", &[missing.as_str(), txt.as_str(), exe.as_str()])]);
-    assert_eq!(
-        probe_search_paths(Platform::Windows, &map).unwrap(),
-        Some(exe)
     );
 }
 

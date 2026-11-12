@@ -13,14 +13,12 @@
 //! supplied by the caller through [`AliasProbe`] and [`SystemCommandRunner`].
 //! This module does not detect the shell and does not spawn processes.
 //!
-//! [`probe_search_paths`] covers profile `search_paths` (Windows Program Files
-//! layouts, macOS app bundles). The pinned Ruby code never reads that profile
-//! field, so it is a separate explicit call and is not part of
-//! [`find_with_info`]'s strategy order.
+//! Profile `search_paths` (Windows Program Files, macOS app bundles) are not
+//! read here: the pinned Ruby discovery never consults them. The only extra
+//! directories are the explicit `additional_paths`, appended after `PATH`.
 
 mod locator;
 mod path;
-mod search_paths;
 
 pub use locator::{
     alias_target_command, find, find_with_info, first_output_line, resolve_executable_name,
@@ -32,7 +30,6 @@ pub use path::{
     candidate_paths, find_in_path, is_executable, join_path, path_extensions, split_search_path,
     DiscoveryContext,
 };
-pub use search_paths::{probe_search_paths, search_path_candidates, SearchPathError};
 
 /// Platform families known to the Ruby implementation (`:linux`, `:macos`,
 /// `:windows`). Names match exactly; there is no fuzzy mapping.
