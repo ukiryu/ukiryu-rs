@@ -1,0 +1,109 @@
+{
+  "description": "Request reference cases that do not match the pinned Ruby capture exactly. 'detail': Ruby class and public message prefix match; the parser or OS diagnostic text differs. 'pending': known divergence owned outside the request module.",
+  "cases": {
+    "alias-value": {
+      "status": "pending",
+      "reason": "Psych.safe_load(permitted_classes: [Symbol]) load policy: Date/Time/arbitrary Ruby classes and aliases are rejected as 'Error loading request file: ...'. Needs typed Ruby value resolution and alias detection from the shared loader/model owner (K17-MODELS); Yeptris expands aliases and returns plain strings for timestamps."
+    },
+    "arguments-key-collision": {
+      "status": "pending",
+      "reason": "Ruby YAML 1.1 / Psych scalar and tag resolution (symbols, yes/no/on/off booleans, sexagesimal and leading-zero integers, 1e3 as string, !!binary, !!str, unknown tags). Owner: K17-MODELS typed Ruby value (RubyValue); integrate there, not in request.rs."
+    },
+    "arguments-key-types": {
+      "status": "pending",
+      "reason": "Ruby YAML 1.1 / Psych scalar and tag resolution (symbols, yes/no/on/off booleans, sexagesimal and leading-zero integers, 1e3 as string, !!binary, !!str, unknown tags). Owner: K17-MODELS typed Ruby value (RubyValue); integrate there, not in request.rs."
+    },
+    "arguments-scalars": {
+      "status": "pending",
+      "reason": "Ruby YAML 1.1 / Psych scalar and tag resolution (symbols, yes/no/on/off booleans, sexagesimal and leading-zero integers, 1e3 as string, !!binary, !!str, unknown tags). Owner: K17-MODELS typed Ruby value (RubyValue); integrate there, not in request.rs."
+    },
+    "binary-tag": {
+      "status": "pending",
+      "reason": "Ruby YAML 1.1 / Psych scalar and tag resolution (symbols, yes/no/on/off booleans, sexagesimal and leading-zero integers, 1e3 as string, !!binary, !!str, unknown tags). Owner: K17-MODELS typed Ruby value (RubyValue); integrate there, not in request.rs."
+    },
+    "bom-prefixed": {
+      "status": "pending",
+      "reason": "Captured Psych 5.3.1 on x64-mingw-ucrt returns only {'tool' => 'a'} for a UTF-8 BOM-prefixed document (so 'command' is reported missing); Yeptris reads all three keys. Needs a Linux/Ruby 4.0.1 capture before deciding."
+    },
+    "command-yes": {
+      "status": "pending",
+      "reason": "Ruby YAML 1.1 / Psych scalar and tag resolution (symbols, yes/no/on/off booleans, sexagesimal and leading-zero integers, 1e3 as string, !!binary, !!str, unknown tags). Owner: K17-MODELS typed Ruby value (RubyValue); integrate there, not in request.rs."
+    },
+    "comment-only": {
+      "status": "pending",
+      "reason": "Yeptris 0.6.63 defect: an empty or comment-only stream fails with 'Unknown(0)' or a stale diagnostic from an earlier parse instead of yielding no document (Psych: nil -> 'Request must be a YAML object (hash)'). Owner: Yeptris pin (foundation root)."
+    },
+    "core-str-tag": {
+      "status": "pending",
+      "reason": "Ruby YAML 1.1 / Psych scalar and tag resolution (symbols, yes/no/on/off booleans, sexagesimal and leading-zero integers, 1e3 as string, !!binary, !!str, unknown tags). Owner: K17-MODELS typed Ruby value (RubyValue); integrate there, not in request.rs."
+    },
+    "custom-scalar-tag": {
+      "status": "pending",
+      "reason": "Ruby YAML 1.1 / Psych scalar and tag resolution (symbols, yes/no/on/off booleans, sexagesimal and leading-zero integers, 1e3 as string, !!binary, !!str, unknown tags). Owner: K17-MODELS typed Ruby value (RubyValue); integrate there, not in request.rs."
+    },
+    "date-value": {
+      "status": "pending",
+      "reason": "Psych.safe_load(permitted_classes: [Symbol]) load policy: Date/Time/arbitrary Ruby classes and aliases are rejected as 'Error loading request file: ...'. Needs typed Ruby value resolution and alias detection from the shared loader/model owner (K17-MODELS); Yeptris expands aliases and returns plain strings for timestamps."
+    },
+    "directory": {
+      "status": "detail",
+      "reason": "Ruby Errno text ('Is a directory @ rb_sysopen/io_fread - path', platform-dependent in Ruby itself) vs Rust io::Error text after 'Error loading request file: '."
+    },
+    "empty-file": {
+      "status": "pending",
+      "reason": "Yeptris 0.6.63 defect: an empty or comment-only stream fails with 'Unknown(0)' or a stale diagnostic from an earlier parse instead of yielding no document (Psych: nil -> 'Request must be a YAML object (hash)'). Owner: Yeptris pin (foundation root)."
+    },
+    "flow-scalar-continuation-unindented": {
+      "status": "pending",
+      "reason": "libyaml accepts a double-quoted scalar continued at column 0 inside a block mapping; Yeptris rejects it as inconsistent indentation. Parser acceptance divergence (Yeptris pin owner)."
+    },
+    "invalid-utf8": {
+      "status": "detail",
+      "reason": "Psych/libyaml vs Yeptris diagnostic text after 'Invalid YAML in request file: '."
+    },
+    "multiple-documents": {
+      "status": "pending",
+      "reason": "Psych.safe_load reads the first document of a multi-document stream; Yeptris from_slice rejects more than one document. Needs a shared first-document load decision (Yeptris pin / loader owner)."
+    },
+    "ruby-object-tag": {
+      "status": "pending",
+      "reason": "Psych.safe_load(permitted_classes: [Symbol]) load policy: Date/Time/arbitrary Ruby classes and aliases are rejected as 'Error loading request file: ...'. Needs typed Ruby value resolution and alias detection from the shared loader/model owner (K17-MODELS); Yeptris expands aliases and returns plain strings for timestamps."
+    },
+    "ruby-symbol-tag": {
+      "status": "pending",
+      "reason": "Ruby YAML 1.1 / Psych scalar and tag resolution (symbols, yes/no/on/off booleans, sexagesimal and leading-zero integers, 1e3 as string, !!binary, !!str, unknown tags). Owner: K17-MODELS typed Ruby value (RubyValue); integrate there, not in request.rs."
+    },
+    "syntax-bad-indent": {
+      "status": "detail",
+      "reason": "Psych/libyaml vs Yeptris diagnostic text after 'Invalid YAML in request file: '."
+    },
+    "syntax-tab-indent": {
+      "status": "detail",
+      "reason": "Psych/libyaml vs Yeptris diagnostic text after 'Invalid YAML in request file: '."
+    },
+    "syntax-unclosed-flow": {
+      "status": "detail",
+      "reason": "Psych/libyaml vs Yeptris diagnostic text after 'Invalid YAML in request file: '."
+    },
+    "syntax-unclosed-quote": {
+      "status": "detail",
+      "reason": "Psych/libyaml vs Yeptris diagnostic text after 'Invalid YAML in request file: '."
+    },
+    "timestamp-value": {
+      "status": "pending",
+      "reason": "Psych.safe_load(permitted_classes: [Symbol]) load policy: Date/Time/arbitrary Ruby classes and aliases are rejected as 'Error loading request file: ...'. Needs typed Ruby value resolution and alias detection from the shared loader/model owner (K17-MODELS); Yeptris expands aliases and returns plain strings for timestamps."
+    },
+    "tool-no": {
+      "status": "pending",
+      "reason": "Ruby YAML 1.1 / Psych scalar and tag resolution (symbols, yes/no/on/off booleans, sexagesimal and leading-zero integers, 1e3 as string, !!binary, !!str, unknown tags). Owner: K17-MODELS typed Ruby value (RubyValue); integrate there, not in request.rs."
+    },
+    "tool-off": {
+      "status": "pending",
+      "reason": "Ruby YAML 1.1 / Psych scalar and tag resolution (symbols, yes/no/on/off booleans, sexagesimal and leading-zero integers, 1e3 as string, !!binary, !!str, unknown tags). Owner: K17-MODELS typed Ruby value (RubyValue); integrate there, not in request.rs."
+    },
+    "tool-symbol-value": {
+      "status": "pending",
+      "reason": "Ruby YAML 1.1 / Psych scalar and tag resolution (symbols, yes/no/on/off booleans, sexagesimal and leading-zero integers, 1e3 as string, !!binary, !!str, unknown tags). Owner: K17-MODELS typed Ruby value (RubyValue); integrate there, not in request.rs."
+    }
+  }
+}
