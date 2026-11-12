@@ -1233,12 +1233,10 @@ fn jd_to_date(jd: &BigInt) -> CivilDate {
     let nth = floor_div(jd, &p);
     let rjd = i64::try_from(&(jd - &nth * &p)).expect("bounded by period");
     let zero = BigInt::from(0);
-    let vsg = if nth == zero {
-        Sg::Reform
-    } else if nth < zero {
-        Sg::Julian
-    } else {
-        Sg::Gregorian
+    let vsg = match nth.cmp(&zero) {
+        std::cmp::Ordering::Equal => Sg::Reform,
+        std::cmp::Ordering::Less => Sg::Julian,
+        std::cmp::Ordering::Greater => Sg::Gregorian,
     };
     let (ry, m, d) = jd_to_civil(rjd, vsg);
     let gregorian = !vsg.before(rjd);
