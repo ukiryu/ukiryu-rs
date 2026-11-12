@@ -20,7 +20,9 @@ const EXEC_ORACLE_JSON: &str = r###"{"args":["","plain","hello world","it's","'"
 // runs it through the real shell found on PATH and checks what the child got.
 //
 // A shell missing from PATH is reported on stderr as UNVERIFIED, never as a
-// pass. With UKIRYU_REQUIRE_SHELL_TESTS=1 a missing shell fails the test.
+// pass. With UKIRYU_REQUIRE_SHELL_TESTS=1 a missing shell fails the test on
+// Linux, where CI provisions bash, dash, zsh and sh. These shells do not apply
+// on Windows, so the checks are reported as not applicable there.
 
 use serde_json::Value;
 use std::path::Path;
@@ -56,11 +58,15 @@ fn formatter(shell: &str) -> &'static dyn ShellFormatting {
 }
 
 fn require_all() -> bool {
-    std::env::var("UKIRYU_REQUIRE_SHELL_TESTS").as_deref() == Ok("1")
+    cfg!(target_os = "linux") && std::env::var("UKIRYU_REQUIRE_SHELL_TESTS").as_deref() == Ok("1")
 }
 
-/// Returns false (after reporting) when the shell is not on PATH.
+/// Returns false (after reporting) when the shell is not applicable or not on PATH.
 fn available(shell: &str) -> bool {
+    if !cfg!(unix) {
+        eprintln!("UNVERIFIED: {shell} checks do not apply on this platform; not passed");
+        return false;
+    }
     let found = Command::new(shell)
         .args(["-c", "exit 0"])
         .status()
