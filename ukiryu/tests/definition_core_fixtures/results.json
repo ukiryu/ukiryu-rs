@@ -1,0 +1,393 @@
+{
+  "provenance": {
+    "oracle_sha": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+    "files": [
+      "lib/ukiryu/definition/lint_issue.rb",
+      "lib/ukiryu/definition/validation_result.rb"
+    ],
+    "capture": "capture/results.rb",
+    "ruby": "4.0.1",
+    "tz": "UTC"
+  },
+  "cases": [
+    {
+      "op": "lint_issue_factory",
+      "severity": "error",
+      "message": "Missing name",
+      "location": null,
+      "suggestion": null,
+      "rule_id": null,
+      "result": {
+        "ok": {
+          "to_h": {
+            "severity": "error",
+            "severity_string": "ERROR",
+            "message": "Missing name",
+            "location": null,
+            "suggestion": null,
+            "rule_id": null
+          },
+          "to_s": "[ERROR] Missing name",
+          "error": true,
+          "warning": false,
+          "info": false,
+          "style": false,
+          "has_suggestion": false,
+          "has_location": false,
+          "severity_string": "ERROR"
+        }
+      }
+    },
+    {
+      "op": "lint_issue_factory",
+      "severity": "warning",
+      "message": "Deprecated",
+      "location": "profiles[0]",
+      "suggestion": "Use x",
+      "rule_id": "W001",
+      "result": {
+        "ok": {
+          "to_h": {
+            "severity": "warning",
+            "severity_string": "WARNING",
+            "message": "Deprecated",
+            "location": "profiles[0]",
+            "suggestion": "Use x",
+            "rule_id": "W001"
+          },
+          "to_s": "[WARNING] Deprecated (at profiles[0])\n  Suggestion: Use x",
+          "error": false,
+          "warning": true,
+          "info": false,
+          "style": false,
+          "has_suggestion": true,
+          "has_location": true,
+          "severity_string": "WARNING"
+        }
+      }
+    },
+    {
+      "op": "lint_issue_factory",
+      "severity": "info",
+      "message": "Note",
+      "location": "",
+      "suggestion": "",
+      "rule_id": null,
+      "result": {
+        "ok": {
+          "to_h": {
+            "severity": "info",
+            "severity_string": "INFO",
+            "message": "Note",
+            "location": "",
+            "suggestion": "",
+            "rule_id": null
+          },
+          "to_s": "[INFO] Note",
+          "error": false,
+          "warning": false,
+          "info": true,
+          "style": false,
+          "has_suggestion": false,
+          "has_location": false,
+          "severity_string": "INFO"
+        }
+      }
+    },
+    {
+      "op": "lint_issue_factory",
+      "severity": "style",
+      "message": "Indent",
+      "location": "root",
+      "suggestion": null,
+      "rule_id": "S1",
+      "result": {
+        "ok": {
+          "to_h": {
+            "severity": "style",
+            "severity_string": "STYLE",
+            "message": "Indent",
+            "location": "root",
+            "suggestion": null,
+            "rule_id": "S1"
+          },
+          "to_s": "[STYLE] Indent (at root)",
+          "error": false,
+          "warning": false,
+          "info": false,
+          "style": true,
+          "has_suggestion": false,
+          "has_location": true,
+          "severity_string": "STYLE"
+        }
+      }
+    },
+    {
+      "op": "lint_issue_factory",
+      "severity": "error",
+      "message": "",
+      "location": null,
+      "suggestion": "fix it",
+      "rule_id": "E9",
+      "result": {
+        "ok": {
+          "to_h": {
+            "severity": "error",
+            "severity_string": "ERROR",
+            "message": "",
+            "location": null,
+            "suggestion": "fix it",
+            "rule_id": "E9"
+          },
+          "to_s": "[ERROR] \n  Suggestion: fix it",
+          "error": true,
+          "warning": false,
+          "info": false,
+          "style": false,
+          "has_suggestion": true,
+          "has_location": false,
+          "severity_string": "ERROR"
+        }
+      }
+    },
+    {
+      "op": "lint_issue_factory",
+      "severity": "info",
+      "message": "multi\nline",
+      "location": "a\nb",
+      "suggestion": "c\nd",
+      "rule_id": null,
+      "result": {
+        "ok": {
+          "to_h": {
+            "severity": "info",
+            "severity_string": "INFO",
+            "message": "multi\nline",
+            "location": "a\nb",
+            "suggestion": "c\nd",
+            "rule_id": null
+          },
+          "to_s": "[INFO] multi\nline (at a\nb)\n  Suggestion: c\nd",
+          "error": false,
+          "warning": false,
+          "info": true,
+          "style": false,
+          "has_suggestion": true,
+          "has_location": true,
+          "severity_string": "INFO"
+        }
+      }
+    },
+    {
+      "op": "lint_issue_custom_severity",
+      "severity": "fatal",
+      "result": {
+        "ok": {
+          "to_h": {
+            "severity": "fatal",
+            "severity_string": "FATAL",
+            "message": "m",
+            "location": "l",
+            "suggestion": null,
+            "rule_id": null
+          },
+          "to_s": "[FATAL] m (at l)",
+          "error": false,
+          "warning": false,
+          "info": false,
+          "style": false,
+          "has_suggestion": false,
+          "has_location": true,
+          "severity_string": "FATAL"
+        }
+      }
+    },
+    {
+      "op": "lint_issue_constants",
+      "result": {
+        "ok": [
+          "error",
+          "warning",
+          "info",
+          "style"
+        ]
+      }
+    },
+    {
+      "op": "vr_success",
+      "result": {
+        "ok": {
+          "valid": true,
+          "invalid": false,
+          "has_errors": false,
+          "has_warnings": false,
+          "issue_count": 0,
+          "error_count": 0,
+          "warning_count": 0,
+          "summary": "Valid",
+          "to_s": "Validation: Valid",
+          "to_json": "{\"valid\":true,\"errors\":[],\"warnings\":[],\"schema_path\":null,\"error_count\":0,\"warning_count\":0}",
+          "schema_path": null
+        }
+      }
+    },
+    {
+      "op": "vr_failure",
+      "errors": [
+        "a",
+        "b \"q\""
+      ],
+      "warnings": [],
+      "result": {
+        "ok": {
+          "valid": false,
+          "invalid": true,
+          "has_errors": true,
+          "has_warnings": false,
+          "issue_count": 2,
+          "error_count": 2,
+          "warning_count": 0,
+          "summary": "Invalid (2 error(s))",
+          "to_s": "Validation: Invalid (2 error(s))\n\nErrors:\n  1. a\n  2. b \"q\"",
+          "to_json": "{\"valid\":false,\"errors\":[\"a\",\"b \\\"q\\\"\"],\"warnings\":[],\"schema_path\":null,\"error_count\":2,\"warning_count\":0}",
+          "schema_path": null
+        }
+      }
+    },
+    {
+      "op": "vr_failure",
+      "errors": [
+        "e1"
+      ],
+      "warnings": [
+        "w1",
+        "w2"
+      ],
+      "result": {
+        "ok": {
+          "valid": false,
+          "invalid": true,
+          "has_errors": true,
+          "has_warnings": true,
+          "issue_count": 3,
+          "error_count": 1,
+          "warning_count": 2,
+          "summary": "Invalid (1 error(s), 2 warning(s))",
+          "to_s": "Validation: Invalid (1 error(s), 2 warning(s))\n\nErrors:\n  1. e1\n\nWarnings:\n  1. w1\n  2. w2",
+          "to_json": "{\"valid\":false,\"errors\":[\"e1\"],\"warnings\":[\"w1\",\"w2\"],\"schema_path\":null,\"error_count\":1,\"warning_count\":2}",
+          "schema_path": null
+        }
+      }
+    },
+    {
+      "op": "vr_failure",
+      "errors": [],
+      "warnings": [],
+      "result": {
+        "ok": {
+          "valid": false,
+          "invalid": true,
+          "has_errors": false,
+          "has_warnings": false,
+          "issue_count": 0,
+          "error_count": 0,
+          "warning_count": 0,
+          "summary": "Invalid (0 error(s))",
+          "to_s": "Validation: Invalid (0 error(s))",
+          "to_json": "{\"valid\":false,\"errors\":[],\"warnings\":[],\"schema_path\":null,\"error_count\":0,\"warning_count\":0}",
+          "schema_path": null
+        }
+      }
+    },
+    {
+      "op": "vr_with_warnings",
+      "warnings": [
+        "w <&> é"
+      ],
+      "result": {
+        "ok": {
+          "valid": true,
+          "invalid": false,
+          "has_errors": false,
+          "has_warnings": true,
+          "issue_count": 1,
+          "error_count": 0,
+          "warning_count": 1,
+          "summary": "Valid with 1 warning(s)",
+          "to_s": "Validation: Valid with 1 warning(s)\n\nWarnings:\n  1. w <&> é",
+          "to_json": "{\"valid\":true,\"errors\":[],\"warnings\":[\"w <&> é\"],\"schema_path\":null,\"error_count\":0,\"warning_count\":1}",
+          "schema_path": null
+        }
+      }
+    },
+    {
+      "op": "vr_with_warnings",
+      "warnings": [],
+      "result": {
+        "ok": {
+          "valid": true,
+          "invalid": false,
+          "has_errors": false,
+          "has_warnings": false,
+          "issue_count": 0,
+          "error_count": 0,
+          "warning_count": 0,
+          "summary": "Valid",
+          "to_s": "Validation: Valid",
+          "to_json": "{\"valid\":true,\"errors\":[],\"warnings\":[],\"schema_path\":null,\"error_count\":0,\"warning_count\":0}",
+          "schema_path": null
+        }
+      }
+    },
+    {
+      "op": "vr_new",
+      "valid": true,
+      "errors": [
+        "x"
+      ],
+      "warnings": [
+        "y"
+      ],
+      "schema_path": "/s/tool.schema.json",
+      "result": {
+        "ok": {
+          "valid": true,
+          "invalid": false,
+          "has_errors": true,
+          "has_warnings": true,
+          "issue_count": 2,
+          "error_count": 1,
+          "warning_count": 1,
+          "summary": "Valid with 1 warning(s)",
+          "to_s": "Validation: Valid with 1 warning(s)\n\nErrors:\n  1. x\n\nWarnings:\n  1. y",
+          "to_json": "{\"valid\":true,\"errors\":[\"x\"],\"warnings\":[\"y\"],\"schema_path\":\"/s/tool.schema.json\",\"error_count\":1,\"warning_count\":1}",
+          "schema_path": "/s/tool.schema.json"
+        }
+      }
+    },
+    {
+      "op": "vr_new",
+      "valid": false,
+      "errors": [],
+      "warnings": [
+        "line\nbreak\t\u0001"
+      ],
+      "schema_path": null,
+      "result": {
+        "ok": {
+          "valid": false,
+          "invalid": true,
+          "has_errors": false,
+          "has_warnings": true,
+          "issue_count": 1,
+          "error_count": 0,
+          "warning_count": 1,
+          "summary": "Invalid (0 error(s), 1 warning(s))",
+          "to_s": "Validation: Invalid (0 error(s), 1 warning(s))\n\nWarnings:\n  1. line\nbreak\t\u0001",
+          "to_json": "{\"valid\":false,\"errors\":[],\"warnings\":[\"line\\nbreak\\t\\u0001\"],\"schema_path\":null,\"error_count\":0,\"warning_count\":1}",
+          "schema_path": null
+        }
+      }
+    }
+  ]
+}
