@@ -317,8 +317,12 @@ fn type_file_real_filesystem() {
             &decode(&input["options"]),
             &OracleHost,
         );
+        // Messages embed the path; substitute it as it appears inside JSON
+        // text (Windows paths contain escaped backslashes).
+        let root_json = serde_json::to_string(&root).unwrap();
+        let root_json = &root_json[1..root_json.len() - 1];
         let actual: Json =
-            serde_json::from_str(&outcome(&r).to_string().replace(&root, "${TMP}")).unwrap();
+            serde_json::from_str(&outcome(&r).to_string().replace(root_json, "${TMP}")).unwrap();
         tally.record(id, &row["expect"], &actual, is_unsupported(&r));
     }
     let _ = std::fs::remove_dir_all(&dir);
