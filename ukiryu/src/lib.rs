@@ -3,6 +3,7 @@
 pub mod config;
 pub mod shell;
 pub mod version_detection;
+pub mod version_ranges;
 pub mod wire;
 pub use yeptris::{from_slice as from_yaml_slice, from_str as from_yaml, DeserError as YamlError};
 
