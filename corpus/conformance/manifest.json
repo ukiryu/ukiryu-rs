@@ -38,7 +38,7 @@
     "ids_sha256": "c355e0b7cd34d59c1427be0b51e2809212316d234d5943326949406ce8793173",
     "files": {
       "cases/build.jsonl": "3e1d05bcffa4cc8411a60c9d4b461b9e915ec7374d0793f5f0a246aaa9373112",
-      "cases/cli-output.jsonl": "5a35c9cb024fb0656b48111ae38d8a180ed7bf48acf4b2a166c80ef7d1074c6d",
+      "cases/cli-output.jsonl": "ae8e27cd686497192ad06de48648ebf41b7e0e62b5f0db9e93e35dec3632bb14",
       "cases/escape.jsonl": "ae7a4e0612ba4d52353501d8a110430d040aec3a090545e1200f700fa2a7857b",
       "cases/lint.jsonl": "c60cd99cfcc5f78ff3c0971d1e9e6483246a028afb800c867d2ab486a80bdd4b",
       "cases/resolve.jsonl": "5c91cc56d51e16a7ac350d60e77f1c686411d631810b1db6e4c6db80066f8a92",
@@ -53,6 +53,11 @@
     "windows": 2155
   },
   "inputs": [
+    {
+      "path": "external-schema/tool.schema.yaml",
+      "source_path": "https://github.com/ukiryu/schemas/blob/744630fc341681fae75cf2629a533717f1ff3ede/v1/tool.schema.yaml",
+      "sha256": "a269b860f7f6ce28e7c70ac02c1e80c3e843be466ebf40bfc090b7330ca43285"
+    },
     {
       "path": "fixture-schema/tool.schema.yaml",
       "source_path": "spec/fixtures/tool.schema.yaml",

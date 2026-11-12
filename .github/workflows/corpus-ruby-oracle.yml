@@ -40,6 +40,11 @@ jobs:
           ruby-version: '4.0.1'
           bundler-cache: true
           working-directory: corpus/oracle-ruby
+      - name: Record actual oracle runtime inputs
+        shell: bash
+        run: |
+          bundle exec ruby -r ./capture -e 'puts JSON.pretty_generate(UkiryuOracle::Capture.oracle_info)' > "$RUNNER_TEMP/oracle-runtime.json"
+          cat "$RUNNER_TEMP/oracle-runtime.json"
       - name: Replay corpus against the pinned Ruby oracle
         shell: bash
         run: |
@@ -50,7 +55,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: corpus-report-${{ matrix.os }}
-          path: ${{ runner.temp }}/corpus-report.json
+          path: |
+            ${{ runner.temp }}/corpus-report.json
+            ${{ runner.temp }}/oracle-runtime.json
           if-no-files-found: error
 
   controls:

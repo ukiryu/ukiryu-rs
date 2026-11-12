@@ -39,6 +39,11 @@ Adopted from the parsanol corpus:
   checkout's other tracked YAML: workflows, docs and RuboCop config, used
   only for parse rows). They are never edited by hand. The register and
   schemas repositories are not copied or modified.
+- `inputs/external-schema/tool.schema.yaml`: the CLI validation schema from
+  `ukiryu/schemas` at commit `744630fc341681fae75cf2629a533717f1ff3ede`.
+  Its URL and digest are pinned in the manifest and capture helper. The
+  `validate-file` CLI row passes it explicitly, preserving its original
+  rejection without depending on a live remote download.
 - `inputs/synthetic-register/`: an authored register (written by
   `capture.rb`, marked `authored` in the manifest) with one tool,
   `absenttool`, whose executable exists on no host. CLI rows that report
@@ -167,8 +172,11 @@ behaviour and has no row here.
   `between` ranges on the `calver` scheme raise `NoMethodError`
   ("undefined method '>=' for an instance of Array"), including register
   routing for `ping`'s gnu implementation. Only `equals` works.
-- `DefinitionValidator` with no schema path downloads a remote schema. That
-  path depends on the network and is not in the corpus.
+- `DefinitionValidator` with no schema path downloads a remote schema and
+  silently falls back to structural-only checks when download fails. The
+  original CLI `validate-file` capture depended on that remote input. Its
+  schema is now a pinned local input; the unchanged expected rejection is
+  reproduced with `--schema`, keeping network availability out of replay.
 - `register/tools/ping/index.yaml` routes some versions to `latest.yaml`
   files that do not exist. The `build` op follows
   `Tool.get`: a missing index, interface, version file or compatible

@@ -144,8 +144,25 @@ module UkiryuOracle
       YAML
     }.freeze
 
+    # The CLI's implicit remote-schema lookup was part of the original capture.
+    # Pin that exact external input locally so network failures cannot silently
+    # turn the recorded rejection into structural-only success.
+    PINNED_REMOTE_SCHEMA = {
+      'path' => 'external-schema/tool.schema.yaml',
+      'source_path' => 'https://github.com/ukiryu/schemas/blob/744630fc341681fae75cf2629a533717f1ff3ede/v1/tool.schema.yaml',
+      'sha256' => 'a269b860f7f6ce28e7c70ac02c1e80c3e843be466ebf40bfc090b7330ca43285'
+    }.freeze
+
     def copy_inputs(out)
       rows = []
+      schema_bytes = File.binread(File.expand_path("../conformance/inputs/#{PINNED_REMOTE_SCHEMA['path']}", __dir__))
+      unless Digest::SHA256.hexdigest(schema_bytes) == PINNED_REMOTE_SCHEMA['sha256']
+        raise 'pinned external schema bytes do not match their source digest'
+      end
+      schema_target = File.join(out, 'inputs', PINNED_REMOTE_SCHEMA['path'])
+      FileUtils.mkdir_p(File.dirname(schema_target))
+      File.binwrite(schema_target, schema_bytes)
+      rows << PINNED_REMOTE_SCHEMA
       SYNTHETIC_REGISTER.each do |rel, body|
         target = File.join(out, 'inputs', 'synthetic-register', rel)
         FileUtils.mkdir_p(File.dirname(target))
@@ -598,7 +615,8 @@ module UkiryuOracle
       ['info-absent', ['info', 'absenttool', '--register', SYN]],
       ['info-unknown', %w[info nosuchtool]],
       ['resolve-jq', %w[resolve jq]], ['resolve-jq-1-0', %w[resolve jq 1.0]],
-      ['validate-file', ['validate', 'file', '${INPUTS}/profiles/inkscape_1.0.yaml']],
+      ['validate-file', ['validate', 'file', '${INPUTS}/profiles/inkscape_1.0.yaml',
+                         '--schema', "${INPUTS}/#{PINNED_REMOTE_SCHEMA['path']}"]],
       ['lint-file', ['validate', 'lint', '${INPUTS}/profiles/inkscape_1.0.yaml']],
       ['exec-dry-run-jq', ['exec', 'jq', 'process', 'filter=.a', '--dry-run']],
       ['exec-dry-run-json', ['exec', 'jq', 'process', 'filter=.a', '--dry-run', '--format', 'json']],
@@ -611,6 +629,7 @@ module UkiryuOracle
       CLI.map do |label, argv|
         row(id: "cli-output.#{label}", kind: 'cli-output', op: 'cli.run', api: 'exe/ukiryu (Thor CLI)',
             input: { 'argv' => argv }, platforms: %w[linux], requires: %w[cli process fs],
+            sources: label == 'validate-file' ? [PINNED_REMOTE_SCHEMA['path']] : [],
             note: 'captured on Linux only; stdout/stderr/exit compared byte-exact after ${INPUTS}/${HOME} substitution')
       end
     end
