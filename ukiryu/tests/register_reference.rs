@@ -580,4 +580,13 @@ fn missing_git_executable_uses_path_guidance() {
         "{message}"
     );
     assert!(message.contains("This error usually means git is not in PATH"));
+
+    // A spawn failure must not erase a directory the caller already owned.
+    let note = scratch.write("occupied/keep.txt", "pre-existing user data");
+    let occupied = Register::at(scratch.path("occupied"));
+    let error = occupied.clone_register(&git).unwrap_err();
+    assert!(error
+        .to_string()
+        .contains("This error usually means git is not in PATH"));
+    assert_eq!(fs::read_to_string(note).unwrap(), "pre-existing user data");
 }
