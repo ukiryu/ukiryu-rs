@@ -19,3 +19,4 @@ serde.workspace = true
 serde_json.workspace = true
 num-bigint.workspace = true
 yeptris.workspace = true
+regex = "1"
