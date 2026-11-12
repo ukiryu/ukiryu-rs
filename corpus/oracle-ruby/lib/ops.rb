@@ -58,7 +58,8 @@ module UkiryuOracle
           ENV['SHELL'] = '/bin/bash'
           ENV['UKIRYU_REGISTER'] = File.join(Ops.corpus_dir, 'inputs', 'register')
           %w[UKIRYU_SCHEMA_PATH UKIRYU_TEST_SHELL UKIRYU_DEBUG UKIRYU_DEBUG_EXECUTABLE UKIRYU_CONFIG
-             UKIRYU_TIMEOUT UKIRYU_SHELL UKIRYU_FORMAT UKIRYU_LOG_LEVEL NO_COLOR].each { |k| ENV.delete(k) }
+             UKIRYU_TIMEOUT UKIRYU_SHELL UKIRYU_FORMAT UKIRYU_LOG_LEVEL NO_COLOR
+             PSModulePath MSYSTEM MINGW_PREFIX WSL_DISTRO].each { |k| ENV.delete(k) }
         end
 
         def reset!
@@ -102,6 +103,16 @@ module UkiryuOracle
     # version file given instead of detected from a running executable. Each
     # step returning nil ends the chain the way Tool.get does: with
     # ToolNotFoundError "Tool not found: <name>".
+    # The builder's contract excludes host executable discovery. Preserve the
+    # real Tool initializer and command builder, supplying a declared absent
+    # executable instead of running where/which during every pure argv row.
+    class BuilderTool < Ukiryu::Tool
+      private
+
+      def find_executable = nil
+    end
+    private_constant :BuilderTool
+
     def load_tool(i)
       opts = { platform: i['platform'].to_sym, shell: i['shell'].to_sym }
       not_found = -> { raise Ukiryu::Errors::ToolNotFoundError, "Tool not found: #{i['tool']}" }
@@ -111,7 +122,7 @@ module UkiryuOracle
                      not_found.call
       tool_def = Ukiryu::Tool::Loader.send(:convert_to_tool_definition, i['tool'], interface, impl_version,
                                            i['implementation'], nil, opts) || not_found.call
-      Ukiryu::Tool.new(tool_def, opts)
+      BuilderTool.new(tool_def, opts)
     end
 
     def op_build_args(i)
@@ -218,7 +229,8 @@ module UkiryuOracle
       exe = File.join(Gem.loaded_specs.fetch('ukiryu').full_gem_path, 'exe', 'ukiryu')
       env = {
         'HOME' => Sandbox.home, 'TZ' => 'UTC', 'LANG' => 'C.UTF-8', 'LC_ALL' => 'C.UTF-8', 'SHELL' => '/bin/bash',
-        'UKIRYU_REGISTER' => File.join(corpus_dir, 'inputs', 'register'), 'COLUMNS' => '100',
+        'UKIRYU_REGISTER' => File.join(corpus_dir, 'inputs', 'register'),
+        'COLUMNS' => '100', 'THOR_COLUMNS' => '100', 'TERM' => 'dumb',
         'GIT_REDIRECT_STDERR' => '/dev/null'
       }.merge(i['env'] || {})
       args = i['argv'].map { |a| a.gsub('${INPUTS}', File.join(corpus_dir, 'inputs')) }

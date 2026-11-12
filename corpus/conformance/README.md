@@ -58,6 +58,15 @@ Adopted from the parsanol corpus:
 | `yaml` | `yaml.load`, `yaml.model_load`, `yaml.lutaml_roundtrip` | The parsed structure (or parse error) of all 81 YAML files tracked at the pinned commit (65 spec fixtures, 4 bundled schemas, 12 workflow/docs/RuboCop files), the loaded state of the register models, and the emitted YAML of a Lutaml model round trip. |
 | `cli-output` | `cli.run` | stdout, stderr and exit status of the Ruby CLI for a set of verbs. |
 
+The Ruby builder oracle uses a Tool subclass with a declared absent
+executable. It runs the original constructor/profile selection and
+`build_args`, while the overridden discovery hook returns nil without
+running host `where`/`which`. None of these argv rows depend on executable
+availability; executable discovery is a separate contract.
+
+Git marks this directory `-text` so checkout never rewrites its sealed
+LF bytes to CRLF. Input hashes describe the original pinned bytes.
+
 Real process execution stays runtime-local: subprocess behaviour differs per
 runtime. The corpus pins the command each engine builds (`build`) and the
 shape of its results, not the output of external tools.
@@ -110,7 +119,10 @@ Two substitutions apply before comparison: the absolute path of `inputs/`
 becomes `${INPUTS}` and the sandbox home directory becomes `${HOME}`. Each
 case runs with `TZ=UTC`, `LANG=LC_ALL=C.UTF-8`, `SHELL=/bin/bash`,
 `UKIRYU_REGISTER=inputs/register`, an empty temporary `HOME`, and with
-`UKIRYU_SCHEMA_PATH` and `UKIRYU_TEST_SHELL` unset unless the row sets them.
+`UKIRYU_SCHEMA_PATH`, `UKIRYU_TEST_SHELL`, `PSModulePath`, `MSYSTEM`,
+`MINGW_PREFIX` and `WSL_DISTRO` unset unless the row sets them. CLI
+subprocesses use `THOR_COLUMNS=COLUMNS=100` and `TERM=dumb`, which keep
+Thor help independent of the parent terminal.
 
 ## Applicability
 
