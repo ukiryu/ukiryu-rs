@@ -14,13 +14,16 @@ use std::collections::VecDeque;
 use std::sync::{Arc, Mutex};
 
 use serde_json::Value as J;
+use ukiryu::command_builder::{build_args, BuildContext, CommandSpec};
 use ukiryu::options::formatter::{self, Formatted};
+use ukiryu::options::integration::TypeCoercer;
 use ukiryu::options::{
     missing_format, validator, ArgumentDef, Cache, Clock, Coercer, CommandDef, DefRef, FlagDef,
     OptionDef, OptionValue, Options, OptionsClass, OptionsClassCache, OptionsError, Position,
     TypeRef,
 };
 use ukiryu::shell::ShellFormatting;
+use ukiryu::types::{StdHost, Value};
 
 const GOLDEN: &str = include_str!("../src/options/testdata/options.json");
 
@@ -338,6 +341,18 @@ struct Replay {
     case: String,
 }
 
+impl Drop for Replay {
+    fn drop(&mut self) {
+        if !std::thread::panicking() {
+            assert!(
+                self.calls.borrow().is_empty(),
+                "{}: unused coerce calls",
+                self.case
+            );
+        }
+    }
+}
+
 impl Coercer<TCmd, TV> for Replay {
     fn coerce(
         &self,
@@ -417,16 +432,23 @@ fn expect_result<T: PartialEq + std::fmt::Debug>(
     }
 }
 
-#[test]
-fn class_cases_match_oracle() {
+type BuildArgs<'a, C, V> = &'a dyn Fn(&Options<C, V>) -> Result<Vec<String>, OptionsError>;
+
+/// Replays every class case through one value/definition/coercer stack.
+/// Returns (steps run, build_args steps checked).
+fn run_class_cases<C: CommandDef, V: OptionValue + PartialEq + std::fmt::Debug>(
+    make_def: &dyn Fn(&J) -> C,
+    conv: &dyn Fn(&J) -> V,
+    coercer_for: &dyn Fn(&J, &str) -> Box<dyn Coercer<C, V>>,
+    build_args: Option<BuildArgs<'_, C, V>>,
+) -> (usize, usize) {
     let g = golden();
     let cases = g["classes"].as_array().unwrap();
     assert_eq!(cases.len(), 24, "pinned class case count");
-    let mut steps = 0;
+    let (mut steps, mut built) = (0, 0);
     for case in cases {
         let id = case["id"].as_str().unwrap();
-        let def = Arc::new(command(&case["definition"]));
-        let class = OptionsClass::new("tool", "cmd", def);
+        let class = OptionsClass::new("tool", "cmd", Arc::new(make_def(case)));
         let class = match (class, case["create"].get("ok")) {
             (Ok(c), Some(_)) => Arc::new(c),
             (Err(e), None) => {
@@ -435,39 +457,29 @@ fn class_cases_match_oracle() {
             }
             (got, _) => panic!("{id}: create mismatch, got ok={}", got.is_ok()),
         };
-        let mut obj: Options<TCmd, TV> = Options::new(class);
+        let mut obj: Options<C, V> = Options::new(class);
         for st in case["steps"].as_array().unwrap() {
             steps += 1;
             let want = &st["expect"];
+            let strings = |v: &J| {
+                v.as_array()
+                    .unwrap()
+                    .iter()
+                    .map(|s| s.as_str().unwrap().to_owned())
+                    .collect::<Vec<_>>()
+            };
             match st["op"].as_str().unwrap() {
                 "set" => {
-                    let replay = Replay {
-                        calls: RefCell::new(
-                            st["coerce"].as_array().unwrap().iter().cloned().collect(),
-                        ),
-                        case: id.to_owned(),
-                    };
+                    let coercer = coercer_for(st, id);
                     let name = st["name"].as_str().unwrap();
-                    let got = obj.set(name, dec(&st["value"]), &replay);
+                    let got = obj.set(name, conv(&st["value"]), coercer.as_ref());
                     expect_result(id, &format!("set {name}"), got, want, |_| ());
-                    assert!(
-                        replay.calls.borrow().is_empty(),
-                        "{id}: unused coerce calls"
-                    );
                 }
                 "get" => {
                     let name = st["name"].as_str().unwrap();
-                    expect_result(id, &format!("get {name}"), obj.get(name), want, dec);
+                    expect_result(id, &format!("get {name}"), obj.get(name), want, conv);
                 }
-                "argv" => {
-                    expect_result(id, "argv", obj.argv(&RecordingShell), want, |v| {
-                        v.as_array()
-                            .unwrap()
-                            .iter()
-                            .map(|s| s.as_str().unwrap().to_owned())
-                            .collect::<Vec<_>>()
-                    });
-                }
+                "argv" => expect_result(id, "argv", obj.argv(&RecordingShell), want, strings),
                 "bash" => {
                     // Bash quoting belongs to the shell owners; here the join
                     // plumbing (first piece is the executable, empty argv is
@@ -487,16 +499,89 @@ fn class_cases_match_oracle() {
                         v.as_array()
                             .unwrap()
                             .iter()
-                            .map(|p| (p[0].as_str().unwrap().to_owned(), dec(&p[1])))
+                            .map(|p| (p[0].as_str().unwrap().to_owned(), conv(&p[1])))
                             .collect::<Vec<_>>()
                     });
+                }
+                "build_args" => {
+                    if let Some(build) = build_args {
+                        built += 1;
+                        expect_result(id, "build_args", build(&obj), want, strings);
+                    }
                 }
                 "validate" => expect_result(id, "validate", obj.validate(), want, |_| ()),
                 op => panic!("unknown op {op}"),
             }
         }
     }
-    assert_eq!(steps, 140, "pinned class step count");
+    (steps, built)
+}
+
+/// Coercion replayed from the capture: checks the exact `Type.validate`
+/// calls the setters make.
+#[test]
+fn class_cases_match_oracle_with_replayed_coercion() {
+    let (steps, _) = run_class_cases::<TCmd, TV>(
+        &|case| command(&case["definition"]),
+        &dec,
+        &|st, id| {
+            Box::new(Replay {
+                calls: RefCell::new(st["coerce"].as_array().unwrap().iter().cloned().collect()),
+                case: id.to_owned(),
+            })
+        },
+        None,
+    );
+    assert_eq!(steps, 150, "pinned class step count");
+}
+
+fn core_val(j: &J) -> Value {
+    if j.is_null() {
+        return Value::Nil;
+    }
+    let o = j.as_object().expect("tagged value");
+    if let Some(b) = o.get("b") {
+        Value::Bool(b.as_bool().unwrap())
+    } else if let Some(i) = o.get("i") {
+        Value::int(i.as_i64().unwrap())
+    } else if let Some(f) = o.get("f") {
+        Value::Float(f.as_f64().unwrap())
+    } else if let Some(s) = o.get("s") {
+        Value::str(s.as_str().unwrap())
+    } else if let Some(s) = o.get("sym") {
+        Value::sym(s.as_str().unwrap())
+    } else if let Some(a) = o.get("a") {
+        Value::Array(a.as_array().unwrap().iter().map(core_val).collect())
+    } else {
+        panic!("no core value for {j}")
+    }
+}
+
+/// The actual consumer stack: definitions as command assembly reads them,
+/// `types::Value`, coercion by `types::validate`, and the `to_hash` result
+/// handed to `command_builder::build_args` (Ruby `Tool#execute`).
+#[test]
+fn class_cases_match_oracle_through_core_types() {
+    let build = |obj: &Options<CommandSpec, Value>| {
+        let spec = obj.class().command_def();
+        let ctx = BuildContext {
+            shell: &RecordingShell,
+            platform: "linux",
+            host: &StdHost,
+        };
+        build_args(spec, &obj.to_params(), &ctx).map_err(OptionsError::from)
+    };
+    let (steps, built) = run_class_cases::<CommandSpec, Value>(
+        &|case| serde_json::from_value(case["spec"].clone()).expect("command spec"),
+        &core_val,
+        &|_, _| Box::new(TypeCoercer { host: &StdHost }),
+        Some(&build),
+    );
+    assert_eq!(
+        (steps, built),
+        (150, 10),
+        "pinned class/build_args step counts"
+    );
 }
 
 #[test]

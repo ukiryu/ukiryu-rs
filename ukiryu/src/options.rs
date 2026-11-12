@@ -31,6 +31,7 @@
 
 pub mod cache;
 pub mod formatter;
+pub mod integration;
 pub mod validator;
 
 use std::collections::HashMap;
