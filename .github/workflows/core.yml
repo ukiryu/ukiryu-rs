@@ -1,0 +1,83 @@
+name: Core
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: core-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  core:
+    name: Core (${{ matrix.os }}, Rust ${{ matrix.rust }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            rust: 1.95.0
+          - os: macos-15-intel
+            rust: 1.95.0
+          - os: windows-2022
+            rust: 1.95.0
+          - os: ubuntu-24.04
+            rust: 1.86.0
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ matrix.rust }}
+          components: rustfmt, clippy
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Prepare real Linux shells in job-local prefix
+        if: runner.os == 'Linux'
+        run: python scripts/prepare-linux-shells.py
+      - name: Require real Windows shell checks
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          cmd.exe /d /c "echo ukiryu-shell-ready"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          pwsh -NoProfile -Command "Write-Output ukiryu-shell-ready"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          "UKIRYU_REQUIRE_SHELL_TESTS=1" >> $env:GITHUB_ENV
+      - name: Format and locked workspace tests
+        shell: bash
+        run: |
+          cargo fmt --all -- --check
+          cargo test --workspace --locked --features ukiryu/c
+          cargo clippy --workspace --all-targets --locked --features ukiryu/c -- -D warnings
+      - name: Build and load actual native C library
+        shell: bash
+        run: |
+          cargo build --workspace --locked
+          python scripts/check-c-api.py
+          cargo run --locked -p ukiryu-cli -- --version
+
+  reference:
+    name: Regenerate pinned Ruby configuration reference
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: ukiryu/ukiryu
+          ref: ab6df353c6dc2d7faf7817a86aafcafa82579896
+          path: ruby-reference
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '4.0.1'
+      - name: Prove reference regeneration
+        run: |
+          ruby scripts/capture-config-reference.rb ruby-reference > config-reference.json
+          diff -u fixtures/reference/config.json config-reference.json
