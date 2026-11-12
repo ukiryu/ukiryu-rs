@@ -280,7 +280,8 @@ fn output_response_matches_every_captured_render() {
         let mut want_out = s(&row["stdout"]).to_owned();
         let mut want_file = row["file"].as_str().map(str::to_owned);
         if FOLD_GAPS.contains(&id.as_str()) && format == OutputFormat::Yaml {
-            let (r, t) = line_diff(ruby_yaml, &to_yaml(oracle).unwrap());
+            let rust_yaml = to_yaml(oracle).unwrap();
+            let (r, t) = line_diff(ruby_yaml, &rust_yaml);
             want_out = want_out.replacen(r, t, 1);
             want_file = want_file.map(|f| f.replacen(r, t, 1));
         }
