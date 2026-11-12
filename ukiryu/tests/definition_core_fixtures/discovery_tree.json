@@ -1,0 +1,34 @@
+{
+  "files": {
+    "home/.local/share/ukiryu/definitions/alpha/1.0.yaml": "name: alpha\nversion: '1.0'\n",
+    "home/.local/share/ukiryu/definitions/alpha/2.0.yaml": "name: alpha\nversion: '2.0'\nprofiles: []\n",
+    "home/.local/share/ukiryu/definitions/alpha/notes.txt": "name: alpha\nversion: '7.0'\n",
+    "home/.local/share/ukiryu/definitions/alpha/sub/4.0.yaml": "name: alpha\nversion: '4.0'\n",
+    "home/.local/share/ukiryu/definitions/.hidden/1.0.yaml": "name: hidden\nversion: '1.0'\n",
+    "home/.local/share/ukiryu/definitions/beta/1.0.yaml": "name: beta\n",
+    "home/.local/share/ukiryu/definitions/gamma/bad.yaml": "name: [unclosed\n",
+    "home/.local/share/ukiryu/definitions/delta/list.yaml": "- name: delta\n",
+    "home/.local/share/ukiryu/definitions/eps/noname.yaml": "version: '1.0'\n",
+    "home/.local/share/ukiryu/definitions/theta/1.0.yaml": "name: other_name\nversion: '0.1'\n",
+    "home/.local/share/ukiryu/definitions/iota/anchors.yaml": "base: &b '5.5'\nname: iota\nversion: *b\n",
+    "home/.local/share/ukiryu/definitions/kappa/null.yaml": "name: kappa\nversion: null\n",
+    "home/.local/share/ukiryu/definitions/alpha-3.0.yaml": "name: alpha\nversion: '3.0'\n",
+    "home/.local/share/ukiryu/definitions/flat.yaml": "name: flat\nversion: '1.0'\n",
+    "home/.local/share/ukiryu/definitions/lambda-x.yml": "name: lambda\nversion: '1.0'\n",
+    "usr/local/share/ukiryu/definitions/alpha/1.5.yaml": "name: alpha\nversion: '1.5'\n",
+    "usr/local/share/ukiryu/definitions/beta/2.0.yaml": "name: beta\nversion: '2.0'\n",
+    "usr/share/ukiryu/definitions/beta/1.0.yaml": "name: beta\nversion: '1.0'\n",
+    "prefix/bin/.keep": "",
+    "prefix/ukiryu/alpha/0.9.yaml": "name: alpha\nversion: '0.9'\n",
+    "prefix/share/ukiryu/beta/3.0.yaml": "name: beta\nversion: '3.0'\n",
+    "other/bin/.keep": "",
+    "opt/vendor/ukiryu/mu/1.0.yaml": "name: mu\nversion: '1.0'\n",
+    "opt/vendor2/ukiryu.txt": ""
+  },
+  "dirs": ["opt/empty", "home/.local/share/ukiryu/definitions/emptytool"],
+  "env": {
+    "HOME": "<ROOT>/home",
+    "XDG_DATA_DIRS": "<ROOT>/usr/local/share: <ROOT>/usr/share ::",
+    "PATH": "<ROOT>/prefix/bin:<ROOT>/missing/bin:<ROOT>/prefix/bin:<ROOT>/other/bin"
+  }
+}

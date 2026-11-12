@@ -3,6 +3,7 @@
 pub mod base;
 pub mod cmd;
 pub mod posix;
+pub mod unix_special;
 
 pub trait ShellFormatting {
     fn name(&self) -> &'static str;

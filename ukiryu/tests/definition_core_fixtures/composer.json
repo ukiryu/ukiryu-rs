@@ -1,0 +1,3528 @@
+{
+  "provenance": {
+    "oracle_sha": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+    "files": [
+      "lib/ukiryu/definition/definition_composer.rb"
+    ],
+    "capture": "capture/composer.rb",
+    "ruby": "4.0.1",
+    "tz": "UTC"
+  },
+  "cases": [
+    {
+      "op": "merge_definitions",
+      "base": "base",
+      "addition": "addition",
+      "strategy": "override",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "addition",
+            "version": "2.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base",
+      "addition": "addition",
+      "strategy": "replace",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "addition",
+            "version": "2.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base",
+      "addition": "addition",
+      "strategy": "append",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              },
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3",
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1",
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "addition",
+            "version": "2.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3",
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1",
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base",
+      "addition": "addition",
+      "strategy": "prepend",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3",
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1",
+                  "c1:add-c1"
+                ]
+              },
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3",
+                  "a2:add-a2",
+                  "a3:add-a3",
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3",
+                  "a2:add-a2",
+                  "a3:add-a3",
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "addition",
+            "version": "2.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3",
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1",
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base",
+      "addition": "addition",
+      "strategy": "bogus",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "addition",
+            "version": "2.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base",
+      "addition": "addition_dup",
+      "strategy": "override",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "slash_space",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "x1:dup1-x1",
+                  "x2:dup2-x2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "dup",
+            "version": "3.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "x1:dup1-x1"
+                ]
+              },
+              {
+                "name": "A",
+                "option_style": "slash_space",
+                "commands": [
+                  "x2:dup2-x2",
+                  "x1:dup2-x1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base",
+      "addition": "addition_dup",
+      "strategy": "replace",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "x1:dup1-x1"
+                ]
+              },
+              {
+                "name": "A",
+                "option_style": "slash_space",
+                "commands": [
+                  "x1:dup1-x1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "dup",
+            "version": "3.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "x1:dup1-x1"
+                ]
+              },
+              {
+                "name": "A",
+                "option_style": "slash_space",
+                "commands": [
+                  "x1:dup1-x1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base",
+      "addition": "addition_dup",
+      "strategy": "append",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "x1:dup1-x1"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              },
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "x1:dup1-x1",
+                  "x1:dup1-x1"
+                ]
+              },
+              {
+                "name": "A",
+                "option_style": "slash_space",
+                "commands": [
+                  "x2:dup2-x2",
+                  "x1:dup2-x1",
+                  "x1:dup1-x1",
+                  "x1:dup1-x1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "x1:dup1-x1"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "dup",
+            "version": "3.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "x1:dup1-x1",
+                  "x1:dup1-x1"
+                ]
+              },
+              {
+                "name": "A",
+                "option_style": "slash_space",
+                "commands": [
+                  "x2:dup2-x2",
+                  "x1:dup2-x1",
+                  "x1:dup1-x1",
+                  "x1:dup1-x1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base",
+      "addition": "addition_dup",
+      "strategy": "prepend",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "x1:dup1-x1",
+                  "x1:dup1-x1"
+                ]
+              },
+              {
+                "name": "A",
+                "option_style": "slash_space",
+                "commands": [
+                  "x1:dup1-x1",
+                  "x1:dup1-x1",
+                  "x2:dup2-x2",
+                  "x1:dup2-x1"
+                ]
+              },
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "x1:dup1-x1",
+                  "x1:dup1-x1",
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "x1:dup1-x1",
+                  "x1:dup1-x1",
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "dup",
+            "version": "3.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "x1:dup1-x1",
+                  "x1:dup1-x1"
+                ]
+              },
+              {
+                "name": "A",
+                "option_style": "slash_space",
+                "commands": [
+                  "x1:dup1-x1",
+                  "x1:dup1-x1",
+                  "x2:dup2-x2",
+                  "x1:dup2-x1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base",
+      "addition": "addition_dup",
+      "strategy": "bogus",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "dup",
+            "version": "3.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "x1:dup1-x1"
+                ]
+              },
+              {
+                "name": "A",
+                "option_style": "slash_space",
+                "commands": [
+                  "x2:dup2-x2",
+                  "x1:dup2-x1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base",
+      "addition": "addition_empty_cmds",
+      "strategy": "override",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "double_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "empty",
+            "version": "1",
+            "profiles": [
+              {
+                "name": "B",
+                "option_style": "double_dash_space",
+                "commands": []
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base",
+      "addition": "addition_empty_cmds",
+      "strategy": "replace",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "B",
+                "option_style": "double_dash_space",
+                "commands": []
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "empty",
+            "version": "1",
+            "profiles": [
+              {
+                "name": "B",
+                "option_style": "double_dash_space",
+                "commands": []
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base",
+      "addition": "addition_empty_cmds",
+      "strategy": "append",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "double_dash_space",
+                "commands": []
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "empty",
+            "version": "1",
+            "profiles": [
+              {
+                "name": "B",
+                "option_style": "double_dash_space",
+                "commands": []
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base",
+      "addition": "addition_empty_cmds",
+      "strategy": "prepend",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "B",
+                "option_style": "double_dash_space",
+                "commands": []
+              },
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "empty",
+            "version": "1",
+            "profiles": [
+              {
+                "name": "B",
+                "option_style": "double_dash_space",
+                "commands": []
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base",
+      "addition": "addition_empty_cmds",
+      "strategy": "bogus",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "empty",
+            "version": "1",
+            "profiles": [
+              {
+                "name": "B",
+                "option_style": "double_dash_space",
+                "commands": []
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base",
+      "addition": "addition_no_profiles",
+      "strategy": "override",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "none",
+            "version": "1",
+            "profiles": null
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base",
+      "addition": "addition_no_profiles",
+      "strategy": "replace",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "none",
+            "version": "1",
+            "profiles": null
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base",
+      "addition": "addition_no_profiles",
+      "strategy": "append",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "none",
+            "version": "1",
+            "profiles": null
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base",
+      "addition": "addition_no_profiles",
+      "strategy": "prepend",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "none",
+            "version": "1",
+            "profiles": null
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base",
+      "addition": "addition_no_profiles",
+      "strategy": "bogus",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "none",
+            "version": "1",
+            "profiles": null
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base_no_profiles",
+      "addition": "addition",
+      "strategy": "override",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "bare",
+            "version": "1",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "bare",
+            "version": "1",
+            "profiles": null
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "addition",
+            "version": "2.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base_no_profiles",
+      "addition": "addition",
+      "strategy": "replace",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "bare",
+            "version": "1",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "bare",
+            "version": "1",
+            "profiles": null
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "addition",
+            "version": "2.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base_no_profiles",
+      "addition": "addition",
+      "strategy": "append",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "bare",
+            "version": "1",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3",
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1",
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "bare",
+            "version": "1",
+            "profiles": null
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "addition",
+            "version": "2.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3",
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1",
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base_no_profiles",
+      "addition": "addition",
+      "strategy": "prepend",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "bare",
+            "version": "1",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3",
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1",
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "bare",
+            "version": "1",
+            "profiles": null
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "addition",
+            "version": "2.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3",
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1",
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base_no_profiles",
+      "addition": "addition",
+      "strategy": "bogus",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "bare",
+            "version": "1",
+            "profiles": []
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "bare",
+            "version": "1",
+            "profiles": null
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "addition",
+            "version": "2.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base_dup_cmds",
+      "addition": "addition",
+      "strategy": "override",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "dupcmds",
+            "version": "1",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a1:first",
+                  "a1:second",
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "dupcmds",
+            "version": "1",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a1:first",
+                  "a1:second"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "addition",
+            "version": "2.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base_dup_cmds",
+      "addition": "addition",
+      "strategy": "replace",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "dupcmds",
+            "version": "1",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "dupcmds",
+            "version": "1",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a1:first",
+                  "a1:second"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "addition",
+            "version": "2.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base_dup_cmds",
+      "addition": "addition",
+      "strategy": "append",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "dupcmds",
+            "version": "1",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a1:first",
+                  "a1:second",
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3",
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1",
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "dupcmds",
+            "version": "1",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a1:first",
+                  "a1:second",
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "addition",
+            "version": "2.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3",
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1",
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base_dup_cmds",
+      "addition": "addition",
+      "strategy": "prepend",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "dupcmds",
+            "version": "1",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3",
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1",
+                  "c1:add-c1"
+                ]
+              },
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3",
+                  "a2:add-a2",
+                  "a3:add-a3",
+                  "a1:first",
+                  "a1:second"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "dupcmds",
+            "version": "1",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3",
+                  "a2:add-a2",
+                  "a3:add-a3",
+                  "a1:first",
+                  "a1:second"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "addition",
+            "version": "2.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3",
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1",
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base_dup_cmds",
+      "addition": "addition",
+      "strategy": "bogus",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "dupcmds",
+            "version": "1",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a1:first",
+                  "a1:second"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "dupcmds",
+            "version": "1",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a1:first",
+                  "a1:second"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "addition",
+            "version": "2.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "addition",
+      "addition": "base",
+      "strategy": "override",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "addition",
+            "version": "2.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a2:base-a2",
+                  "a3:add-a3",
+                  "a1:base-a1"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "addition",
+            "version": "2.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "addition",
+      "addition": "base",
+      "strategy": "replace",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "addition",
+            "version": "2.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "addition",
+            "version": "2.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "addition",
+      "addition": "base",
+      "strategy": "append",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "addition",
+            "version": "2.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3",
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1"
+                ]
+              },
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1",
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "addition",
+            "version": "2.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3",
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1",
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "addition",
+      "addition": "base",
+      "strategy": "prepend",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "addition",
+            "version": "2.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1",
+                  "b1:base-b1"
+                ]
+              },
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "addition",
+            "version": "2.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1",
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "addition",
+      "addition": "base",
+      "strategy": "bogus",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "addition",
+            "version": "2.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "addition",
+            "version": "2.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "a2:add-a2",
+                  "a3:add-a3"
+                ]
+              },
+              {
+                "name": "C",
+                "option_style": "slash_space",
+                "commands": [
+                  "c1:add-c1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base",
+      "addition": "base",
+      "strategy": "override",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base",
+      "addition": "base",
+      "strategy": "replace",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base",
+      "addition": "base",
+      "strategy": "append",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1",
+                  "b1:base-b1",
+                  "b1:base-b1",
+                  "b1:base-b1"
+                ]
+              },
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1",
+                  "b1:base-b1",
+                  "b1:base-b1",
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1",
+                  "b1:base-b1",
+                  "b1:base-b1",
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1",
+                  "b1:base-b1",
+                  "b1:base-b1",
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base",
+      "addition": "base",
+      "strategy": "prepend",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1",
+                  "b1:base-b1",
+                  "b1:base-b1",
+                  "b1:base-b1"
+                ]
+              },
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1",
+                  "b1:base-b1",
+                  "b1:base-b1",
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1",
+                  "b1:base-b1",
+                  "b1:base-b1",
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2",
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1",
+                  "b1:base-b1",
+                  "b1:base-b1",
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_definitions",
+      "base": "base",
+      "addition": "base",
+      "strategy": "bogus",
+      "result": {
+        "ok": {
+          "merged": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "base_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "addition_after": {
+            "class": "ToolDefinition",
+            "name": "base",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "A",
+                "option_style": "double_dash_equals",
+                "commands": [
+                  "a1:base-a1",
+                  "a2:base-a2"
+                ]
+              },
+              {
+                "name": "B",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "b1:base-b1"
+                ]
+              }
+            ]
+          },
+          "merged_is_base": false
+        }
+      }
+    },
+    {
+      "op": "merge_strategies_constant",
+      "result": {
+        "ok": [
+          "override",
+          "replace",
+          "prepend",
+          "append"
+        ]
+      }
+    },
+    {
+      "op": "compose_tool_definition_identity",
+      "result": {
+        "ok": [
+          true,
+          []
+        ]
+      }
+    },
+    {
+      "op": "compose",
+      "id": "inherit_latest",
+      "result": {
+        "ok": {
+          "composed": {
+            "class": "ToolDefinition",
+            "name": "basetool",
+            "version": "2.0",
+            "profiles": [
+              {
+                "name": "P",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "run:child-run",
+                  "own:child-own"
+                ]
+              }
+            ]
+          },
+          "validate_composable": []
+        }
+      }
+    },
+    {
+      "op": "compose",
+      "id": "inherit_versioned",
+      "result": {
+        "ok": {
+          "composed": {
+            "class": "ToolDefinition",
+            "name": "basetool",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "P",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "run:child-run",
+                  "own:child-own"
+                ]
+              }
+            ]
+          },
+          "validate_composable": []
+        }
+      }
+    },
+    {
+      "op": "compose",
+      "id": "inherit_missing",
+      "result": {
+        "ok": {
+          "composed": {
+            "class": "Composite",
+            "name": "child",
+            "version": "1",
+            "profiles": [
+              {
+                "name": "P",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "run:child-run",
+                  "own:child-own"
+                ]
+              }
+            ]
+          },
+          "validate_composable": [
+            "Cannot inherit from 'nope': definition not found",
+            "Cannot inherit from '{\"tool\" => \"basetool\", \"version\" => \"9\"}': definition not found"
+          ]
+        }
+      }
+    },
+    {
+      "op": "compose",
+      "id": "inherit_two",
+      "result": {
+        "ok": {
+          "composed": {
+            "class": "ToolDefinition",
+            "name": "mixin",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "P",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "run:child-run",
+                  "own:child-own"
+                ]
+              }
+            ]
+          },
+          "validate_composable": []
+        }
+      }
+    },
+    {
+      "op": "compose",
+      "id": "include_only",
+      "result": {
+        "ok": {
+          "composed": {
+            "class": "Composite",
+            "name": "child",
+            "version": "1",
+            "profiles": [
+              {
+                "name": "P",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "run:child-run",
+                  "own:child-own",
+                  "extra:mixin-extra",
+                  "run:basetool-2.0-run",
+                  "stop:basetool-2.0-stop"
+                ]
+              },
+              {
+                "name": "P",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "extra:mixin-extra",
+                  "extra:mixin-extra",
+                  "run:basetool-2.0-run",
+                  "stop:basetool-2.0-stop"
+                ]
+              },
+              {
+                "name": "P",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "run:basetool-2.0-run",
+                  "stop:basetool-2.0-stop",
+                  "run:basetool-2.0-run",
+                  "stop:basetool-2.0-stop"
+                ]
+              },
+              {
+                "name": "Q",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "q:basetool-2.0-q",
+                  "q:basetool-2.0-q"
+                ]
+              }
+            ]
+          },
+          "validate_composable": []
+        }
+      }
+    },
+    {
+      "op": "compose",
+      "id": "include_missing",
+      "result": {
+        "ok": {
+          "composed": {
+            "class": "Composite",
+            "name": "child",
+            "version": "1",
+            "profiles": [
+              {
+                "name": "P",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "run:child-run",
+                  "own:child-own"
+                ]
+              }
+            ]
+          },
+          "validate_composable": [
+            "Cannot include '{\"tool\" => \"nope\"}': definition not found",
+            "Cannot include '{\"version\" => \"1.0\"}': definition not found"
+          ]
+        }
+      }
+    },
+    {
+      "op": "compose",
+      "id": "inherit_and_include",
+      "result": {
+        "ok": {
+          "composed": {
+            "class": "ToolDefinition",
+            "name": "basetool",
+            "version": "2.0",
+            "profiles": [
+              {
+                "name": "P",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "run:child-run",
+                  "own:child-own"
+                ]
+              }
+            ]
+          },
+          "validate_composable": []
+        }
+      }
+    },
+    {
+      "op": "compose",
+      "id": "empty_lists",
+      "result": {
+        "ok": {
+          "composed": {
+            "class": "Composite",
+            "name": "child",
+            "version": "1",
+            "profiles": [
+              {
+                "name": "P",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "run:child-run",
+                  "own:child-own"
+                ]
+              }
+            ]
+          },
+          "validate_composable": []
+        }
+      }
+    },
+    {
+      "op": "load_base_definition",
+      "spec": "basetool",
+      "result": {
+        "ok": {
+          "class": "ToolDefinition",
+          "name": "basetool",
+          "version": "2.0",
+          "profiles": [
+            {
+              "name": "P",
+              "option_style": "single_dash_space",
+              "commands": [
+                "run:basetool-2.0-run",
+                "stop:basetool-2.0-stop"
+              ]
+            },
+            {
+              "name": "Q",
+              "option_style": "single_dash_space",
+              "commands": [
+                "q:basetool-2.0-q"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "op": "load_base_definition",
+      "spec": {
+        "tool": "basetool",
+        "version": "2.0"
+      },
+      "result": {
+        "ok": {
+          "class": "ToolDefinition",
+          "name": "basetool",
+          "version": "2.0",
+          "profiles": [
+            {
+              "name": "P",
+              "option_style": "single_dash_space",
+              "commands": [
+                "run:basetool-2.0-run",
+                "stop:basetool-2.0-stop"
+              ]
+            },
+            {
+              "name": "Q",
+              "option_style": "single_dash_space",
+              "commands": [
+                "q:basetool-2.0-q"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "op": "load_base_definition",
+      "spec": {
+        "tool": "basetool",
+        "version": "3"
+      },
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "op": "load_base_definition",
+      "spec": "nope",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "op": "load_base_definition",
+      "spec": 42,
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "op": "load_base_definition",
+      "spec": null,
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "op": "loader_cache_poisoning",
+      "result": {
+        "ok": {
+          "before": {
+            "class": "ToolDefinition",
+            "name": "mixin",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "P",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "extra:mixin-extra"
+                ]
+              }
+            ]
+          },
+          "after": {
+            "class": "ToolDefinition",
+            "name": "mixin",
+            "version": "1.0",
+            "profiles": [
+              {
+                "name": "P",
+                "option_style": "single_dash_space",
+                "commands": [
+                  "extra:mixin-extra",
+                  "extra:mixin-extra"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
