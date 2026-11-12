@@ -1,0 +1,8 @@
+$schema: http://json-schema.org/draft-04/schema#
+type: object
+required: [name]
+additionalProperties: false
+properties:
+  name: {type: string}
+  size: {type: integer, minimum: 0}
+  mode: {enum: [fast, slow]}

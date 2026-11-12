@@ -19,6 +19,10 @@ JSON-compatible YAML diagnostics; it is not the complete typed-model interface.
 Diagnostics reject non-finite numbers, non-string mapping keys and YAML tags rather
 than silently changing their values to fit JSON. The typed YAML API remains
 available to the core without that JSON profile restriction.
+Development currently pins the exact qualified Yeptris source revision carrying
+float fidelity, explicit emitter options, Rust1.86 compatibility and browser
+build support. This is a source qualification pin; no fixed registry release or
+Ukiryu publication is claimed.
 Only `--version` exists in the CLI foundation. Full models, loaders, schema/type
 validation, shells, process execution, authoring and runtime bindings remain
 tracked migration work; this increment does not complete issue17 or the product.
