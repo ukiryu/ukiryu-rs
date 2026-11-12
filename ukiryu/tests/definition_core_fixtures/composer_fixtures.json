@@ -1,0 +1,27 @@
+{
+  "documents": {
+    "base": "name: base\nversion: '1.0'\nprofiles:\n  - name: A\n    option_style: double_dash_equals\n    commands:\n      - name: a1\n        description: base-a1\n      - name: a2\n        description: base-a2\n  - name: B\n    commands:\n      - name: b1\n        description: base-b1\n",
+    "addition": "name: addition\nversion: '2.0'\nprofiles:\n  - name: A\n    commands:\n      - name: a2\n        description: add-a2\n      - name: a3\n        description: add-a3\n  - name: C\n    option_style: slash_space\n    commands:\n      - name: c1\n        description: add-c1\n",
+    "addition_dup": "name: dup\nversion: '3.0'\nprofiles:\n  - name: A\n    commands:\n      - name: x1\n        description: dup1-x1\n  - name: A\n    option_style: slash_space\n    commands:\n      - name: x2\n        description: dup2-x2\n      - name: x1\n        description: dup2-x1\n",
+    "addition_empty_cmds": "name: empty\nversion: '1'\nprofiles:\n  - name: B\n    option_style: double_dash_space\n",
+    "addition_no_profiles": "name: none\nversion: '1'\n",
+    "base_no_profiles": "name: bare\nversion: '1'\n",
+    "base_dup_cmds": "name: dupcmds\nversion: '1'\nprofiles:\n  - name: A\n    commands:\n      - name: a1\n        description: first\n      - name: a1\n        description: second\n"
+  },
+  "tree": {
+    "home/.local/share/ukiryu/definitions/basetool/1.0.yaml": "name: basetool\nversion: '1.0'\nprofiles:\n  - name: P\n    commands:\n      - name: run\n        description: basetool-1.0-run\n",
+    "home/.local/share/ukiryu/definitions/basetool/2.0.yaml": "name: basetool\nversion: '2.0'\nprofiles:\n  - name: P\n    commands:\n      - name: run\n        description: basetool-2.0-run\n      - name: stop\n        description: basetool-2.0-stop\n  - name: Q\n    commands:\n      - name: q\n        description: basetool-2.0-q\n",
+    "home/.local/share/ukiryu/definitions/mixin/1.0.yaml": "name: mixin\nversion: '1.0'\nprofiles:\n  - name: P\n    commands:\n      - name: extra\n        description: mixin-extra\n"
+  },
+  "composites": {
+    "inherit_latest": {"inherits": ["basetool"], "includes": null, "profiles": "child"},
+    "inherit_versioned": {"inherits": [{"tool": "basetool", "version": "1.0"}], "includes": null, "profiles": "child"},
+    "inherit_missing": {"inherits": ["nope", {"tool": "basetool", "version": "9"}], "includes": null, "profiles": "child"},
+    "inherit_two": {"inherits": ["mixin", {"tool": "basetool", "version": "1.0"}], "includes": null, "profiles": "child"},
+    "include_only": {"inherits": null, "includes": ["mixin", "basetool"], "profiles": "child"},
+    "include_missing": {"inherits": null, "includes": [{"tool": "nope"}, {"version": "1.0"}], "profiles": "child"},
+    "inherit_and_include": {"inherits": ["basetool"], "includes": ["mixin"], "profiles": "child"},
+    "empty_lists": {"inherits": [], "includes": [], "profiles": "child"}
+  },
+  "child_profiles": "name: child\nversion: '1'\nprofiles:\n  - name: P\n    commands:\n      - name: run\n        description: child-run\n      - name: own\n        description: child-own\n"
+}

@@ -2,6 +2,7 @@
 //! reimplementing configuration or maintaining another YAML stack.
 pub mod command_builder;
 pub mod config;
+pub mod definition;
 pub mod extractors;
 pub mod routing;
 pub mod schema;

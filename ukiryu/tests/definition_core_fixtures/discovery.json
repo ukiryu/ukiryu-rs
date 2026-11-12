@@ -1,0 +1,689 @@
+{
+  "provenance": {
+    "oracle_sha": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+    "files": [
+      "lib/ukiryu/definition/discovery.rb",
+      "lib/ukiryu/definition/metadata.rb"
+    ],
+    "capture": "capture/discovery.rb",
+    "ruby": "4.0.1",
+    "tz": "UTC"
+  },
+  "cases": [
+    {
+      "op": "paths",
+      "env": "tree",
+      "result": {
+        "ok": {
+          "xdg_data_home": "<ROOT>/home/.local/share",
+          "xdg_data_dirs": [
+            "<ROOT>/usr/local/share",
+            "<ROOT>/usr/share"
+          ],
+          "user_definitions_directory": "<ROOT>/home/.local/share/ukiryu/definitions",
+          "tool_bundled_paths": [
+            "<ROOT>/prefix/ukiryu",
+            "<ROOT>/prefix/share/ukiryu",
+            "<ROOT>/opt/vendor/ukiryu"
+          ],
+          "search_paths": [
+            "<ROOT>/home/.local/share/ukiryu/definitions",
+            "<ROOT>/prefix/ukiryu",
+            "<ROOT>/prefix/share/ukiryu",
+            "<ROOT>/opt/vendor/ukiryu",
+            "<ROOT>/usr/local/share/ukiryu/definitions",
+            "<ROOT>/usr/share/ukiryu/definitions"
+          ]
+        }
+      }
+    },
+    {
+      "op": "paths",
+      "env": "tree_explicit_home",
+      "result": {
+        "ok": {
+          "xdg_data_home": "<ROOT>/home/.local/share",
+          "xdg_data_dirs": [
+            "<ROOT>/usr/local/share",
+            "<ROOT>/usr/share"
+          ],
+          "user_definitions_directory": "<ROOT>/home/.local/share/ukiryu/definitions",
+          "tool_bundled_paths": [
+            "<ROOT>/prefix/ukiryu",
+            "<ROOT>/prefix/share/ukiryu",
+            "<ROOT>/opt/vendor/ukiryu"
+          ],
+          "search_paths": [
+            "<ROOT>/home/.local/share/ukiryu/definitions",
+            "<ROOT>/prefix/ukiryu",
+            "<ROOT>/prefix/share/ukiryu",
+            "<ROOT>/opt/vendor/ukiryu",
+            "<ROOT>/usr/local/share/ukiryu/definitions",
+            "<ROOT>/usr/share/ukiryu/definitions"
+          ]
+        }
+      }
+    },
+    {
+      "op": "paths",
+      "env": "dirs_unset",
+      "result": {
+        "ok": {
+          "xdg_data_home": "<ROOT>/home/.local/share",
+          "xdg_data_dirs": [
+            "/usr/local/share",
+            "/usr/share"
+          ],
+          "user_definitions_directory": "<ROOT>/home/.local/share/ukiryu/definitions",
+          "tool_bundled_paths": [
+            "<ROOT>/prefix/ukiryu",
+            "<ROOT>/prefix/share/ukiryu",
+            "<ROOT>/opt/vendor/ukiryu"
+          ],
+          "search_paths": [
+            "<ROOT>/home/.local/share/ukiryu/definitions",
+            "<ROOT>/prefix/ukiryu",
+            "<ROOT>/prefix/share/ukiryu",
+            "<ROOT>/opt/vendor/ukiryu",
+            "/usr/local/share/ukiryu/definitions",
+            "/usr/share/ukiryu/definitions"
+          ]
+        }
+      }
+    },
+    {
+      "op": "paths",
+      "env": "dirs_empty",
+      "result": {
+        "ok": {
+          "xdg_data_home": "<ROOT>/home/.local/share",
+          "xdg_data_dirs": [],
+          "user_definitions_directory": "<ROOT>/home/.local/share/ukiryu/definitions",
+          "tool_bundled_paths": [
+            "<ROOT>/prefix/ukiryu",
+            "<ROOT>/prefix/share/ukiryu",
+            "<ROOT>/opt/vendor/ukiryu"
+          ],
+          "search_paths": [
+            "<ROOT>/home/.local/share/ukiryu/definitions",
+            "<ROOT>/prefix/ukiryu",
+            "<ROOT>/prefix/share/ukiryu",
+            "<ROOT>/opt/vendor/ukiryu"
+          ]
+        }
+      }
+    },
+    {
+      "op": "paths",
+      "env": "home_empty_string",
+      "result": {
+        "ok": {
+          "xdg_data_home": "",
+          "xdg_data_dirs": [
+            "<ROOT>/usr/local/share",
+            "<ROOT>/usr/share"
+          ],
+          "user_definitions_directory": "/ukiryu/definitions",
+          "tool_bundled_paths": [
+            "<ROOT>/prefix/ukiryu",
+            "<ROOT>/prefix/share/ukiryu",
+            "<ROOT>/opt/vendor/ukiryu"
+          ],
+          "search_paths": [
+            "/ukiryu/definitions",
+            "<ROOT>/prefix/ukiryu",
+            "<ROOT>/prefix/share/ukiryu",
+            "<ROOT>/opt/vendor/ukiryu",
+            "<ROOT>/usr/local/share/ukiryu/definitions",
+            "<ROOT>/usr/share/ukiryu/definitions"
+          ]
+        }
+      }
+    },
+    {
+      "op": "paths",
+      "env": "path_unset",
+      "result": {
+        "ok": {
+          "xdg_data_home": "<ROOT>/home/.local/share",
+          "xdg_data_dirs": [
+            "<ROOT>/usr/local/share",
+            "<ROOT>/usr/share"
+          ],
+          "user_definitions_directory": "<ROOT>/home/.local/share/ukiryu/definitions",
+          "tool_bundled_paths": [
+            "<ROOT>/opt/vendor/ukiryu"
+          ],
+          "search_paths": [
+            "<ROOT>/home/.local/share/ukiryu/definitions",
+            "<ROOT>/opt/vendor/ukiryu",
+            "<ROOT>/usr/local/share/ukiryu/definitions",
+            "<ROOT>/usr/share/ukiryu/definitions"
+          ]
+        }
+      }
+    },
+    {
+      "op": "paths",
+      "env": "path_empty",
+      "result": {
+        "ok": {
+          "xdg_data_home": "<ROOT>/home/.local/share",
+          "xdg_data_dirs": [
+            "<ROOT>/usr/local/share",
+            "<ROOT>/usr/share"
+          ],
+          "user_definitions_directory": "<ROOT>/home/.local/share/ukiryu/definitions",
+          "tool_bundled_paths": [
+            "<ROOT>/opt/vendor/ukiryu"
+          ],
+          "search_paths": [
+            "<ROOT>/home/.local/share/ukiryu/definitions",
+            "<ROOT>/opt/vendor/ukiryu",
+            "<ROOT>/usr/local/share/ukiryu/definitions",
+            "<ROOT>/usr/share/ukiryu/definitions"
+          ]
+        }
+      }
+    },
+    {
+      "op": "discover",
+      "env": "tree",
+      "result": {
+        "ok": {
+          "kappa": [
+            "kappa/1.0 (user) - <ROOT>/home/.local/share/ukiryu/definitions/kappa/null.yaml"
+          ],
+          "alpha": [
+            "alpha/3.0 (user) - <ROOT>/home/.local/share/ukiryu/definitions/alpha-3.0.yaml",
+            "alpha/2.0 (user) - <ROOT>/home/.local/share/ukiryu/definitions/alpha/2.0.yaml",
+            "alpha/1.0 (user) - <ROOT>/home/.local/share/ukiryu/definitions/alpha/1.0.yaml",
+            "alpha/0.9 (bundled) - <ROOT>/prefix/ukiryu/alpha/0.9.yaml",
+            "alpha/1.5 (local_system) - <ROOT>/usr/local/share/ukiryu/definitions/alpha/1.5.yaml"
+          ],
+          "iota": [
+            "iota/5.5 (user) - <ROOT>/home/.local/share/ukiryu/definitions/iota/anchors.yaml"
+          ],
+          "beta": [
+            "beta/1.0 (user) - <ROOT>/home/.local/share/ukiryu/definitions/beta/1.0.yaml",
+            "beta/3.0 (bundled) - <ROOT>/prefix/share/ukiryu/beta/3.0.yaml",
+            "beta/2.0 (local_system) - <ROOT>/usr/local/share/ukiryu/definitions/beta/2.0.yaml",
+            "beta/1.0 (system) - <ROOT>/usr/share/ukiryu/definitions/beta/1.0.yaml"
+          ],
+          "other_name": [
+            "other_name/0.1 (user) - <ROOT>/home/.local/share/ukiryu/definitions/theta/1.0.yaml"
+          ],
+          "mu": [
+            "mu/1.0 (bundled) - <ROOT>/opt/vendor/ukiryu/mu/1.0.yaml"
+          ]
+        }
+      }
+    },
+    {
+      "op": "available_tools",
+      "env": "tree",
+      "result": {
+        "ok": [
+          "alpha",
+          "beta",
+          "iota",
+          "kappa",
+          "mu",
+          "other_name"
+        ]
+      }
+    },
+    {
+      "op": "find",
+      "env": "tree",
+      "tool": "alpha",
+      "version": null,
+      "result": {
+        "ok": "alpha/3.0 (user) - <ROOT>/home/.local/share/ukiryu/definitions/alpha-3.0.yaml"
+      }
+    },
+    {
+      "op": "find",
+      "env": "tree",
+      "tool": "alpha",
+      "version": "1.5",
+      "result": {
+        "ok": "alpha/1.5 (local_system) - <ROOT>/usr/local/share/ukiryu/definitions/alpha/1.5.yaml"
+      }
+    },
+    {
+      "op": "find",
+      "env": "tree",
+      "tool": "alpha",
+      "version": "9",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "op": "find",
+      "env": "tree",
+      "tool": "nope",
+      "version": null,
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "op": "find",
+      "env": "tree",
+      "tool": "beta",
+      "version": "1.0",
+      "result": {
+        "ok": "beta/1.0 (user) - <ROOT>/home/.local/share/ukiryu/definitions/beta/1.0.yaml"
+      }
+    },
+    {
+      "op": "find",
+      "env": "tree",
+      "tool": "other_name",
+      "version": null,
+      "result": {
+        "ok": "other_name/0.1 (user) - <ROOT>/home/.local/share/ukiryu/definitions/theta/1.0.yaml"
+      }
+    },
+    {
+      "op": "find",
+      "env": "tree",
+      "tool": "mu",
+      "version": null,
+      "result": {
+        "ok": "mu/1.0 (bundled) - <ROOT>/opt/vendor/ukiryu/mu/1.0.yaml"
+      }
+    },
+    {
+      "op": "definitions_for",
+      "env": "tree",
+      "tool": "alpha",
+      "result": {
+        "ok": [
+          "alpha/3.0 (user) - <ROOT>/home/.local/share/ukiryu/definitions/alpha-3.0.yaml",
+          "alpha/2.0 (user) - <ROOT>/home/.local/share/ukiryu/definitions/alpha/2.0.yaml",
+          "alpha/1.0 (user) - <ROOT>/home/.local/share/ukiryu/definitions/alpha/1.0.yaml",
+          "alpha/0.9 (bundled) - <ROOT>/prefix/ukiryu/alpha/0.9.yaml",
+          "alpha/1.5 (local_system) - <ROOT>/usr/local/share/ukiryu/definitions/alpha/1.5.yaml"
+        ]
+      }
+    },
+    {
+      "op": "definitions_for",
+      "env": "tree",
+      "tool": "beta",
+      "result": {
+        "ok": [
+          "beta/1.0 (user) - <ROOT>/home/.local/share/ukiryu/definitions/beta/1.0.yaml",
+          "beta/3.0 (bundled) - <ROOT>/prefix/share/ukiryu/beta/3.0.yaml",
+          "beta/2.0 (local_system) - <ROOT>/usr/local/share/ukiryu/definitions/beta/2.0.yaml",
+          "beta/1.0 (system) - <ROOT>/usr/share/ukiryu/definitions/beta/1.0.yaml"
+        ]
+      }
+    },
+    {
+      "op": "definitions_for",
+      "env": "tree",
+      "tool": "nope",
+      "result": {
+        "ok": []
+      }
+    },
+    {
+      "op": "discover_in_path",
+      "env": "tree",
+      "path": "<ROOT>/home/.local/share/ukiryu/definitions",
+      "result": {
+        "ok": [
+          "alpha/1.0 (user) - <ROOT>/home/.local/share/ukiryu/definitions/alpha/1.0.yaml",
+          "alpha/2.0 (user) - <ROOT>/home/.local/share/ukiryu/definitions/alpha/2.0.yaml",
+          "alpha/3.0 (user) - <ROOT>/home/.local/share/ukiryu/definitions/alpha-3.0.yaml",
+          "beta/1.0 (user) - <ROOT>/home/.local/share/ukiryu/definitions/beta/1.0.yaml",
+          "iota/5.5 (user) - <ROOT>/home/.local/share/ukiryu/definitions/iota/anchors.yaml",
+          "kappa/1.0 (user) - <ROOT>/home/.local/share/ukiryu/definitions/kappa/null.yaml",
+          "other_name/0.1 (user) - <ROOT>/home/.local/share/ukiryu/definitions/theta/1.0.yaml"
+        ]
+      }
+    },
+    {
+      "op": "discover_in_path",
+      "env": "tree",
+      "path": "<ROOT>/usr/local/share/ukiryu/definitions",
+      "result": {
+        "ok": [
+          "alpha/1.5 (local_system) - <ROOT>/usr/local/share/ukiryu/definitions/alpha/1.5.yaml",
+          "beta/2.0 (local_system) - <ROOT>/usr/local/share/ukiryu/definitions/beta/2.0.yaml"
+        ]
+      }
+    },
+    {
+      "op": "discover_in_path",
+      "env": "tree",
+      "path": "<ROOT>/usr/share/ukiryu/definitions",
+      "result": {
+        "ok": [
+          "beta/1.0 (system) - <ROOT>/usr/share/ukiryu/definitions/beta/1.0.yaml"
+        ]
+      }
+    },
+    {
+      "op": "discover_in_path",
+      "env": "tree",
+      "path": "<ROOT>/prefix/ukiryu",
+      "result": {
+        "ok": [
+          "alpha/0.9 (bundled) - <ROOT>/prefix/ukiryu/alpha/0.9.yaml"
+        ]
+      }
+    },
+    {
+      "op": "discover_in_path",
+      "env": "tree",
+      "path": "<ROOT>/opt/vendor/ukiryu",
+      "result": {
+        "ok": [
+          "mu/1.0 (bundled) - <ROOT>/opt/vendor/ukiryu/mu/1.0.yaml"
+        ]
+      }
+    },
+    {
+      "op": "discover_in_path",
+      "env": "tree",
+      "path": "<ROOT>/nowhere",
+      "result": {
+        "ok": []
+      }
+    },
+    {
+      "op": "determine_source_type",
+      "env": "tree",
+      "path": "<ROOT>/home/.local/share/x",
+      "cwd": "<ROOT>",
+      "result": {
+        "ok": "user"
+      }
+    },
+    {
+      "op": "determine_source_type",
+      "env": "tree",
+      "path": "<ROOT>/opt/a",
+      "cwd": "<ROOT>",
+      "result": {
+        "ok": "bundled"
+      }
+    },
+    {
+      "op": "determine_source_type",
+      "env": "tree",
+      "path": "/opt/a",
+      "cwd": "<ROOT>",
+      "result": {
+        "ok": "bundled"
+      }
+    },
+    {
+      "op": "determine_source_type",
+      "env": "tree",
+      "path": "<ROOT>/usr/local/share/a",
+      "cwd": "<ROOT>",
+      "result": {
+        "ok": "local_system"
+      }
+    },
+    {
+      "op": "determine_source_type",
+      "env": "tree",
+      "path": "<ROOT>/usr/share/a",
+      "cwd": "<ROOT>",
+      "result": {
+        "ok": "system"
+      }
+    },
+    {
+      "op": "determine_source_type",
+      "env": "tree",
+      "path": "/usr/local/share",
+      "cwd": "<ROOT>",
+      "result": {
+        "ok": "local_system"
+      }
+    },
+    {
+      "op": "determine_source_type",
+      "env": "tree",
+      "path": "/usr/share/x",
+      "cwd": "<ROOT>",
+      "result": {
+        "ok": "system"
+      }
+    },
+    {
+      "op": "determine_source_type",
+      "env": "tree",
+      "path": "/srv/x",
+      "cwd": "<ROOT>",
+      "result": {
+        "ok": "bundled"
+      }
+    },
+    {
+      "op": "determine_source_type",
+      "env": "tree",
+      "path": "<ROOT>/home/.local/share/../share/x",
+      "cwd": "<ROOT>",
+      "result": {
+        "ok": "user"
+      }
+    },
+    {
+      "op": "determine_source_type",
+      "env": "tree",
+      "path": "relative/x",
+      "cwd": "<ROOT>",
+      "result": {
+        "ok": "bundled"
+      }
+    },
+    {
+      "op": "determine_source_type",
+      "env": "tree",
+      "path": "/usr/local/share/usr/share",
+      "cwd": "<ROOT>",
+      "result": {
+        "ok": "local_system"
+      }
+    },
+    {
+      "op": "determine_source_type",
+      "env": "tree",
+      "path": "/x/opt/",
+      "cwd": "<ROOT>",
+      "result": {
+        "ok": "bundled"
+      }
+    },
+    {
+      "op": "determine_source_type",
+      "env": "home_empty_string",
+      "path": "/a/b",
+      "result": {
+        "ok": "user"
+      }
+    },
+    {
+      "op": "determine_source_type",
+      "env": "home_empty_string",
+      "path": "/usr/share/x",
+      "result": {
+        "ok": "user"
+      }
+    },
+    {
+      "op": "metadata_from_file",
+      "file": "int_name.yaml",
+      "body": "name: 42\nversion: '1'\n",
+      "result": {
+        "ok": {
+          "name": "42",
+          "name_class": "Integer",
+          "version": "\"1\"",
+          "version_class": "String",
+          "to_s": "42/1 (user) - <ROOT>/edge/int_name.yaml"
+        }
+      }
+    },
+    {
+      "op": "metadata_from_file",
+      "file": "float_version.yaml",
+      "body": "name: f\nversion: 1.5\n",
+      "result": {
+        "ok": {
+          "name": "\"f\"",
+          "name_class": "String",
+          "version": "1.5",
+          "version_class": "Float",
+          "to_s": "f/1.5 (user) - <ROOT>/edge/float_version.yaml"
+        }
+      }
+    },
+    {
+      "op": "metadata_from_file",
+      "file": "int_version.yaml",
+      "body": "name: f\nversion: 2\n",
+      "result": {
+        "ok": {
+          "name": "\"f\"",
+          "name_class": "String",
+          "version": "2",
+          "version_class": "Integer",
+          "to_s": "f/2 (user) - <ROOT>/edge/int_version.yaml"
+        }
+      }
+    },
+    {
+      "op": "metadata_from_file",
+      "file": "bool_name.yaml",
+      "body": "name: true\n",
+      "result": {
+        "ok": {
+          "name": "true",
+          "name_class": "TrueClass",
+          "version": "\"1.0\"",
+          "version_class": "String",
+          "to_s": "true/1.0 (user) - <ROOT>/edge/bool_name.yaml"
+        }
+      }
+    },
+    {
+      "op": "metadata_from_file",
+      "file": "false_name.yaml",
+      "body": "name: false\n",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "op": "metadata_from_file",
+      "file": "symbol.yaml",
+      "body": "name: :sym\nversion: '1'\n",
+      "result": {
+        "ok": {
+          "name": ":sym",
+          "name_class": "Symbol",
+          "version": "\"1\"",
+          "version_class": "String",
+          "to_s": "sym/1 (user) - <ROOT>/edge/symbol.yaml"
+        }
+      }
+    },
+    {
+      "op": "metadata_from_file",
+      "file": "empty.yaml",
+      "body": "",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "op": "metadata_from_file",
+      "file": "scalar.yaml",
+      "body": "hello\n",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "op": "metadata_from_file",
+      "file": "date.yaml",
+      "body": "name: d\nversion: 2020-01-01\n",
+      "result": {
+        "ok": null
+      }
+    },
+    {
+      "op": "metadata_from_file",
+      "file": "multi.yaml",
+      "body": "name: a\n---\nname: b\n",
+      "result": {
+        "ok": {
+          "name": "\"a\"",
+          "name_class": "String",
+          "version": "\"1.0\"",
+          "version_class": "String",
+          "to_s": "a/1.0 (user) - <ROOT>/edge/multi.yaml"
+        }
+      }
+    },
+    {
+      "op": "metadata_from_file",
+      "file": "tagged.yaml",
+      "body": "name: !custom x\n",
+      "result": {
+        "ok": {
+          "name": "\"x\"",
+          "name_class": "String",
+          "version": "\"1.0\"",
+          "version_class": "String",
+          "to_s": "x/1.0 (user) - <ROOT>/edge/tagged.yaml"
+        }
+      }
+    },
+    {
+      "op": "metadata_from_file",
+      "file": "quoted.yaml",
+      "body": "\"name\": 'q'\n",
+      "result": {
+        "ok": {
+          "name": "\"q\"",
+          "name_class": "String",
+          "version": "\"1.0\"",
+          "version_class": "String",
+          "to_s": "q/1.0 (user) - <ROOT>/edge/quoted.yaml"
+        }
+      }
+    },
+    {
+      "op": "metadata_from_file",
+      "file": "dupkey.yaml",
+      "body": "name: a\nname: b\n",
+      "result": {
+        "ok": {
+          "name": "\"b\"",
+          "name_class": "String",
+          "version": "\"1.0\"",
+          "version_class": "String",
+          "to_s": "b/1.0 (user) - <ROOT>/edge/dupkey.yaml"
+        }
+      }
+    },
+    {
+      "op": "metadata_from_file",
+      "file": "missing.yaml",
+      "result": {
+        "ok": null
+      }
+    }
+  ]
+}
