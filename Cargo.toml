@@ -1,0 +1,25 @@
+[workspace]
+resolver = "2"
+members = ["ukiryu", "ukiryu-ffi", "ukiryu-cli"]
+exclude = ["tools/dependency-probe"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.86"
+authors = ["Ribose Inc. <open.source@ribose.com>"]
+license = "BSD-2-Clause"
+repository = "https://github.com/ukiryu/ukiryu-rs"
+
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["arbitrary_precision"] }
+num-bigint = "0.4"
+# Development pin: qualified float/emitter/MSRV + browser prerequisites in
+# leptris/yeptris-rs#57, retaining #55. Registry publication remains owner-gated.
+yeptris = { git = "https://github.com/leptris/yeptris-rs", rev = "6a62ea753276b2e03ae1c7fb88a15d22f3e822a9", features = ["vendored"] }
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
