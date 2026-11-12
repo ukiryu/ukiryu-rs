@@ -1,0 +1,50 @@
+{
+  "provenance": {
+    "oracle": "ukiryu/ukiryu",
+    "oracle_sha": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+    "ruby": "4.0.1",
+    "json": "3.1.0",
+    "lutaml_model": "0.8.175",
+    "script": "handoffs/batch-03/K22-RENDER/capture/nonfinite.rb",
+    "calls": [
+      "JSON.pretty_generate([f])",
+      "SuccessResponse#to_json(pretty: true) with metadata.duration_seconds = f",
+      "SuccessResponse#to_yaml"
+    ]
+  },
+  "cases": {
+    "NaN": {
+      "pretty_generate": {
+        "class": "JSON::GeneratorError",
+        "message": "NaN not allowed in JSON"
+      },
+      "response_to_json": {
+        "class": "JSON::GeneratorError",
+        "message": "NaN not allowed in JSON"
+      },
+      "response_to_yaml": "---\nstatus: success\nexit_code: 0\nmetadata:\n  started_at: a\n  duration_seconds: .nan\n"
+    },
+    "Infinity": {
+      "pretty_generate": {
+        "class": "JSON::GeneratorError",
+        "message": "Infinity not allowed in JSON"
+      },
+      "response_to_json": {
+        "class": "JSON::GeneratorError",
+        "message": "Infinity not allowed in JSON"
+      },
+      "response_to_yaml": "---\nstatus: success\nexit_code: 0\nmetadata:\n  started_at: a\n  duration_seconds: .inf\n"
+    },
+    "-Infinity": {
+      "pretty_generate": {
+        "class": "JSON::GeneratorError",
+        "message": "-Infinity not allowed in JSON"
+      },
+      "response_to_json": {
+        "class": "JSON::GeneratorError",
+        "message": "-Infinity not allowed in JSON"
+      },
+      "response_to_yaml": "---\nstatus: success\nexit_code: 0\nmetadata:\n  started_at: a\n  duration_seconds: -.inf\n"
+    }
+  }
+}

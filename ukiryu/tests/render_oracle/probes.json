@@ -1,0 +1,366 @@
+{
+  "about": "Authored inputs for the render YAML cross-engine checks (ukiryu#27, ukiryu-rs#23 render contract). 'values' are emitted by ukiryu::render::to_yaml as {value: <v>}; 'snippets' are loaded by both Yeptris and Psych. Values use the canonical encoding of tests/render_oracle/support.rs.",
+  "values": [
+    {
+      "id": "str-no",
+      "value": "no"
+    },
+    {
+      "id": "str-yes",
+      "value": "yes"
+    },
+    {
+      "id": "str-y",
+      "value": "y"
+    },
+    {
+      "id": "str-n",
+      "value": "n"
+    },
+    {
+      "id": "str-on",
+      "value": "on"
+    },
+    {
+      "id": "str-off",
+      "value": "off"
+    },
+    {
+      "id": "str-true",
+      "value": "true"
+    },
+    {
+      "id": "str-null",
+      "value": "null"
+    },
+    {
+      "id": "str-tilde",
+      "value": "~"
+    },
+    {
+      "id": "str-empty",
+      "value": ""
+    },
+    {
+      "id": "str-timestamp",
+      "value": "2024-01-17T10:20:30Z"
+    },
+    {
+      "id": "str-timestamp-offset",
+      "value": "2024-01-17T10:20:30+00:00"
+    },
+    {
+      "id": "str-date",
+      "value": "2024-01-17"
+    },
+    {
+      "id": "str-int",
+      "value": "123"
+    },
+    {
+      "id": "str-int-signed",
+      "value": "-7"
+    },
+    {
+      "id": "str-octal-old",
+      "value": "0123"
+    },
+    {
+      "id": "str-octal",
+      "value": "0o17"
+    },
+    {
+      "id": "str-hex",
+      "value": "0x1A"
+    },
+    {
+      "id": "str-underscore-int",
+      "value": "1_000"
+    },
+    {
+      "id": "str-sexagesimal",
+      "value": "1:30"
+    },
+    {
+      "id": "str-float",
+      "value": "2.0e-05"
+    },
+    {
+      "id": "str-float-plain",
+      "value": "1.25"
+    },
+    {
+      "id": "str-inf-word",
+      "value": ".inf"
+    },
+    {
+      "id": "str-nan-word",
+      "value": ".nan"
+    },
+    {
+      "id": "str-dot-path",
+      "value": ".a"
+    },
+    {
+      "id": "str-abs-path",
+      "value": "/usr/bin/jq"
+    },
+    {
+      "id": "str-colon-space",
+      "value": "a: b"
+    },
+    {
+      "id": "str-hash",
+      "value": "echo # c"
+    },
+    {
+      "id": "str-unicode",
+      "value": "héllo ✓"
+    },
+    {
+      "id": "multiline-trailing-newline",
+      "value": "line1\nline2\n"
+    },
+    {
+      "id": "multiline-no-trailing",
+      "value": "a\nb"
+    },
+    {
+      "id": "multiline-only-newline",
+      "value": "\n"
+    },
+    {
+      "id": "multiline-leading-blank",
+      "value": "\n\nthird\n"
+    },
+    {
+      "id": "multiline-trailing-spaces",
+      "value": "a \nb\n"
+    },
+    {
+      "id": "long-line",
+      "value": "word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12 word13 word14 word15 word16 word17 word18 word19 word20 word21 word22 word23 word24 word25 word26 word27 word28 word29 word30\n"
+    },
+    {
+      "id": "bool-false",
+      "value": false
+    },
+    {
+      "id": "bool-true",
+      "value": true
+    },
+    {
+      "id": "null",
+      "value": null
+    },
+    {
+      "id": "int",
+      "value": {
+        "$int": "123"
+      }
+    },
+    {
+      "id": "int-max",
+      "value": {
+        "$int": "9223372036854775807"
+      }
+    },
+    {
+      "id": "float-small",
+      "value": {
+        "$float": "3ef4f8b588e368f1"
+      }
+    },
+    {
+      "id": "float-large",
+      "value": {
+        "$float": "4341c37937e08000"
+      }
+    },
+    {
+      "id": "float-neg-zero",
+      "value": {
+        "$float": "8000000000000000"
+      }
+    },
+    {
+      "id": "float-plain",
+      "value": {
+        "$float": "3ff4000000000000"
+      }
+    },
+    {
+      "id": "float-nan",
+      "value": {
+        "$float": "nan"
+      }
+    },
+    {
+      "id": "float-inf",
+      "value": {
+        "$float": "inf"
+      }
+    },
+    {
+      "id": "float-neg-inf",
+      "value": {
+        "$float": "-inf"
+      }
+    },
+    {
+      "id": "tagged-local",
+      "value": {
+        "$tag": "!custom",
+        "value": "x"
+      }
+    },
+    {
+      "id": "tagged-str",
+      "value": {
+        "$tag": "tag:yaml.org,2002:str",
+        "value": "123"
+      }
+    },
+    {
+      "id": "seq-mixed",
+      "value": [
+        "no",
+        {
+          "$int": "1"
+        },
+        null,
+        "2024-01-17"
+      ]
+    }
+  ],
+  "snippets": [
+    {
+      "id": "plain-no",
+      "yaml": "v: no\n"
+    },
+    {
+      "id": "quoted-no",
+      "yaml": "v: 'no'\n"
+    },
+    {
+      "id": "plain-yes",
+      "yaml": "v: yes\n"
+    },
+    {
+      "id": "plain-y",
+      "yaml": "v: y\n"
+    },
+    {
+      "id": "plain-on",
+      "yaml": "v: on\n"
+    },
+    {
+      "id": "plain-timestamp",
+      "yaml": "v: 2024-01-17T10:20:30Z\n"
+    },
+    {
+      "id": "quoted-timestamp",
+      "yaml": "v: '2024-01-17T10:20:30Z'\n"
+    },
+    {
+      "id": "plain-date",
+      "yaml": "v: 2024-01-17\n"
+    },
+    {
+      "id": "plain-octal-old",
+      "yaml": "v: 0123\n"
+    },
+    {
+      "id": "plain-octal",
+      "yaml": "v: 0o17\n"
+    },
+    {
+      "id": "plain-underscore-int",
+      "yaml": "v: 1_000\n"
+    },
+    {
+      "id": "plain-sexagesimal",
+      "yaml": "v: 1:30\n"
+    },
+    {
+      "id": "plain-float-exp",
+      "yaml": "v: 2.0e-05\n"
+    },
+    {
+      "id": "plain-float-1e3",
+      "yaml": "v: 1e3\n"
+    },
+    {
+      "id": "plain-inf",
+      "yaml": "v: .inf\n"
+    },
+    {
+      "id": "plain-neg-inf",
+      "yaml": "v: -.inf\n"
+    },
+    {
+      "id": "plain-nan",
+      "yaml": "v: .nan\n"
+    },
+    {
+      "id": "plain-tilde",
+      "yaml": "v: ~\n"
+    },
+    {
+      "id": "literal-clip",
+      "yaml": "v: |\n  a\n  b\n"
+    },
+    {
+      "id": "literal-strip",
+      "yaml": "v: |-\n  a\n  b\n"
+    },
+    {
+      "id": "literal-keep",
+      "yaml": "v: |+\n  a\n\n"
+    },
+    {
+      "id": "single-quoted-newline",
+      "yaml": "v: 'a\n\n  '\n"
+    },
+    {
+      "id": "double-quoted-newline",
+      "yaml": "v: \"a\\n\"\n"
+    },
+    {
+      "id": "folded-psych",
+      "yaml": "v: 'word1 word2\n  word3\n\n  '\n"
+    },
+    {
+      "id": "alias",
+      "yaml": "v: &x [1, 2]\nw: *x\n"
+    },
+    {
+      "id": "alias-map",
+      "yaml": "base: &b {k: 1}\nother: *b\n"
+    },
+    {
+      "id": "merge-key",
+      "yaml": "base: &b {k: 1}\nother:\n  <<: *b\n  j: 2\n"
+    },
+    {
+      "id": "tag-local",
+      "yaml": "v: !custom x\n"
+    },
+    {
+      "id": "tag-str",
+      "yaml": "v: !!str 123\n"
+    },
+    {
+      "id": "tag-float",
+      "yaml": "v: !!float 1\n"
+    },
+    {
+      "id": "tag-int",
+      "yaml": "v: !!int '7'\n"
+    },
+    {
+      "id": "explicit-doc",
+      "yaml": "--- {}\n"
+    }
+  ]
+}
