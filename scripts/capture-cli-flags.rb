@@ -11,6 +11,11 @@ class Ukiryu::CliCommands::RunCommand
     puts JSON.generate(arguments: args, options: @options)
   end
 end
+class Ukiryu::CliCommands::ValidateCommand
+  def file(path)
+    puts JSON.generate(arguments: [path], options: options)
+  end
+end
 rows = []
 [
   %w[exec tool],
@@ -22,6 +27,9 @@ rows = []
   %w[exec tool --dry-run=false],
   %w[exec tool -- action --raw x=1],
   %w[exec tool --unknown],
+  %w[validate file profile.yaml --strict --no-strict],
+  %w[validate file profile.yaml --strict=false],
+  %w[validate file profile.yaml --no-strict --strict],
 ].each do |args|
   original_out, original_err = $stdout, $stderr
   $stdout, $stderr = StringIO.new, StringIO.new

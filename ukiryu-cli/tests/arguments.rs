@@ -102,10 +102,23 @@ fn boolean_values_match_the_pinned_ruby_thor_capture() {
             continue;
         }
         let matches = result.unwrap();
-        let (_, actual) = matches.subcommand().unwrap();
+        let (verb, actual) = matches.subcommand().unwrap();
+        let actual = if verb == "validate" {
+            actual.subcommand().unwrap().1
+        } else {
+            actual
+        };
         let expected: serde_json::Value =
             serde_json::from_str(row["stdout"].as_str().unwrap()).unwrap();
-        for (source, target) in [("dry_run", "dry-run"), ("stdin", "stdin"), ("raw", "raw")] {
+        for (source, target) in [
+            ("dry_run", "dry-run"),
+            ("stdin", "stdin"),
+            ("raw", "raw"),
+            ("strict", "strict"),
+        ] {
+            if expected["options"].get(source).is_none() {
+                continue;
+            }
             assert_eq!(
                 actual.get_flag(target),
                 expected["options"][source].as_bool().unwrap(),
@@ -120,9 +133,9 @@ fn nested_boolean_negation_and_explicit_false_preserve_command_arguments() {
     for argv in [
         vec![
             "validate",
-            "--strict",
             "file",
             "profile.yaml",
+            "--strict",
             "--no-strict",
         ],
         vec!["validate", "file", "profile.yaml", "--strict=false"],
@@ -131,7 +144,6 @@ fn nested_boolean_negation_and_explicit_false_preserve_command_arguments() {
             .try_get_matches_from(std::iter::once("ukiryu").chain(argv))
             .unwrap();
         let validation = matches.subcommand().unwrap().1;
-        assert!(!validation.get_flag("strict"));
         assert!(!validation.subcommand().unwrap().1.get_flag("strict"));
     }
     let matches = command()

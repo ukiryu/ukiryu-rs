@@ -91,6 +91,38 @@
       "stderr": "Unknown switches \"--unknown\"\n",
       "error": "SystemExit",
       "message": "exit"
+    },
+    {
+      "argv": [
+        "validate",
+        "file",
+        "profile.yaml",
+        "--strict",
+        "--no-strict"
+      ],
+      "stdout": "{\"arguments\":[\"profile.yaml\"],\"options\":{\"verbose\":false,\"format\":\"text\",\"strict\":false,\"executable\":false,\"all\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "validate",
+        "file",
+        "profile.yaml",
+        "--strict=false"
+      ],
+      "stdout": "{\"arguments\":[\"profile.yaml\"],\"options\":{\"verbose\":false,\"format\":\"text\",\"strict\":false,\"executable\":false,\"all\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "validate",
+        "file",
+        "profile.yaml",
+        "--no-strict",
+        "--strict"
+      ],
+      "stdout": "{\"arguments\":[\"profile.yaml\"],\"options\":{\"verbose\":false,\"format\":\"text\",\"strict\":true,\"executable\":false,\"all\":false}}\n",
+      "stderr": ""
     }
   ]
 }
