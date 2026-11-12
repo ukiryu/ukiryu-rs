@@ -1,0 +1,3 @@
+id: http://example.com/schemas/with-id.json
+type: object
+required: [name]
