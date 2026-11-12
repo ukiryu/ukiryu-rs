@@ -3,6 +3,7 @@
 //! Detection never starts processes or reads files itself. The root executor
 //! and the man-page parser (K21-MAN) plug in through these traits; tests use
 //! scripted implementations that record every request.
+use crate::extractors::man::ManPageError;
 
 /// One `Ukiryu::Executor.execute(executable, args, shell:, timeout:, allow_failure: true)` call.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -56,7 +57,11 @@ pub trait CommandRunner {
     fn run(&mut self, request: &CommandRequest) -> Result<CommandOutput, RunnerError>;
 }
 
-/// `Ukiryu::ManPageParser.parse_date(path)`: an ISO date or `None`.
+/// `Ukiryu::ManPageParser.parse_date(path)`: an ISO date, `None` when the
+/// page is missing or has no usable `.Dd` line, or the exception the source
+/// lets escape (`Date::Error`, `RangeError`, `ArgumentError`, `Errno::*`).
+///
+/// [`crate::extractors::man::ManPageParser`] implements it.
 pub trait ManPageDates {
-    fn parse_date(&mut self, path: &str) -> Option<String>;
+    fn parse_date(&mut self, path: &str) -> Result<Option<String>, ManPageError>;
 }

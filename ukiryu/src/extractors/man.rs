@@ -8,7 +8,13 @@
 //!
 //! File access is injected through [`ManPageSource`]; [`FileSystem`] is the
 //! `std::fs` implementation. `Date.parse` fills missing fields from the
-//! current day, so the parser takes that day explicitly as [`Today`].
+//! current day, so the parser reads that day from an injected
+//! [`Clock`] (the runtime / execution context clock:
+//! the system clock at an explicit UTC offset natively, a fixed day in tests).
+//!
+//! [`ManPageParser`] implements
+//! [`ManPageDates`], so version
+//! detection's `man_page` method gets the same errors the source raises.
 //!
 //! `ManPageParser.resolve_man_page_path` is not ported: at the pinned source
 //! it calls `Ukiryu::Platform.current`, which does not exist, so every call
@@ -19,6 +25,8 @@ mod onig;
 
 pub use date::{date_parse, date_parse_fragments, CivilDate, DateFailure, Fragments, Today};
 
+use crate::runtime::Clock;
+use crate::version_detection::ManPageDates;
 use num_bigint::BigInt;
 use onig::Regex;
 use std::fmt;
@@ -99,12 +107,25 @@ impl From<DateFailure> for ManPageError {
 #[derive(Clone, Debug)]
 pub struct ManPageParser<S> {
     source: S,
-    today: Today,
+    clock: Clock,
 }
 
 impl<S: ManPageSource> ManPageParser<S> {
+    /// A parser whose "today" is always `today`.
     pub fn new(source: S, today: Today) -> Self {
-        ManPageParser { source, today }
+        Self::with_clock(source, Clock::Fixed(today))
+    }
+
+    /// A parser that reads "today" from `clock` on every parse, as the
+    /// source's `Date.parse` does. Pass the runtime or execution context
+    /// clock (`Runtime::clock`, `ExecutionContext::clock`).
+    pub fn with_clock(source: S, clock: Clock) -> Self {
+        ManPageParser { source, clock }
+    }
+
+    /// The injected clock.
+    pub fn clock(&self) -> Clock {
+        self.clock
     }
 
     /// `ManPageParser.parse_date(path)`: the `.Dd` date as `YYYY-MM-DD`, or
@@ -129,7 +150,7 @@ impl<S: ManPageSource> ManPageParser<S> {
             }
             Err(e) => return Err(ManPageError::Io(e)),
         };
-        parse_content(&content, &self.today)
+        parse_content(&content, &self.clock.today())
     }
 
     /// `ManPageParser.parse_from_fallback(paths)`: the first path that yields
@@ -144,6 +165,14 @@ impl<S: ManPageSource> ManPageParser<S> {
             }
         }
         Ok(None)
+    }
+}
+
+/// The man-page boundary of `VersionDetector.detect_with_methods`. Errors
+/// propagate unchanged; the source does not rescue them there.
+impl<S: ManPageSource> ManPageDates for ManPageParser<S> {
+    fn parse_date(&mut self, path: &str) -> Result<Option<String>, ManPageError> {
+        ManPageParser::parse_date(self, Some(path))
     }
 }
 
