@@ -1,0 +1,90 @@
+{
+ "provenance": {
+  "oracle": "ukiryu ab6df353c6dc2d7faf7817a86aafcafa82579896",
+  "file": "lib/ukiryu/platform.rb",
+  "method": "Ukiryu::Platform.detect"
+ },
+ "rows": [
+  {
+   "host_os": "linux-gnu",
+   "ruby": {
+    "ok": "linux"
+   }
+  },
+  {
+   "host_os": "linux",
+   "ruby": {
+    "ok": "linux"
+   }
+  },
+  {
+   "host_os": "darwin23",
+   "ruby": {
+    "ok": "macos"
+   }
+  },
+  {
+   "host_os": "Darwin",
+   "ruby": {
+    "ok": "macos"
+   }
+  },
+  {
+   "host_os": "mac os x",
+   "ruby": {
+    "ok": "macos"
+   }
+  },
+  {
+   "host_os": "mingw32",
+   "ruby": {
+    "ok": "windows"
+   }
+  },
+  {
+   "host_os": "mswin64",
+   "ruby": {
+    "ok": "windows"
+   }
+  },
+  {
+   "host_os": "cygwin",
+   "ruby": {
+    "error": "Ukiryu::Errors::UnsupportedPlatformError",
+    "message_first_line": "Unable to detect platform. Host OS: cygwin"
+   }
+  },
+  {
+   "host_os": "freebsd14",
+   "ruby": {
+    "error": "Ukiryu::Errors::UnsupportedPlatformError",
+    "message_first_line": "Unable to detect platform. Host OS: freebsd14"
+   }
+  },
+  {
+   "host_os": "WINDOWS",
+   "ruby": {
+    "ok": "windows"
+   }
+  },
+  {
+   "host_os": "x86_64-Linux",
+   "ruby": {
+    "ok": "linux"
+   }
+  },
+  {
+   "host_os": "darwinlinux",
+   "ruby": {
+    "ok": "macos"
+   }
+  },
+  {
+   "host_os": "",
+   "ruby": {
+    "error": "Ukiryu::Errors::UnsupportedPlatformError",
+    "message_first_line": "Unable to detect platform. Host OS: "
+   }
+  }
+ ]
+}
