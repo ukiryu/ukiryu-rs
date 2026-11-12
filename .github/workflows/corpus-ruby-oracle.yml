@@ -1,0 +1,72 @@
+name: Corpus (Ruby oracle)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'corpus/**'
+      - '.github/workflows/corpus-ruby-oracle.yml'
+  pull_request:
+    paths:
+      - 'corpus/**'
+      - '.github/workflows/corpus-ruby-oracle.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: verify (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-14, windows-2022]
+    defaults:
+      run:
+        working-directory: corpus/oracle-ruby
+    env:
+      BUNDLE_FROZEN: 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '4.0.1'
+          bundler-cache: true
+          working-directory: corpus/oracle-ruby
+      - name: Replay corpus against the pinned Ruby oracle
+        shell: bash
+        run: |
+          export UKIRYU_CONFORMANCE_DIR="$GITHUB_WORKSPACE/corpus/conformance"
+          bundle exec ruby verify.rb --report "$RUNNER_TEMP/corpus-report.json"
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: corpus-report-${{ matrix.os }}
+          path: ${{ runner.temp }}/corpus-report.json
+          if-no-files-found: error
+
+  controls:
+    name: negative controls and regeneration
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: corpus/oracle-ruby
+    env:
+      BUNDLE_FROZEN: 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '4.0.1'
+          bundler-cache: true
+          working-directory: corpus/oracle-ruby
+      - name: Negative controls
+        run: UKIRYU_CONFORMANCE_DIR="$GITHUB_WORKSPACE/corpus/conformance" bundle exec ruby selftest.rb
+      - name: Regeneration is byte-identical
+        run: bundle exec ruby capture.rb --check
