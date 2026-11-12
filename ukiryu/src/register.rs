@@ -328,6 +328,36 @@ pub struct GitInfo {
     pub last_update: Option<i64>,
 }
 
+/// Preserve spawn error kinds until clone guidance has been selected.
+/// Completed git commands keep the source's error-text classification.
+#[derive(Debug)]
+enum GitFailure {
+    Spawn(io::Error),
+    Exit(String),
+}
+
+impl GitFailure {
+    fn uses_path_guidance(&self) -> bool {
+        match self {
+            Self::Spawn(error) => error.kind() == io::ErrorKind::NotFound,
+            Self::Exit(message) => {
+                message.contains("cannot find")
+                    || message.contains("not found")
+                    || message.contains("path specified")
+            }
+        }
+    }
+}
+
+impl fmt::Display for GitFailure {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Spawn(error) => fmt::Display::fmt(error, f),
+            Self::Exit(message) => f.write_str(message),
+        }
+    }
+}
+
 impl Git {
     fn command(&self) -> Command {
         let mut command = Command::new(&self.program);
@@ -340,16 +370,16 @@ impl Git {
         command
     }
 
-    fn run(&self, args: &[&std::ffi::OsStr]) -> std::result::Result<String, String> {
+    fn run(&self, args: &[&std::ffi::OsStr]) -> std::result::Result<String, GitFailure> {
         let output = self
             .command()
             .args(args)
             .output()
-            .map_err(|e| e.to_string())?;
+            .map_err(GitFailure::Spawn)?;
         if output.status.success() {
             Ok(String::from_utf8_lossy(&output.stdout).into_owned())
         } else {
-            Err(format!(
+            Err(GitFailure::Exit(format!(
                 "git {} failed with {}: {}",
                 args.iter()
                     .map(|a| a.to_string_lossy())
@@ -357,11 +387,11 @@ impl Git {
                     .join(" "),
                 output.status,
                 String::from_utf8_lossy(&output.stderr).trim()
-            ))
+            )))
         }
     }
 
-    fn clone_into(&self, path: &Path) -> std::result::Result<(), String> {
+    fn clone_into(&self, path: &Path) -> std::result::Result<(), GitFailure> {
         self.run(&[
             "clone".as_ref(),
             "--".as_ref(),
@@ -381,7 +411,7 @@ impl Git {
         .is_ok()
     }
 
-    fn pull(&self, path: &Path) -> std::result::Result<(), String> {
+    fn pull(&self, path: &Path) -> std::result::Result<(), GitFailure> {
         self.run(&["-C".as_ref(), path.as_os_str(), "pull".as_ref()])
             .map(drop)
     }
@@ -736,11 +766,8 @@ impl Register {
         })
     }
 
-    fn clone_error_message(&self, git: &Git, message: &str) -> String {
-        if message.contains("cannot find")
-            || message.contains("not found")
-            || message.contains("path specified")
-        {
+    fn clone_error_message(&self, git: &Git, message: &GitFailure) -> String {
+        if message.uses_path_guidance() {
             format!(
                 "Failed to clone register: {message}\n\n\
                  This error usually means git is not in PATH or the target directory is not accessible.\n\n\
@@ -833,5 +860,39 @@ pub fn ruby_float(n: f64) -> String {
         format!("{n:.1}")
     } else {
         format!("{n}")
+    }
+}
+
+#[cfg(test)]
+mod spawn_guidance_tests {
+    use super::*;
+
+    #[test]
+    fn spawn_guidance_uses_error_kind_and_preserves_command_diagnostics() {
+        let register = Register::new(PathBuf::from("unused"), Source::Manual);
+        let git = Git {
+            program: "git".into(),
+            remote_url: "fixture://register".into(),
+        };
+        let cases = [
+            (
+                GitFailure::Spawn(io::Error::new(io::ErrorKind::NotFound, "Datei fehlt")),
+                true,
+            ),
+            (
+                GitFailure::Spawn(io::Error::new(io::ErrorKind::PermissionDenied, "not found")),
+                false,
+            ),
+            (GitFailure::Exit("repository not found".into()), true),
+            (GitFailure::Exit("permission denied".into()), false),
+        ];
+        for (failure, path_guidance) in cases {
+            let message = register.clone_error_message(&git, &failure);
+            assert_eq!(
+                message.contains("This error usually means git is not in PATH"),
+                path_guidance,
+                "{message}"
+            );
+        }
     }
 }

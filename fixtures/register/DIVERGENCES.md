@@ -28,8 +28,13 @@ script refuses to run if the copy differs.
 - Clone failure text: the source embeds the git gem's `Git::FailedError`
   message (Ruby inspect of the full command, environment and stderr). The port
   embeds `git <args> failed with <status>: <stderr>` from the installed git.
-  The Ukiryu framing (first-line prefix, the "To fix this" guidance and its
-  `git`-not-in-PATH classification) is identical and tested.
+  The Ukiryu framing and completed-command error-text classification remain
+  source-compatible. For a failed process spawn, missing Git is classified by
+  `std::io::ErrorKind::NotFound`, independent of localized OS wording. The
+  source's English-substring heuristic misclassifies Unix ENOENT; this explicit
+  portability correction gives PATH guidance on every supported host. Other
+  spawn errors retain general clone guidance even when their text happens to
+  contain an English "not found" phrase.
 - Progress output (`Cloning register from ...`, `done`, `Updating
   register...`) is printed by the source when stdout is a TTY. The shared core
   does not print; adapters own presentation.
