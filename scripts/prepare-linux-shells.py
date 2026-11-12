@@ -3,6 +3,7 @@
 import hashlib
 import json
 import os
+import getpass
 import pathlib
 import subprocess
 
@@ -11,9 +12,27 @@ packages = root / 'packages'
 prefix = root / 'root'
 packages.mkdir(parents=True, exist_ok=True)
 prefix.mkdir(parents=True, exist_ok=True)
+# Runner images can have stale package indexes (yielding archive 404s). Refresh
+# signed Ubuntu indexes in a private state/cache, without root or global hooks.
+state = root / 'apt-state'
+cache = root / 'apt-cache'
+for directory in [state / 'lists/partial', cache / 'archives/partial', root / 'apt-log']:
+    directory.mkdir(parents=True, exist_ok=True)
+sources = root / 'sources.list'
+sources.write_text(''.join(
+    f'deb [signed-by=/usr/share/keyrings/ubuntu-archive-keyring.gpg] {url} {suite} main universe\n'
+    for url, suite in [('https://archive.ubuntu.com/ubuntu', 'noble'),
+                       ('https://archive.ubuntu.com/ubuntu', 'noble-updates'),
+                       ('https://security.ubuntu.com/ubuntu', 'noble-security')]))
+apt = ['apt-get', '-o', 'Dir::Etc::main=/dev/null', '-o', 'Dir::Etc::parts=-',
+       '-o', f'Dir::Etc::sourcelist={sources}', '-o', 'Dir::Etc::sourceparts=-',
+       '-o', f'Dir::State={state}', '-o', 'Dir::State::status=/var/lib/dpkg/status',
+       '-o', f'Dir::Cache={cache}', '-o', f'Dir::Log={root / "apt-log"}',
+       '-o', f'APT::Sandbox::User={getpass.getuser()}']
+subprocess.run(apt + ['update'], check=True)
 # apt download only fetches archives. dpkg-deb extracts into this job's private
 # prefix; neither command installs packages or runs package maintainer scripts.
-subprocess.run(['apt-get', 'download', 'fish', 'tcsh', 'zsh', 'zsh-common',
+subprocess.run(apt + ['download', 'fish', 'tcsh', 'zsh', 'zsh-common',
                 'libpcre2-32-0', 'libpcre2-8-0', 'libtinfo6', 'libncurses6',
                 'libcrypt1'], cwd=packages, check=True)
 receipts = []
@@ -25,7 +44,7 @@ libpaths = [str(path) for path in (prefix / 'usr/lib/x86_64-linux-gnu',
                                  prefix / 'lib/x86_64-linux-gnu') if path.is_dir()]
 env = dict(os.environ)
 env['PATH'] = str(prefix / 'usr/bin') + os.pathsep + env['PATH']
-env['LD_LIBRARY_PATH'] = os.pathsep.join(libpaths + [env.get('LD_LIBRARY_PATH', '')])
+env['LD_LIBRARY_PATH'] = os.pathsep.join(libpaths + ([env['LD_LIBRARY_PATH']] if env.get('LD_LIBRARY_PATH') else []))
 for shell in ['bash', 'dash', 'zsh', 'fish', 'tcsh']:
     # Command execution proves this private prefix's binaries can actually load.
     subprocess.run([shell, '-c', 'echo ukiryu-shell-ready'], env=env, check=True)
