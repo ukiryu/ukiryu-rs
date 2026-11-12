@@ -1,10 +1,10 @@
 fn main() {
-    let args: Vec<_> = std::env::args_os().skip(1).collect();
-    if args.len() == 1 && args[0] == "--version" {
+    let matches = ukiryu_cli::arguments::command().get_matches();
+    if matches.subcommand_name() == Some("version") {
         println!("ukiryu {}", ukiryu::VERSION);
     } else {
         eprintln!(
-            "Ukiryu CLI migration is incomplete; only --version is available in this foundation."
+            "Ukiryu CLI migration is incomplete; the selected command handler is not integrated yet."
         );
         std::process::exit(2);
     }
