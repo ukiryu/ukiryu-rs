@@ -1,0 +1,2 @@
+# Corpus hashes and golden bytes must survive every checkout unchanged.
+corpus/conformance/** -text
