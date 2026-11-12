@@ -1,0 +1,3642 @@
+{
+ "provenance": {
+  "oracle": "ukiryu ab6df353c6dc2d7faf7817a86aafcafa82579896",
+  "files": [
+   "lib/ukiryu/environment.rb",
+   "lib/ukiryu/execution_context.rb",
+   "lib/ukiryu/runtime.rb",
+   "lib/ukiryu/shell.rb"
+  ],
+  "ruby": "4.0.1",
+  "platform": "x86_64-linux",
+  "note": "Captured on Linux; Windows rows force Platform.windows? and replace ENV, so they do not prove native Windows behaviour.",
+  "capture_script": "handoffs/batch-03/K20-ENV/capture/capture.rb (local evidence)"
+ },
+ "environment": [
+  {
+   "id": "init_empty",
+   "source": "spec/ukiryu/environment_spec.rb:7",
+   "init": [],
+   "ops": [
+    [
+     "to_h"
+    ]
+   ],
+   "final": [],
+   "observations": [
+    []
+   ],
+   "original_after": []
+  },
+  {
+   "id": "init_hash",
+   "source": "spec/ukiryu/environment_spec.rb:12",
+   "init": [
+    [
+     "PATH",
+     "/usr/bin"
+    ],
+    [
+     "HOME",
+     "/home/user"
+    ]
+   ],
+   "ops": [
+    [
+     "get",
+     "PATH"
+    ],
+    [
+     "get",
+     "HOME"
+    ]
+   ],
+   "final": [
+    [
+     "PATH",
+     "/usr/bin"
+    ],
+    [
+     "HOME",
+     "/home/user"
+    ]
+   ],
+   "observations": [
+    "/usr/bin",
+    "/home/user"
+   ],
+   "original_after": [
+    [
+     "PATH",
+     "/usr/bin"
+    ],
+    [
+     "HOME",
+     "/home/user"
+    ]
+   ]
+  },
+  {
+   "id": "get_existing",
+   "source": "spec/ukiryu/environment_spec.rb:49",
+   "init": [
+    [
+     "FOO",
+     "bar"
+    ]
+   ],
+   "ops": [
+    [
+     "get",
+     "FOO"
+    ]
+   ],
+   "final": [
+    [
+     "FOO",
+     "bar"
+    ]
+   ],
+   "observations": [
+    "bar"
+   ],
+   "original_after": [
+    [
+     "FOO",
+     "bar"
+    ]
+   ]
+  },
+  {
+   "id": "get_missing",
+   "source": "spec/ukiryu/environment_spec.rb:54",
+   "init": [],
+   "ops": [
+    [
+     "get",
+     "MISSING"
+    ]
+   ],
+   "final": [],
+   "observations": [
+    null
+   ],
+   "original_after": []
+  },
+  {
+   "id": "get_symbol",
+   "source": "spec/ukiryu/environment_spec.rb:59",
+   "init": [
+    [
+     "FOO",
+     "bar"
+    ]
+   ],
+   "ops": [
+    [
+     "get_sym",
+     "FOO"
+    ]
+   ],
+   "final": [
+    [
+     "FOO",
+     "bar"
+    ]
+   ],
+   "observations": [
+    "bar"
+   ],
+   "original_after": [
+    [
+     "FOO",
+     "bar"
+    ]
+   ]
+  },
+  {
+   "id": "key_existing",
+   "source": "spec/ukiryu/environment_spec.rb:66",
+   "init": [
+    [
+     "FOO",
+     "bar"
+    ]
+   ],
+   "ops": [
+    [
+     "key",
+     "FOO"
+    ]
+   ],
+   "final": [
+    [
+     "FOO",
+     "bar"
+    ]
+   ],
+   "observations": [
+    true
+   ],
+   "original_after": [
+    [
+     "FOO",
+     "bar"
+    ]
+   ]
+  },
+  {
+   "id": "key_missing",
+   "source": "spec/ukiryu/environment_spec.rb:71",
+   "init": [],
+   "ops": [
+    [
+     "key",
+     "MISSING"
+    ]
+   ],
+   "final": [],
+   "observations": [
+    false
+   ],
+   "original_after": []
+  },
+  {
+   "id": "key_symbol",
+   "source": "spec/ukiryu/environment_spec.rb:76",
+   "init": [
+    [
+     "FOO",
+     "bar"
+    ]
+   ],
+   "ops": [
+    [
+     "key_sym",
+     "FOO"
+    ]
+   ],
+   "final": [
+    [
+     "FOO",
+     "bar"
+    ]
+   ],
+   "observations": [
+    true
+   ],
+   "original_after": [
+    [
+     "FOO",
+     "bar"
+    ]
+   ]
+  },
+  {
+   "id": "keys_all",
+   "source": "spec/ukiryu/environment_spec.rb:83",
+   "init": [
+    [
+     "A",
+     "1"
+    ],
+    [
+     "B",
+     "2"
+    ],
+    [
+     "C",
+     "3"
+    ]
+   ],
+   "ops": [
+    [
+     "keys"
+    ]
+   ],
+   "final": [
+    [
+     "A",
+     "1"
+    ],
+    [
+     "B",
+     "2"
+    ],
+    [
+     "C",
+     "3"
+    ]
+   ],
+   "observations": [
+    [
+     "A",
+     "B",
+     "C"
+    ]
+   ],
+   "original_after": [
+    [
+     "A",
+     "1"
+    ],
+    [
+     "B",
+     "2"
+    ],
+    [
+     "C",
+     "3"
+    ]
+   ]
+  },
+  {
+   "id": "set_new",
+   "source": "spec/ukiryu/environment_spec.rb:103",
+   "init": [],
+   "ops": [
+    [
+     "set",
+     "NEW_VAR",
+     "new_value"
+    ],
+    [
+     "get",
+     "NEW_VAR"
+    ]
+   ],
+   "final": [
+    [
+     "NEW_VAR",
+     "new_value"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "NEW_VAR",
+       "new_value"
+      ]
+     ]
+    },
+    "new_value"
+   ],
+   "original_after": []
+  },
+  {
+   "id": "set_update",
+   "source": "spec/ukiryu/environment_spec.rb:108",
+   "init": [
+    [
+     "VAR",
+     "old"
+    ]
+   ],
+   "ops": [
+    [
+     "set",
+     "VAR",
+     "new"
+    ],
+    [
+     "get",
+     "VAR"
+    ]
+   ],
+   "final": [
+    [
+     "VAR",
+     "new"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "VAR",
+       "new"
+      ]
+     ]
+    },
+    "new"
+   ],
+   "original_after": [
+    [
+     "VAR",
+     "old"
+    ]
+   ]
+  },
+  {
+   "id": "set_int",
+   "source": "spec/ukiryu/environment_spec.rb:120",
+   "init": [],
+   "ops": [
+    [
+     "set_int",
+     "NUM",
+     "123"
+    ],
+    [
+     "get",
+     "NUM"
+    ]
+   ],
+   "final": [
+    [
+     "NUM",
+     "123"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "NUM",
+       "123"
+      ]
+     ]
+    },
+    "123"
+   ],
+   "original_after": []
+  },
+  {
+   "id": "set_symbol_key",
+   "source": "spec/ukiryu/environment_spec.rb:125",
+   "init": [],
+   "ops": [
+    [
+     "set_sym_key",
+     "SYMBOL_KEY",
+     "value"
+    ],
+    [
+     "get",
+     "SYMBOL_KEY"
+    ]
+   ],
+   "final": [
+    [
+     "SYMBOL_KEY",
+     "value"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "SYMBOL_KEY",
+       "value"
+      ]
+     ]
+    },
+    "value"
+   ],
+   "original_after": []
+  },
+  {
+   "id": "delete_existing",
+   "source": "spec/ukiryu/environment_spec.rb:132",
+   "init": [
+    [
+     "A",
+     "1"
+    ],
+    [
+     "B",
+     "2"
+    ]
+   ],
+   "ops": [
+    [
+     "delete",
+     "A"
+    ],
+    [
+     "key",
+     "A"
+    ],
+    [
+     "key",
+     "B"
+    ]
+   ],
+   "final": [
+    [
+     "B",
+     "2"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "B",
+       "2"
+      ]
+     ]
+    },
+    false,
+    true
+   ],
+   "original_after": [
+    [
+     "A",
+     "1"
+    ],
+    [
+     "B",
+     "2"
+    ]
+   ]
+  },
+  {
+   "id": "delete_missing",
+   "source": "spec/ukiryu/environment_spec.rb:145",
+   "init": [],
+   "ops": [
+    [
+     "delete",
+     "MISSING"
+    ],
+    [
+     "key",
+     "MISSING"
+    ]
+   ],
+   "final": [],
+   "observations": [
+    {
+     "env": []
+    },
+    false
+   ],
+   "original_after": []
+  },
+  {
+   "id": "merge_env",
+   "source": "spec/ukiryu/environment_spec.rb:152",
+   "init": [
+    [
+     "A",
+     "1"
+    ],
+    [
+     "B",
+     "2"
+    ]
+   ],
+   "ops": [
+    [
+     "merge_env",
+     [
+      [
+       "B",
+       "updated"
+      ],
+      [
+       "C",
+       "3"
+      ]
+     ]
+    ],
+    [
+     "get",
+     "A"
+    ],
+    [
+     "get",
+     "B"
+    ],
+    [
+     "get",
+     "C"
+    ]
+   ],
+   "final": [
+    [
+     "A",
+     "1"
+    ],
+    [
+     "B",
+     "updated"
+    ],
+    [
+     "C",
+     "3"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "A",
+       "1"
+      ],
+      [
+       "B",
+       "updated"
+      ],
+      [
+       "C",
+       "3"
+      ]
+     ]
+    },
+    "1",
+    "updated",
+    "3"
+   ],
+   "original_after": [
+    [
+     "A",
+     "1"
+    ],
+    [
+     "B",
+     "2"
+    ]
+   ]
+  },
+  {
+   "id": "merge_hash",
+   "source": "spec/ukiryu/environment_spec.rb:161",
+   "init": [
+    [
+     "A",
+     "1"
+    ]
+   ],
+   "ops": [
+    [
+     "merge_hash",
+     [
+      [
+       "B",
+       "2"
+      ],
+      [
+       "C",
+       "3"
+      ]
+     ]
+    ],
+    [
+     "get",
+     "A"
+    ],
+    [
+     "get",
+     "B"
+    ],
+    [
+     "get",
+     "C"
+    ]
+   ],
+   "final": [
+    [
+     "A",
+     "1"
+    ],
+    [
+     "B",
+     "2"
+    ],
+    [
+     "C",
+     "3"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "A",
+       "1"
+      ],
+      [
+       "B",
+       "2"
+      ],
+      [
+       "C",
+       "3"
+      ]
+     ]
+    },
+    "1",
+    "2",
+    "3"
+   ],
+   "original_after": [
+    [
+     "A",
+     "1"
+    ]
+   ]
+  },
+  {
+   "id": "prepend_single",
+   "source": "spec/ukiryu/environment_spec.rb:178",
+   "init": [
+    [
+     "PATH",
+     "/usr/bin:/usr/local/bin"
+    ]
+   ],
+   "ops": [
+    [
+     "prepend_path",
+     "/opt/bin"
+    ],
+    [
+     "get",
+     "PATH"
+    ]
+   ],
+   "final": [
+    [
+     "PATH",
+     "/opt/bin:/usr/bin:/usr/local/bin"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "PATH",
+       "/opt/bin:/usr/bin:/usr/local/bin"
+      ]
+     ]
+    },
+    "/opt/bin:/usr/bin:/usr/local/bin"
+   ],
+   "original_after": [
+    [
+     "PATH",
+     "/usr/bin:/usr/local/bin"
+    ]
+   ]
+  },
+  {
+   "id": "prepend_multi",
+   "source": "spec/ukiryu/environment_spec.rb:184",
+   "init": [
+    [
+     "PATH",
+     "/usr/bin"
+    ]
+   ],
+   "ops": [
+    [
+     "prepend_path",
+     [
+      "/opt/bin",
+      "/usr/local/bin"
+     ]
+    ],
+    [
+     "get",
+     "PATH"
+    ]
+   ],
+   "final": [
+    [
+     "PATH",
+     "/opt/bin:/usr/local/bin:/usr/bin"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "PATH",
+       "/opt/bin:/usr/local/bin:/usr/bin"
+      ]
+     ]
+    },
+    "/opt/bin:/usr/local/bin:/usr/bin"
+   ],
+   "original_after": [
+    [
+     "PATH",
+     "/usr/bin"
+    ]
+   ]
+  },
+  {
+   "id": "prepend_create",
+   "source": "spec/ukiryu/environment_spec.rb:190",
+   "init": [],
+   "ops": [
+    [
+     "prepend_path",
+     "/new/bin"
+    ],
+    [
+     "get",
+     "PATH"
+    ]
+   ],
+   "final": [
+    [
+     "PATH",
+     "/new/bin"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "PATH",
+       "/new/bin"
+      ]
+     ]
+    },
+    "/new/bin"
+   ],
+   "original_after": []
+  },
+  {
+   "id": "prepend_new_instance",
+   "source": "spec/ukiryu/environment_spec.rb:195",
+   "init": [
+    [
+     "PATH",
+     "/usr/bin"
+    ]
+   ],
+   "ops": [
+    [
+     "prepend_path",
+     "/opt"
+    ],
+    [
+     "get",
+     "PATH"
+    ]
+   ],
+   "final": [
+    [
+     "PATH",
+     "/opt:/usr/bin"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "PATH",
+       "/opt:/usr/bin"
+      ]
+     ]
+    },
+    "/opt:/usr/bin"
+   ],
+   "original_after": [
+    [
+     "PATH",
+     "/usr/bin"
+    ]
+   ]
+  },
+  {
+   "id": "append_single",
+   "source": "spec/ukiryu/environment_spec.rb:204",
+   "init": [
+    [
+     "PATH",
+     "/usr/bin:/usr/local/bin"
+    ]
+   ],
+   "ops": [
+    [
+     "append_path",
+     "/opt/bin"
+    ],
+    [
+     "get",
+     "PATH"
+    ]
+   ],
+   "final": [
+    [
+     "PATH",
+     "/usr/bin:/usr/local/bin:/opt/bin"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "PATH",
+       "/usr/bin:/usr/local/bin:/opt/bin"
+      ]
+     ]
+    },
+    "/usr/bin:/usr/local/bin:/opt/bin"
+   ],
+   "original_after": [
+    [
+     "PATH",
+     "/usr/bin:/usr/local/bin"
+    ]
+   ]
+  },
+  {
+   "id": "append_multi",
+   "source": "spec/ukiryu/environment_spec.rb:210",
+   "init": [
+    [
+     "PATH",
+     "/usr/bin"
+    ]
+   ],
+   "ops": [
+    [
+     "append_path",
+     [
+      "/opt/bin",
+      "/usr/local/bin"
+     ]
+    ],
+    [
+     "get",
+     "PATH"
+    ]
+   ],
+   "final": [
+    [
+     "PATH",
+     "/usr/bin:/opt/bin:/usr/local/bin"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "PATH",
+       "/usr/bin:/opt/bin:/usr/local/bin"
+      ]
+     ]
+    },
+    "/usr/bin:/opt/bin:/usr/local/bin"
+   ],
+   "original_after": [
+    [
+     "PATH",
+     "/usr/bin"
+    ]
+   ]
+  },
+  {
+   "id": "append_create",
+   "source": "spec/ukiryu/environment_spec.rb:216",
+   "init": [],
+   "ops": [
+    [
+     "append_path",
+     "/new/bin"
+    ],
+    [
+     "get",
+     "PATH"
+    ]
+   ],
+   "final": [
+    [
+     "PATH",
+     "/new/bin"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "PATH",
+       "/new/bin"
+      ]
+     ]
+    },
+    "/new/bin"
+   ],
+   "original_after": []
+  },
+  {
+   "id": "append_new_instance",
+   "source": "spec/ukiryu/environment_spec.rb:221",
+   "init": [
+    [
+     "PATH",
+     "/usr/bin"
+    ]
+   ],
+   "ops": [
+    [
+     "append_path",
+     "/opt"
+    ],
+    [
+     "get",
+     "PATH"
+    ]
+   ],
+   "final": [
+    [
+     "PATH",
+     "/usr/bin:/opt"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "PATH",
+       "/usr/bin:/opt"
+      ]
+     ]
+    },
+    "/usr/bin:/opt"
+   ],
+   "original_after": [
+    [
+     "PATH",
+     "/usr/bin"
+    ]
+   ]
+  },
+  {
+   "id": "remove_single",
+   "source": "spec/ukiryu/environment_spec.rb:230",
+   "init": [
+    [
+     "PATH",
+     "/usr/bin:/opt/bin:/usr/local/bin"
+    ]
+   ],
+   "ops": [
+    [
+     "remove_path",
+     "/opt/bin"
+    ],
+    [
+     "get",
+     "PATH"
+    ]
+   ],
+   "final": [
+    [
+     "PATH",
+     "/usr/bin:/usr/local/bin"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "PATH",
+       "/usr/bin:/usr/local/bin"
+      ]
+     ]
+    },
+    "/usr/bin:/usr/local/bin"
+   ],
+   "original_after": [
+    [
+     "PATH",
+     "/usr/bin:/opt/bin:/usr/local/bin"
+    ]
+   ]
+  },
+  {
+   "id": "remove_multiple",
+   "source": "spec/ukiryu/environment_spec.rb:236",
+   "init": [
+    [
+     "PATH",
+     "/usr/bin:/usr/bin:/opt/bin"
+    ]
+   ],
+   "ops": [
+    [
+     "remove_path",
+     "/usr/bin"
+    ],
+    [
+     "get",
+     "PATH"
+    ]
+   ],
+   "final": [
+    [
+     "PATH",
+     "/opt/bin"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "PATH",
+       "/opt/bin"
+      ]
+     ]
+    },
+    "/opt/bin"
+   ],
+   "original_after": [
+    [
+     "PATH",
+     "/usr/bin:/usr/bin:/opt/bin"
+    ]
+   ]
+  },
+  {
+   "id": "remove_missing",
+   "source": "spec/ukiryu/environment_spec.rb:242",
+   "init": [
+    [
+     "PATH",
+     "/usr/bin"
+    ]
+   ],
+   "ops": [
+    [
+     "remove_path",
+     "/nonexistent"
+    ],
+    [
+     "get",
+     "PATH"
+    ]
+   ],
+   "final": [
+    [
+     "PATH",
+     "/usr/bin"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "PATH",
+       "/usr/bin"
+      ]
+     ]
+    },
+    "/usr/bin"
+   ],
+   "original_after": [
+    [
+     "PATH",
+     "/usr/bin"
+    ]
+   ]
+  },
+  {
+   "id": "remove_prefix",
+   "source": "spec/ukiryu/environment_spec.rb:248",
+   "init": [
+    [
+     "PATH",
+     "/usr/bin:/opt/bin"
+    ]
+   ],
+   "ops": [
+    [
+     "remove_path",
+     "/opt"
+    ],
+    [
+     "get",
+     "PATH"
+    ]
+   ],
+   "final": [
+    [
+     "PATH",
+     "/usr/bin"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "PATH",
+       "/usr/bin"
+      ]
+     ]
+    },
+    "/usr/bin"
+   ],
+   "original_after": [
+    [
+     "PATH",
+     "/usr/bin:/opt/bin"
+    ]
+   ]
+  },
+  {
+   "id": "contains_true",
+   "source": "spec/ukiryu/environment_spec.rb:257",
+   "init": [
+    [
+     "PATH",
+     "/usr/bin:/usr/local/bin"
+    ]
+   ],
+   "ops": [
+    [
+     "path_contains",
+     "/usr/bin"
+    ],
+    [
+     "path_contains",
+     "/usr/local/bin"
+    ]
+   ],
+   "final": [
+    [
+     "PATH",
+     "/usr/bin:/usr/local/bin"
+    ]
+   ],
+   "observations": [
+    true,
+    true
+   ],
+   "original_after": [
+    [
+     "PATH",
+     "/usr/bin:/usr/local/bin"
+    ]
+   ]
+  },
+  {
+   "id": "contains_false",
+   "source": "spec/ukiryu/environment_spec.rb:263",
+   "init": [
+    [
+     "PATH",
+     "/usr/bin"
+    ]
+   ],
+   "ops": [
+    [
+     "path_contains",
+     "/opt/bin"
+    ]
+   ],
+   "final": [
+    [
+     "PATH",
+     "/usr/bin"
+    ]
+   ],
+   "observations": [
+    false
+   ],
+   "original_after": [
+    [
+     "PATH",
+     "/usr/bin"
+    ]
+   ]
+  },
+  {
+   "id": "contains_unset",
+   "source": "spec/ukiryu/environment_spec.rb:268",
+   "init": [],
+   "ops": [
+    [
+     "path_contains",
+     "/usr/bin"
+    ]
+   ],
+   "final": [],
+   "observations": [
+    false
+   ],
+   "original_after": []
+  },
+  {
+   "id": "path_array",
+   "source": "spec/ukiryu/environment_spec.rb:275",
+   "init": [
+    [
+     "PATH",
+     "/usr/bin:/usr/local/bin:/opt/bin"
+    ]
+   ],
+   "ops": [
+    [
+     "path_array"
+    ]
+   ],
+   "final": [
+    [
+     "PATH",
+     "/usr/bin:/usr/local/bin:/opt/bin"
+    ]
+   ],
+   "observations": [
+    [
+     "/usr/bin",
+     "/usr/local/bin",
+     "/opt/bin"
+    ]
+   ],
+   "original_after": [
+    [
+     "PATH",
+     "/usr/bin:/usr/local/bin:/opt/bin"
+    ]
+   ]
+  },
+  {
+   "id": "path_array_unset",
+   "source": "spec/ukiryu/environment_spec.rb:280",
+   "init": [],
+   "ops": [
+    [
+     "path_array"
+    ]
+   ],
+   "final": [],
+   "observations": [
+    []
+   ],
+   "original_after": []
+  },
+  {
+   "id": "inspect_keys",
+   "source": "spec/ukiryu/environment_spec.rb:313",
+   "init": [
+    [
+     "A",
+     "1"
+    ],
+    [
+     "B",
+     "2"
+    ],
+    [
+     "C",
+     "3"
+    ]
+   ],
+   "ops": [
+    [
+     "inspect"
+    ]
+   ],
+   "final": [
+    [
+     "A",
+     "1"
+    ],
+    [
+     "B",
+     "2"
+    ],
+    [
+     "C",
+     "3"
+    ]
+   ],
+   "observations": [
+    "#<Ukiryu::Environment keys=3>"
+   ],
+   "original_after": [
+    [
+     "A",
+     "1"
+    ],
+    [
+     "B",
+     "2"
+    ],
+    [
+     "C",
+     "3"
+    ]
+   ]
+  },
+  {
+   "id": "chroot_set",
+   "source": "spec/ukiryu/environment_spec.rb:362",
+   "init": [],
+   "ops": [
+    [
+     "set",
+     "CHROOT",
+     "/mnt/chroot"
+    ],
+    [
+     "set",
+     "PATH",
+     "/chroot/usr/bin:/chroot/bin:/usr/bin"
+    ],
+    [
+     "get",
+     "CHROOT"
+    ],
+    [
+     "get",
+     "PATH"
+    ]
+   ],
+   "final": [
+    [
+     "CHROOT",
+     "/mnt/chroot"
+    ],
+    [
+     "PATH",
+     "/chroot/usr/bin:/chroot/bin:/usr/bin"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "CHROOT",
+       "/mnt/chroot"
+      ]
+     ]
+    },
+    {
+     "env": [
+      [
+       "CHROOT",
+       "/mnt/chroot"
+      ],
+      [
+       "PATH",
+       "/chroot/usr/bin:/chroot/bin:/usr/bin"
+      ]
+     ]
+    },
+    "/mnt/chroot",
+    "/chroot/usr/bin:/chroot/bin:/usr/bin"
+   ],
+   "original_after": []
+  },
+  {
+   "id": "edge_path_empty_prepend",
+   "source": "edge",
+   "init": [
+    [
+     "PATH",
+     ""
+    ]
+   ],
+   "ops": [
+    [
+     "prepend_path",
+     "/a"
+    ],
+    [
+     "get",
+     "PATH"
+    ]
+   ],
+   "final": [
+    [
+     "PATH",
+     "/a"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "PATH",
+       "/a"
+      ]
+     ]
+    },
+    "/a"
+   ],
+   "original_after": [
+    [
+     "PATH",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "edge_path_empty_append",
+   "source": "edge",
+   "init": [
+    [
+     "PATH",
+     ""
+    ]
+   ],
+   "ops": [
+    [
+     "append_path",
+     "/a"
+    ],
+    [
+     "get",
+     "PATH"
+    ]
+   ],
+   "final": [
+    [
+     "PATH",
+     "/a"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "PATH",
+       "/a"
+      ]
+     ]
+    },
+    "/a"
+   ],
+   "original_after": [
+    [
+     "PATH",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "edge_prepend_empty_array",
+   "source": "edge",
+   "init": [
+    [
+     "PATH",
+     "/usr/bin"
+    ]
+   ],
+   "ops": [
+    [
+     "prepend_path",
+     []
+    ],
+    [
+     "get",
+     "PATH"
+    ]
+   ],
+   "final": [
+    [
+     "PATH",
+     ":/usr/bin"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "PATH",
+       ":/usr/bin"
+      ]
+     ]
+    },
+    ":/usr/bin"
+   ],
+   "original_after": [
+    [
+     "PATH",
+     "/usr/bin"
+    ]
+   ]
+  },
+  {
+   "id": "edge_append_empty_array_unset",
+   "source": "edge",
+   "init": [],
+   "ops": [
+    [
+     "append_path",
+     []
+    ],
+    [
+     "get",
+     "PATH"
+    ],
+    [
+     "key",
+     "PATH"
+    ]
+   ],
+   "final": [
+    [
+     "PATH",
+     ""
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "PATH",
+       ""
+      ]
+     ]
+    },
+    "",
+    true
+   ],
+   "original_after": []
+  },
+  {
+   "id": "edge_split_trailing",
+   "source": "edge",
+   "init": [
+    [
+     "PATH",
+     "/a:/b::"
+    ]
+   ],
+   "ops": [
+    [
+     "path_array"
+    ]
+   ],
+   "final": [
+    [
+     "PATH",
+     "/a:/b::"
+    ]
+   ],
+   "observations": [
+    [
+     "/a",
+     "/b"
+    ]
+   ],
+   "original_after": [
+    [
+     "PATH",
+     "/a:/b::"
+    ]
+   ]
+  },
+  {
+   "id": "edge_split_leading",
+   "source": "edge",
+   "init": [
+    [
+     "PATH",
+     ":/a::/b"
+    ]
+   ],
+   "ops": [
+    [
+     "path_array"
+    ]
+   ],
+   "final": [
+    [
+     "PATH",
+     ":/a::/b"
+    ]
+   ],
+   "observations": [
+    [
+     "",
+     "/a",
+     "",
+     "/b"
+    ]
+   ],
+   "original_after": [
+    [
+     "PATH",
+     ":/a::/b"
+    ]
+   ]
+  },
+  {
+   "id": "edge_split_only_colons",
+   "source": "edge",
+   "init": [
+    [
+     "PATH",
+     ":::"
+    ]
+   ],
+   "ops": [
+    [
+     "path_array"
+    ]
+   ],
+   "final": [
+    [
+     "PATH",
+     ":::"
+    ]
+   ],
+   "observations": [
+    []
+   ],
+   "original_after": [
+    [
+     "PATH",
+     ":::"
+    ]
+   ]
+  },
+  {
+   "id": "edge_contains_empty_segment",
+   "source": "edge",
+   "init": [
+    [
+     "PATH",
+     "/a::/b"
+    ]
+   ],
+   "ops": [
+    [
+     "path_contains",
+     ""
+    ],
+    [
+     "path_contains",
+     "/a"
+    ]
+   ],
+   "final": [
+    [
+     "PATH",
+     "/a::/b"
+    ]
+   ],
+   "observations": [
+    true,
+    true
+   ],
+   "original_after": [
+    [
+     "PATH",
+     "/a::/b"
+    ]
+   ]
+  },
+  {
+   "id": "edge_contains_trailing_empty",
+   "source": "edge",
+   "init": [
+    [
+     "PATH",
+     "/a:"
+    ]
+   ],
+   "ops": [
+    [
+     "path_contains",
+     ""
+    ]
+   ],
+   "final": [
+    [
+     "PATH",
+     "/a:"
+    ]
+   ],
+   "observations": [
+    false
+   ],
+   "original_after": [
+    [
+     "PATH",
+     "/a:"
+    ]
+   ]
+  },
+  {
+   "id": "edge_remove_trailing_slash",
+   "source": "edge",
+   "init": [
+    [
+     "PATH",
+     "/opt:/opt/bin:/optx:/usr/bin"
+    ]
+   ],
+   "ops": [
+    [
+     "remove_path",
+     "/opt/"
+    ],
+    [
+     "get",
+     "PATH"
+    ]
+   ],
+   "final": [
+    [
+     "PATH",
+     "/optx:/usr/bin"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "PATH",
+       "/optx:/usr/bin"
+      ]
+     ]
+    },
+    "/optx:/usr/bin"
+   ],
+   "original_after": [
+    [
+     "PATH",
+     "/opt:/opt/bin:/optx:/usr/bin"
+    ]
+   ]
+  },
+  {
+   "id": "edge_remove_root",
+   "source": "edge",
+   "init": [
+    [
+     "PATH",
+     "/usr/bin:rel:/bin:"
+    ]
+   ],
+   "ops": [
+    [
+     "remove_path",
+     "/"
+    ],
+    [
+     "get",
+     "PATH"
+    ]
+   ],
+   "final": [
+    [
+     "PATH",
+     "rel"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "PATH",
+       "rel"
+      ]
+     ]
+    },
+    "rel"
+   ],
+   "original_after": [
+    [
+     "PATH",
+     "/usr/bin:rel:/bin:"
+    ]
+   ]
+  },
+  {
+   "id": "edge_remove_unset",
+   "source": "edge",
+   "init": [
+    [
+     "A",
+     "1"
+    ]
+   ],
+   "ops": [
+    [
+     "remove_path",
+     "/x"
+    ],
+    [
+     "get",
+     "PATH"
+    ],
+    [
+     "key",
+     "PATH"
+    ],
+    [
+     "keys"
+    ]
+   ],
+   "final": [
+    [
+     "A",
+     "1"
+    ],
+    [
+     "PATH",
+     ""
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "A",
+       "1"
+      ],
+      [
+       "PATH",
+       ""
+      ]
+     ]
+    },
+    "",
+    true,
+    [
+     "A",
+     "PATH"
+    ]
+   ],
+   "original_after": [
+    [
+     "A",
+     "1"
+    ]
+   ]
+  },
+  {
+   "id": "edge_remove_collapses_empty",
+   "source": "edge",
+   "init": [
+    [
+     "PATH",
+     "/a::/b:"
+    ]
+   ],
+   "ops": [
+    [
+     "remove_path",
+     "/b"
+    ],
+    [
+     "get",
+     "PATH"
+    ]
+   ],
+   "final": [
+    [
+     "PATH",
+     "/a:"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "PATH",
+       "/a:"
+      ]
+     ]
+    },
+    "/a:"
+   ],
+   "original_after": [
+    [
+     "PATH",
+     "/a::/b:"
+    ]
+   ]
+  },
+  {
+   "id": "edge_windows_path_colon_rule",
+   "source": "edge",
+   "init": [
+    [
+     "PATH",
+     "C:\\Windows;C:\\Tools"
+    ]
+   ],
+   "ops": [
+    [
+     "path_array"
+    ],
+    [
+     "append_path",
+     "D:\\bin"
+    ],
+    [
+     "get",
+     "PATH"
+    ],
+    [
+     "path_contains",
+     "C"
+    ]
+   ],
+   "final": [
+    [
+     "PATH",
+     "C:\\Windows;C:\\Tools:D:\\bin"
+    ]
+   ],
+   "observations": [
+    [
+     "C",
+     "\\Windows;C",
+     "\\Tools"
+    ],
+    {
+     "env": [
+      [
+       "PATH",
+       "C:\\Windows;C:\\Tools:D:\\bin"
+      ]
+     ]
+    },
+    "C:\\Windows;C:\\Tools:D:\\bin",
+    true
+   ],
+   "original_after": [
+    [
+     "PATH",
+     "C:\\Windows;C:\\Tools"
+    ]
+   ]
+  },
+  {
+   "id": "edge_lowercase_path_ignored",
+   "source": "edge",
+   "init": [
+    [
+     "Path",
+     "/x"
+    ]
+   ],
+   "ops": [
+    [
+     "prepend_path",
+     "/a"
+    ],
+    [
+     "keys"
+    ],
+    [
+     "get",
+     "PATH"
+    ],
+    [
+     "get",
+     "Path"
+    ]
+   ],
+   "final": [
+    [
+     "Path",
+     "/x"
+    ],
+    [
+     "PATH",
+     "/a"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "Path",
+       "/x"
+      ],
+      [
+       "PATH",
+       "/a"
+      ]
+     ]
+    },
+    [
+     "Path",
+     "PATH"
+    ],
+    "/a",
+    "/x"
+   ],
+   "original_after": [
+    [
+     "Path",
+     "/x"
+    ]
+   ]
+  },
+  {
+   "id": "edge_case_sensitive_keys",
+   "source": "edge",
+   "init": [
+    [
+     "foo",
+     "1"
+    ]
+   ],
+   "ops": [
+    [
+     "get",
+     "FOO"
+    ],
+    [
+     "key",
+     "Foo"
+    ],
+    [
+     "set",
+     "FOO",
+     "2"
+    ],
+    [
+     "keys"
+    ]
+   ],
+   "final": [
+    [
+     "foo",
+     "1"
+    ],
+    [
+     "FOO",
+     "2"
+    ]
+   ],
+   "observations": [
+    null,
+    false,
+    {
+     "env": [
+      [
+       "foo",
+       "1"
+      ],
+      [
+       "FOO",
+       "2"
+      ]
+     ]
+    },
+    [
+     "foo",
+     "FOO"
+    ]
+   ],
+   "original_after": [
+    [
+     "foo",
+     "1"
+    ]
+   ]
+  },
+  {
+   "id": "edge_key_order_set_existing",
+   "source": "edge",
+   "init": [
+    [
+     "A",
+     "1"
+    ],
+    [
+     "B",
+     "2"
+    ],
+    [
+     "C",
+     "3"
+    ]
+   ],
+   "ops": [
+    [
+     "set",
+     "A",
+     "x"
+    ],
+    [
+     "keys"
+    ]
+   ],
+   "final": [
+    [
+     "A",
+     "x"
+    ],
+    [
+     "B",
+     "2"
+    ],
+    [
+     "C",
+     "3"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "A",
+       "x"
+      ],
+      [
+       "B",
+       "2"
+      ],
+      [
+       "C",
+       "3"
+      ]
+     ]
+    },
+    [
+     "A",
+     "B",
+     "C"
+    ]
+   ],
+   "original_after": [
+    [
+     "A",
+     "1"
+    ],
+    [
+     "B",
+     "2"
+    ],
+    [
+     "C",
+     "3"
+    ]
+   ]
+  },
+  {
+   "id": "edge_key_order_delete_readd",
+   "source": "edge",
+   "init": [
+    [
+     "A",
+     "1"
+    ],
+    [
+     "B",
+     "2"
+    ]
+   ],
+   "ops": [
+    [
+     "delete",
+     "A"
+    ],
+    [
+     "set",
+     "A",
+     "3"
+    ],
+    [
+     "keys"
+    ]
+   ],
+   "final": [
+    [
+     "B",
+     "2"
+    ],
+    [
+     "A",
+     "3"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "B",
+       "2"
+      ]
+     ]
+    },
+    {
+     "env": [
+      [
+       "B",
+       "2"
+      ],
+      [
+       "A",
+       "3"
+      ]
+     ]
+    },
+    [
+     "B",
+     "A"
+    ]
+   ],
+   "original_after": [
+    [
+     "A",
+     "1"
+    ],
+    [
+     "B",
+     "2"
+    ]
+   ]
+  },
+  {
+   "id": "edge_key_order_merge",
+   "source": "edge",
+   "init": [
+    [
+     "A",
+     "1"
+    ],
+    [
+     "B",
+     "2"
+    ]
+   ],
+   "ops": [
+    [
+     "merge_hash",
+     [
+      [
+       "C",
+       "3"
+      ],
+      [
+       "A",
+       "9"
+      ]
+     ]
+    ],
+    [
+     "keys"
+    ],
+    [
+     "to_h"
+    ]
+   ],
+   "final": [
+    [
+     "A",
+     "9"
+    ],
+    [
+     "B",
+     "2"
+    ],
+    [
+     "C",
+     "3"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "A",
+       "9"
+      ],
+      [
+       "B",
+       "2"
+      ],
+      [
+       "C",
+       "3"
+      ]
+     ]
+    },
+    [
+     "A",
+     "B",
+     "C"
+    ],
+    [
+     [
+      "A",
+      "9"
+     ],
+     [
+      "B",
+      "2"
+     ],
+     [
+      "C",
+      "3"
+     ]
+    ]
+   ],
+   "original_after": [
+    [
+     "A",
+     "1"
+    ],
+    [
+     "B",
+     "2"
+    ]
+   ]
+  },
+  {
+   "id": "edge_key_order_prepend_new",
+   "source": "edge",
+   "init": [
+    [
+     "A",
+     "1"
+    ]
+   ],
+   "ops": [
+    [
+     "prepend_path",
+     "/p"
+    ],
+    [
+     "keys"
+    ]
+   ],
+   "final": [
+    [
+     "A",
+     "1"
+    ],
+    [
+     "PATH",
+     "/p"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "A",
+       "1"
+      ],
+      [
+       "PATH",
+       "/p"
+      ]
+     ]
+    },
+    [
+     "A",
+     "PATH"
+    ]
+   ],
+   "original_after": [
+    [
+     "A",
+     "1"
+    ]
+   ]
+  },
+  {
+   "id": "edge_empty_value",
+   "source": "edge",
+   "init": [
+    [
+     "E",
+     ""
+    ]
+   ],
+   "ops": [
+    [
+     "get",
+     "E"
+    ],
+    [
+     "key",
+     "E"
+    ]
+   ],
+   "final": [
+    [
+     "E",
+     ""
+    ]
+   ],
+   "observations": [
+    "",
+    true
+   ],
+   "original_after": [
+    [
+     "E",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "edge_inspect_empty",
+   "source": "edge",
+   "init": [],
+   "ops": [
+    [
+     "inspect"
+    ]
+   ],
+   "final": [],
+   "observations": [
+    "#<Ukiryu::Environment keys=0>"
+   ],
+   "original_after": []
+  },
+  {
+   "id": "edge_unicode",
+   "source": "edge",
+   "init": [
+    [
+     "ÜNI",
+     "wert/ß"
+    ]
+   ],
+   "ops": [
+    [
+     "prepend_path",
+     "/ü"
+    ],
+    [
+     "get",
+     "ÜNI"
+    ],
+    [
+     "inspect"
+    ]
+   ],
+   "final": [
+    [
+     "ÜNI",
+     "wert/ß"
+    ],
+    [
+     "PATH",
+     "/ü"
+    ]
+   ],
+   "observations": [
+    {
+     "env": [
+      [
+       "ÜNI",
+       "wert/ß"
+      ],
+      [
+       "PATH",
+       "/ü"
+      ]
+     ]
+    },
+    "wert/ß",
+    "#<Ukiryu::Environment keys=2>"
+   ],
+   "original_after": [
+    [
+     "ÜNI",
+     "wert/ß"
+    ]
+   ]
+  }
+ ],
+ "equality": [
+  {
+   "id": "eq_same",
+   "source": "spec/ukiryu/environment_spec.rb:288",
+   "a": [
+    [
+     "A",
+     "1"
+    ],
+    [
+     "B",
+     "2"
+    ]
+   ],
+   "b": [
+    [
+     "A",
+     "1"
+    ],
+    [
+     "B",
+     "2"
+    ]
+   ],
+   "eq": true,
+   "hash_eq": true,
+   "eql_hash_key": false
+  },
+  {
+   "id": "eq_diff",
+   "source": "spec/ukiryu/environment_spec.rb:294",
+   "a": [
+    [
+     "A",
+     "1"
+    ]
+   ],
+   "b": [
+    [
+     "A",
+     "2"
+    ]
+   ],
+   "eq": false,
+   "hash_eq": false,
+   "eql_hash_key": false
+  },
+  {
+   "id": "eq_order_insensitive",
+   "source": "edge",
+   "a": [
+    [
+     "A",
+     "1"
+    ],
+    [
+     "B",
+     "2"
+    ]
+   ],
+   "b": [
+    [
+     "B",
+     "2"
+    ],
+    [
+     "A",
+     "1"
+    ]
+   ],
+   "eq": true,
+   "hash_eq": true,
+   "eql_hash_key": false
+  },
+  {
+   "id": "eq_empty",
+   "source": "edge",
+   "a": [],
+   "b": [],
+   "eq": true,
+   "hash_eq": true,
+   "eql_hash_key": false
+  },
+  {
+   "id": "eq_extra_key",
+   "source": "edge",
+   "a": [
+    [
+     "A",
+     "1"
+    ]
+   ],
+   "b": [
+    [
+     "A",
+     "1"
+    ],
+    [
+     "B",
+     "2"
+    ]
+   ],
+   "eq": false,
+   "hash_eq": false,
+   "eql_hash_key": false
+  }
+ ],
+ "environment_vs_hash_eq": false,
+ "from_env": [
+  {
+   "id": "fromenv_path_present",
+   "source": "lib/ukiryu/environment.rb:51 (Environment.from_env)",
+   "snapshot": [
+    [
+     "HOME",
+     "/h"
+    ],
+    [
+     "PATH",
+     "/usr/bin"
+    ]
+   ],
+   "result": [
+    [
+     "HOME",
+     "/h"
+    ],
+    [
+     "PATH",
+     "/usr/bin"
+    ]
+   ]
+  },
+  {
+   "id": "fromenv_path_absent",
+   "source": "lib/ukiryu/environment.rb:51 (Environment.from_env)",
+   "snapshot": [
+    [
+     "HOME",
+     "/h"
+    ]
+   ],
+   "result": [
+    [
+     "HOME",
+     "/h"
+    ]
+   ]
+  },
+  {
+   "id": "fromenv_path_alias_Path",
+   "source": "lib/ukiryu/environment.rb:51 (Environment.from_env)",
+   "snapshot": [
+    [
+     "HOME",
+     "/h"
+    ],
+    [
+     "Path",
+     "C:\\Windows;C:\\bin"
+    ],
+    [
+     "Z",
+     "1"
+    ]
+   ],
+   "result": [
+    [
+     "HOME",
+     "/h"
+    ],
+    [
+     "Path",
+     "C:\\Windows;C:\\bin"
+    ],
+    [
+     "Z",
+     "1"
+    ],
+    [
+     "PATH",
+     "C:\\Windows;C:\\bin"
+    ]
+   ]
+  },
+  {
+   "id": "fromenv_path_alias_path_lower",
+   "source": "lib/ukiryu/environment.rb:51 (Environment.from_env)",
+   "snapshot": [
+    [
+     "path",
+     "/lower"
+    ]
+   ],
+   "result": [
+    [
+     "path",
+     "/lower"
+    ],
+    [
+     "PATH",
+     "/lower"
+    ]
+   ]
+  },
+  {
+   "id": "fromenv_path_alias_first_wins",
+   "source": "lib/ukiryu/environment.rb:51 (Environment.from_env)",
+   "snapshot": [
+    [
+     "pAth",
+     "/first"
+    ],
+    [
+     "Path",
+     "/second"
+    ]
+   ],
+   "result": [
+    [
+     "pAth",
+     "/first"
+    ],
+    [
+     "Path",
+     "/second"
+    ],
+    [
+     "PATH",
+     "/first"
+    ]
+   ]
+  },
+  {
+   "id": "fromenv_both_PATH_and_Path",
+   "source": "lib/ukiryu/environment.rb:51 (Environment.from_env)",
+   "snapshot": [
+    [
+     "PATH",
+     "/real"
+    ],
+    [
+     "Path",
+     "/alias"
+    ]
+   ],
+   "result": [
+    [
+     "PATH",
+     "/real"
+    ],
+    [
+     "Path",
+     "/alias"
+    ]
+   ]
+  },
+  {
+   "id": "fromenv_empty_path_value",
+   "source": "lib/ukiryu/environment.rb:51 (Environment.from_env)",
+   "snapshot": [
+    [
+     "PATH",
+     ""
+    ]
+   ],
+   "result": [
+    [
+     "PATH",
+     ""
+    ]
+   ]
+  },
+  {
+   "id": "fromenv_empty",
+   "source": "lib/ukiryu/environment.rb:51 (Environment.from_env)",
+   "snapshot": [],
+   "result": []
+  }
+ ],
+ "context": [
+  {
+   "kind": "shell_predicates",
+   "shell": "bash",
+   "unix_shell": true,
+   "windows_shell": false,
+   "using_self": true,
+   "using_bash": true,
+   "using_self_string": true
+  },
+  {
+   "kind": "shell_predicates",
+   "shell": "zsh",
+   "unix_shell": true,
+   "windows_shell": false,
+   "using_self": true,
+   "using_bash": false,
+   "using_self_string": true
+  },
+  {
+   "kind": "shell_predicates",
+   "shell": "fish",
+   "unix_shell": true,
+   "windows_shell": false,
+   "using_self": true,
+   "using_bash": false,
+   "using_self_string": true
+  },
+  {
+   "kind": "shell_predicates",
+   "shell": "sh",
+   "unix_shell": true,
+   "windows_shell": false,
+   "using_self": true,
+   "using_bash": false,
+   "using_self_string": true
+  },
+  {
+   "kind": "shell_predicates",
+   "shell": "dash",
+   "unix_shell": false,
+   "windows_shell": false,
+   "using_self": true,
+   "using_bash": false,
+   "using_self_string": true
+  },
+  {
+   "kind": "shell_predicates",
+   "shell": "tcsh",
+   "unix_shell": false,
+   "windows_shell": false,
+   "using_self": true,
+   "using_bash": false,
+   "using_self_string": true
+  },
+  {
+   "kind": "shell_predicates",
+   "shell": "powershell",
+   "unix_shell": false,
+   "windows_shell": true,
+   "using_self": true,
+   "using_bash": false,
+   "using_self_string": true
+  },
+  {
+   "kind": "shell_predicates",
+   "shell": "pwsh",
+   "unix_shell": false,
+   "windows_shell": false,
+   "using_self": true,
+   "using_bash": false,
+   "using_self_string": true
+  },
+  {
+   "kind": "shell_predicates",
+   "shell": "cmd",
+   "unix_shell": false,
+   "windows_shell": true,
+   "using_self": true,
+   "using_bash": false,
+   "using_self_string": true
+  },
+  {
+   "kind": "shell_predicates",
+   "shell": "unix",
+   "unix_shell": false,
+   "windows_shell": false,
+   "using_self": true,
+   "using_bash": false,
+   "using_self_string": true
+  },
+  {
+   "kind": "shell_predicates",
+   "shell": "windows",
+   "unix_shell": false,
+   "windows_shell": false,
+   "using_self": true,
+   "using_bash": false,
+   "using_self_string": true
+  },
+  {
+   "kind": "platform_predicates",
+   "platform": "macos",
+   "windows": false,
+   "macos": true,
+   "linux": false,
+   "on_self": true,
+   "on_self_string": true
+  },
+  {
+   "kind": "platform_predicates",
+   "platform": "linux",
+   "windows": false,
+   "macos": false,
+   "linux": true,
+   "on_self": true,
+   "on_self_string": true
+  },
+  {
+   "kind": "platform_predicates",
+   "platform": "windows",
+   "windows": true,
+   "macos": false,
+   "linux": false,
+   "on_self": true,
+   "on_self_string": true
+  },
+  {
+   "kind": "defaults",
+   "source": "spec/ukiryu/execution_context_spec.rb:113",
+   "platform": null,
+   "shell": null,
+   "register_path": null,
+   "timeout": null,
+   "debug": false,
+   "metrics": false,
+   "options": {},
+   "to_s": "ExecutionContext(platform=, shell=, register=)",
+   "inspect": "#<Ukiryu::ExecutionContext ExecutionContext(platform=, shell=, register=)>",
+   "unix_shell": false,
+   "windows_shell": false,
+   "windows": false
+  },
+  {
+   "kind": "render",
+   "source": "spec/ukiryu/execution_context_spec.rb:265",
+   "platform": "macos",
+   "shell": "bash",
+   "register_path": "/test/register",
+   "to_s": "ExecutionContext(platform=macos, shell=bash, register=/test/register)",
+   "inspect": "#<Ukiryu::ExecutionContext ExecutionContext(platform=macos, shell=bash, register=/test/register)>"
+  },
+  {
+   "kind": "render",
+   "source": "edge",
+   "platform": "linux",
+   "shell": "zsh",
+   "register_path": null,
+   "to_s": "ExecutionContext(platform=linux, shell=zsh, register=)",
+   "inspect": "#<Ukiryu::ExecutionContext ExecutionContext(platform=linux, shell=zsh, register=)>"
+  },
+  {
+   "kind": "render",
+   "source": "edge",
+   "platform": "windows",
+   "shell": "cmd",
+   "register_path": "C:\\reg",
+   "to_s": "ExecutionContext(platform=windows, shell=cmd, register=C:\\reg)",
+   "inspect": "#<Ukiryu::ExecutionContext ExecutionContext(platform=windows, shell=cmd, register=C:\\reg)>"
+  },
+  {
+   "kind": "render",
+   "source": "edge",
+   "platform": null,
+   "shell": "bash",
+   "register_path": null,
+   "to_s": "ExecutionContext(platform=, shell=bash, register=)",
+   "inspect": "#<Ukiryu::ExecutionContext ExecutionContext(platform=, shell=bash, register=)>"
+  },
+  {
+   "kind": "render",
+   "source": "edge",
+   "platform": null,
+   "shell": null,
+   "register_path": "",
+   "to_s": "ExecutionContext(platform=, shell=, register=)",
+   "inspect": "#<Ukiryu::ExecutionContext ExecutionContext(platform=, shell=, register=)>"
+  },
+  {
+   "kind": "merge",
+   "id": "merge_shell_timeout",
+   "source": "spec/ukiryu/execution_context_spec.rb:235",
+   "changes": {
+    "shell": "zsh",
+    "timeout": 60
+   },
+   "changes_nil_keys": [],
+   "result": {
+    "platform": "macos",
+    "shell": "zsh",
+    "register_path": "/r",
+    "timeout": 60,
+    "debug": true,
+    "metrics": false,
+    "options": {
+     "a": 1,
+     "b": 2
+    }
+   },
+   "base_after": {
+    "platform": "macos",
+    "shell": "bash",
+    "timeout": 30,
+    "options": {
+     "a": 1,
+     "b": 2
+    }
+   }
+  },
+  {
+   "kind": "merge",
+   "id": "merge_preserve",
+   "source": "spec/ukiryu/execution_context_spec.rb:253",
+   "changes": {
+    "shell": "zsh"
+   },
+   "changes_nil_keys": [],
+   "result": {
+    "platform": "macos",
+    "shell": "zsh",
+    "register_path": "/r",
+    "timeout": 30,
+    "debug": true,
+    "metrics": false,
+    "options": {
+     "a": 1,
+     "b": 2
+    }
+   },
+   "base_after": {
+    "platform": "macos",
+    "shell": "bash",
+    "timeout": 30,
+    "options": {
+     "a": 1,
+     "b": 2
+    }
+   }
+  },
+  {
+   "kind": "merge",
+   "id": "merge_explicit_nil",
+   "source": "edge",
+   "changes": {
+    "platform": null,
+    "timeout": null,
+    "register_path": null
+   },
+   "changes_nil_keys": [
+    "platform",
+    "timeout",
+    "register_path"
+   ],
+   "result": {
+    "platform": null,
+    "shell": "bash",
+    "register_path": null,
+    "timeout": null,
+    "debug": true,
+    "metrics": false,
+    "options": {
+     "a": 1,
+     "b": 2
+    }
+   },
+   "base_after": {
+    "platform": "macos",
+    "shell": "bash",
+    "timeout": 30,
+    "options": {
+     "a": 1,
+     "b": 2
+    }
+   }
+  },
+  {
+   "kind": "merge",
+   "id": "merge_options",
+   "source": "edge",
+   "changes": {
+    "options": {
+     "b": 3,
+     "c": 4
+    }
+   },
+   "changes_nil_keys": [],
+   "result": {
+    "platform": "macos",
+    "shell": "bash",
+    "register_path": "/r",
+    "timeout": 30,
+    "debug": true,
+    "metrics": false,
+    "options": {
+     "a": 1,
+     "b": 3,
+     "c": 4
+    }
+   },
+   "base_after": {
+    "platform": "macos",
+    "shell": "bash",
+    "timeout": 30,
+    "options": {
+     "a": 1,
+     "b": 2
+    }
+   }
+  },
+  {
+   "kind": "merge",
+   "id": "merge_flags",
+   "source": "edge",
+   "changes": {
+    "debug": false,
+    "metrics": true
+   },
+   "changes_nil_keys": [],
+   "result": {
+    "platform": "macos",
+    "shell": "bash",
+    "register_path": "/r",
+    "timeout": 30,
+    "debug": false,
+    "metrics": true,
+    "options": {
+     "a": 1,
+     "b": 2
+    }
+   },
+   "base_after": {
+    "platform": "macos",
+    "shell": "bash",
+    "timeout": 30,
+    "options": {
+     "a": 1,
+     "b": 2
+    }
+   }
+  },
+  {
+   "kind": "merge",
+   "id": "merge_empty",
+   "source": "edge",
+   "changes": {},
+   "changes_nil_keys": [],
+   "result": {
+    "platform": "macos",
+    "shell": "bash",
+    "register_path": "/r",
+    "timeout": 30,
+    "debug": true,
+    "metrics": false,
+    "options": {
+     "a": 1,
+     "b": 2
+    }
+   },
+   "base_after": {
+    "platform": "macos",
+    "shell": "bash",
+    "timeout": 30,
+    "options": {
+     "a": 1,
+     "b": 2
+    }
+   }
+  }
+ ],
+ "current": {
+  "same_object_twice": true,
+  "with_context_inside": true,
+  "restored": true,
+  "error_propagated": "test error",
+  "restored_after_error": true,
+  "set_current": true,
+  "reset_creates_new": true
+ },
+ "runtime": {
+  "set_values": {
+   "platform": "linux",
+   "shell": "zsh",
+   "linux": true,
+   "unix_shell": true,
+   "using_zsh": true
+  },
+  "locked_platform": {
+   "class": "RuntimeError",
+   "message": "Runtime is locked"
+  },
+  "locked_shell": {
+   "class": "RuntimeError",
+   "message": "Runtime is locked"
+  },
+  "after_lock_values": {
+   "platform": "linux",
+   "shell": "zsh"
+  },
+  "reset_unlocks": "windows"
+ },
+ "shell_priority": [
+  {
+   "case": "config_over_detect",
+   "result": "fish"
+  },
+  {
+   "case": "explicit_over_config",
+   "result": "tcsh"
+  },
+  {
+   "case": "config_platform_group",
+   "result": "unix",
+   "class_for": "Ukiryu::Shell::Bash"
+  }
+ ],
+ "detect": [
+  {
+   "id": "unix_bash_abs",
+   "windows": false,
+   "env": [
+    [
+     "SHELL",
+     "/bin/bash"
+    ]
+   ],
+   "ruby": {
+    "ok": "bash"
+   }
+  },
+  {
+   "id": "unix_bash_bare",
+   "windows": false,
+   "env": [
+    [
+     "SHELL",
+     "bash"
+    ]
+   ],
+   "ruby": {
+    "ok": "bash"
+   }
+  },
+  {
+   "id": "unix_zsh",
+   "windows": false,
+   "env": [
+    [
+     "SHELL",
+     "/usr/bin/zsh"
+    ]
+   ],
+   "ruby": {
+    "ok": "zsh"
+   }
+  },
+  {
+   "id": "unix_fish",
+   "windows": false,
+   "env": [
+    [
+     "SHELL",
+     "/usr/bin/fish"
+    ]
+   ],
+   "ruby": {
+    "ok": "fish"
+   }
+  },
+  {
+   "id": "unix_sh",
+   "windows": false,
+   "env": [
+    [
+     "SHELL",
+     "/bin/sh"
+    ]
+   ],
+   "ruby": {
+    "ok": "sh"
+   }
+  },
+  {
+   "id": "unix_dash",
+   "windows": false,
+   "env": [
+    [
+     "SHELL",
+     "/bin/dash"
+    ]
+   ],
+   "ruby": {
+    "ok": "sh"
+   }
+  },
+  {
+   "id": "unix_tcsh",
+   "windows": false,
+   "env": [
+    [
+     "SHELL",
+     "/bin/tcsh"
+    ]
+   ],
+   "ruby": {
+    "ok": "sh"
+   }
+  },
+  {
+   "id": "unix_csh",
+   "windows": false,
+   "env": [
+    [
+     "SHELL",
+     "/bin/csh"
+    ]
+   ],
+   "ruby": {
+    "ok": "sh"
+   }
+  },
+  {
+   "id": "unix_pwsh",
+   "windows": false,
+   "env": [
+    [
+     "SHELL",
+     "/usr/bin/pwsh"
+    ]
+   ],
+   "ruby": {
+    "ok": "sh"
+   }
+  },
+  {
+   "id": "unix_ksh_missing",
+   "windows": false,
+   "env": [
+    [
+     "SHELL",
+     "/nonexistent/ksh"
+    ]
+   ],
+   "ruby": {
+    "ok": "sh"
+   }
+  },
+  {
+   "id": "unix_custom_exec",
+   "windows": false,
+   "env": [
+    [
+     "SHELL",
+     "/tmp/k20-shell20261112-958300-dy46z9/ksh"
+    ]
+   ],
+   "ruby": {
+    "ok": "sh"
+   }
+  },
+  {
+   "id": "unix_bash_suffix",
+   "windows": false,
+   "env": [
+    [
+     "SHELL",
+     "/opt/mybash"
+    ]
+   ],
+   "ruby": {
+    "ok": "bash"
+   }
+  },
+  {
+   "id": "unix_trailing_slash",
+   "windows": false,
+   "env": [
+    [
+     "SHELL",
+     "/bin/bash/"
+    ]
+   ],
+   "ruby": {
+    "ok": "bash"
+   }
+  },
+  {
+   "id": "unix_empty",
+   "windows": false,
+   "env": [
+    [
+     "SHELL",
+     ""
+    ]
+   ],
+   "ruby": {
+    "error": "Ukiryu::Errors::UnknownShellError",
+    "message_first_line": "Unknown shell in SHELL: "
+   }
+  },
+  {
+   "id": "unix_powershell",
+   "windows": false,
+   "env": [
+    [
+     "SHELL",
+     "/opt/microsoft/powershell"
+    ]
+   ],
+   "ruby": {
+    "error": "Ukiryu::Errors::UnknownShellError",
+    "message_first_line": "Unknown shell in SHELL: /opt/microsoft/powershell"
+   }
+  },
+  {
+   "id": "unix_test_shell_valid",
+   "windows": false,
+   "env": [
+    [
+     "UKIRYU_TEST_SHELL",
+     "zsh"
+    ],
+    [
+     "SHELL",
+     "/bin/bash"
+    ]
+   ],
+   "ruby": {
+    "ok": "zsh"
+   }
+  },
+  {
+   "id": "unix_test_shell_group",
+   "windows": false,
+   "env": [
+    [
+     "UKIRYU_TEST_SHELL",
+     "unix"
+    ],
+    [
+     "SHELL",
+     "/bin/bash"
+    ]
+   ],
+   "ruby": {
+    "ok": "unix"
+   }
+  },
+  {
+   "id": "unix_test_shell_invalid",
+   "windows": false,
+   "env": [
+    [
+     "UKIRYU_TEST_SHELL",
+     "ksh"
+    ],
+    [
+     "SHELL",
+     "/bin/zsh"
+    ]
+   ],
+   "ruby": {
+    "ok": "zsh"
+   }
+  },
+  {
+   "id": "win_psmodulepath",
+   "windows": true,
+   "env": [
+    [
+     "PSModulePath",
+     "C:\\ps"
+    ],
+    [
+     "MSYSTEM",
+     "MINGW64"
+    ]
+   ],
+   "ruby": {
+    "ok": "powershell"
+   }
+  },
+  {
+   "id": "win_msystem",
+   "windows": true,
+   "env": [
+    [
+     "MSYSTEM",
+     "MINGW64"
+    ]
+   ],
+   "ruby": {
+    "ok": "bash"
+   }
+  },
+  {
+   "id": "win_mingw_prefix",
+   "windows": true,
+   "env": [
+    [
+     "MINGW_PREFIX",
+     "/mingw64"
+    ]
+   ],
+   "ruby": {
+    "ok": "bash"
+   }
+  },
+  {
+   "id": "win_wsl",
+   "windows": true,
+   "env": [
+    [
+     "WSL_DISTRO",
+     "Ubuntu"
+    ]
+   ],
+   "ruby": {
+    "ok": "bash"
+   }
+  },
+  {
+   "id": "win_default",
+   "windows": true,
+   "env": [],
+   "ruby": {
+    "ok": "cmd"
+   }
+  },
+  {
+   "id": "win_empty_psmodulepath",
+   "windows": true,
+   "env": [
+    [
+     "PSModulePath",
+     ""
+    ]
+   ],
+   "ruby": {
+    "ok": "powershell"
+   }
+  }
+ ],
+ "class_for": {
+  "unix": "Ukiryu::Shell::Bash",
+  "windows": "Ukiryu::Shell::Cmd",
+  "powershell": "Ukiryu::Shell::PowerShell",
+  "bash": "Ukiryu::Shell::Bash",
+  "zsh": "Ukiryu::Shell::Zsh",
+  "fish": "Ukiryu::Shell::Fish",
+  "sh": "Ukiryu::Shell::Sh",
+  "dash": "Ukiryu::Shell::Dash",
+  "tcsh": "Ukiryu::Shell::Tcsh",
+  "pwsh": "Ukiryu::Shell::PowerShell",
+  "cmd": "Ukiryu::Shell::Cmd",
+  "ksh": "Ukiryu::Errors::UnknownShellError: Unknown shell: ksh"
+ },
+ "env_var": [
+  {
+   "shell": "bash",
+   "name": "PATH",
+   "env_var": "$PATH",
+   "format_environment_identity": true
+  },
+  {
+   "shell": "zsh",
+   "name": "PATH",
+   "env_var": "$PATH",
+   "format_environment_identity": true
+  },
+  {
+   "shell": "fish",
+   "name": "PATH",
+   "env_var": "$PATH",
+   "format_environment_identity": true
+  },
+  {
+   "shell": "sh",
+   "name": "PATH",
+   "env_var": "$PATH",
+   "format_environment_identity": true
+  },
+  {
+   "shell": "dash",
+   "name": "PATH",
+   "env_var": "$PATH",
+   "format_environment_identity": true
+  },
+  {
+   "shell": "tcsh",
+   "name": "PATH",
+   "env_var": "$PATH",
+   "format_environment_identity": true
+  },
+  {
+   "shell": "powershell",
+   "name": "PATH",
+   "env_var": "$ENV:PATH",
+   "format_environment_identity": true
+  },
+  {
+   "shell": "cmd",
+   "name": "PATH",
+   "env_var": "%PATH%",
+   "format_environment_identity": true
+  }
+ ]
+}
