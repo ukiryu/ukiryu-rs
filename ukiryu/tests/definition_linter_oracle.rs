@@ -64,6 +64,21 @@ fn tmp_dir(tag: &str) -> PathBuf {
     dir
 }
 
+/// Apply `sub` to every string in a JSON value (not to the JSON text, so
+/// Windows path separators need no escaping).
+fn subst_value(v: &Value, sub: &dyn Fn(&str) -> String) -> Value {
+    match v {
+        Value::String(s) => Value::String(sub(s)),
+        Value::Array(a) => Value::Array(a.iter().map(|x| subst_value(x, sub)).collect()),
+        Value::Object(o) => Value::Object(
+            o.iter()
+                .map(|(k, x)| (k.clone(), subst_value(x, sub)))
+                .collect(),
+        ),
+        other => other.clone(),
+    }
+}
+
 /// Compare one Rust outcome with one captured Ruby outcome.
 fn check(
     ctx: &str,
@@ -88,7 +103,7 @@ fn check(
                 want["has_errors"].as_bool().unwrap(),
                 "{ctx}: has_errors"
             );
-            let want_h: Value = serde_json::from_str(&sub(&want["to_h"].to_string())).unwrap();
+            let want_h = subst_value(&want["to_h"], &sub);
             let got_h = to_value(&res.to_h());
             if syntax {
                 assert_eq!(res.count(), 1, "{ctx}: one issue");
