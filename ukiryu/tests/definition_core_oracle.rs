@@ -99,6 +99,7 @@ fn set_mtime(path: &str, secs: u64) {
 #[derive(Clone, Debug, Deserialize)]
 struct TCmd {
     name: Option<String>,
+    #[cfg_attr(not(unix), allow(dead_code))]
     description: Option<String>,
 }
 
