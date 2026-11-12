@@ -3,6 +3,8 @@
 pub mod config;
 pub mod extractors;
 pub mod models;
+pub mod routing;
+pub mod schema;
 pub mod shell;
 pub mod types;
 pub mod version_detection;
