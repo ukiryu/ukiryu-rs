@@ -43,6 +43,12 @@ value = request(json.dumps({'op': 'parse_yaml', 'yaml': 'version: "1.0"\nflag: f
 assert value['ok'] and value['value']['version'] == '1.0'
 assert value['value']['flag'] is False
 assert all(type(x) is float for x in value['value']['range'])
+for yaml in ['.nan', '.inf', '-.inf', 'nested: [.nan]', '1: number-key', 'true: bool-key']:
+    rejected = request(json.dumps({'op': 'parse_yaml', 'yaml': yaml}).encode())
+    assert rejected['ok'] is False, (yaml, rejected)
+    assert rejected['error']['code'] == 'YAML_NOT_JSON_COMPATIBLE', (yaml, rejected)
+quoted = request(json.dumps({'op': 'parse_yaml', 'yaml': "literal: '.nan'"}).encode())
+assert quoted['ok'] and quoted['value']['literal'] == '.nan'
 configuration = {
     'op': 'resolve_config',
     'environment': {'UKIRYU_TIMEOUT': '999999999999999999999999999999999999999',
