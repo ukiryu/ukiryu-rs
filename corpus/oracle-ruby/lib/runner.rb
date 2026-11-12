@@ -13,7 +13,7 @@ module UkiryuOracle
     PLATFORMS = %w[linux macos windows].freeze
     # Capabilities a consuming engine may lack. The Ruby oracle provides all.
     CAPABILITIES = %w[fs process cli].freeze
-    OPS = %w[shell.escape shell.quote shell.join shell.env_var shell.format_path type.validate build.args
+    OPS = %w[shell.escape shell.quote shell.needs_quoting shell.join shell.env_var shell.format_path type.validate build.args
              resolve.extract_version resolve.version_spec resolve.range resolve.shell_detect lint.string
              schema.validate_profile schema.definition_validate yaml.load yaml.model_load yaml.lutaml_roundtrip
              cli.run].freeze
