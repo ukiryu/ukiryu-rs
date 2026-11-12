@@ -8,6 +8,7 @@ use std::hash::{Hash, Hasher};
 use ukiryu::environment::Environment;
 use ukiryu::shell::cmd::Cmd;
 use ukiryu::shell::powershell::PowerShell;
+use ukiryu::shell::unix_special::{Fish, Tcsh};
 use ukiryu::shell::ShellFormatting;
 
 const ORACLE: &str = include_str!("../src/environment/testdata/oracle.json");
@@ -239,9 +240,14 @@ fn per_shell_variable_reference() {
         // so an Environment is passed to the executor unchanged.
         assert_eq!(row["format_environment_identity"], json!(true));
     }
-    // Shell formatters on main so far: cmd and powershell. The remaining
-    // rows are checked when their ShellFormatting modules land.
-    let shells: [(&str, &dyn ShellFormatting); 2] = [("cmd", &Cmd), ("powershell", &PowerShell)];
+    // Shell formatters on main so far: cmd, powershell, fish and tcsh. The
+    // POSIX rows are checked when that ShellFormatting module lands.
+    let shells: [(&str, &dyn ShellFormatting); 4] = [
+        ("cmd", &Cmd),
+        ("powershell", &PowerShell),
+        ("fish", &Fish),
+        ("tcsh", &Tcsh),
+    ];
     for (name, shell) in shells {
         let row = rows.iter().find(|r| r["shell"] == name).unwrap();
         assert_eq!(

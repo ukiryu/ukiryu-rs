@@ -16,8 +16,8 @@ use ukiryu::execution_context::{
 };
 use ukiryu::extractors::man::Today;
 use ukiryu::runtime::{
-    civil_from_unix_secs, detect_shell, Clock, Host, Platform, Runtime, RuntimeLocked, ShellError,
-    ShellName, ShellSource,
+    civil_from_unix_secs, detect_shell, native_platform, platform_from_host_os, Clock, Host,
+    Platform, Runtime, RuntimeLocked, ShellError, ShellName, ShellSource,
 };
 
 const ORACLE: &str = include_str!("../src/environment/testdata/oracle.json");
@@ -33,7 +33,7 @@ fn shell(name: &str) -> ShellName {
 }
 
 fn platform(name: &str) -> Platform {
-    Platform::parse(name).unwrap()
+    Platform::from_name(name).unwrap()
 }
 
 #[test]
@@ -556,7 +556,7 @@ fn platform_from_host_os_matches_oracle() {
     assert_eq!(rows.len(), 13);
     for row in rows {
         let host = row["host_os"].as_str().unwrap();
-        match (Platform::from_host_os(host), row["ruby"].get("ok")) {
+        match (platform_from_host_os(host), row["ruby"].get("ok")) {
             (Ok(pl), Some(name)) => assert_eq!(json!(pl.as_str()), *name, "{host}"),
             (Err(e), None) => assert_eq!(
                 json!(e.to_string()),
@@ -566,7 +566,7 @@ fn platform_from_host_os_matches_oracle() {
             (got, _) => panic!("{host}: {got:?} vs {}", row["ruby"]),
         }
     }
-    assert!(Platform::native().is_ok());
+    assert!(native_platform().is_ok());
 }
 
 #[test]

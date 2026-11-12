@@ -19,13 +19,8 @@ use std::cell::OnceCell;
 use std::fmt;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-/// `Ukiryu::Platform.detect` values.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-pub enum Platform {
-    Macos,
-    Linux,
-    Windows,
-}
+/// `Ukiryu::Platform.detect` values (the executable-discovery platform type).
+pub use crate::executable::Platform;
 
 /// `Ukiryu::Errors::UnsupportedPlatformError`.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -41,63 +36,37 @@ impl fmt::Display for UnsupportedPlatform {
 
 impl std::error::Error for UnsupportedPlatform {}
 
-impl Platform {
-    pub fn as_str(self) -> &'static str {
-        match self {
-            Platform::Macos => "macos",
-            Platform::Linux => "linux",
-            Platform::Windows => "windows",
-        }
-    }
-
-    /// A platform symbol name (`macos`, `linux`, `windows`).
-    pub fn parse(name: &str) -> Option<Platform> {
-        match name {
-            "macos" => Some(Platform::Macos),
-            "linux" => Some(Platform::Linux),
-            "windows" => Some(Platform::Windows),
-            _ => None,
-        }
-    }
-
-    /// `Platform.detect` from an `RbConfig::CONFIG['host_os']` string with
-    /// `Gem.win_platform?` false: case-insensitive substring tests for
-    /// `mswin|mingw|windows`, then `darwin|mac os`, then `linux`.
-    pub fn from_host_os(host_os: &str) -> Result<Platform, UnsupportedPlatform> {
-        let h = host_os.to_lowercase();
-        let any = |needles: &[&str]| needles.iter().any(|n| h.contains(n));
-        if any(&["mswin", "mingw", "windows"]) {
-            Ok(Platform::Windows)
-        } else if any(&["darwin", "mac os"]) {
-            Ok(Platform::Macos)
-        } else if h.contains("linux") {
-            Ok(Platform::Linux)
-        } else {
-            Err(UnsupportedPlatform {
-                host_os: host_os.to_string(),
-            })
-        }
-    }
-
-    /// The platform this binary was compiled for.
-    pub fn native() -> Result<Platform, UnsupportedPlatform> {
-        if cfg!(windows) {
-            Ok(Platform::Windows)
-        } else if cfg!(target_os = "macos") {
-            Ok(Platform::Macos)
-        } else if cfg!(target_os = "linux") {
-            Ok(Platform::Linux)
-        } else {
-            Err(UnsupportedPlatform {
-                host_os: std::env::consts::OS.to_string(),
-            })
-        }
+/// `Platform.detect` from an `RbConfig::CONFIG['host_os']` string with
+/// `Gem.win_platform?` false: case-insensitive substring tests for
+/// `mswin|mingw|windows`, then `darwin|mac os`, then `linux`.
+pub fn platform_from_host_os(host_os: &str) -> Result<Platform, UnsupportedPlatform> {
+    let h = host_os.to_lowercase();
+    let any = |needles: &[&str]| needles.iter().any(|n| h.contains(n));
+    if any(&["mswin", "mingw", "windows"]) {
+        Ok(Platform::Windows)
+    } else if any(&["darwin", "mac os"]) {
+        Ok(Platform::Macos)
+    } else if h.contains("linux") {
+        Ok(Platform::Linux)
+    } else {
+        Err(UnsupportedPlatform {
+            host_os: host_os.to_string(),
+        })
     }
 }
 
-impl fmt::Display for Platform {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str(self.as_str())
+/// The platform this binary was compiled for.
+pub fn native_platform() -> Result<Platform, UnsupportedPlatform> {
+    if cfg!(windows) {
+        Ok(Platform::Windows)
+    } else if cfg!(target_os = "macos") {
+        Ok(Platform::Macos)
+    } else if cfg!(target_os = "linux") {
+        Ok(Platform::Linux)
+    } else {
+        Err(UnsupportedPlatform {
+            host_os: std::env::consts::OS.to_string(),
+        })
     }
 }
 
@@ -351,7 +320,7 @@ impl Host {
     /// environment.
     pub fn native() -> Result<Host, HostError> {
         Ok(Host {
-            platform: Platform::native().map_err(HostError::Platform)?,
+            platform: native_platform().map_err(HostError::Platform)?,
             env: Environment::from_process().map_err(HostError::Environment)?,
         })
     }
