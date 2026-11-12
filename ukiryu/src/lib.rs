@@ -17,6 +17,9 @@ pub mod types;
 pub mod version_detection;
 pub mod version_ranges;
 pub mod wire;
+
+#[cfg(feature = "wasm")]
+pub mod wasm;
 pub use yeptris::{from_slice as from_yaml_slice, from_str as from_yaml, DeserError as YamlError};
 
 #[cfg(feature = "c")]
