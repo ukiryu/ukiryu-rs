@@ -13,3 +13,5 @@ pub trait ShellFormatting {
     fn env_var(&self, name: &str) -> String;
     fn join(&self, executable: &str, arguments: &[String]) -> String;
 }
+
+pub mod powershell;
