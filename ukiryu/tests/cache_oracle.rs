@@ -20,7 +20,6 @@ use ukiryu::cache::{
 };
 use ukiryu::definition::{DefinitionDocument, DocumentParseError, Loader, ValidationMode};
 use ukiryu::options::Cache;
-use ukiryu::shell::ShellFormatting;
 
 const GOLDEN: &str = include_str!("cache_data/caches.json");
 
