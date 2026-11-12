@@ -5,6 +5,7 @@ pub mod config;
 pub mod definition;
 pub mod executable;
 pub mod extractors;
+pub mod options;
 pub mod routing;
 pub mod schema;
 pub mod shell;
