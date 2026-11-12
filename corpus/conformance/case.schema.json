@@ -14,7 +14,7 @@
     "kind": { "enum": ["resolve", "build", "escape", "validate", "lint", "schema", "cli-output", "yaml"] },
     "op": {
       "enum": [
-        "shell.escape", "shell.quote", "shell.join", "shell.env_var", "shell.format_path",
+        "shell.escape", "shell.quote", "shell.needs_quoting", "shell.join", "shell.env_var", "shell.format_path",
         "type.validate", "build.args",
         "resolve.extract_version", "resolve.version_spec", "resolve.range", "resolve.shell_detect",
         "lint.string", "schema.validate_profile", "schema.definition_validate",
