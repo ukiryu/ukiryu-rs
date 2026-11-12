@@ -22,11 +22,11 @@
     }
   },
   "cases": {
-    "total": 2193,
+    "total": 14177,
     "by_kind": {
       "build": 485,
       "cli-output": 21,
-      "escape": 632,
+      "escape": 12616,
       "lint": 70,
       "resolve": 587,
       "schema": 193,
@@ -35,11 +35,11 @@
     },
     "expect_error": 138,
     "decision_pending": 17,
-    "ids_sha256": "c355e0b7cd34d59c1427be0b51e2809212316d234d5943326949406ce8793173",
+    "ids_sha256": "80dd3593a329ab75b6291374121703c60d9b4fa1b06e7df984c07ffcde5bc34b",
     "files": {
       "cases/build.jsonl": "3e1d05bcffa4cc8411a60c9d4b461b9e915ec7374d0793f5f0a246aaa9373112",
       "cases/cli-output.jsonl": "ae8e27cd686497192ad06de48648ebf41b7e0e62b5f0db9e93e35dec3632bb14",
-      "cases/escape.jsonl": "ae7a4e0612ba4d52353501d8a110430d040aec3a090545e1200f700fa2a7857b",
+      "cases/escape.jsonl": "f673881132c7eb1638e8a0973b93aa146327e5c3bc1f3f0ba62a5e4cc5620754",
       "cases/lint.jsonl": "c60cd99cfcc5f78ff3c0971d1e9e6483246a028afb800c867d2ab486a80bdd4b",
       "cases/resolve.jsonl": "c8bae384e964e3125e844f20a6cf608d43b63a69efdba9d1c8a2c73ddf2ee331",
       "cases/schema.jsonl": "c0e5b3c13ee43a661a145c2e6124dd8fc91c304b206261a6809b380a2f5e042e",
@@ -48,9 +48,9 @@
     }
   },
   "applicable": {
-    "linux": 2193,
-    "macos": 2172,
-    "windows": 2155
+    "linux": 14177,
+    "macos": 14156,
+    "windows": 14139
   },
   "inputs": [
     {

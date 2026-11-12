@@ -12,3 +12,5 @@ path = "src/main.rs"
 
 [dependencies]
 ukiryu = { path = "../ukiryu" }
+# Keep the CLI parser compatible with the workspace's Rust 1.86 floor.
+clap = { version = "=4.5.32", default-features = false, features = ["std", "help", "usage", "error-context"] }

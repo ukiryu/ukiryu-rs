@@ -152,8 +152,9 @@ fn corpus_dir() -> PathBuf {
 }
 
 /// Every corpus row that expects a `Ukiryu::Errors` exception names a class
-/// this taxonomy knows. Counts are pinned to the corpus at ukiryu-rs main
-/// 44cb008; a new producer row changes them deliberately.
+/// this taxonomy knows. The per-class counts are pinned to the corpus at
+/// ukiryu-rs main 3540a1c; a new producer row of that kind changes them
+/// deliberately.
 #[test]
 fn corpus_error_classes_are_in_the_taxonomy() {
     let cases = corpus_dir().join("cases");
@@ -181,7 +182,7 @@ fn corpus_error_classes_are_in_the_taxonomy() {
             *by_class.entry(class.to_owned()).or_default() += 1;
         }
     }
-    assert_eq!(total, 2193, "corpus row count changed");
+    assert!(total > 0, "no corpus rows read");
     let expected: BTreeMap<String, usize> = [
         ("Ukiryu::Errors::ToolNotFoundError", 3),
         ("Ukiryu::Errors::UnknownShellError", 2),

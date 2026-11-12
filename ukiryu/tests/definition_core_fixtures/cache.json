@@ -1,0 +1,133 @@
+{
+  "provenance": {
+    "oracle_sha": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+    "files": [
+      "lib/ukiryu/definition/definition_cache.rb"
+    ],
+    "capture": "capture/cache.rb",
+    "ruby": "4.0.1",
+    "tz": "UTC"
+  },
+  "cases": [
+    {
+      "op": "default_ttl",
+      "result": {
+        "ok": [
+          300,
+          300,
+          "lazy"
+        ]
+      }
+    },
+    {
+      "op": "basic",
+      "result": {
+        "ok": [
+          "nil",
+          true,
+          true,
+          true,
+          false,
+          {
+            "size": 2,
+            "ttl": 300,
+            "refresh_strategy": "lazy",
+            "entries": [
+              "k1",
+              "k0"
+            ]
+          },
+          true,
+          false,
+          true,
+          false,
+          1,
+          0,
+          {
+            "size": 0,
+            "ttl": 300,
+            "refresh_strategy": "lazy",
+            "entries": []
+          }
+        ]
+      }
+    },
+    {
+      "op": "refresh_strategy",
+      "result": {
+        "ok": [
+          "lazy",
+          "eager",
+          "never",
+          {
+            "class": "ArgumentError",
+            "message": "Invalid refresh strategy: bogus"
+          },
+          {
+            "class": "ArgumentError",
+            "message": "Invalid refresh strategy: lazy"
+          }
+        ]
+      }
+    },
+    {
+      "op": "ttl_staleness",
+      "result": {
+        "ok": [
+          true,
+          true,
+          1,
+          1,
+          false,
+          {
+            "size": 0,
+            "ttl": -1,
+            "refresh_strategy": "lazy",
+            "entries": []
+          },
+          false,
+          0,
+          0,
+          true
+        ]
+      }
+    },
+    {
+      "op": "metadata_entries",
+      "result": {
+        "ok": [
+          false,
+          true,
+          {
+            "class": "NoMethodError",
+            "message": "undefined method 'mtime' for an instance of Ukiryu::Models::ToolDefinition"
+          },
+          "t/1 (user) - <ROOT>/d/tool.yaml",
+          {
+            "class": "NoMethodError",
+            "message": "undefined method 'mtime' for an instance of Ukiryu::Models::ToolDefinition"
+          },
+          1,
+          false
+        ]
+      }
+    },
+    {
+      "op": "metadata_without_mtime",
+      "result": {
+        "ok": [
+          false
+        ]
+      }
+    },
+    {
+      "op": "singleton",
+      "result": {
+        "ok": [
+          true,
+          false
+        ]
+      }
+    }
+  ]
+}
