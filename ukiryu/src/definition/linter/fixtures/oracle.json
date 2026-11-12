@@ -1,0 +1,3935 @@
+{
+ "provenance": "Captured from ukiryu/ukiryu lib/ukiryu/definition/definition_linter.rb (DefinitionLinter.lint/lint_string/lint_file, LintResult, Rules) and lib/ukiryu/cli_commands/lint_command.rb (lint file --format json, lint all) by the K21-LINT capture script linter.rb; do not edit by hand.",
+ "oracle": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+ "ruby": "4.0.1",
+ "psych": "5.3.1",
+ "cases": [
+  {
+   "id": "spec_valid_minimal",
+   "yaml": "name: test-tool\nversion: '1.0'\ndescription: A test tool\nhomepage: https://example.com\nversion_detection:\n  command: --version\n  pattern: '(\\d+\\.\\d+)'\nprofiles:\n  - name: default\n    platforms:\n      - :macos\n      - :linux\n    commands:\n      test_command:\n        arguments:\n          - name: input\n            type: file\n",
+   "rules": null,
+   "note": null,
+   "lint": 0,
+   "lint_string": 1,
+   "lint_file": 0,
+   "cli_file": 2
+  },
+  {
+   "id": "spec_invalid_name",
+   "yaml": "name: TestTool\n",
+   "rules": null,
+   "note": null,
+   "lint": 3,
+   "lint_string": 1,
+   "lint_file": 3,
+   "cli_file": 4
+  },
+  {
+   "id": "spec_name_test",
+   "yaml": "name: test\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "spec_suspicious_subcommand",
+   "yaml": "name: test\nprofiles:\n  - name: default\n    commands:\n      dangerous:\n        subcommand: rm -rf /\n",
+   "rules": null,
+   "note": null,
+   "lint": 6,
+   "lint_string": 1,
+   "lint_file": 6,
+   "cli_file": 7
+  },
+  {
+   "id": "spec_unvalidated_args",
+   "yaml": "name: test\nprofiles:\n  - name: default\n    commands:\n      test_cmd:\n        arguments:\n          - name: input\n",
+   "rules": null,
+   "note": null,
+   "lint": 8,
+   "lint_string": 1,
+   "lint_file": 8,
+   "cli_file": 9
+  },
+  {
+   "id": "spec_single_default_profile",
+   "yaml": "name: test\nprofiles:\n  - name: default\n    platforms:\n      - :macos\n",
+   "rules": null,
+   "note": null,
+   "lint": 10,
+   "lint_string": 1,
+   "lint_file": 10,
+   "cli_file": 11
+  },
+  {
+   "id": "spec_profile_missing_platforms",
+   "yaml": "name: test\nprofiles:\n  - name: default\n",
+   "rules": null,
+   "note": null,
+   "lint": 12,
+   "lint_string": 1,
+   "lint_file": 12,
+   "cli_file": 13
+  },
+  {
+   "id": "spec_rules_disabled",
+   "yaml": "name: TestTool\n",
+   "rules": {
+    "disabled": [
+     "naming_tool_name_format"
+    ]
+   },
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1
+  },
+  {
+   "id": "spec_rules_enabled",
+   "yaml": "name: TestTool\n",
+   "rules": {
+    "enabled": [
+     "naming_tool_name_format"
+    ]
+   },
+   "note": null,
+   "lint": 14,
+   "lint_string": 15,
+   "lint_file": 14
+  },
+  {
+   "id": "spec_not_a_hash",
+   "yaml": "not-a-hash\n",
+   "rules": null,
+   "note": null,
+   "lint": 16,
+   "lint_string": 16,
+   "lint_file": 16,
+   "cli_file": 17
+  },
+  {
+   "id": "spec_lint_file_to_yaml",
+   "yaml": "---\n:name: test-tool\n:description: Test\n:profiles:\n- :name: default\n  :platforms:\n  - :macos\n  :shells:\n  - :bash\n",
+   "rules": null,
+   "note": null,
+   "lint": 18,
+   "lint_string": 18,
+   "lint_file": 18,
+   "cli_file": 19
+  },
+  {
+   "id": "spec_lint_string_to_yaml",
+   "yaml": "---\n:name: test-tool\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "spec_invalid_yaml_indent",
+   "yaml": "name: test\n  bad: indent",
+   "rules": null,
+   "note": null,
+   "lint": 20,
+   "lint_string": 21,
+   "lint_file": 21,
+   "cli_file": 22
+  },
+  {
+   "id": "spec_invalid_yaml_colon",
+   "yaml": "name: : test",
+   "rules": null,
+   "note": null,
+   "lint": 23,
+   "lint_string": 24,
+   "lint_file": 24,
+   "cli_file": 25
+  },
+  {
+   "id": "doc_empty",
+   "yaml": "",
+   "rules": null,
+   "note": null,
+   "lint": 16,
+   "lint_string": 16,
+   "lint_file": 16,
+   "cli_file": 17
+  },
+  {
+   "id": "doc_comment_only",
+   "yaml": "# nothing\n",
+   "rules": null,
+   "note": null,
+   "lint": 16,
+   "lint_string": 16,
+   "lint_file": 16,
+   "cli_file": 17
+  },
+  {
+   "id": "doc_explicit_null",
+   "yaml": "---\n",
+   "rules": null,
+   "note": null,
+   "lint": 16,
+   "lint_string": 16,
+   "lint_file": 16,
+   "cli_file": 17
+  },
+  {
+   "id": "doc_tilde",
+   "yaml": "~\n",
+   "rules": null,
+   "note": null,
+   "lint": 16,
+   "lint_string": 16,
+   "lint_file": 16,
+   "cli_file": 17
+  },
+  {
+   "id": "doc_integer",
+   "yaml": "42\n",
+   "rules": null,
+   "note": null,
+   "lint": 16,
+   "lint_string": 16,
+   "lint_file": 16,
+   "cli_file": 17
+  },
+  {
+   "id": "doc_array",
+   "yaml": "- name: x\n",
+   "rules": null,
+   "note": null,
+   "lint": 16,
+   "lint_string": 16,
+   "lint_file": 16,
+   "cli_file": 17
+  },
+  {
+   "id": "doc_empty_hash",
+   "yaml": "{}\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "doc_false",
+   "yaml": "false\n",
+   "rules": null,
+   "note": null,
+   "lint": 16,
+   "lint_string": 16,
+   "lint_file": 16,
+   "cli_file": 17
+  },
+  {
+   "id": "name_snake",
+   "yaml": "name: my_tool\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "name_single",
+   "yaml": "name: a\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "name_digit_first",
+   "yaml": "name: '1tool'\n",
+   "rules": null,
+   "note": null,
+   "lint": 3,
+   "lint_string": 1,
+   "lint_file": 3,
+   "cli_file": 4
+  },
+  {
+   "id": "name_mixed",
+   "yaml": "name: tool-Name\n",
+   "rules": null,
+   "note": null,
+   "lint": 3,
+   "lint_string": 1,
+   "lint_file": 3,
+   "cli_file": 4
+  },
+  {
+   "id": "name_unicode",
+   "yaml": "name: näme\n",
+   "rules": null,
+   "note": null,
+   "lint": 3,
+   "lint_string": 1,
+   "lint_file": 3,
+   "cli_file": 4
+  },
+  {
+   "id": "name_empty",
+   "yaml": "name: ''\n",
+   "rules": null,
+   "note": null,
+   "lint": 3,
+   "lint_string": 1,
+   "lint_file": 3,
+   "cli_file": 4
+  },
+  {
+   "id": "name_newline_ok_line",
+   "yaml": "name: \"Foo\\nbar\"\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "name_trailing_newline",
+   "yaml": "name: \"test\\n\"\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "name_leading_newline",
+   "yaml": "name: \"\\nTool\"\n",
+   "rules": null,
+   "note": null,
+   "lint": 3,
+   "lint_string": 1,
+   "lint_file": 3,
+   "cli_file": 4
+  },
+  {
+   "id": "name_space",
+   "yaml": "name: \"my tool\"\n",
+   "rules": null,
+   "note": null,
+   "lint": 3,
+   "lint_string": 1,
+   "lint_file": 3,
+   "cli_file": 4
+  },
+  {
+   "id": "name_symbol_bad",
+   "yaml": "name: :MySym\n",
+   "rules": null,
+   "note": null,
+   "lint": 3,
+   "lint_string": 1,
+   "lint_file": 3,
+   "cli_file": 4
+  },
+  {
+   "id": "name_symbol_ok",
+   "yaml": "name: :mysym\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "name_integer",
+   "yaml": "name: 42\n",
+   "rules": null,
+   "note": null,
+   "lint": 26,
+   "lint_string": 1,
+   "lint_file": 26,
+   "cli_file": 27
+  },
+  {
+   "id": "name_float",
+   "yaml": "name: 1.5\n",
+   "rules": null,
+   "note": null,
+   "lint": 28,
+   "lint_string": 1,
+   "lint_file": 28,
+   "cli_file": 29
+  },
+  {
+   "id": "name_true",
+   "yaml": "name: true\n",
+   "rules": null,
+   "note": null,
+   "lint": 30,
+   "lint_string": 1,
+   "lint_file": 30,
+   "cli_file": 31
+  },
+  {
+   "id": "name_false",
+   "yaml": "name: false\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "name_null",
+   "yaml": "name: null\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "name_array",
+   "yaml": "name: [a]\n",
+   "rules": null,
+   "note": null,
+   "lint": 32,
+   "lint_string": 1,
+   "lint_file": 32,
+   "cli_file": 33
+  },
+  {
+   "id": "name_hash",
+   "yaml": "name: {a: 1}\n",
+   "rules": null,
+   "note": null,
+   "lint": 34,
+   "lint_string": 1,
+   "lint_file": 34,
+   "cli_file": 35
+  },
+  {
+   "id": "name_date",
+   "yaml": "name: 2020-01-01\n",
+   "rules": null,
+   "note": null,
+   "lint": 36,
+   "lint_string": 1,
+   "lint_file": 36,
+   "cli_file": 37
+  },
+  {
+   "id": "name_time",
+   "yaml": "name: 2020-01-01 10:00:00\n",
+   "rules": null,
+   "note": null,
+   "lint": 38,
+   "lint_string": 1,
+   "lint_file": 38,
+   "cli_file": 39
+  },
+  {
+   "id": "name_cr",
+   "yaml": "name: \"tool\\r\"\n",
+   "rules": null,
+   "note": null,
+   "lint": 3,
+   "lint_string": 1,
+   "lint_file": 3,
+   "cli_file": 4
+  },
+  {
+   "id": "profiles_string",
+   "yaml": "name: tool\nprofiles: \"x\"\n",
+   "rules": null,
+   "note": null,
+   "lint": 40,
+   "lint_string": 1,
+   "lint_file": 40,
+   "cli_file": 41
+  },
+  {
+   "id": "profiles_integer",
+   "yaml": "name: tool\nprofiles: 5\n",
+   "rules": null,
+   "note": null,
+   "lint": 42,
+   "lint_string": 1,
+   "lint_file": 42,
+   "cli_file": 43
+  },
+  {
+   "id": "profiles_true",
+   "yaml": "name: tool\nprofiles: true\n",
+   "rules": null,
+   "note": null,
+   "lint": 44,
+   "lint_string": 1,
+   "lint_file": 44,
+   "cli_file": 45
+  },
+  {
+   "id": "profiles_false",
+   "yaml": "name: tool\nprofiles: false\n",
+   "rules": null,
+   "note": null,
+   "lint": 46,
+   "lint_string": 1,
+   "lint_file": 46,
+   "cli_file": 47
+  },
+  {
+   "id": "profiles_null",
+   "yaml": "name: tool\nprofiles: null\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "profiles_empty_array",
+   "yaml": "name: tool\nprofiles: []\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "profiles_empty_hash",
+   "yaml": "name: tool\nprofiles: {}\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "profiles_hash",
+   "yaml": "name: tool\nprofiles: {a: 1}\n",
+   "rules": null,
+   "note": null,
+   "lint": 48,
+   "lint_string": 1,
+   "lint_file": 48,
+   "cli_file": 49
+  },
+  {
+   "id": "profiles_symbol",
+   "yaml": "name: tool\nprofiles: :p\n",
+   "rules": null,
+   "note": null,
+   "lint": 50,
+   "lint_string": 1,
+   "lint_file": 50,
+   "cli_file": 51
+  },
+  {
+   "id": "profiles_null_item",
+   "yaml": "name: tool\nprofiles: [null]\n",
+   "rules": null,
+   "note": null,
+   "lint": 52,
+   "lint_string": 1,
+   "lint_file": 52,
+   "cli_file": 53
+  },
+  {
+   "id": "profiles_string_item",
+   "yaml": "name: tool\nprofiles: [\"x\"]\n",
+   "rules": null,
+   "note": null,
+   "lint": 48,
+   "lint_string": 1,
+   "lint_file": 48,
+   "cli_file": 49
+  },
+  {
+   "id": "profiles_integer_item",
+   "yaml": "name: tool\nprofiles: [5]\n",
+   "rules": null,
+   "note": null,
+   "lint": 48,
+   "lint_string": 1,
+   "lint_file": 48,
+   "cli_file": 49
+  },
+  {
+   "id": "profiles_float_item",
+   "yaml": "name: tool\nprofiles: [1.5]\n",
+   "rules": null,
+   "note": null,
+   "lint": 54,
+   "lint_string": 1,
+   "lint_file": 54,
+   "cli_file": 55
+  },
+  {
+   "id": "profiles_true_item",
+   "yaml": "name: tool\nprofiles: [true]\n",
+   "rules": null,
+   "note": null,
+   "lint": 56,
+   "lint_string": 1,
+   "lint_file": 56,
+   "cli_file": 57
+  },
+  {
+   "id": "profiles_false_item",
+   "yaml": "name: tool\nprofiles: [false]\n",
+   "rules": null,
+   "note": null,
+   "lint": 58,
+   "lint_string": 1,
+   "lint_file": 58,
+   "cli_file": 59
+  },
+  {
+   "id": "profiles_array_item",
+   "yaml": "name: tool\nprofiles: [[1]]\n",
+   "rules": null,
+   "note": null,
+   "lint": 48,
+   "lint_string": 1,
+   "lint_file": 48,
+   "cli_file": 49
+  },
+  {
+   "id": "profiles_symbol_item",
+   "yaml": "name: tool\nprofiles: \n  - :sym\n",
+   "rules": null,
+   "note": null,
+   "lint": 48,
+   "lint_string": 1,
+   "lint_file": 48,
+   "cli_file": 49
+  },
+  {
+   "id": "profiles_date_item",
+   "yaml": "name: tool\nprofiles: [2020-01-01]\n",
+   "rules": null,
+   "note": null,
+   "lint": 60,
+   "lint_string": 1,
+   "lint_file": 60,
+   "cli_file": 61
+  },
+  {
+   "id": "profiles_empty_hash_item",
+   "yaml": "name: tool\nprofiles: [{}]\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "commands_array",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands: []\n",
+   "rules": null,
+   "note": null,
+   "lint": 62,
+   "lint_string": 1,
+   "lint_file": 62,
+   "cli_file": 63
+  },
+  {
+   "id": "commands_string",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands: \"x\"\n",
+   "rules": null,
+   "note": null,
+   "lint": 64,
+   "lint_string": 1,
+   "lint_file": 64,
+   "cli_file": 65
+  },
+  {
+   "id": "commands_empty_hash",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands: {}\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "commands_null",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands: null\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "commands_false",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands: false\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "commands_integer",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands: 3\n",
+   "rules": null,
+   "note": null,
+   "lint": 66,
+   "lint_string": 1,
+   "lint_file": 66,
+   "cli_file": 67
+  },
+  {
+   "id": "command_names",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    platforms: [linux]\n    commands:\n      build: {}\n      Build: {}\n      build-cmd: {}\n      \"build cmd\": {}\n      1: {}\n      ~: {}\n      true: {}\n      :Sym: {}\n      :ok_sym: {}\n      1.5: {}\n      2020-01-01: {}\n      \"_x\": {}\n      b2: {}\n",
+   "rules": null,
+   "note": null,
+   "lint": 68,
+   "lint_string": 1,
+   "lint_file": 68,
+   "cli_file": 69
+  },
+  {
+   "id": "command_name_array_key",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      ? [a, b]\n      : {}\n",
+   "rules": null,
+   "note": null,
+   "lint": 70,
+   "lint_string": 1,
+   "lint_file": 70,
+   "cli_file": 71
+  },
+  {
+   "id": "cmddef_null",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run: null\n",
+   "rules": null,
+   "note": null,
+   "lint": 52,
+   "lint_string": 1,
+   "lint_file": 52,
+   "cli_file": 53
+  },
+  {
+   "id": "cmddef_string",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run: \"x\"\n",
+   "rules": null,
+   "note": null,
+   "lint": 48,
+   "lint_string": 1,
+   "lint_file": 48,
+   "cli_file": 49
+  },
+  {
+   "id": "cmddef_integer",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run: 5\n",
+   "rules": null,
+   "note": null,
+   "lint": 48,
+   "lint_string": 1,
+   "lint_file": 48,
+   "cli_file": 49
+  },
+  {
+   "id": "cmddef_array",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run: []\n",
+   "rules": null,
+   "note": null,
+   "lint": 48,
+   "lint_string": 1,
+   "lint_file": 48,
+   "cli_file": 49
+  },
+  {
+   "id": "cmddef_true",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run: true\n",
+   "rules": null,
+   "note": null,
+   "lint": 56,
+   "lint_string": 1,
+   "lint_file": 56,
+   "cli_file": 57
+  },
+  {
+   "id": "cmddef_false",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run: false\n",
+   "rules": null,
+   "note": null,
+   "lint": 58,
+   "lint_string": 1,
+   "lint_file": 58,
+   "cli_file": 59
+  },
+  {
+   "id": "cmddef_float",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run: 2.5\n",
+   "rules": null,
+   "note": null,
+   "lint": 54,
+   "lint_string": 1,
+   "lint_file": 54,
+   "cli_file": 55
+  },
+  {
+   "id": "cmddef_symbol",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run: :s\n",
+   "rules": null,
+   "note": null,
+   "lint": 48,
+   "lint_string": 1,
+   "lint_file": 48,
+   "cli_file": 49
+  },
+  {
+   "id": "sub_rm_rf",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        subcommand: rm -rf /\n",
+   "rules": null,
+   "note": null,
+   "lint": 72,
+   "lint_string": 1,
+   "lint_file": 72,
+   "cli_file": 73
+  },
+  {
+   "id": "sub_semicolon",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        subcommand: \"echo hi; rm -rf /tmp\"\n",
+   "rules": null,
+   "note": null,
+   "lint": 72,
+   "lint_string": 1,
+   "lint_file": 72,
+   "cli_file": 73
+  },
+  {
+   "id": "sub_del",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        subcommand: del file\n",
+   "rules": null,
+   "note": null,
+   "lint": 72,
+   "lint_string": 1,
+   "lint_file": 72,
+   "cli_file": 73
+  },
+  {
+   "id": "sub_delete",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        subcommand: delete\n",
+   "rules": null,
+   "note": null,
+   "lint": 72,
+   "lint_string": 1,
+   "lint_file": 72,
+   "cli_file": 73
+  },
+  {
+   "id": "sub_model",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        subcommand: model\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "sub_reformat",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        subcommand: reformat\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "sub_leading_space_format",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        subcommand: \" format\"\n",
+   "rules": null,
+   "note": null,
+   "lint": 72,
+   "lint_string": 1,
+   "lint_file": 72,
+   "cli_file": 73
+  },
+  {
+   "id": "sub_mkfs",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        subcommand: mkfs.ext4\n",
+   "rules": null,
+   "note": null,
+   "lint": 72,
+   "lint_string": 1,
+   "lint_file": 72,
+   "cli_file": 73
+  },
+  {
+   "id": "sub_rm_double_space",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        subcommand: \"rm  -rf x\"\n",
+   "rules": null,
+   "note": null,
+   "lint": 72,
+   "lint_string": 1,
+   "lint_file": 72,
+   "cli_file": 73
+  },
+  {
+   "id": "sub_rm_r_f",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        subcommand: rm -r -f\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "sub_newline",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        subcommand: \"x\\nrm -rf y\"\n",
+   "rules": null,
+   "note": null,
+   "lint": 72,
+   "lint_string": 1,
+   "lint_file": 72,
+   "cli_file": 73
+  },
+  {
+   "id": "sub_ideographic_space",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        subcommand: \"x　del\"\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "sub_nbsp",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        subcommand: \"x del\"\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "sub_vtab",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        subcommand: \"x\\vdel\"\n",
+   "rules": null,
+   "note": null,
+   "lint": 72,
+   "lint_string": 1,
+   "lint_file": 72,
+   "cli_file": 73
+  },
+  {
+   "id": "sub_tab",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        subcommand: \"x\\tdel\"\n",
+   "rules": null,
+   "note": null,
+   "lint": 72,
+   "lint_string": 1,
+   "lint_file": 72,
+   "cli_file": 73
+  },
+  {
+   "id": "sub_semicolon_space",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        subcommand: \"a;  mkfs\"\n",
+   "rules": null,
+   "note": null,
+   "lint": 72,
+   "lint_string": 1,
+   "lint_file": 72,
+   "cli_file": 73
+  },
+  {
+   "id": "sub_integer",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        subcommand: 123\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "sub_array",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        subcommand: [\"rm -rf\"]\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "sub_false",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        subcommand: false\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "sub_symbol",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        subcommand: :del\n",
+   "rules": null,
+   "note": null,
+   "lint": 72,
+   "lint_string": 1,
+   "lint_file": 72,
+   "cli_file": 73
+  },
+  {
+   "id": "sub_safe",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        subcommand: convert\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "sub_rm_rf_upper",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        subcommand: RM -RF\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "sub_mid_word",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        subcommand: xdel\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "args_empty",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        arguments: []\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "args_untyped",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        arguments: [{name: x}]\n",
+   "rules": null,
+   "note": null,
+   "lint": 74,
+   "lint_string": 1,
+   "lint_file": 74,
+   "cli_file": 75
+  },
+  {
+   "id": "args_type_null",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        arguments: [{type: null}]\n",
+   "rules": null,
+   "note": null,
+   "lint": 74,
+   "lint_string": 1,
+   "lint_file": 74,
+   "cli_file": 75
+  },
+  {
+   "id": "args_type_false",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        arguments: [{type: false}]\n",
+   "rules": null,
+   "note": null,
+   "lint": 74,
+   "lint_string": 1,
+   "lint_file": 74,
+   "cli_file": 75
+  },
+  {
+   "id": "args_typed",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        arguments: [{type: file}]\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "args_string",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        arguments: \"x\"\n",
+   "rules": null,
+   "note": null,
+   "lint": 40,
+   "lint_string": 1,
+   "lint_file": 40,
+   "cli_file": 41
+  },
+  {
+   "id": "args_hash",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        arguments: {a: 1}\n",
+   "rules": null,
+   "note": null,
+   "lint": 48,
+   "lint_string": 1,
+   "lint_file": 48,
+   "cli_file": 49
+  },
+  {
+   "id": "args_null_item",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        arguments: [null]\n",
+   "rules": null,
+   "note": null,
+   "lint": 52,
+   "lint_string": 1,
+   "lint_file": 52,
+   "cli_file": 53
+  },
+  {
+   "id": "args_string_item",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        arguments: [\"s\"]\n",
+   "rules": null,
+   "note": null,
+   "lint": 48,
+   "lint_string": 1,
+   "lint_file": 48,
+   "cli_file": 49
+  },
+  {
+   "id": "args_integer_item",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        arguments: [1]\n",
+   "rules": null,
+   "note": null,
+   "lint": 48,
+   "lint_string": 1,
+   "lint_file": 48,
+   "cli_file": 49
+  },
+  {
+   "id": "args_mixed",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        arguments: [{type: a}, {}, {type: b}, {name: c}]\n",
+   "rules": null,
+   "note": null,
+   "lint": 76,
+   "lint_string": 1,
+   "lint_file": 76,
+   "cli_file": 77
+  },
+  {
+   "id": "args_false",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        arguments: false\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "args_null",
+   "yaml": "name: tool\nprofiles:\n  - name: p\n    commands:\n      run:\n        arguments: null\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "order_full",
+   "yaml": "name: Bad Name\nschema: https://ukiryu.org/schema/v0.9\nprofiles:\n  - name: default\n    commands:\n      Alpha:\n        subcommand: rm -rf /\n        arguments: [{name: a}, {type: x}, {name: b}]\n      beta:\n        arguments: [{name: c}]\n      Gamma:\n        subcommand: del x\n  - name: second\n    commands:\n      Delta:\n        subcommand: mkfs\n        arguments: [{name: d}]\n",
+   "rules": null,
+   "note": null,
+   "lint": 78,
+   "lint_string": 1,
+   "lint_file": 78,
+   "cli_file": 79
+  },
+  {
+   "id": "order_single_default_with_issues",
+   "yaml": "name: Bad\nprofiles:\n  - name: default\n    commands:\n      Run:\n        subcommand: format c\n        arguments: [{}]\n",
+   "rules": null,
+   "note": null,
+   "lint": 80,
+   "lint_string": 1,
+   "lint_file": 80,
+   "cli_file": 81
+  },
+  {
+   "id": "schema_old",
+   "yaml": "name: tool\nschema: https://ukiryu.org/schema/v0.9\n",
+   "rules": null,
+   "note": null,
+   "lint": 82,
+   "lint_string": 1,
+   "lint_file": 82,
+   "cli_file": 83
+  },
+  {
+   "id": "schema_current",
+   "yaml": "name: tool\nschema: v1.0\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "schema_newer",
+   "yaml": "name: tool\nschema: 1.0.1\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "schema_trailing_slash",
+   "yaml": "name: tool\nschema: \"v0.1/\"\n",
+   "rules": null,
+   "note": null,
+   "lint": 82,
+   "lint_string": 1,
+   "lint_file": 82,
+   "cli_file": 83
+  },
+  {
+   "id": "schema_empty",
+   "yaml": "name: tool\nschema: ''\n",
+   "rules": null,
+   "note": null,
+   "lint": 84,
+   "lint_string": 1,
+   "lint_file": 84,
+   "cli_file": 85
+  },
+  {
+   "id": "schema_slash",
+   "yaml": "name: tool\nschema: /\n",
+   "rules": null,
+   "note": null,
+   "lint": 84,
+   "lint_string": 1,
+   "lint_file": 84,
+   "cli_file": 85
+  },
+  {
+   "id": "schema_float",
+   "yaml": "name: tool\nschema: 0.5\n",
+   "rules": null,
+   "note": null,
+   "lint": 82,
+   "lint_string": 1,
+   "lint_file": 82,
+   "cli_file": 83
+  },
+  {
+   "id": "schema_integer",
+   "yaml": "name: tool\nschema: 2\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "schema_false",
+   "yaml": "name: tool\nschema: false\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "schema_vvv",
+   "yaml": "name: tool\nschema: vvv\n",
+   "rules": null,
+   "note": null,
+   "lint": 82,
+   "lint_string": 1,
+   "lint_file": 82,
+   "cli_file": 83
+  },
+  {
+   "id": "schema_abc",
+   "yaml": "name: tool\nschema: abc\n",
+   "rules": null,
+   "note": null,
+   "lint": 82,
+   "lint_string": 1,
+   "lint_file": 82,
+   "cli_file": 83
+  },
+  {
+   "id": "schema_array",
+   "yaml": "name: tool\nschema: [a, b]\n",
+   "rules": null,
+   "note": null,
+   "lint": 82,
+   "lint_string": 1,
+   "lint_file": 82,
+   "cli_file": 83
+  },
+  {
+   "id": "schema_zero",
+   "yaml": "name: tool\nschema: 0\n",
+   "rules": null,
+   "note": null,
+   "lint": 82,
+   "lint_string": 1,
+   "lint_file": 82,
+   "cli_file": 83
+  },
+  {
+   "id": "schema_mixed",
+   "yaml": "name: tool\nschema: 0.9abc\n",
+   "rules": null,
+   "note": null,
+   "lint": 82,
+   "lint_string": 1,
+   "lint_file": 82,
+   "cli_file": 83
+  },
+  {
+   "id": "schema_v_in_middle",
+   "yaml": "name: tool\nschema: 1v.0\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "schema_null",
+   "yaml": "name: tool\nschema: null\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "schema_symbol",
+   "yaml": "name: tool\nschema: :v0.2\n",
+   "rules": null,
+   "note": null,
+   "lint": 82,
+   "lint_string": 1,
+   "lint_file": 82,
+   "cli_file": 83
+  },
+  {
+   "id": "schema_date",
+   "yaml": "name: tool\nschema: 2020-01-01\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "schema_bigint",
+   "yaml": "name: tool\nschema: 99999999999999999999999\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "dollar_schema_old",
+   "yaml": "name: tool\n$schema: https://ukiryu.org/schema/v0.5\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 82,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "dollar_schema_and_schema_false",
+   "yaml": "name: tool\nschema: false\n$schema: v0.5\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 82,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "dollar_schema_empty",
+   "yaml": "$schema: ''\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 84,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "dollar_schema_symbol_key",
+   "yaml": ":$schema: v0.5\nname: tool\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "bp_two_defaults",
+   "yaml": "name: tool\nprofiles:\n  - name: default\n  - name: default\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "bp_symbol_default",
+   "yaml": "name: tool\nprofiles:\n  - name: :default\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "bp_platforms_false",
+   "yaml": "name: tool\nprofiles:\n  - name: default\n    platforms: false\n",
+   "rules": null,
+   "note": null,
+   "lint": 12,
+   "lint_string": 1,
+   "lint_file": 12,
+   "cli_file": 13
+  },
+  {
+   "id": "bp_platforms_empty",
+   "yaml": "name: tool\nprofiles:\n  - name: default\n    platforms: []\n",
+   "rules": null,
+   "note": null,
+   "lint": 10,
+   "lint_string": 1,
+   "lint_file": 10,
+   "cli_file": 11
+  },
+  {
+   "id": "bp_named_other",
+   "yaml": "name: tool\nprofiles:\n  - name: linux\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "bp_hash_profiles_one",
+   "yaml": "name: tool\nprofiles:\n  default: {}\n",
+   "rules": null,
+   "note": null,
+   "lint": 48,
+   "lint_string": 1,
+   "lint_file": 48,
+   "cli_file": 49
+  },
+  {
+   "id": "complete_all_present",
+   "yaml": "name: tool\ndescription: d\nhomepage: h\nversion_detection: {}\n",
+   "rules": null,
+   "note": null,
+   "lint": 15,
+   "lint_string": 1,
+   "lint_file": 15,
+   "cli_file": 86
+  },
+  {
+   "id": "complete_false_values",
+   "yaml": "name: tool\ndescription: false\nhomepage: null\nversion_detection: false\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "complete_empty_strings",
+   "yaml": "name: tool\ndescription: ''\nhomepage: ''\nversion_detection: ''\n",
+   "rules": null,
+   "note": null,
+   "lint": 15,
+   "lint_string": 1,
+   "lint_file": 15,
+   "cli_file": 86
+  },
+  {
+   "id": "keys_symbol_and_string",
+   "yaml": ":name: Tool\ndescription: d\n",
+   "rules": null,
+   "note": null,
+   "lint": 87,
+   "lint_string": 3,
+   "lint_file": 87,
+   "cli_file": 88
+  },
+  {
+   "id": "keys_duplicate",
+   "yaml": "name: Bad\nname: good\n",
+   "rules": null,
+   "note": null,
+   "lint": 1,
+   "lint_string": 1,
+   "lint_file": 1,
+   "cli_file": 5
+  },
+  {
+   "id": "keys_quoted",
+   "yaml": "\"name\": Bad\n",
+   "rules": null,
+   "note": null,
+   "lint": 3,
+   "lint_string": 1,
+   "lint_file": 3,
+   "cli_file": 4
+  },
+  {
+   "id": "rules_none_given_empty_hash",
+   "yaml": "name: Tool\nprofiles:\n  - name: default\n    commands:\n      Run:\n        arguments: [{}]\n",
+   "rules": {},
+   "note": null,
+   "lint": 89,
+   "lint_string": 1,
+   "lint_file": 89
+  },
+  {
+   "id": "rules_empty_lists",
+   "yaml": "name: Tool\nprofiles:\n  - name: default\n    commands:\n      Run:\n        arguments: [{}]\n",
+   "rules": {
+    "enabled": [],
+    "disabled": []
+   },
+   "note": null,
+   "lint": 89,
+   "lint_string": 1,
+   "lint_file": 89
+  },
+  {
+   "id": "rules_disabled_wins",
+   "yaml": "name: Tool\nprofiles:\n  - name: default\n    commands:\n      Run:\n        arguments: [{}]\n",
+   "rules": {
+    "enabled": [
+     "naming_tool_name_format"
+    ],
+    "disabled": [
+     "complete_missing_homepage"
+    ]
+   },
+   "note": null,
+   "lint": 90,
+   "lint_string": 91,
+   "lint_file": 90
+  },
+  {
+   "id": "rules_enabled_multi",
+   "yaml": "name: Tool\nprofiles:\n  - name: default\n    commands:\n      Run:\n        arguments: [{}]\n",
+   "rules": {
+    "enabled": [
+     "security_unvalidated_input",
+     "complete_missing_platforms"
+    ]
+   },
+   "note": null,
+   "lint": 92,
+   "lint_string": 15,
+   "lint_file": 92
+  },
+  {
+   "id": "rules_enabled_unknown",
+   "yaml": "name: Tool\nprofiles:\n  - name: default\n    commands:\n      Run:\n        arguments: [{}]\n",
+   "rules": {
+    "enabled": [
+     "nope"
+    ]
+   },
+   "note": null,
+   "lint": 15,
+   "lint_string": 15,
+   "lint_file": 15
+  },
+  {
+   "id": "rules_disabled_multi",
+   "yaml": "name: Tool\nprofiles:\n  - name: default\n    commands:\n      Run:\n        arguments: [{}]\n",
+   "rules": {
+    "disabled": [
+     "naming_tool_name_format",
+     "naming_command_name_format",
+     "complete_missing_description"
+    ]
+   },
+   "note": null,
+   "lint": 93,
+   "lint_string": 94,
+   "lint_file": 93
+  },
+  {
+   "id": "rules_enabled_null",
+   "yaml": "name: Tool\nprofiles:\n  - name: default\n    commands:\n      Run:\n        arguments: [{}]\n",
+   "rules": {
+    "enabled": null,
+    "disabled": [
+     "naming_tool_name_format"
+    ]
+   },
+   "note": null,
+   "lint": 95,
+   "lint_string": 1,
+   "lint_file": 95
+  },
+  {
+   "id": "rules_not_hash_input",
+   "yaml": "- x\n",
+   "rules": {
+    "enabled": [
+     "naming_tool_name_format"
+    ]
+   },
+   "note": null,
+   "lint": 16,
+   "lint_string": 16,
+   "lint_file": 16
+  },
+  {
+   "id": "yaml_alias",
+   "yaml": "a: &x 1\nname: *x\n",
+   "rules": null,
+   "note": null,
+   "lint": 96,
+   "lint_string": 96,
+   "lint_file": 96,
+   "cli_file": 97
+  },
+  {
+   "id": "yaml_merge_key_alias",
+   "yaml": "base: &b {name: x}\n<<: *b\n",
+   "rules": null,
+   "note": null,
+   "lint": 96,
+   "lint_string": 96,
+   "lint_file": 96,
+   "cli_file": 97
+  },
+  {
+   "id": "yaml_merge_key_inline",
+   "yaml": "<<: {name: Bad}\ndescription: d\n",
+   "rules": null,
+   "note": null,
+   "lint": 87,
+   "lint_string": 1,
+   "lint_file": 87,
+   "cli_file": 88
+  },
+  {
+   "id": "yaml_multi_doc",
+   "yaml": "name: Bad\n---\nname: good\n",
+   "rules": null,
+   "note": null,
+   "lint": 3,
+   "lint_string": 1,
+   "lint_file": 3,
+   "cli_file": 4
+  }
+ ],
+ "fs": {
+  "not_found_relative": {
+   "path": "nonexistent.yaml",
+   "lint_file": 98
+  },
+  "not_found_absolute": {
+   "lint_file": 99
+  },
+  "directory": {
+   "lint_file": 100
+  },
+  "not_a_directory": {
+   "lint_file": 101
+  }
+ },
+ "fs_cli": {
+  "not_found_relative": {
+   "exit": 1,
+   "stdout": "{\"issues\":[{\"severity\":\"error\",\"severity_string\":\"ERROR\",\"message\":\"File not found: {path}\",\"location\":null,\"suggestion\":null,\"rule_id\":null}],\"total_count\":1,\"error_count\":1,\"warning_count\":0,\"info_count\":0,\"style_count\":0}\n"
+  }
+ },
+ "built": {
+  "spec_four": {
+   "issues": [
+    {
+     "severity": "error",
+     "severity_string": "ERROR",
+     "message": "Error 1",
+     "location": null,
+     "suggestion": null,
+     "rule_id": null
+    },
+    {
+     "severity": "warning",
+     "severity_string": "WARNING",
+     "message": "Warning 1",
+     "location": null,
+     "suggestion": null,
+     "rule_id": null
+    },
+    {
+     "severity": "info",
+     "severity_string": "INFO",
+     "message": "Info 1",
+     "location": null,
+     "suggestion": null,
+     "rule_id": null
+    },
+    {
+     "severity": "style",
+     "severity_string": "STYLE",
+     "message": "Style 1",
+     "location": null,
+     "suggestion": null,
+     "rule_id": null
+    }
+   ],
+   "result": {
+    "kind": "result",
+    "to_h": {
+     "issues": [
+      {
+       "severity": "error",
+       "severity_string": "ERROR",
+       "message": "Error 1",
+       "location": null,
+       "suggestion": null,
+       "rule_id": null
+      },
+      {
+       "severity": "warning",
+       "severity_string": "WARNING",
+       "message": "Warning 1",
+       "location": null,
+       "suggestion": null,
+       "rule_id": null
+      },
+      {
+       "severity": "info",
+       "severity_string": "INFO",
+       "message": "Info 1",
+       "location": null,
+       "suggestion": null,
+       "rule_id": null
+      },
+      {
+       "severity": "style",
+       "severity_string": "STYLE",
+       "message": "Style 1",
+       "location": null,
+       "suggestion": null,
+       "rule_id": null
+      }
+     ],
+     "total_count": 4,
+     "error_count": 1,
+     "warning_count": 1,
+     "info_count": 1,
+     "style_count": 1
+    },
+    "to_s": "Found 4 issue(s):\n\nERROR:\n  [ERROR] Error 1\n\nWARNING:\n  [WARNING] Warning 1\n\nINFO:\n  [INFO] Info 1\n\nSTYLE:\n  [STYLE] Style 1",
+    "has_issues": true,
+    "has_errors": true
+   },
+   "count_by_severity": {
+    "error": 1,
+    "warning": 1,
+    "info": 1,
+    "style": 1,
+    "fatal": 0
+   }
+  },
+  "empty": {
+   "issues": [],
+   "result": {
+    "kind": "result",
+    "to_h": {
+     "issues": [],
+     "total_count": 0,
+     "error_count": 0,
+     "warning_count": 0,
+     "info_count": 0,
+     "style_count": 0
+    },
+    "to_s": "No issues found",
+    "has_issues": false,
+    "has_errors": false
+   },
+   "count_by_severity": {
+    "error": 0,
+    "warning": 0,
+    "info": 0,
+    "style": 0,
+    "fatal": 0
+   }
+  },
+  "other_severity": {
+   "issues": [
+    {
+     "severity": "fatal",
+     "severity_string": "FATAL",
+     "message": "Fatal 1",
+     "location": null,
+     "suggestion": null,
+     "rule_id": null
+    },
+    {
+     "severity": "info",
+     "severity_string": "INFO",
+     "message": "Info 1",
+     "location": "x",
+     "suggestion": null,
+     "rule_id": null
+    }
+   ],
+   "result": {
+    "kind": "result",
+    "to_h": {
+     "issues": [
+      {
+       "severity": "fatal",
+       "severity_string": "FATAL",
+       "message": "Fatal 1",
+       "location": null,
+       "suggestion": null,
+       "rule_id": null
+      },
+      {
+       "severity": "info",
+       "severity_string": "INFO",
+       "message": "Info 1",
+       "location": "x",
+       "suggestion": null,
+       "rule_id": null
+      }
+     ],
+     "total_count": 2,
+     "error_count": 0,
+     "warning_count": 0,
+     "info_count": 1,
+     "style_count": 0
+    },
+    "to_s": "Found 2 issue(s):\n\nINFO:\n  [INFO] Info 1 (at x)",
+    "has_issues": true,
+    "has_errors": false
+   },
+   "count_by_severity": {
+    "error": 0,
+    "warning": 0,
+    "info": 1,
+    "style": 0,
+    "fatal": 1
+   }
+  },
+  "interleaved": {
+   "issues": [
+    {
+     "severity": "style",
+     "severity_string": "STYLE",
+     "message": "s1",
+     "location": null,
+     "suggestion": null,
+     "rule_id": null
+    },
+    {
+     "severity": "error",
+     "severity_string": "ERROR",
+     "message": "e1",
+     "location": null,
+     "suggestion": "fix",
+     "rule_id": null
+    },
+    {
+     "severity": "style",
+     "severity_string": "STYLE",
+     "message": "s2",
+     "location": "loc",
+     "suggestion": null,
+     "rule_id": null
+    },
+    {
+     "severity": "warning",
+     "severity_string": "WARNING",
+     "message": "w1",
+     "location": "",
+     "suggestion": "",
+     "rule_id": null
+    },
+    {
+     "severity": "error",
+     "severity_string": "ERROR",
+     "message": "e2",
+     "location": null,
+     "suggestion": null,
+     "rule_id": "r"
+    }
+   ],
+   "result": {
+    "kind": "result",
+    "to_h": {
+     "issues": [
+      {
+       "severity": "style",
+       "severity_string": "STYLE",
+       "message": "s1",
+       "location": null,
+       "suggestion": null,
+       "rule_id": null
+      },
+      {
+       "severity": "error",
+       "severity_string": "ERROR",
+       "message": "e1",
+       "location": null,
+       "suggestion": "fix",
+       "rule_id": null
+      },
+      {
+       "severity": "style",
+       "severity_string": "STYLE",
+       "message": "s2",
+       "location": "loc",
+       "suggestion": null,
+       "rule_id": null
+      },
+      {
+       "severity": "warning",
+       "severity_string": "WARNING",
+       "message": "w1",
+       "location": "",
+       "suggestion": "",
+       "rule_id": null
+      },
+      {
+       "severity": "error",
+       "severity_string": "ERROR",
+       "message": "e2",
+       "location": null,
+       "suggestion": null,
+       "rule_id": "r"
+      }
+     ],
+     "total_count": 5,
+     "error_count": 2,
+     "warning_count": 1,
+     "info_count": 0,
+     "style_count": 2
+    },
+    "to_s": "Found 5 issue(s):\n\nERROR:\n  [ERROR] e1\n  Suggestion: fix\n  [ERROR] e2\n\nWARNING:\n  [WARNING] w1\n\nSTYLE:\n  [STYLE] s1\n  [STYLE] s2 (at loc)",
+    "has_issues": true,
+    "has_errors": true
+   },
+   "count_by_severity": {
+    "error": 2,
+    "warning": 1,
+    "info": 0,
+    "style": 2,
+    "fatal": 0
+   }
+  }
+ },
+ "rules": {
+  "naming": {
+   "tool_name_format": {
+    "rule_id": "naming_tool_name_format",
+    "pattern": "^[a-z][a-z0-9_-]*$",
+    "message": "Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores",
+    "suggestion": "Use lowercase with hyphens for multi-word names (e.g., \"my-tool\")"
+   },
+   "command_name_format": {
+    "rule_id": "naming_command_name_format",
+    "pattern": "^[a-z][a-z0-9_]*$",
+    "message": "Command names should be lowercase with underscores",
+    "suggestion": "Use snake_case for command names (e.g., \"build_command\")"
+   }
+  },
+  "completeness": {
+   "missing_description": {
+    "rule_id": "complete_missing_description",
+    "message": "Tool is missing a description",
+    "suggestion": "Add a \"description\" field to help users understand what this tool does"
+   },
+   "missing_homepage": {
+    "rule_id": "complete_missing_homepage",
+    "message": "Tool is missing a homepage URL",
+    "suggestion": "Add a \"homepage\" field linking to the tool's website"
+   },
+   "missing_version_detection": {
+    "rule_id": "complete_missing_version_detection",
+    "message": "Tool is missing version detection",
+    "suggestion": "Add \"version_detection\" to auto-detect installed versions"
+   }
+  },
+  "security": {
+   "suspicious_subcommand": {
+    "rule_id": "security_suspicious_subcommand",
+    "pattern": "(^|\\s|;)\\s*(rm\\s+-rf|del|format|mkfs)",
+    "message": "Subcommand contains potentially dangerous shell commands",
+    "suggestion": "Avoid using destructive commands in subcommands"
+   },
+   "unvalidated_user_input": {
+    "rule_id": "security_unvalidated_input",
+    "message": "Arguments should specify type validation",
+    "suggestion": "Add \"type\" field to all arguments for validation"
+   }
+  },
+  "deprecated": {
+   "old_schema_version": {
+    "rule_id": "deprecated_old_schema",
+    "threshold": "1.0",
+    "message": "Schema version should be 1.0",
+    "suggestion": "Use ukiryu_schema: 1.0 (we are in 1.0 development)"
+   }
+  }
+ },
+ "cli_all": {
+  "kind": "raised",
+  "class": "NoMethodError",
+  "message": "undefined method 'error_count' for an instance of Ukiryu::Definition::DefinitionLinter::LintResult"
+ },
+ "outcomes": [
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "style",
+      "severity_string": "STYLE",
+      "message": "Single profile named \"default\" is redundant",
+      "location": "profiles[0]",
+      "suggestion": "For single-profile definitions, omit the profiles array and define commands directly",
+      "rule_id": "style_redundant_default_profile"
+     }
+    ],
+    "total_count": 1,
+    "error_count": 0,
+    "warning_count": 0,
+    "info_count": 0,
+    "style_count": 1
+   },
+   "to_s": "Found 1 issue(s):\n\nSTYLE:\n  [STYLE] Single profile named \"default\" is redundant (at profiles[0])\n  Suggestion: For single-profile definitions, omit the profiles array and define commands directly",
+   "has_issues": true,
+   "has_errors": false
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a description",
+      "location": "definition",
+      "suggestion": "Add a \"description\" field to help users understand what this tool does",
+      "rule_id": "complete_missing_description"
+     },
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a homepage URL",
+      "location": "definition",
+      "suggestion": "Add a \"homepage\" field linking to the tool's website",
+      "rule_id": "complete_missing_homepage"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Tool is missing version detection",
+      "location": "definition",
+      "suggestion": "Add \"version_detection\" to auto-detect installed versions",
+      "rule_id": "complete_missing_version_detection"
+     }
+    ],
+    "total_count": 3,
+    "error_count": 0,
+    "warning_count": 1,
+    "info_count": 2,
+    "style_count": 0
+   },
+   "to_s": "Found 3 issue(s):\n\nWARNING:\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n\nINFO:\n  [INFO] Tool is missing a description (at definition)\n  Suggestion: Add a \"description\" field to help users understand what this tool does\n  [INFO] Tool is missing a homepage URL (at definition)\n  Suggestion: Add a \"homepage\" field linking to the tool's website",
+   "has_issues": true,
+   "has_errors": false
+  },
+  {
+   "exit": 0,
+   "stdout": "{\"issues\":[{\"severity\":\"style\",\"severity_string\":\"STYLE\",\"message\":\"Single profile named \\\"default\\\" is redundant\",\"location\":\"profiles[0]\",\"suggestion\":\"For single-profile definitions, omit the profiles array and define commands directly\",\"rule_id\":\"style_redundant_default_profile\"}],\"total_count\":1,\"error_count\":0,\"warning_count\":0,\"info_count\":0,\"style_count\":1}\n"
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores",
+      "location": "name",
+      "suggestion": "Use lowercase with hyphens for multi-word names (e.g., \"my-tool\")",
+      "rule_id": "naming_tool_name_format"
+     },
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a description",
+      "location": "definition",
+      "suggestion": "Add a \"description\" field to help users understand what this tool does",
+      "rule_id": "complete_missing_description"
+     },
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a homepage URL",
+      "location": "definition",
+      "suggestion": "Add a \"homepage\" field linking to the tool's website",
+      "rule_id": "complete_missing_homepage"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Tool is missing version detection",
+      "location": "definition",
+      "suggestion": "Add \"version_detection\" to auto-detect installed versions",
+      "rule_id": "complete_missing_version_detection"
+     }
+    ],
+    "total_count": 4,
+    "error_count": 0,
+    "warning_count": 2,
+    "info_count": 2,
+    "style_count": 0
+   },
+   "to_s": "Found 4 issue(s):\n\nWARNING:\n  [WARNING] Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores (at name)\n  Suggestion: Use lowercase with hyphens for multi-word names (e.g., \"my-tool\")\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n\nINFO:\n  [INFO] Tool is missing a description (at definition)\n  Suggestion: Add a \"description\" field to help users understand what this tool does\n  [INFO] Tool is missing a homepage URL (at definition)\n  Suggestion: Add a \"homepage\" field linking to the tool's website",
+   "has_issues": true,
+   "has_errors": false
+  },
+  {
+   "exit": 0,
+   "stdout": "{\"issues\":[{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores\",\"location\":\"name\",\"suggestion\":\"Use lowercase with hyphens for multi-word names (e.g., \\\"my-tool\\\")\",\"rule_id\":\"naming_tool_name_format\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a description\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"description\\\" field to help users understand what this tool does\",\"rule_id\":\"complete_missing_description\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a homepage URL\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"homepage\\\" field linking to the tool's website\",\"rule_id\":\"complete_missing_homepage\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool is missing version detection\",\"location\":\"definition\",\"suggestion\":\"Add \\\"version_detection\\\" to auto-detect installed versions\",\"rule_id\":\"complete_missing_version_detection\"}],\"total_count\":4,\"error_count\":0,\"warning_count\":2,\"info_count\":2,\"style_count\":0}\n"
+  },
+  {
+   "exit": 0,
+   "stdout": "{\"issues\":[{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a description\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"description\\\" field to help users understand what this tool does\",\"rule_id\":\"complete_missing_description\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a homepage URL\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"homepage\\\" field linking to the tool's website\",\"rule_id\":\"complete_missing_homepage\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool is missing version detection\",\"location\":\"definition\",\"suggestion\":\"Add \\\"version_detection\\\" to auto-detect installed versions\",\"rule_id\":\"complete_missing_version_detection\"}],\"total_count\":3,\"error_count\":0,\"warning_count\":1,\"info_count\":2,\"style_count\":0}\n"
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a description",
+      "location": "definition",
+      "suggestion": "Add a \"description\" field to help users understand what this tool does",
+      "rule_id": "complete_missing_description"
+     },
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a homepage URL",
+      "location": "definition",
+      "suggestion": "Add a \"homepage\" field linking to the tool's website",
+      "rule_id": "complete_missing_homepage"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Tool is missing version detection",
+      "location": "definition",
+      "suggestion": "Add \"version_detection\" to auto-detect installed versions",
+      "rule_id": "complete_missing_version_detection"
+     },
+     {
+      "severity": "error",
+      "severity_string": "ERROR",
+      "message": "Subcommand contains potentially dangerous shell commands",
+      "location": "profiles[0].commands.dangerous.subcommand",
+      "suggestion": "Avoid using destructive commands in subcommands",
+      "rule_id": "security_suspicious_subcommand"
+     },
+     {
+      "severity": "style",
+      "severity_string": "STYLE",
+      "message": "Single profile named \"default\" is redundant",
+      "location": "profiles[0]",
+      "suggestion": "For single-profile definitions, omit the profiles array and define commands directly",
+      "rule_id": "style_redundant_default_profile"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Profile missing platforms specification",
+      "location": "profiles[0]",
+      "suggestion": "Specify supported platforms (macos, linux, windows)",
+      "rule_id": "complete_missing_platforms"
+     }
+    ],
+    "total_count": 6,
+    "error_count": 1,
+    "warning_count": 2,
+    "info_count": 2,
+    "style_count": 1
+   },
+   "to_s": "Found 6 issue(s):\n\nERROR:\n  [ERROR] Subcommand contains potentially dangerous shell commands (at profiles[0].commands.dangerous.subcommand)\n  Suggestion: Avoid using destructive commands in subcommands\n\nWARNING:\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n  [WARNING] Profile missing platforms specification (at profiles[0])\n  Suggestion: Specify supported platforms (macos, linux, windows)\n\nINFO:\n  [INFO] Tool is missing a description (at definition)\n  Suggestion: Add a \"description\" field to help users understand what this tool does\n  [INFO] Tool is missing a homepage URL (at definition)\n  Suggestion: Add a \"homepage\" field linking to the tool's website\n\nSTYLE:\n  [STYLE] Single profile named \"default\" is redundant (at profiles[0])\n  Suggestion: For single-profile definitions, omit the profiles array and define commands directly",
+   "has_issues": true,
+   "has_errors": true
+  },
+  {
+   "exit": 1,
+   "stdout": "{\"issues\":[{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a description\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"description\\\" field to help users understand what this tool does\",\"rule_id\":\"complete_missing_description\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a homepage URL\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"homepage\\\" field linking to the tool's website\",\"rule_id\":\"complete_missing_homepage\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool is missing version detection\",\"location\":\"definition\",\"suggestion\":\"Add \\\"version_detection\\\" to auto-detect installed versions\",\"rule_id\":\"complete_missing_version_detection\"},{\"severity\":\"error\",\"severity_string\":\"ERROR\",\"message\":\"Subcommand contains potentially dangerous shell commands\",\"location\":\"profiles[0].commands.dangerous.subcommand\",\"suggestion\":\"Avoid using destructive commands in subcommands\",\"rule_id\":\"security_suspicious_subcommand\"},{\"severity\":\"style\",\"severity_string\":\"STYLE\",\"message\":\"Single profile named \\\"default\\\" is redundant\",\"location\":\"profiles[0]\",\"suggestion\":\"For single-profile definitions, omit the profiles array and define commands directly\",\"rule_id\":\"style_redundant_default_profile\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Profile missing platforms specification\",\"location\":\"profiles[0]\",\"suggestion\":\"Specify supported platforms (macos, linux, windows)\",\"rule_id\":\"complete_missing_platforms\"}],\"total_count\":6,\"error_count\":1,\"warning_count\":2,\"info_count\":2,\"style_count\":1}\n"
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a description",
+      "location": "definition",
+      "suggestion": "Add a \"description\" field to help users understand what this tool does",
+      "rule_id": "complete_missing_description"
+     },
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a homepage URL",
+      "location": "definition",
+      "suggestion": "Add a \"homepage\" field linking to the tool's website",
+      "rule_id": "complete_missing_homepage"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Tool is missing version detection",
+      "location": "definition",
+      "suggestion": "Add \"version_detection\" to auto-detect installed versions",
+      "rule_id": "complete_missing_version_detection"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Arguments should specify type validation",
+      "location": "profiles[0].commands.test_cmd.arguments[0]",
+      "suggestion": "Add \"type\" field to all arguments for validation",
+      "rule_id": "security_unvalidated_input"
+     },
+     {
+      "severity": "style",
+      "severity_string": "STYLE",
+      "message": "Single profile named \"default\" is redundant",
+      "location": "profiles[0]",
+      "suggestion": "For single-profile definitions, omit the profiles array and define commands directly",
+      "rule_id": "style_redundant_default_profile"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Profile missing platforms specification",
+      "location": "profiles[0]",
+      "suggestion": "Specify supported platforms (macos, linux, windows)",
+      "rule_id": "complete_missing_platforms"
+     }
+    ],
+    "total_count": 6,
+    "error_count": 0,
+    "warning_count": 3,
+    "info_count": 2,
+    "style_count": 1
+   },
+   "to_s": "Found 6 issue(s):\n\nWARNING:\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n  [WARNING] Arguments should specify type validation (at profiles[0].commands.test_cmd.arguments[0])\n  Suggestion: Add \"type\" field to all arguments for validation\n  [WARNING] Profile missing platforms specification (at profiles[0])\n  Suggestion: Specify supported platforms (macos, linux, windows)\n\nINFO:\n  [INFO] Tool is missing a description (at definition)\n  Suggestion: Add a \"description\" field to help users understand what this tool does\n  [INFO] Tool is missing a homepage URL (at definition)\n  Suggestion: Add a \"homepage\" field linking to the tool's website\n\nSTYLE:\n  [STYLE] Single profile named \"default\" is redundant (at profiles[0])\n  Suggestion: For single-profile definitions, omit the profiles array and define commands directly",
+   "has_issues": true,
+   "has_errors": false
+  },
+  {
+   "exit": 0,
+   "stdout": "{\"issues\":[{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a description\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"description\\\" field to help users understand what this tool does\",\"rule_id\":\"complete_missing_description\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a homepage URL\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"homepage\\\" field linking to the tool's website\",\"rule_id\":\"complete_missing_homepage\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool is missing version detection\",\"location\":\"definition\",\"suggestion\":\"Add \\\"version_detection\\\" to auto-detect installed versions\",\"rule_id\":\"complete_missing_version_detection\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Arguments should specify type validation\",\"location\":\"profiles[0].commands.test_cmd.arguments[0]\",\"suggestion\":\"Add \\\"type\\\" field to all arguments for validation\",\"rule_id\":\"security_unvalidated_input\"},{\"severity\":\"style\",\"severity_string\":\"STYLE\",\"message\":\"Single profile named \\\"default\\\" is redundant\",\"location\":\"profiles[0]\",\"suggestion\":\"For single-profile definitions, omit the profiles array and define commands directly\",\"rule_id\":\"style_redundant_default_profile\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Profile missing platforms specification\",\"location\":\"profiles[0]\",\"suggestion\":\"Specify supported platforms (macos, linux, windows)\",\"rule_id\":\"complete_missing_platforms\"}],\"total_count\":6,\"error_count\":0,\"warning_count\":3,\"info_count\":2,\"style_count\":1}\n"
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a description",
+      "location": "definition",
+      "suggestion": "Add a \"description\" field to help users understand what this tool does",
+      "rule_id": "complete_missing_description"
+     },
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a homepage URL",
+      "location": "definition",
+      "suggestion": "Add a \"homepage\" field linking to the tool's website",
+      "rule_id": "complete_missing_homepage"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Tool is missing version detection",
+      "location": "definition",
+      "suggestion": "Add \"version_detection\" to auto-detect installed versions",
+      "rule_id": "complete_missing_version_detection"
+     },
+     {
+      "severity": "style",
+      "severity_string": "STYLE",
+      "message": "Single profile named \"default\" is redundant",
+      "location": "profiles[0]",
+      "suggestion": "For single-profile definitions, omit the profiles array and define commands directly",
+      "rule_id": "style_redundant_default_profile"
+     }
+    ],
+    "total_count": 4,
+    "error_count": 0,
+    "warning_count": 1,
+    "info_count": 2,
+    "style_count": 1
+   },
+   "to_s": "Found 4 issue(s):\n\nWARNING:\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n\nINFO:\n  [INFO] Tool is missing a description (at definition)\n  Suggestion: Add a \"description\" field to help users understand what this tool does\n  [INFO] Tool is missing a homepage URL (at definition)\n  Suggestion: Add a \"homepage\" field linking to the tool's website\n\nSTYLE:\n  [STYLE] Single profile named \"default\" is redundant (at profiles[0])\n  Suggestion: For single-profile definitions, omit the profiles array and define commands directly",
+   "has_issues": true,
+   "has_errors": false
+  },
+  {
+   "exit": 0,
+   "stdout": "{\"issues\":[{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a description\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"description\\\" field to help users understand what this tool does\",\"rule_id\":\"complete_missing_description\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a homepage URL\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"homepage\\\" field linking to the tool's website\",\"rule_id\":\"complete_missing_homepage\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool is missing version detection\",\"location\":\"definition\",\"suggestion\":\"Add \\\"version_detection\\\" to auto-detect installed versions\",\"rule_id\":\"complete_missing_version_detection\"},{\"severity\":\"style\",\"severity_string\":\"STYLE\",\"message\":\"Single profile named \\\"default\\\" is redundant\",\"location\":\"profiles[0]\",\"suggestion\":\"For single-profile definitions, omit the profiles array and define commands directly\",\"rule_id\":\"style_redundant_default_profile\"}],\"total_count\":4,\"error_count\":0,\"warning_count\":1,\"info_count\":2,\"style_count\":1}\n"
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a description",
+      "location": "definition",
+      "suggestion": "Add a \"description\" field to help users understand what this tool does",
+      "rule_id": "complete_missing_description"
+     },
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a homepage URL",
+      "location": "definition",
+      "suggestion": "Add a \"homepage\" field linking to the tool's website",
+      "rule_id": "complete_missing_homepage"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Tool is missing version detection",
+      "location": "definition",
+      "suggestion": "Add \"version_detection\" to auto-detect installed versions",
+      "rule_id": "complete_missing_version_detection"
+     },
+     {
+      "severity": "style",
+      "severity_string": "STYLE",
+      "message": "Single profile named \"default\" is redundant",
+      "location": "profiles[0]",
+      "suggestion": "For single-profile definitions, omit the profiles array and define commands directly",
+      "rule_id": "style_redundant_default_profile"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Profile missing platforms specification",
+      "location": "profiles[0]",
+      "suggestion": "Specify supported platforms (macos, linux, windows)",
+      "rule_id": "complete_missing_platforms"
+     }
+    ],
+    "total_count": 5,
+    "error_count": 0,
+    "warning_count": 2,
+    "info_count": 2,
+    "style_count": 1
+   },
+   "to_s": "Found 5 issue(s):\n\nWARNING:\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n  [WARNING] Profile missing platforms specification (at profiles[0])\n  Suggestion: Specify supported platforms (macos, linux, windows)\n\nINFO:\n  [INFO] Tool is missing a description (at definition)\n  Suggestion: Add a \"description\" field to help users understand what this tool does\n  [INFO] Tool is missing a homepage URL (at definition)\n  Suggestion: Add a \"homepage\" field linking to the tool's website\n\nSTYLE:\n  [STYLE] Single profile named \"default\" is redundant (at profiles[0])\n  Suggestion: For single-profile definitions, omit the profiles array and define commands directly",
+   "has_issues": true,
+   "has_errors": false
+  },
+  {
+   "exit": 0,
+   "stdout": "{\"issues\":[{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a description\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"description\\\" field to help users understand what this tool does\",\"rule_id\":\"complete_missing_description\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a homepage URL\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"homepage\\\" field linking to the tool's website\",\"rule_id\":\"complete_missing_homepage\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool is missing version detection\",\"location\":\"definition\",\"suggestion\":\"Add \\\"version_detection\\\" to auto-detect installed versions\",\"rule_id\":\"complete_missing_version_detection\"},{\"severity\":\"style\",\"severity_string\":\"STYLE\",\"message\":\"Single profile named \\\"default\\\" is redundant\",\"location\":\"profiles[0]\",\"suggestion\":\"For single-profile definitions, omit the profiles array and define commands directly\",\"rule_id\":\"style_redundant_default_profile\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Profile missing platforms specification\",\"location\":\"profiles[0]\",\"suggestion\":\"Specify supported platforms (macos, linux, windows)\",\"rule_id\":\"complete_missing_platforms\"}],\"total_count\":5,\"error_count\":0,\"warning_count\":2,\"info_count\":2,\"style_count\":1}\n"
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores",
+      "location": "name",
+      "suggestion": "Use lowercase with hyphens for multi-word names (e.g., \"my-tool\")",
+      "rule_id": "naming_tool_name_format"
+     }
+    ],
+    "total_count": 1,
+    "error_count": 0,
+    "warning_count": 1,
+    "info_count": 0,
+    "style_count": 0
+   },
+   "to_s": "Found 1 issue(s):\n\nWARNING:\n  [WARNING] Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores (at name)\n  Suggestion: Use lowercase with hyphens for multi-word names (e.g., \"my-tool\")",
+   "has_issues": true,
+   "has_errors": false
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [],
+    "total_count": 0,
+    "error_count": 0,
+    "warning_count": 0,
+    "info_count": 0,
+    "style_count": 0
+   },
+   "to_s": "No issues found",
+   "has_issues": false,
+   "has_errors": false
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "error",
+      "severity_string": "ERROR",
+      "message": "Definition must be a hash/object",
+      "location": null,
+      "suggestion": null,
+      "rule_id": null
+     }
+    ],
+    "total_count": 1,
+    "error_count": 1,
+    "warning_count": 0,
+    "info_count": 0,
+    "style_count": 0
+   },
+   "to_s": "Found 1 issue(s):\n\nERROR:\n  [ERROR] Definition must be a hash/object",
+   "has_issues": true,
+   "has_errors": true
+  },
+  {
+   "exit": 1,
+   "stdout": "{\"issues\":[{\"severity\":\"error\",\"severity_string\":\"ERROR\",\"message\":\"Definition must be a hash/object\",\"location\":null,\"suggestion\":null,\"rule_id\":null}],\"total_count\":1,\"error_count\":1,\"warning_count\":0,\"info_count\":0,\"style_count\":0}\n"
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a homepage URL",
+      "location": "definition",
+      "suggestion": "Add a \"homepage\" field linking to the tool's website",
+      "rule_id": "complete_missing_homepage"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Tool is missing version detection",
+      "location": "definition",
+      "suggestion": "Add \"version_detection\" to auto-detect installed versions",
+      "rule_id": "complete_missing_version_detection"
+     },
+     {
+      "severity": "style",
+      "severity_string": "STYLE",
+      "message": "Single profile named \"default\" is redundant",
+      "location": "profiles[0]",
+      "suggestion": "For single-profile definitions, omit the profiles array and define commands directly",
+      "rule_id": "style_redundant_default_profile"
+     }
+    ],
+    "total_count": 3,
+    "error_count": 0,
+    "warning_count": 1,
+    "info_count": 1,
+    "style_count": 1
+   },
+   "to_s": "Found 3 issue(s):\n\nWARNING:\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n\nINFO:\n  [INFO] Tool is missing a homepage URL (at definition)\n  Suggestion: Add a \"homepage\" field linking to the tool's website\n\nSTYLE:\n  [STYLE] Single profile named \"default\" is redundant (at profiles[0])\n  Suggestion: For single-profile definitions, omit the profiles array and define commands directly",
+   "has_issues": true,
+   "has_errors": false
+  },
+  {
+   "exit": 0,
+   "stdout": "{\"issues\":[{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a homepage URL\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"homepage\\\" field linking to the tool's website\",\"rule_id\":\"complete_missing_homepage\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool is missing version detection\",\"location\":\"definition\",\"suggestion\":\"Add \\\"version_detection\\\" to auto-detect installed versions\",\"rule_id\":\"complete_missing_version_detection\"},{\"severity\":\"style\",\"severity_string\":\"STYLE\",\"message\":\"Single profile named \\\"default\\\" is redundant\",\"location\":\"profiles[0]\",\"suggestion\":\"For single-profile definitions, omit the profiles array and define commands directly\",\"rule_id\":\"style_redundant_default_profile\"}],\"total_count\":3,\"error_count\":0,\"warning_count\":1,\"info_count\":1,\"style_count\":1}\n"
+  },
+  {
+   "kind": "raised",
+   "class": "Psych::SyntaxError",
+   "message": "(<unknown>): mapping values are not allowed in this context at line 2 column 6"
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "error",
+      "severity_string": "ERROR",
+      "message": "Invalid YAML: (<unknown>): mapping values are not allowed in this context at line 2 column 6",
+      "location": null,
+      "suggestion": null,
+      "rule_id": null
+     }
+    ],
+    "total_count": 1,
+    "error_count": 1,
+    "warning_count": 0,
+    "info_count": 0,
+    "style_count": 0
+   },
+   "to_s": "Found 1 issue(s):\n\nERROR:\n  [ERROR] Invalid YAML: (<unknown>): mapping values are not allowed in this context at line 2 column 6",
+   "has_issues": true,
+   "has_errors": true
+  },
+  {
+   "exit": 1,
+   "stdout": "{\"issues\":[{\"severity\":\"error\",\"severity_string\":\"ERROR\",\"message\":\"Invalid YAML: (<unknown>): mapping values are not allowed in this context at line 2 column 6\",\"location\":null,\"suggestion\":null,\"rule_id\":null}],\"total_count\":1,\"error_count\":1,\"warning_count\":0,\"info_count\":0,\"style_count\":0}\n"
+  },
+  {
+   "kind": "raised",
+   "class": "Psych::SyntaxError",
+   "message": "(<unknown>): mapping values are not allowed in this context at line 1 column 7"
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "error",
+      "severity_string": "ERROR",
+      "message": "Invalid YAML: (<unknown>): mapping values are not allowed in this context at line 1 column 7",
+      "location": null,
+      "suggestion": null,
+      "rule_id": null
+     }
+    ],
+    "total_count": 1,
+    "error_count": 1,
+    "warning_count": 0,
+    "info_count": 0,
+    "style_count": 0
+   },
+   "to_s": "Found 1 issue(s):\n\nERROR:\n  [ERROR] Invalid YAML: (<unknown>): mapping values are not allowed in this context at line 1 column 7",
+   "has_issues": true,
+   "has_errors": true
+  },
+  {
+   "exit": 1,
+   "stdout": "{\"issues\":[{\"severity\":\"error\",\"severity_string\":\"ERROR\",\"message\":\"Invalid YAML: (<unknown>): mapping values are not allowed in this context at line 1 column 7\",\"location\":null,\"suggestion\":null,\"rule_id\":null}],\"total_count\":1,\"error_count\":1,\"warning_count\":0,\"info_count\":0,\"style_count\":0}\n"
+  },
+  {
+   "kind": "raised",
+   "class": "NoMethodError",
+   "message": "undefined method 'match?' for an instance of Integer"
+  },
+  {
+   "exit": {
+    "raised": "NoMethodError",
+    "message": "undefined method 'match?' for an instance of Integer"
+   },
+   "stdout": ""
+  },
+  {
+   "kind": "raised",
+   "class": "NoMethodError",
+   "message": "undefined method 'match?' for an instance of Float"
+  },
+  {
+   "exit": {
+    "raised": "NoMethodError",
+    "message": "undefined method 'match?' for an instance of Float"
+   },
+   "stdout": ""
+  },
+  {
+   "kind": "raised",
+   "class": "NoMethodError",
+   "message": "undefined method 'match?' for true"
+  },
+  {
+   "exit": {
+    "raised": "NoMethodError",
+    "message": "undefined method 'match?' for true"
+   },
+   "stdout": ""
+  },
+  {
+   "kind": "raised",
+   "class": "NoMethodError",
+   "message": "undefined method 'match?' for an instance of Array"
+  },
+  {
+   "exit": {
+    "raised": "NoMethodError",
+    "message": "undefined method 'match?' for an instance of Array"
+   },
+   "stdout": ""
+  },
+  {
+   "kind": "raised",
+   "class": "NoMethodError",
+   "message": "undefined method 'match?' for an instance of Hash"
+  },
+  {
+   "exit": {
+    "raised": "NoMethodError",
+    "message": "undefined method 'match?' for an instance of Hash"
+   },
+   "stdout": ""
+  },
+  {
+   "kind": "raised",
+   "class": "NoMethodError",
+   "message": "undefined method 'match?' for an instance of Date"
+  },
+  {
+   "exit": {
+    "raised": "NoMethodError",
+    "message": "undefined method 'match?' for an instance of Date"
+   },
+   "stdout": ""
+  },
+  {
+   "kind": "raised",
+   "class": "NoMethodError",
+   "message": "undefined method 'match?' for an instance of Time"
+  },
+  {
+   "exit": {
+    "raised": "NoMethodError",
+    "message": "undefined method 'match?' for an instance of Time"
+   },
+   "stdout": ""
+  },
+  {
+   "kind": "raised",
+   "class": "NoMethodError",
+   "message": "undefined method 'each_with_index' for an instance of String"
+  },
+  {
+   "exit": {
+    "raised": "NoMethodError",
+    "message": "undefined method 'each_with_index' for an instance of String"
+   },
+   "stdout": ""
+  },
+  {
+   "kind": "raised",
+   "class": "NoMethodError",
+   "message": "undefined method 'each_with_index' for an instance of Integer"
+  },
+  {
+   "exit": {
+    "raised": "NoMethodError",
+    "message": "undefined method 'each_with_index' for an instance of Integer"
+   },
+   "stdout": ""
+  },
+  {
+   "kind": "raised",
+   "class": "NoMethodError",
+   "message": "undefined method 'each_with_index' for true"
+  },
+  {
+   "exit": {
+    "raised": "NoMethodError",
+    "message": "undefined method 'each_with_index' for true"
+   },
+   "stdout": ""
+  },
+  {
+   "kind": "raised",
+   "class": "NoMethodError",
+   "message": "undefined method 'each_with_index' for false"
+  },
+  {
+   "exit": {
+    "raised": "NoMethodError",
+    "message": "undefined method 'each_with_index' for false"
+   },
+   "stdout": ""
+  },
+  {
+   "kind": "raised",
+   "class": "TypeError",
+   "message": "no implicit conversion of Symbol into Integer"
+  },
+  {
+   "exit": {
+    "raised": "TypeError",
+    "message": "no implicit conversion of Symbol into Integer"
+   },
+   "stdout": ""
+  },
+  {
+   "kind": "raised",
+   "class": "NoMethodError",
+   "message": "undefined method 'each_with_index' for an instance of Symbol"
+  },
+  {
+   "exit": {
+    "raised": "NoMethodError",
+    "message": "undefined method 'each_with_index' for an instance of Symbol"
+   },
+   "stdout": ""
+  },
+  {
+   "kind": "raised",
+   "class": "NoMethodError",
+   "message": "undefined method '[]' for nil"
+  },
+  {
+   "exit": {
+    "raised": "NoMethodError",
+    "message": "undefined method '[]' for nil"
+   },
+   "stdout": ""
+  },
+  {
+   "kind": "raised",
+   "class": "NoMethodError",
+   "message": "undefined method '[]' for an instance of Float"
+  },
+  {
+   "exit": {
+    "raised": "NoMethodError",
+    "message": "undefined method '[]' for an instance of Float"
+   },
+   "stdout": ""
+  },
+  {
+   "kind": "raised",
+   "class": "NoMethodError",
+   "message": "undefined method '[]' for true"
+  },
+  {
+   "exit": {
+    "raised": "NoMethodError",
+    "message": "undefined method '[]' for true"
+   },
+   "stdout": ""
+  },
+  {
+   "kind": "raised",
+   "class": "NoMethodError",
+   "message": "undefined method '[]' for false"
+  },
+  {
+   "exit": {
+    "raised": "NoMethodError",
+    "message": "undefined method '[]' for false"
+   },
+   "stdout": ""
+  },
+  {
+   "kind": "raised",
+   "class": "NoMethodError",
+   "message": "undefined method '[]' for an instance of Date"
+  },
+  {
+   "exit": {
+    "raised": "NoMethodError",
+    "message": "undefined method '[]' for an instance of Date"
+   },
+   "stdout": ""
+  },
+  {
+   "kind": "raised",
+   "class": "NoMethodError",
+   "message": "undefined method 'each_key' for an instance of Array"
+  },
+  {
+   "exit": {
+    "raised": "NoMethodError",
+    "message": "undefined method 'each_key' for an instance of Array"
+   },
+   "stdout": ""
+  },
+  {
+   "kind": "raised",
+   "class": "NoMethodError",
+   "message": "undefined method 'each_key' for an instance of String"
+  },
+  {
+   "exit": {
+    "raised": "NoMethodError",
+    "message": "undefined method 'each_key' for an instance of String"
+   },
+   "stdout": ""
+  },
+  {
+   "kind": "raised",
+   "class": "NoMethodError",
+   "message": "undefined method 'each_key' for an instance of Integer"
+  },
+  {
+   "exit": {
+    "raised": "NoMethodError",
+    "message": "undefined method 'each_key' for an instance of Integer"
+   },
+   "stdout": ""
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Command names should be lowercase with underscores",
+      "location": "profiles[0].commands.Build",
+      "suggestion": "Use snake_case for command names (e.g., \"build_command\")",
+      "rule_id": "naming_command_name_format"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Command names should be lowercase with underscores",
+      "location": "profiles[0].commands.build-cmd",
+      "suggestion": "Use snake_case for command names (e.g., \"build_command\")",
+      "rule_id": "naming_command_name_format"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Command names should be lowercase with underscores",
+      "location": "profiles[0].commands.build cmd",
+      "suggestion": "Use snake_case for command names (e.g., \"build_command\")",
+      "rule_id": "naming_command_name_format"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Command names should be lowercase with underscores",
+      "location": "profiles[0].commands.1",
+      "suggestion": "Use snake_case for command names (e.g., \"build_command\")",
+      "rule_id": "naming_command_name_format"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Command names should be lowercase with underscores",
+      "location": "profiles[0].commands.",
+      "suggestion": "Use snake_case for command names (e.g., \"build_command\")",
+      "rule_id": "naming_command_name_format"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Command names should be lowercase with underscores",
+      "location": "profiles[0].commands.Sym",
+      "suggestion": "Use snake_case for command names (e.g., \"build_command\")",
+      "rule_id": "naming_command_name_format"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Command names should be lowercase with underscores",
+      "location": "profiles[0].commands.1.5",
+      "suggestion": "Use snake_case for command names (e.g., \"build_command\")",
+      "rule_id": "naming_command_name_format"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Command names should be lowercase with underscores",
+      "location": "profiles[0].commands.2020-01-01",
+      "suggestion": "Use snake_case for command names (e.g., \"build_command\")",
+      "rule_id": "naming_command_name_format"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Command names should be lowercase with underscores",
+      "location": "profiles[0].commands._x",
+      "suggestion": "Use snake_case for command names (e.g., \"build_command\")",
+      "rule_id": "naming_command_name_format"
+     },
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a description",
+      "location": "definition",
+      "suggestion": "Add a \"description\" field to help users understand what this tool does",
+      "rule_id": "complete_missing_description"
+     },
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a homepage URL",
+      "location": "definition",
+      "suggestion": "Add a \"homepage\" field linking to the tool's website",
+      "rule_id": "complete_missing_homepage"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Tool is missing version detection",
+      "location": "definition",
+      "suggestion": "Add \"version_detection\" to auto-detect installed versions",
+      "rule_id": "complete_missing_version_detection"
+     }
+    ],
+    "total_count": 12,
+    "error_count": 0,
+    "warning_count": 10,
+    "info_count": 2,
+    "style_count": 0
+   },
+   "to_s": "Found 12 issue(s):\n\nWARNING:\n  [WARNING] Command names should be lowercase with underscores (at profiles[0].commands.Build)\n  Suggestion: Use snake_case for command names (e.g., \"build_command\")\n  [WARNING] Command names should be lowercase with underscores (at profiles[0].commands.build-cmd)\n  Suggestion: Use snake_case for command names (e.g., \"build_command\")\n  [WARNING] Command names should be lowercase with underscores (at profiles[0].commands.build cmd)\n  Suggestion: Use snake_case for command names (e.g., \"build_command\")\n  [WARNING] Command names should be lowercase with underscores (at profiles[0].commands.1)\n  Suggestion: Use snake_case for command names (e.g., \"build_command\")\n  [WARNING] Command names should be lowercase with underscores (at profiles[0].commands.)\n  Suggestion: Use snake_case for command names (e.g., \"build_command\")\n  [WARNING] Command names should be lowercase with underscores (at profiles[0].commands.Sym)\n  Suggestion: Use snake_case for command names (e.g., \"build_command\")\n  [WARNING] Command names should be lowercase with underscores (at profiles[0].commands.1.5)\n  Suggestion: Use snake_case for command names (e.g., \"build_command\")\n  [WARNING] Command names should be lowercase with underscores (at profiles[0].commands.2020-01-01)\n  Suggestion: Use snake_case for command names (e.g., \"build_command\")\n  [WARNING] Command names should be lowercase with underscores (at profiles[0].commands._x)\n  Suggestion: Use snake_case for command names (e.g., \"build_command\")\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n\nINFO:\n  [INFO] Tool is missing a description (at definition)\n  Suggestion: Add a \"description\" field to help users understand what this tool does\n  [INFO] Tool is missing a homepage URL (at definition)\n  Suggestion: Add a \"homepage\" field linking to the tool's website",
+   "has_issues": true,
+   "has_errors": false
+  },
+  {
+   "exit": 0,
+   "stdout": "{\"issues\":[{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Command names should be lowercase with underscores\",\"location\":\"profiles[0].commands.Build\",\"suggestion\":\"Use snake_case for command names (e.g., \\\"build_command\\\")\",\"rule_id\":\"naming_command_name_format\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Command names should be lowercase with underscores\",\"location\":\"profiles[0].commands.build-cmd\",\"suggestion\":\"Use snake_case for command names (e.g., \\\"build_command\\\")\",\"rule_id\":\"naming_command_name_format\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Command names should be lowercase with underscores\",\"location\":\"profiles[0].commands.build cmd\",\"suggestion\":\"Use snake_case for command names (e.g., \\\"build_command\\\")\",\"rule_id\":\"naming_command_name_format\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Command names should be lowercase with underscores\",\"location\":\"profiles[0].commands.1\",\"suggestion\":\"Use snake_case for command names (e.g., \\\"build_command\\\")\",\"rule_id\":\"naming_command_name_format\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Command names should be lowercase with underscores\",\"location\":\"profiles[0].commands.\",\"suggestion\":\"Use snake_case for command names (e.g., \\\"build_command\\\")\",\"rule_id\":\"naming_command_name_format\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Command names should be lowercase with underscores\",\"location\":\"profiles[0].commands.Sym\",\"suggestion\":\"Use snake_case for command names (e.g., \\\"build_command\\\")\",\"rule_id\":\"naming_command_name_format\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Command names should be lowercase with underscores\",\"location\":\"profiles[0].commands.1.5\",\"suggestion\":\"Use snake_case for command names (e.g., \\\"build_command\\\")\",\"rule_id\":\"naming_command_name_format\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Command names should be lowercase with underscores\",\"location\":\"profiles[0].commands.2020-01-01\",\"suggestion\":\"Use snake_case for command names (e.g., \\\"build_command\\\")\",\"rule_id\":\"naming_command_name_format\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Command names should be lowercase with underscores\",\"location\":\"profiles[0].commands._x\",\"suggestion\":\"Use snake_case for command names (e.g., \\\"build_command\\\")\",\"rule_id\":\"naming_command_name_format\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a description\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"description\\\" field to help users understand what this tool does\",\"rule_id\":\"complete_missing_description\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a homepage URL\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"homepage\\\" field linking to the tool's website\",\"rule_id\":\"complete_missing_homepage\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool is missing version detection\",\"location\":\"definition\",\"suggestion\":\"Add \\\"version_detection\\\" to auto-detect installed versions\",\"rule_id\":\"complete_missing_version_detection\"}],\"total_count\":12,\"error_count\":0,\"warning_count\":10,\"info_count\":2,\"style_count\":0}\n"
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Command names should be lowercase with underscores",
+      "location": "profiles[0].commands.[\"a\", \"b\"]",
+      "suggestion": "Use snake_case for command names (e.g., \"build_command\")",
+      "rule_id": "naming_command_name_format"
+     },
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a description",
+      "location": "definition",
+      "suggestion": "Add a \"description\" field to help users understand what this tool does",
+      "rule_id": "complete_missing_description"
+     },
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a homepage URL",
+      "location": "definition",
+      "suggestion": "Add a \"homepage\" field linking to the tool's website",
+      "rule_id": "complete_missing_homepage"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Tool is missing version detection",
+      "location": "definition",
+      "suggestion": "Add \"version_detection\" to auto-detect installed versions",
+      "rule_id": "complete_missing_version_detection"
+     }
+    ],
+    "total_count": 4,
+    "error_count": 0,
+    "warning_count": 2,
+    "info_count": 2,
+    "style_count": 0
+   },
+   "to_s": "Found 4 issue(s):\n\nWARNING:\n  [WARNING] Command names should be lowercase with underscores (at profiles[0].commands.[\"a\", \"b\"])\n  Suggestion: Use snake_case for command names (e.g., \"build_command\")\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n\nINFO:\n  [INFO] Tool is missing a description (at definition)\n  Suggestion: Add a \"description\" field to help users understand what this tool does\n  [INFO] Tool is missing a homepage URL (at definition)\n  Suggestion: Add a \"homepage\" field linking to the tool's website",
+   "has_issues": true,
+   "has_errors": false
+  },
+  {
+   "exit": 0,
+   "stdout": "{\"issues\":[{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Command names should be lowercase with underscores\",\"location\":\"profiles[0].commands.[\\\"a\\\", \\\"b\\\"]\",\"suggestion\":\"Use snake_case for command names (e.g., \\\"build_command\\\")\",\"rule_id\":\"naming_command_name_format\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a description\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"description\\\" field to help users understand what this tool does\",\"rule_id\":\"complete_missing_description\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a homepage URL\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"homepage\\\" field linking to the tool's website\",\"rule_id\":\"complete_missing_homepage\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool is missing version detection\",\"location\":\"definition\",\"suggestion\":\"Add \\\"version_detection\\\" to auto-detect installed versions\",\"rule_id\":\"complete_missing_version_detection\"}],\"total_count\":4,\"error_count\":0,\"warning_count\":2,\"info_count\":2,\"style_count\":0}\n"
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a description",
+      "location": "definition",
+      "suggestion": "Add a \"description\" field to help users understand what this tool does",
+      "rule_id": "complete_missing_description"
+     },
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a homepage URL",
+      "location": "definition",
+      "suggestion": "Add a \"homepage\" field linking to the tool's website",
+      "rule_id": "complete_missing_homepage"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Tool is missing version detection",
+      "location": "definition",
+      "suggestion": "Add \"version_detection\" to auto-detect installed versions",
+      "rule_id": "complete_missing_version_detection"
+     },
+     {
+      "severity": "error",
+      "severity_string": "ERROR",
+      "message": "Subcommand contains potentially dangerous shell commands",
+      "location": "profiles[0].commands.run.subcommand",
+      "suggestion": "Avoid using destructive commands in subcommands",
+      "rule_id": "security_suspicious_subcommand"
+     }
+    ],
+    "total_count": 4,
+    "error_count": 1,
+    "warning_count": 1,
+    "info_count": 2,
+    "style_count": 0
+   },
+   "to_s": "Found 4 issue(s):\n\nERROR:\n  [ERROR] Subcommand contains potentially dangerous shell commands (at profiles[0].commands.run.subcommand)\n  Suggestion: Avoid using destructive commands in subcommands\n\nWARNING:\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n\nINFO:\n  [INFO] Tool is missing a description (at definition)\n  Suggestion: Add a \"description\" field to help users understand what this tool does\n  [INFO] Tool is missing a homepage URL (at definition)\n  Suggestion: Add a \"homepage\" field linking to the tool's website",
+   "has_issues": true,
+   "has_errors": true
+  },
+  {
+   "exit": 1,
+   "stdout": "{\"issues\":[{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a description\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"description\\\" field to help users understand what this tool does\",\"rule_id\":\"complete_missing_description\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a homepage URL\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"homepage\\\" field linking to the tool's website\",\"rule_id\":\"complete_missing_homepage\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool is missing version detection\",\"location\":\"definition\",\"suggestion\":\"Add \\\"version_detection\\\" to auto-detect installed versions\",\"rule_id\":\"complete_missing_version_detection\"},{\"severity\":\"error\",\"severity_string\":\"ERROR\",\"message\":\"Subcommand contains potentially dangerous shell commands\",\"location\":\"profiles[0].commands.run.subcommand\",\"suggestion\":\"Avoid using destructive commands in subcommands\",\"rule_id\":\"security_suspicious_subcommand\"}],\"total_count\":4,\"error_count\":1,\"warning_count\":1,\"info_count\":2,\"style_count\":0}\n"
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a description",
+      "location": "definition",
+      "suggestion": "Add a \"description\" field to help users understand what this tool does",
+      "rule_id": "complete_missing_description"
+     },
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a homepage URL",
+      "location": "definition",
+      "suggestion": "Add a \"homepage\" field linking to the tool's website",
+      "rule_id": "complete_missing_homepage"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Tool is missing version detection",
+      "location": "definition",
+      "suggestion": "Add \"version_detection\" to auto-detect installed versions",
+      "rule_id": "complete_missing_version_detection"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Arguments should specify type validation",
+      "location": "profiles[0].commands.run.arguments[0]",
+      "suggestion": "Add \"type\" field to all arguments for validation",
+      "rule_id": "security_unvalidated_input"
+     }
+    ],
+    "total_count": 4,
+    "error_count": 0,
+    "warning_count": 2,
+    "info_count": 2,
+    "style_count": 0
+   },
+   "to_s": "Found 4 issue(s):\n\nWARNING:\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n  [WARNING] Arguments should specify type validation (at profiles[0].commands.run.arguments[0])\n  Suggestion: Add \"type\" field to all arguments for validation\n\nINFO:\n  [INFO] Tool is missing a description (at definition)\n  Suggestion: Add a \"description\" field to help users understand what this tool does\n  [INFO] Tool is missing a homepage URL (at definition)\n  Suggestion: Add a \"homepage\" field linking to the tool's website",
+   "has_issues": true,
+   "has_errors": false
+  },
+  {
+   "exit": 0,
+   "stdout": "{\"issues\":[{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a description\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"description\\\" field to help users understand what this tool does\",\"rule_id\":\"complete_missing_description\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a homepage URL\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"homepage\\\" field linking to the tool's website\",\"rule_id\":\"complete_missing_homepage\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool is missing version detection\",\"location\":\"definition\",\"suggestion\":\"Add \\\"version_detection\\\" to auto-detect installed versions\",\"rule_id\":\"complete_missing_version_detection\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Arguments should specify type validation\",\"location\":\"profiles[0].commands.run.arguments[0]\",\"suggestion\":\"Add \\\"type\\\" field to all arguments for validation\",\"rule_id\":\"security_unvalidated_input\"}],\"total_count\":4,\"error_count\":0,\"warning_count\":2,\"info_count\":2,\"style_count\":0}\n"
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a description",
+      "location": "definition",
+      "suggestion": "Add a \"description\" field to help users understand what this tool does",
+      "rule_id": "complete_missing_description"
+     },
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a homepage URL",
+      "location": "definition",
+      "suggestion": "Add a \"homepage\" field linking to the tool's website",
+      "rule_id": "complete_missing_homepage"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Tool is missing version detection",
+      "location": "definition",
+      "suggestion": "Add \"version_detection\" to auto-detect installed versions",
+      "rule_id": "complete_missing_version_detection"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Arguments should specify type validation",
+      "location": "profiles[0].commands.run.arguments[1]",
+      "suggestion": "Add \"type\" field to all arguments for validation",
+      "rule_id": "security_unvalidated_input"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Arguments should specify type validation",
+      "location": "profiles[0].commands.run.arguments[3]",
+      "suggestion": "Add \"type\" field to all arguments for validation",
+      "rule_id": "security_unvalidated_input"
+     }
+    ],
+    "total_count": 5,
+    "error_count": 0,
+    "warning_count": 3,
+    "info_count": 2,
+    "style_count": 0
+   },
+   "to_s": "Found 5 issue(s):\n\nWARNING:\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n  [WARNING] Arguments should specify type validation (at profiles[0].commands.run.arguments[1])\n  Suggestion: Add \"type\" field to all arguments for validation\n  [WARNING] Arguments should specify type validation (at profiles[0].commands.run.arguments[3])\n  Suggestion: Add \"type\" field to all arguments for validation\n\nINFO:\n  [INFO] Tool is missing a description (at definition)\n  Suggestion: Add a \"description\" field to help users understand what this tool does\n  [INFO] Tool is missing a homepage URL (at definition)\n  Suggestion: Add a \"homepage\" field linking to the tool's website",
+   "has_issues": true,
+   "has_errors": false
+  },
+  {
+   "exit": 0,
+   "stdout": "{\"issues\":[{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a description\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"description\\\" field to help users understand what this tool does\",\"rule_id\":\"complete_missing_description\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a homepage URL\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"homepage\\\" field linking to the tool's website\",\"rule_id\":\"complete_missing_homepage\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool is missing version detection\",\"location\":\"definition\",\"suggestion\":\"Add \\\"version_detection\\\" to auto-detect installed versions\",\"rule_id\":\"complete_missing_version_detection\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Arguments should specify type validation\",\"location\":\"profiles[0].commands.run.arguments[1]\",\"suggestion\":\"Add \\\"type\\\" field to all arguments for validation\",\"rule_id\":\"security_unvalidated_input\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Arguments should specify type validation\",\"location\":\"profiles[0].commands.run.arguments[3]\",\"suggestion\":\"Add \\\"type\\\" field to all arguments for validation\",\"rule_id\":\"security_unvalidated_input\"}],\"total_count\":5,\"error_count\":0,\"warning_count\":3,\"info_count\":2,\"style_count\":0}\n"
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores",
+      "location": "name",
+      "suggestion": "Use lowercase with hyphens for multi-word names (e.g., \"my-tool\")",
+      "rule_id": "naming_tool_name_format"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Command names should be lowercase with underscores",
+      "location": "profiles[0].commands.Alpha",
+      "suggestion": "Use snake_case for command names (e.g., \"build_command\")",
+      "rule_id": "naming_command_name_format"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Command names should be lowercase with underscores",
+      "location": "profiles[0].commands.Gamma",
+      "suggestion": "Use snake_case for command names (e.g., \"build_command\")",
+      "rule_id": "naming_command_name_format"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Command names should be lowercase with underscores",
+      "location": "profiles[1].commands.Delta",
+      "suggestion": "Use snake_case for command names (e.g., \"build_command\")",
+      "rule_id": "naming_command_name_format"
+     },
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a description",
+      "location": "definition",
+      "suggestion": "Add a \"description\" field to help users understand what this tool does",
+      "rule_id": "complete_missing_description"
+     },
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a homepage URL",
+      "location": "definition",
+      "suggestion": "Add a \"homepage\" field linking to the tool's website",
+      "rule_id": "complete_missing_homepage"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Tool is missing version detection",
+      "location": "definition",
+      "suggestion": "Add \"version_detection\" to auto-detect installed versions",
+      "rule_id": "complete_missing_version_detection"
+     },
+     {
+      "severity": "error",
+      "severity_string": "ERROR",
+      "message": "Subcommand contains potentially dangerous shell commands",
+      "location": "profiles[0].commands.Alpha.subcommand",
+      "suggestion": "Avoid using destructive commands in subcommands",
+      "rule_id": "security_suspicious_subcommand"
+     },
+     {
+      "severity": "error",
+      "severity_string": "ERROR",
+      "message": "Subcommand contains potentially dangerous shell commands",
+      "location": "profiles[0].commands.Gamma.subcommand",
+      "suggestion": "Avoid using destructive commands in subcommands",
+      "rule_id": "security_suspicious_subcommand"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Arguments should specify type validation",
+      "location": "profiles[0].commands.Alpha.arguments[0]",
+      "suggestion": "Add \"type\" field to all arguments for validation",
+      "rule_id": "security_unvalidated_input"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Arguments should specify type validation",
+      "location": "profiles[0].commands.Alpha.arguments[2]",
+      "suggestion": "Add \"type\" field to all arguments for validation",
+      "rule_id": "security_unvalidated_input"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Arguments should specify type validation",
+      "location": "profiles[0].commands.beta.arguments[0]",
+      "suggestion": "Add \"type\" field to all arguments for validation",
+      "rule_id": "security_unvalidated_input"
+     },
+     {
+      "severity": "error",
+      "severity_string": "ERROR",
+      "message": "Subcommand contains potentially dangerous shell commands",
+      "location": "profiles[1].commands.Delta.subcommand",
+      "suggestion": "Avoid using destructive commands in subcommands",
+      "rule_id": "security_suspicious_subcommand"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Arguments should specify type validation",
+      "location": "profiles[1].commands.Delta.arguments[0]",
+      "suggestion": "Add \"type\" field to all arguments for validation",
+      "rule_id": "security_unvalidated_input"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Schema version should be 1.0",
+      "location": "schema",
+      "suggestion": "Use ukiryu_schema: 1.0 (we are in 1.0 development)",
+      "rule_id": "deprecated_old_schema"
+     }
+    ],
+    "total_count": 15,
+    "error_count": 3,
+    "warning_count": 10,
+    "info_count": 2,
+    "style_count": 0
+   },
+   "to_s": "Found 15 issue(s):\n\nERROR:\n  [ERROR] Subcommand contains potentially dangerous shell commands (at profiles[0].commands.Alpha.subcommand)\n  Suggestion: Avoid using destructive commands in subcommands\n  [ERROR] Subcommand contains potentially dangerous shell commands (at profiles[0].commands.Gamma.subcommand)\n  Suggestion: Avoid using destructive commands in subcommands\n  [ERROR] Subcommand contains potentially dangerous shell commands (at profiles[1].commands.Delta.subcommand)\n  Suggestion: Avoid using destructive commands in subcommands\n\nWARNING:\n  [WARNING] Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores (at name)\n  Suggestion: Use lowercase with hyphens for multi-word names (e.g., \"my-tool\")\n  [WARNING] Command names should be lowercase with underscores (at profiles[0].commands.Alpha)\n  Suggestion: Use snake_case for command names (e.g., \"build_command\")\n  [WARNING] Command names should be lowercase with underscores (at profiles[0].commands.Gamma)\n  Suggestion: Use snake_case for command names (e.g., \"build_command\")\n  [WARNING] Command names should be lowercase with underscores (at profiles[1].commands.Delta)\n  Suggestion: Use snake_case for command names (e.g., \"build_command\")\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n  [WARNING] Arguments should specify type validation (at profiles[0].commands.Alpha.arguments[0])\n  Suggestion: Add \"type\" field to all arguments for validation\n  [WARNING] Arguments should specify type validation (at profiles[0].commands.Alpha.arguments[2])\n  Suggestion: Add \"type\" field to all arguments for validation\n  [WARNING] Arguments should specify type validation (at profiles[0].commands.beta.arguments[0])\n  Suggestion: Add \"type\" field to all arguments for validation\n  [WARNING] Arguments should specify type validation (at profiles[1].commands.Delta.arguments[0])\n  Suggestion: Add \"type\" field to all arguments for validation\n  [WARNING] Schema version should be 1.0 (at schema)\n  Suggestion: Use ukiryu_schema: 1.0 (we are in 1.0 development)\n\nINFO:\n  [INFO] Tool is missing a description (at definition)\n  Suggestion: Add a \"description\" field to help users understand what this tool does\n  [INFO] Tool is missing a homepage URL (at definition)\n  Suggestion: Add a \"homepage\" field linking to the tool's website",
+   "has_issues": true,
+   "has_errors": true
+  },
+  {
+   "exit": 1,
+   "stdout": "{\"issues\":[{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores\",\"location\":\"name\",\"suggestion\":\"Use lowercase with hyphens for multi-word names (e.g., \\\"my-tool\\\")\",\"rule_id\":\"naming_tool_name_format\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Command names should be lowercase with underscores\",\"location\":\"profiles[0].commands.Alpha\",\"suggestion\":\"Use snake_case for command names (e.g., \\\"build_command\\\")\",\"rule_id\":\"naming_command_name_format\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Command names should be lowercase with underscores\",\"location\":\"profiles[0].commands.Gamma\",\"suggestion\":\"Use snake_case for command names (e.g., \\\"build_command\\\")\",\"rule_id\":\"naming_command_name_format\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Command names should be lowercase with underscores\",\"location\":\"profiles[1].commands.Delta\",\"suggestion\":\"Use snake_case for command names (e.g., \\\"build_command\\\")\",\"rule_id\":\"naming_command_name_format\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a description\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"description\\\" field to help users understand what this tool does\",\"rule_id\":\"complete_missing_description\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a homepage URL\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"homepage\\\" field linking to the tool's website\",\"rule_id\":\"complete_missing_homepage\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool is missing version detection\",\"location\":\"definition\",\"suggestion\":\"Add \\\"version_detection\\\" to auto-detect installed versions\",\"rule_id\":\"complete_missing_version_detection\"},{\"severity\":\"error\",\"severity_string\":\"ERROR\",\"message\":\"Subcommand contains potentially dangerous shell commands\",\"location\":\"profiles[0].commands.Alpha.subcommand\",\"suggestion\":\"Avoid using destructive commands in subcommands\",\"rule_id\":\"security_suspicious_subcommand\"},{\"severity\":\"error\",\"severity_string\":\"ERROR\",\"message\":\"Subcommand contains potentially dangerous shell commands\",\"location\":\"profiles[0].commands.Gamma.subcommand\",\"suggestion\":\"Avoid using destructive commands in subcommands\",\"rule_id\":\"security_suspicious_subcommand\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Arguments should specify type validation\",\"location\":\"profiles[0].commands.Alpha.arguments[0]\",\"suggestion\":\"Add \\\"type\\\" field to all arguments for validation\",\"rule_id\":\"security_unvalidated_input\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Arguments should specify type validation\",\"location\":\"profiles[0].commands.Alpha.arguments[2]\",\"suggestion\":\"Add \\\"type\\\" field to all arguments for validation\",\"rule_id\":\"security_unvalidated_input\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Arguments should specify type validation\",\"location\":\"profiles[0].commands.beta.arguments[0]\",\"suggestion\":\"Add \\\"type\\\" field to all arguments for validation\",\"rule_id\":\"security_unvalidated_input\"},{\"severity\":\"error\",\"severity_string\":\"ERROR\",\"message\":\"Subcommand contains potentially dangerous shell commands\",\"location\":\"profiles[1].commands.Delta.subcommand\",\"suggestion\":\"Avoid using destructive commands in subcommands\",\"rule_id\":\"security_suspicious_subcommand\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Arguments should specify type validation\",\"location\":\"profiles[1].commands.Delta.arguments[0]\",\"suggestion\":\"Add \\\"type\\\" field to all arguments for validation\",\"rule_id\":\"security_unvalidated_input\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Schema version should be 1.0\",\"location\":\"schema\",\"suggestion\":\"Use ukiryu_schema: 1.0 (we are in 1.0 development)\",\"rule_id\":\"deprecated_old_schema\"}],\"total_count\":15,\"error_count\":3,\"warning_count\":10,\"info_count\":2,\"style_count\":0}\n"
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores",
+      "location": "name",
+      "suggestion": "Use lowercase with hyphens for multi-word names (e.g., \"my-tool\")",
+      "rule_id": "naming_tool_name_format"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Command names should be lowercase with underscores",
+      "location": "profiles[0].commands.Run",
+      "suggestion": "Use snake_case for command names (e.g., \"build_command\")",
+      "rule_id": "naming_command_name_format"
+     },
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a description",
+      "location": "definition",
+      "suggestion": "Add a \"description\" field to help users understand what this tool does",
+      "rule_id": "complete_missing_description"
+     },
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a homepage URL",
+      "location": "definition",
+      "suggestion": "Add a \"homepage\" field linking to the tool's website",
+      "rule_id": "complete_missing_homepage"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Tool is missing version detection",
+      "location": "definition",
+      "suggestion": "Add \"version_detection\" to auto-detect installed versions",
+      "rule_id": "complete_missing_version_detection"
+     },
+     {
+      "severity": "error",
+      "severity_string": "ERROR",
+      "message": "Subcommand contains potentially dangerous shell commands",
+      "location": "profiles[0].commands.Run.subcommand",
+      "suggestion": "Avoid using destructive commands in subcommands",
+      "rule_id": "security_suspicious_subcommand"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Arguments should specify type validation",
+      "location": "profiles[0].commands.Run.arguments[0]",
+      "suggestion": "Add \"type\" field to all arguments for validation",
+      "rule_id": "security_unvalidated_input"
+     },
+     {
+      "severity": "style",
+      "severity_string": "STYLE",
+      "message": "Single profile named \"default\" is redundant",
+      "location": "profiles[0]",
+      "suggestion": "For single-profile definitions, omit the profiles array and define commands directly",
+      "rule_id": "style_redundant_default_profile"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Profile missing platforms specification",
+      "location": "profiles[0]",
+      "suggestion": "Specify supported platforms (macos, linux, windows)",
+      "rule_id": "complete_missing_platforms"
+     }
+    ],
+    "total_count": 9,
+    "error_count": 1,
+    "warning_count": 5,
+    "info_count": 2,
+    "style_count": 1
+   },
+   "to_s": "Found 9 issue(s):\n\nERROR:\n  [ERROR] Subcommand contains potentially dangerous shell commands (at profiles[0].commands.Run.subcommand)\n  Suggestion: Avoid using destructive commands in subcommands\n\nWARNING:\n  [WARNING] Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores (at name)\n  Suggestion: Use lowercase with hyphens for multi-word names (e.g., \"my-tool\")\n  [WARNING] Command names should be lowercase with underscores (at profiles[0].commands.Run)\n  Suggestion: Use snake_case for command names (e.g., \"build_command\")\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n  [WARNING] Arguments should specify type validation (at profiles[0].commands.Run.arguments[0])\n  Suggestion: Add \"type\" field to all arguments for validation\n  [WARNING] Profile missing platforms specification (at profiles[0])\n  Suggestion: Specify supported platforms (macos, linux, windows)\n\nINFO:\n  [INFO] Tool is missing a description (at definition)\n  Suggestion: Add a \"description\" field to help users understand what this tool does\n  [INFO] Tool is missing a homepage URL (at definition)\n  Suggestion: Add a \"homepage\" field linking to the tool's website\n\nSTYLE:\n  [STYLE] Single profile named \"default\" is redundant (at profiles[0])\n  Suggestion: For single-profile definitions, omit the profiles array and define commands directly",
+   "has_issues": true,
+   "has_errors": true
+  },
+  {
+   "exit": 1,
+   "stdout": "{\"issues\":[{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores\",\"location\":\"name\",\"suggestion\":\"Use lowercase with hyphens for multi-word names (e.g., \\\"my-tool\\\")\",\"rule_id\":\"naming_tool_name_format\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Command names should be lowercase with underscores\",\"location\":\"profiles[0].commands.Run\",\"suggestion\":\"Use snake_case for command names (e.g., \\\"build_command\\\")\",\"rule_id\":\"naming_command_name_format\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a description\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"description\\\" field to help users understand what this tool does\",\"rule_id\":\"complete_missing_description\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a homepage URL\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"homepage\\\" field linking to the tool's website\",\"rule_id\":\"complete_missing_homepage\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool is missing version detection\",\"location\":\"definition\",\"suggestion\":\"Add \\\"version_detection\\\" to auto-detect installed versions\",\"rule_id\":\"complete_missing_version_detection\"},{\"severity\":\"error\",\"severity_string\":\"ERROR\",\"message\":\"Subcommand contains potentially dangerous shell commands\",\"location\":\"profiles[0].commands.Run.subcommand\",\"suggestion\":\"Avoid using destructive commands in subcommands\",\"rule_id\":\"security_suspicious_subcommand\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Arguments should specify type validation\",\"location\":\"profiles[0].commands.Run.arguments[0]\",\"suggestion\":\"Add \\\"type\\\" field to all arguments for validation\",\"rule_id\":\"security_unvalidated_input\"},{\"severity\":\"style\",\"severity_string\":\"STYLE\",\"message\":\"Single profile named \\\"default\\\" is redundant\",\"location\":\"profiles[0]\",\"suggestion\":\"For single-profile definitions, omit the profiles array and define commands directly\",\"rule_id\":\"style_redundant_default_profile\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Profile missing platforms specification\",\"location\":\"profiles[0]\",\"suggestion\":\"Specify supported platforms (macos, linux, windows)\",\"rule_id\":\"complete_missing_platforms\"}],\"total_count\":9,\"error_count\":1,\"warning_count\":5,\"info_count\":2,\"style_count\":1}\n"
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a description",
+      "location": "definition",
+      "suggestion": "Add a \"description\" field to help users understand what this tool does",
+      "rule_id": "complete_missing_description"
+     },
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a homepage URL",
+      "location": "definition",
+      "suggestion": "Add a \"homepage\" field linking to the tool's website",
+      "rule_id": "complete_missing_homepage"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Tool is missing version detection",
+      "location": "definition",
+      "suggestion": "Add \"version_detection\" to auto-detect installed versions",
+      "rule_id": "complete_missing_version_detection"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Schema version should be 1.0",
+      "location": "schema",
+      "suggestion": "Use ukiryu_schema: 1.0 (we are in 1.0 development)",
+      "rule_id": "deprecated_old_schema"
+     }
+    ],
+    "total_count": 4,
+    "error_count": 0,
+    "warning_count": 2,
+    "info_count": 2,
+    "style_count": 0
+   },
+   "to_s": "Found 4 issue(s):\n\nWARNING:\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n  [WARNING] Schema version should be 1.0 (at schema)\n  Suggestion: Use ukiryu_schema: 1.0 (we are in 1.0 development)\n\nINFO:\n  [INFO] Tool is missing a description (at definition)\n  Suggestion: Add a \"description\" field to help users understand what this tool does\n  [INFO] Tool is missing a homepage URL (at definition)\n  Suggestion: Add a \"homepage\" field linking to the tool's website",
+   "has_issues": true,
+   "has_errors": false
+  },
+  {
+   "exit": 0,
+   "stdout": "{\"issues\":[{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a description\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"description\\\" field to help users understand what this tool does\",\"rule_id\":\"complete_missing_description\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a homepage URL\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"homepage\\\" field linking to the tool's website\",\"rule_id\":\"complete_missing_homepage\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool is missing version detection\",\"location\":\"definition\",\"suggestion\":\"Add \\\"version_detection\\\" to auto-detect installed versions\",\"rule_id\":\"complete_missing_version_detection\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Schema version should be 1.0\",\"location\":\"schema\",\"suggestion\":\"Use ukiryu_schema: 1.0 (we are in 1.0 development)\",\"rule_id\":\"deprecated_old_schema\"}],\"total_count\":4,\"error_count\":0,\"warning_count\":2,\"info_count\":2,\"style_count\":0}\n"
+  },
+  {
+   "kind": "raised",
+   "class": "NoMethodError",
+   "message": "undefined method 'gsub' for nil"
+  },
+  {
+   "exit": {
+    "raised": "NoMethodError",
+    "message": "undefined method 'gsub' for nil"
+   },
+   "stdout": ""
+  },
+  {
+   "exit": 0,
+   "stdout": "{\"issues\":[],\"total_count\":0,\"error_count\":0,\"warning_count\":0,\"info_count\":0,\"style_count\":0}\n"
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores",
+      "location": "name",
+      "suggestion": "Use lowercase with hyphens for multi-word names (e.g., \"my-tool\")",
+      "rule_id": "naming_tool_name_format"
+     },
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a homepage URL",
+      "location": "definition",
+      "suggestion": "Add a \"homepage\" field linking to the tool's website",
+      "rule_id": "complete_missing_homepage"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Tool is missing version detection",
+      "location": "definition",
+      "suggestion": "Add \"version_detection\" to auto-detect installed versions",
+      "rule_id": "complete_missing_version_detection"
+     }
+    ],
+    "total_count": 3,
+    "error_count": 0,
+    "warning_count": 2,
+    "info_count": 1,
+    "style_count": 0
+   },
+   "to_s": "Found 3 issue(s):\n\nWARNING:\n  [WARNING] Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores (at name)\n  Suggestion: Use lowercase with hyphens for multi-word names (e.g., \"my-tool\")\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n\nINFO:\n  [INFO] Tool is missing a homepage URL (at definition)\n  Suggestion: Add a \"homepage\" field linking to the tool's website",
+   "has_issues": true,
+   "has_errors": false
+  },
+  {
+   "exit": 0,
+   "stdout": "{\"issues\":[{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores\",\"location\":\"name\",\"suggestion\":\"Use lowercase with hyphens for multi-word names (e.g., \\\"my-tool\\\")\",\"rule_id\":\"naming_tool_name_format\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a homepage URL\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"homepage\\\" field linking to the tool's website\",\"rule_id\":\"complete_missing_homepage\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool is missing version detection\",\"location\":\"definition\",\"suggestion\":\"Add \\\"version_detection\\\" to auto-detect installed versions\",\"rule_id\":\"complete_missing_version_detection\"}],\"total_count\":3,\"error_count\":0,\"warning_count\":2,\"info_count\":1,\"style_count\":0}\n"
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores",
+      "location": "name",
+      "suggestion": "Use lowercase with hyphens for multi-word names (e.g., \"my-tool\")",
+      "rule_id": "naming_tool_name_format"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Command names should be lowercase with underscores",
+      "location": "profiles[0].commands.Run",
+      "suggestion": "Use snake_case for command names (e.g., \"build_command\")",
+      "rule_id": "naming_command_name_format"
+     },
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a description",
+      "location": "definition",
+      "suggestion": "Add a \"description\" field to help users understand what this tool does",
+      "rule_id": "complete_missing_description"
+     },
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a homepage URL",
+      "location": "definition",
+      "suggestion": "Add a \"homepage\" field linking to the tool's website",
+      "rule_id": "complete_missing_homepage"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Tool is missing version detection",
+      "location": "definition",
+      "suggestion": "Add \"version_detection\" to auto-detect installed versions",
+      "rule_id": "complete_missing_version_detection"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Arguments should specify type validation",
+      "location": "profiles[0].commands.Run.arguments[0]",
+      "suggestion": "Add \"type\" field to all arguments for validation",
+      "rule_id": "security_unvalidated_input"
+     },
+     {
+      "severity": "style",
+      "severity_string": "STYLE",
+      "message": "Single profile named \"default\" is redundant",
+      "location": "profiles[0]",
+      "suggestion": "For single-profile definitions, omit the profiles array and define commands directly",
+      "rule_id": "style_redundant_default_profile"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Profile missing platforms specification",
+      "location": "profiles[0]",
+      "suggestion": "Specify supported platforms (macos, linux, windows)",
+      "rule_id": "complete_missing_platforms"
+     }
+    ],
+    "total_count": 8,
+    "error_count": 0,
+    "warning_count": 5,
+    "info_count": 2,
+    "style_count": 1
+   },
+   "to_s": "Found 8 issue(s):\n\nWARNING:\n  [WARNING] Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores (at name)\n  Suggestion: Use lowercase with hyphens for multi-word names (e.g., \"my-tool\")\n  [WARNING] Command names should be lowercase with underscores (at profiles[0].commands.Run)\n  Suggestion: Use snake_case for command names (e.g., \"build_command\")\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n  [WARNING] Arguments should specify type validation (at profiles[0].commands.Run.arguments[0])\n  Suggestion: Add \"type\" field to all arguments for validation\n  [WARNING] Profile missing platforms specification (at profiles[0])\n  Suggestion: Specify supported platforms (macos, linux, windows)\n\nINFO:\n  [INFO] Tool is missing a description (at definition)\n  Suggestion: Add a \"description\" field to help users understand what this tool does\n  [INFO] Tool is missing a homepage URL (at definition)\n  Suggestion: Add a \"homepage\" field linking to the tool's website\n\nSTYLE:\n  [STYLE] Single profile named \"default\" is redundant (at profiles[0])\n  Suggestion: For single-profile definitions, omit the profiles array and define commands directly",
+   "has_issues": true,
+   "has_errors": false
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores",
+      "location": "name",
+      "suggestion": "Use lowercase with hyphens for multi-word names (e.g., \"my-tool\")",
+      "rule_id": "naming_tool_name_format"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Command names should be lowercase with underscores",
+      "location": "profiles[0].commands.Run",
+      "suggestion": "Use snake_case for command names (e.g., \"build_command\")",
+      "rule_id": "naming_command_name_format"
+     },
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a description",
+      "location": "definition",
+      "suggestion": "Add a \"description\" field to help users understand what this tool does",
+      "rule_id": "complete_missing_description"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Tool is missing version detection",
+      "location": "definition",
+      "suggestion": "Add \"version_detection\" to auto-detect installed versions",
+      "rule_id": "complete_missing_version_detection"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Arguments should specify type validation",
+      "location": "profiles[0].commands.Run.arguments[0]",
+      "suggestion": "Add \"type\" field to all arguments for validation",
+      "rule_id": "security_unvalidated_input"
+     },
+     {
+      "severity": "style",
+      "severity_string": "STYLE",
+      "message": "Single profile named \"default\" is redundant",
+      "location": "profiles[0]",
+      "suggestion": "For single-profile definitions, omit the profiles array and define commands directly",
+      "rule_id": "style_redundant_default_profile"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Profile missing platforms specification",
+      "location": "profiles[0]",
+      "suggestion": "Specify supported platforms (macos, linux, windows)",
+      "rule_id": "complete_missing_platforms"
+     }
+    ],
+    "total_count": 7,
+    "error_count": 0,
+    "warning_count": 5,
+    "info_count": 1,
+    "style_count": 1
+   },
+   "to_s": "Found 7 issue(s):\n\nWARNING:\n  [WARNING] Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores (at name)\n  Suggestion: Use lowercase with hyphens for multi-word names (e.g., \"my-tool\")\n  [WARNING] Command names should be lowercase with underscores (at profiles[0].commands.Run)\n  Suggestion: Use snake_case for command names (e.g., \"build_command\")\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n  [WARNING] Arguments should specify type validation (at profiles[0].commands.Run.arguments[0])\n  Suggestion: Add \"type\" field to all arguments for validation\n  [WARNING] Profile missing platforms specification (at profiles[0])\n  Suggestion: Specify supported platforms (macos, linux, windows)\n\nINFO:\n  [INFO] Tool is missing a description (at definition)\n  Suggestion: Add a \"description\" field to help users understand what this tool does\n\nSTYLE:\n  [STYLE] Single profile named \"default\" is redundant (at profiles[0])\n  Suggestion: For single-profile definitions, omit the profiles array and define commands directly",
+   "has_issues": true,
+   "has_errors": false
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a description",
+      "location": "definition",
+      "suggestion": "Add a \"description\" field to help users understand what this tool does",
+      "rule_id": "complete_missing_description"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Tool is missing version detection",
+      "location": "definition",
+      "suggestion": "Add \"version_detection\" to auto-detect installed versions",
+      "rule_id": "complete_missing_version_detection"
+     }
+    ],
+    "total_count": 2,
+    "error_count": 0,
+    "warning_count": 1,
+    "info_count": 1,
+    "style_count": 0
+   },
+   "to_s": "Found 2 issue(s):\n\nWARNING:\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n\nINFO:\n  [INFO] Tool is missing a description (at definition)\n  Suggestion: Add a \"description\" field to help users understand what this tool does",
+   "has_issues": true,
+   "has_errors": false
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Arguments should specify type validation",
+      "location": "profiles[0].commands.Run.arguments[0]",
+      "suggestion": "Add \"type\" field to all arguments for validation",
+      "rule_id": "security_unvalidated_input"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Profile missing platforms specification",
+      "location": "profiles[0]",
+      "suggestion": "Specify supported platforms (macos, linux, windows)",
+      "rule_id": "complete_missing_platforms"
+     }
+    ],
+    "total_count": 2,
+    "error_count": 0,
+    "warning_count": 2,
+    "info_count": 0,
+    "style_count": 0
+   },
+   "to_s": "Found 2 issue(s):\n\nWARNING:\n  [WARNING] Arguments should specify type validation (at profiles[0].commands.Run.arguments[0])\n  Suggestion: Add \"type\" field to all arguments for validation\n  [WARNING] Profile missing platforms specification (at profiles[0])\n  Suggestion: Specify supported platforms (macos, linux, windows)",
+   "has_issues": true,
+   "has_errors": false
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a homepage URL",
+      "location": "definition",
+      "suggestion": "Add a \"homepage\" field linking to the tool's website",
+      "rule_id": "complete_missing_homepage"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Tool is missing version detection",
+      "location": "definition",
+      "suggestion": "Add \"version_detection\" to auto-detect installed versions",
+      "rule_id": "complete_missing_version_detection"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Arguments should specify type validation",
+      "location": "profiles[0].commands.Run.arguments[0]",
+      "suggestion": "Add \"type\" field to all arguments for validation",
+      "rule_id": "security_unvalidated_input"
+     },
+     {
+      "severity": "style",
+      "severity_string": "STYLE",
+      "message": "Single profile named \"default\" is redundant",
+      "location": "profiles[0]",
+      "suggestion": "For single-profile definitions, omit the profiles array and define commands directly",
+      "rule_id": "style_redundant_default_profile"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Profile missing platforms specification",
+      "location": "profiles[0]",
+      "suggestion": "Specify supported platforms (macos, linux, windows)",
+      "rule_id": "complete_missing_platforms"
+     }
+    ],
+    "total_count": 5,
+    "error_count": 0,
+    "warning_count": 3,
+    "info_count": 1,
+    "style_count": 1
+   },
+   "to_s": "Found 5 issue(s):\n\nWARNING:\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n  [WARNING] Arguments should specify type validation (at profiles[0].commands.Run.arguments[0])\n  Suggestion: Add \"type\" field to all arguments for validation\n  [WARNING] Profile missing platforms specification (at profiles[0])\n  Suggestion: Specify supported platforms (macos, linux, windows)\n\nINFO:\n  [INFO] Tool is missing a homepage URL (at definition)\n  Suggestion: Add a \"homepage\" field linking to the tool's website\n\nSTYLE:\n  [STYLE] Single profile named \"default\" is redundant (at profiles[0])\n  Suggestion: For single-profile definitions, omit the profiles array and define commands directly",
+   "has_issues": true,
+   "has_errors": false
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a homepage URL",
+      "location": "definition",
+      "suggestion": "Add a \"homepage\" field linking to the tool's website",
+      "rule_id": "complete_missing_homepage"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Tool is missing version detection",
+      "location": "definition",
+      "suggestion": "Add \"version_detection\" to auto-detect installed versions",
+      "rule_id": "complete_missing_version_detection"
+     }
+    ],
+    "total_count": 2,
+    "error_count": 0,
+    "warning_count": 1,
+    "info_count": 1,
+    "style_count": 0
+   },
+   "to_s": "Found 2 issue(s):\n\nWARNING:\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n\nINFO:\n  [INFO] Tool is missing a homepage URL (at definition)\n  Suggestion: Add a \"homepage\" field linking to the tool's website",
+   "has_issues": true,
+   "has_errors": false
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Command names should be lowercase with underscores",
+      "location": "profiles[0].commands.Run",
+      "suggestion": "Use snake_case for command names (e.g., \"build_command\")",
+      "rule_id": "naming_command_name_format"
+     },
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a description",
+      "location": "definition",
+      "suggestion": "Add a \"description\" field to help users understand what this tool does",
+      "rule_id": "complete_missing_description"
+     },
+     {
+      "severity": "info",
+      "severity_string": "INFO",
+      "message": "Tool is missing a homepage URL",
+      "location": "definition",
+      "suggestion": "Add a \"homepage\" field linking to the tool's website",
+      "rule_id": "complete_missing_homepage"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Tool is missing version detection",
+      "location": "definition",
+      "suggestion": "Add \"version_detection\" to auto-detect installed versions",
+      "rule_id": "complete_missing_version_detection"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Arguments should specify type validation",
+      "location": "profiles[0].commands.Run.arguments[0]",
+      "suggestion": "Add \"type\" field to all arguments for validation",
+      "rule_id": "security_unvalidated_input"
+     },
+     {
+      "severity": "style",
+      "severity_string": "STYLE",
+      "message": "Single profile named \"default\" is redundant",
+      "location": "profiles[0]",
+      "suggestion": "For single-profile definitions, omit the profiles array and define commands directly",
+      "rule_id": "style_redundant_default_profile"
+     },
+     {
+      "severity": "warning",
+      "severity_string": "WARNING",
+      "message": "Profile missing platforms specification",
+      "location": "profiles[0]",
+      "suggestion": "Specify supported platforms (macos, linux, windows)",
+      "rule_id": "complete_missing_platforms"
+     }
+    ],
+    "total_count": 7,
+    "error_count": 0,
+    "warning_count": 4,
+    "info_count": 2,
+    "style_count": 1
+   },
+   "to_s": "Found 7 issue(s):\n\nWARNING:\n  [WARNING] Command names should be lowercase with underscores (at profiles[0].commands.Run)\n  Suggestion: Use snake_case for command names (e.g., \"build_command\")\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n  [WARNING] Arguments should specify type validation (at profiles[0].commands.Run.arguments[0])\n  Suggestion: Add \"type\" field to all arguments for validation\n  [WARNING] Profile missing platforms specification (at profiles[0])\n  Suggestion: Specify supported platforms (macos, linux, windows)\n\nINFO:\n  [INFO] Tool is missing a description (at definition)\n  Suggestion: Add a \"description\" field to help users understand what this tool does\n  [INFO] Tool is missing a homepage URL (at definition)\n  Suggestion: Add a \"homepage\" field linking to the tool's website\n\nSTYLE:\n  [STYLE] Single profile named \"default\" is redundant (at profiles[0])\n  Suggestion: For single-profile definitions, omit the profiles array and define commands directly",
+   "has_issues": true,
+   "has_errors": false
+  },
+  {
+   "kind": "raised",
+   "class": "Psych::AliasesNotEnabled",
+   "message": "Alias parsing was not enabled. To enable it, pass `aliases: true` to `Psych::load` or `Psych::safe_load`."
+  },
+  {
+   "exit": {
+    "raised": "Psych::AliasesNotEnabled",
+    "message": "Alias parsing was not enabled. To enable it, pass `aliases: true` to `Psych::load` or `Psych::safe_load`."
+   },
+   "stdout": ""
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "error",
+      "severity_string": "ERROR",
+      "message": "File not found: nonexistent.yaml",
+      "location": null,
+      "suggestion": null,
+      "rule_id": null
+     }
+    ],
+    "total_count": 1,
+    "error_count": 1,
+    "warning_count": 0,
+    "info_count": 0,
+    "style_count": 0
+   },
+   "to_s": "Found 1 issue(s):\n\nERROR:\n  [ERROR] File not found: nonexistent.yaml",
+   "has_issues": true,
+   "has_errors": true
+  },
+  {
+   "kind": "result",
+   "to_h": {
+    "issues": [
+     {
+      "severity": "error",
+      "severity_string": "ERROR",
+      "message": "File not found: {path}",
+      "location": null,
+      "suggestion": null,
+      "rule_id": null
+     }
+    ],
+    "total_count": 1,
+    "error_count": 1,
+    "warning_count": 0,
+    "info_count": 0,
+    "style_count": 0
+   },
+   "to_s": "Found 1 issue(s):\n\nERROR:\n  [ERROR] File not found: {path}",
+   "has_issues": true,
+   "has_errors": true
+  },
+  {
+   "kind": "raised",
+   "class": "Errno::EISDIR",
+   "message": "Is a directory @ io_fread - {path}"
+  },
+  {
+   "kind": "raised",
+   "class": "Errno::ENOTDIR",
+   "message": "Not a directory @ rb_sysopen - {path}"
+  }
+ ],
+ "packing": "cases[*].{lint,lint_string,lint_file,cli_file} and fs[*].lint_file are indexes into outcomes (pack.py)"
+}
