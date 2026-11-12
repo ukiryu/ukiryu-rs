@@ -175,7 +175,8 @@ fn generate_to_file_writes_generated_bytes_unchanged() {
     DocumentationGenerator::generate_to_file(&definition, &path, "markdown").unwrap();
     let written = std::fs::read(&path).unwrap();
     std::fs::remove_file(&path).unwrap();
-    // LF line endings on every platform, no trailing newline.
+    // LF line endings on every platform; nothing is appended after the
+    // last line (this document's last line is empty, so it ends in LF).
     assert_eq!(
         written,
         doc["generate_to_file_linux_bytes"]
@@ -184,7 +185,6 @@ fn generate_to_file_writes_generated_bytes_unchanged() {
             .as_bytes()
     );
     assert!(!written.contains(&b'\r'));
-    assert_ne!(written.last(), Some(&b'\n'));
 }
 
 #[test]

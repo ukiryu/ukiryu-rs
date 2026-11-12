@@ -12,8 +12,9 @@
 //! (`NoMethodError`, `TypeError`, `ArgumentError`).
 //!
 //! Output conventions (unchanged from Ruby): lines are joined with `"\n"` on
-//! every platform, there is no trailing newline, and no Markdown or AsciiDoc
-//! escaping is applied to values. [`DocumentationGenerator::generate_to_file`]
+//! every platform with nothing appended after the last line (a document
+//! whose last line is empty therefore ends in `"\n"`), and no Markdown or
+//! AsciiDoc escaping is applied to values. [`DocumentationGenerator::generate_to_file`]
 //! writes those bytes unchanged (no CRLF translation).
 use super::ruby_inspect_str;
 use std::cmp::Ordering;
