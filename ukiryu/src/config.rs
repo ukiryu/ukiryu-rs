@@ -89,6 +89,20 @@ impl fmt::Display for ConversionError {
 
 impl std::error::Error for ConversionError {}
 
+/// TypeConverter also passes through unknown attributes, as the Ruby helper does.
+pub fn convert(attribute: &str, input: Option<&str>) -> Result<Value, ConversionError> {
+    match Attribute::ALL
+        .into_iter()
+        .find(|item| item.name() == attribute)
+    {
+        Some(attribute) => attribute.convert(input),
+        None => Ok(input
+            .filter(|value| !value.is_empty())
+            .map(|value| Value::String(value.to_owned()))
+            .unwrap_or(Value::Null)),
+    }
+}
+
 fn integer(input: &str) -> Result<Value, ConversionError> {
     let invalid = || ConversionError(format!("Invalid integer value: {input}"));
     let text = input.trim_matches(|c: char| c.is_ascii_whitespace());
