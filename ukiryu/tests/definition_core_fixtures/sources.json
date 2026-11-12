@@ -1,0 +1,364 @@
+{
+  "provenance": {
+    "oracle_sha": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+    "files": [
+      "lib/ukiryu/definition/source.rb",
+      "lib/ukiryu/definition/sources/file.rb",
+      "lib/ukiryu/definition/sources/string.rb"
+    ],
+    "capture": "capture/sources.rb",
+    "ruby": "4.0.1",
+    "tz": "UTC"
+  },
+  "cases": [
+    {
+      "op": "string_source",
+      "input": "name: x\n",
+      "result": {
+        "ok": {
+          "content": "name: x",
+          "load": "name: x",
+          "size": 7,
+          "content_hash": "cc624066a62194526885793b2b32066d82c6a1cbf9eb523f3e80614ebbdb0dcb",
+          "cache_key": "string:cc624066a62194526885793b2b32066d82c6a1cbf9eb523f3e80614ebbdb0dcb",
+          "source_type": "string",
+          "to_s": "string:string:cc624066a62194526885793b2b32066d82c6a1cbf9eb523f3e80614ebbdb0dcb",
+          "inspect": "#<Ukiryu::Definition::Sources::StringSource source_type=string cache_key=string:cc624066a62194526885793b2b32066d82c6a1cbf9eb523f3e80614ebbdb0dcb>"
+        }
+      }
+    },
+    {
+      "op": "string_source",
+      "input": "  name: x  \n\n",
+      "result": {
+        "ok": {
+          "content": "name: x",
+          "load": "name: x",
+          "size": 7,
+          "content_hash": "cc624066a62194526885793b2b32066d82c6a1cbf9eb523f3e80614ebbdb0dcb",
+          "cache_key": "string:cc624066a62194526885793b2b32066d82c6a1cbf9eb523f3e80614ebbdb0dcb",
+          "source_type": "string",
+          "to_s": "string:string:cc624066a62194526885793b2b32066d82c6a1cbf9eb523f3e80614ebbdb0dcb",
+          "inspect": "#<Ukiryu::Definition::Sources::StringSource source_type=string cache_key=string:cc624066a62194526885793b2b32066d82c6a1cbf9eb523f3e80614ebbdb0dcb>"
+        }
+      }
+    },
+    {
+      "op": "string_source",
+      "input": "   ",
+      "result": {
+        "ok": {
+          "content": "",
+          "load": "",
+          "size": 0,
+          "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "cache_key": "string:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "source_type": "string",
+          "to_s": "string:string:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "inspect": "#<Ukiryu::Definition::Sources::StringSource source_type=string cache_key=string:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855>"
+        }
+      }
+    },
+    {
+      "op": "string_source",
+      "input": "\n",
+      "result": {
+        "ok": {
+          "content": "",
+          "load": "",
+          "size": 0,
+          "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "cache_key": "string:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "source_type": "string",
+          "to_s": "string:string:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "inspect": "#<Ukiryu::Definition::Sources::StringSource source_type=string cache_key=string:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855>"
+        }
+      }
+    },
+    {
+      "op": "string_source",
+      "input": "a",
+      "result": {
+        "ok": {
+          "content": "a",
+          "load": "a",
+          "size": 1,
+          "content_hash": "ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb",
+          "cache_key": "string:ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb",
+          "source_type": "string",
+          "to_s": "string:string:ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb",
+          "inspect": "#<Ukiryu::Definition::Sources::StringSource source_type=string cache_key=string:ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb>"
+        }
+      }
+    },
+    {
+      "op": "string_source",
+      "input": "é\u0000z",
+      "result": {
+        "ok": {
+          "content": "é\u0000z",
+          "load": "é\u0000z",
+          "size": 4,
+          "content_hash": "d81c38f3eef78d979ead312d6a920b521d20a0656885469f8b717dbf400d5183",
+          "cache_key": "string:d81c38f3eef78d979ead312d6a920b521d20a0656885469f8b717dbf400d5183",
+          "source_type": "string",
+          "to_s": "string:string:d81c38f3eef78d979ead312d6a920b521d20a0656885469f8b717dbf400d5183",
+          "inspect": "#<Ukiryu::Definition::Sources::StringSource source_type=string cache_key=string:d81c38f3eef78d979ead312d6a920b521d20a0656885469f8b717dbf400d5183>"
+        }
+      }
+    },
+    {
+      "op": "string_source",
+      "input": "x\r\n",
+      "result": {
+        "ok": {
+          "content": "x",
+          "load": "x",
+          "size": 1,
+          "content_hash": "2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881",
+          "cache_key": "string:2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881",
+          "source_type": "string",
+          "to_s": "string:string:2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881",
+          "inspect": "#<Ukiryu::Definition::Sources::StringSource source_type=string cache_key=string:2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881>"
+        }
+      }
+    },
+    {
+      "op": "string_source",
+      "input": "",
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::DefinitionLoadError",
+          "message": "Definition content cannot be empty"
+        }
+      }
+    },
+    {
+      "op": "string_source_non_string",
+      "input_class": "Integer",
+      "result": {
+        "error": {
+          "class": "ArgumentError",
+          "message": "Definition content must be a String, got Integer"
+        }
+      }
+    },
+    {
+      "op": "string_source_nil",
+      "result": {
+        "error": {
+          "class": "ArgumentError",
+          "message": "Definition content must be a String, got NilClass"
+        }
+      }
+    },
+    {
+      "op": "string_source_eq",
+      "result": {
+        "ok": [
+          true,
+          false,
+          true,
+          false
+        ]
+      }
+    },
+    {
+      "op": "file_source",
+      "path": "<ROOT>/defs/tool.yaml",
+      "result": {
+        "ok": {
+          "path": "<ROOT>/defs/tool.yaml",
+          "mtime_before": null,
+          "cache_key_before": "file:<SHA256:<ROOT>/defs/tool.yaml>:2020-09-13 12:26:40 +0000",
+          "load": "name: tool\nversion: '1.0'\n",
+          "mtime_after": "2020-09-13 12:26:40 +0000",
+          "cache_key_after": "file:<SHA256:<ROOT>/defs/tool.yaml>:2020-09-13 12:26:40 +0000",
+          "real_path": "<ROOT>/defs/tool.yaml",
+          "source_type": "file",
+          "to_s": "file:file:<SHA256:<ROOT>/defs/tool.yaml>:2020-09-13 12:26:40 +0000",
+          "inspect": "#<Ukiryu::Definition::Sources::FileSource source_type=file cache_key=file:<SHA256:<ROOT>/defs/tool.yaml>:2020-09-13 12:26:40 +0000>"
+        }
+      }
+    },
+    {
+      "op": "file_source",
+      "path": "<ROOT>/defs/other.yaml",
+      "result": {
+        "ok": {
+          "path": "<ROOT>/defs/other.yaml",
+          "mtime_before": null,
+          "cache_key_before": "file:<SHA256:<ROOT>/defs/other.yaml>:2020-09-13 12:26:40 +0000",
+          "load": "  name: other  \n",
+          "mtime_after": "2020-09-13 12:26:40 +0000",
+          "cache_key_after": "file:<SHA256:<ROOT>/defs/other.yaml>:2020-09-13 12:26:40 +0000",
+          "real_path": "<ROOT>/defs/other.yaml",
+          "source_type": "file",
+          "to_s": "file:file:<SHA256:<ROOT>/defs/other.yaml>:2020-09-13 12:26:40 +0000",
+          "inspect": "#<Ukiryu::Definition::Sources::FileSource source_type=file cache_key=file:<SHA256:<ROOT>/defs/other.yaml>:2020-09-13 12:26:40 +0000>"
+        }
+      }
+    },
+    {
+      "op": "file_source",
+      "path": "<ROOT>/defs/link.yaml",
+      "result": {
+        "ok": {
+          "path": "<ROOT>/defs/link.yaml",
+          "mtime_before": null,
+          "cache_key_before": "file:<SHA256:<ROOT>/defs/link.yaml>:2020-09-13 12:26:40 +0000",
+          "load": "name: tool\nversion: '1.0'\n",
+          "mtime_after": "2020-09-13 12:26:40 +0000",
+          "cache_key_after": "file:<SHA256:<ROOT>/defs/link.yaml>:2020-09-13 12:26:40 +0000",
+          "real_path": "<ROOT>/defs/tool.yaml",
+          "source_type": "file",
+          "to_s": "file:file:<SHA256:<ROOT>/defs/link.yaml>:2020-09-13 12:26:40 +0000",
+          "inspect": "#<Ukiryu::Definition::Sources::FileSource source_type=file cache_key=file:<SHA256:<ROOT>/defs/link.yaml>:2020-09-13 12:26:40 +0000>"
+        }
+      }
+    },
+    {
+      "op": "file_source",
+      "path": "<ROOT>/defs/./tool.yaml",
+      "result": {
+        "ok": {
+          "path": "<ROOT>/defs/tool.yaml",
+          "mtime_before": null,
+          "cache_key_before": "file:<SHA256:<ROOT>/defs/tool.yaml>:2020-09-13 12:26:40 +0000",
+          "load": "name: tool\nversion: '1.0'\n",
+          "mtime_after": "2020-09-13 12:26:40 +0000",
+          "cache_key_after": "file:<SHA256:<ROOT>/defs/tool.yaml>:2020-09-13 12:26:40 +0000",
+          "real_path": "<ROOT>/defs/tool.yaml",
+          "source_type": "file",
+          "to_s": "file:file:<SHA256:<ROOT>/defs/tool.yaml>:2020-09-13 12:26:40 +0000",
+          "inspect": "#<Ukiryu::Definition::Sources::FileSource source_type=file cache_key=file:<SHA256:<ROOT>/defs/tool.yaml>:2020-09-13 12:26:40 +0000>"
+        }
+      }
+    },
+    {
+      "op": "file_source",
+      "path": "<ROOT>/defs/x/../tool.yaml",
+      "result": {
+        "ok": {
+          "path": "<ROOT>/defs/tool.yaml",
+          "mtime_before": null,
+          "cache_key_before": "file:<SHA256:<ROOT>/defs/tool.yaml>:2020-09-13 12:26:40 +0000",
+          "load": "name: tool\nversion: '1.0'\n",
+          "mtime_after": "2020-09-13 12:26:40 +0000",
+          "cache_key_after": "file:<SHA256:<ROOT>/defs/tool.yaml>:2020-09-13 12:26:40 +0000",
+          "real_path": "<ROOT>/defs/tool.yaml",
+          "source_type": "file",
+          "to_s": "file:file:<SHA256:<ROOT>/defs/tool.yaml>:2020-09-13 12:26:40 +0000",
+          "inspect": "#<Ukiryu::Definition::Sources::FileSource source_type=file cache_key=file:<SHA256:<ROOT>/defs/tool.yaml>:2020-09-13 12:26:40 +0000>"
+        }
+      }
+    },
+    {
+      "op": "file_source_relative",
+      "cwd": "<ROOT>/defs",
+      "path": "tool.yaml",
+      "result": {
+        "ok": {
+          "path": "<ROOT>/defs/tool.yaml",
+          "mtime_before": null,
+          "cache_key_before": "file:<SHA256:<ROOT>/defs/tool.yaml>:2020-09-13 12:26:40 +0000",
+          "load": "name: tool\nversion: '1.0'\n",
+          "mtime_after": "2020-09-13 12:26:40 +0000",
+          "cache_key_after": "file:<SHA256:<ROOT>/defs/tool.yaml>:2020-09-13 12:26:40 +0000",
+          "real_path": "<ROOT>/defs/tool.yaml",
+          "source_type": "file",
+          "to_s": "file:file:<SHA256:<ROOT>/defs/tool.yaml>:2020-09-13 12:26:40 +0000",
+          "inspect": "#<Ukiryu::Definition::Sources::FileSource source_type=file cache_key=file:<SHA256:<ROOT>/defs/tool.yaml>:2020-09-13 12:26:40 +0000>"
+        }
+      }
+    },
+    {
+      "op": "file_source",
+      "path": "<ROOT>/defs/missing.yaml",
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::DefinitionNotFoundError",
+          "message": "Definition file not found: <ROOT>/defs/missing.yaml"
+        }
+      }
+    },
+    {
+      "op": "file_source",
+      "path": "<ROOT>/defs/dangling.yaml",
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::DefinitionNotFoundError",
+          "message": "Definition file not found: <ROOT>/defs/dangling.yaml"
+        }
+      }
+    },
+    {
+      "op": "file_source",
+      "path": "<ROOT>/defs/locked.yaml",
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::DefinitionLoadError",
+          "message": "Definition file is not readable: <ROOT>/defs/locked.yaml"
+        }
+      }
+    },
+    {
+      "op": "file_source",
+      "path": "<ROOT>/defs/dir.yaml",
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::DefinitionLoadError",
+          "message": "Error reading file <ROOT>/defs/dir.yaml: Is a directory @ io_fread - <ROOT>/defs/dir.yaml"
+        }
+      }
+    },
+    {
+      "op": "file_source_modified_after_load",
+      "result": {
+        "ok": [
+          "name: a\n",
+          "file:<SHA256:<ROOT>/defs/mod.yaml>:2020-09-13 12:26:40 +0000",
+          {
+            "class": "Ukiryu::Errors::DefinitionLoadError",
+            "message": "File <ROOT>/defs/mod.yaml has been modified since it was loaded. Original mtime: 2020-09-13 12:26:40 +0000, Current mtime: 2020-09-13 12:28:20 +0000"
+          }
+        ]
+      }
+    },
+    {
+      "op": "file_source_rewritten_same_mtime",
+      "result": {
+        "ok": [
+          "name: a\n",
+          "name: a\n"
+        ]
+      }
+    },
+    {
+      "op": "file_source_deleted_before_load",
+      "result": {
+        "ok": [
+          "<ROOT>/defs/gone.yaml",
+          {
+            "class": "Ukiryu::Errors::DefinitionLoadError",
+            "message": "Cannot access file metadata for <ROOT>/defs/gone.yaml: No such file or directory @ rb_file_s_mtime - <ROOT>/defs/gone.yaml"
+          },
+          {
+            "class": "Ukiryu::Errors::DefinitionLoadError",
+            "message": "Cannot access file metadata for <ROOT>/defs/gone.yaml: No such file or directory @ rb_file_s_mtime - <ROOT>/defs/gone.yaml"
+          }
+        ]
+      }
+    },
+    {
+      "op": "file_source_eq",
+      "result": {
+        "ok": [
+          true,
+          false,
+          false
+        ]
+      }
+    }
+  ]
+}

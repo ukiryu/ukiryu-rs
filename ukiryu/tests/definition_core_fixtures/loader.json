@@ -1,0 +1,1569 @@
+{
+  "provenance": {
+    "oracle_sha": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+    "files": [
+      "lib/ukiryu/definition/loader.rb"
+    ],
+    "capture": "capture/loader.rb",
+    "ruby": "4.0.1",
+    "tz": "UTC"
+  },
+  "cases": [
+    {
+      "op": "load_from_string",
+      "id": "valid",
+      "yaml": "name: t\nversion: '1.0'\nprofiles:\n  - name: default\n",
+      "mode": null,
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1.0",
+            "ukiryu_schema": null,
+            "self_uri": null,
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "valid",
+      "yaml": "name: t\nversion: '1.0'\nprofiles:\n  - name: default\n",
+      "mode": "strict",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1.0",
+            "ukiryu_schema": null,
+            "self_uri": null,
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "valid",
+      "yaml": "name: t\nversion: '1.0'\nprofiles:\n  - name: default\n",
+      "mode": "lenient",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1.0",
+            "ukiryu_schema": null,
+            "self_uri": null,
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "valid",
+      "yaml": "name: t\nversion: '1.0'\nprofiles:\n  - name: default\n",
+      "mode": "none",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1.0",
+            "ukiryu_schema": null,
+            "self_uri": null,
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "missing_name",
+      "yaml": "version: '1.0'\nprofiles:\n  - name: default\n",
+      "mode": null,
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::DefinitionValidationError",
+          "message": "Profile validation failed:\n  - Missing 'name' field"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "missing_name",
+      "yaml": "version: '1.0'\nprofiles:\n  - name: default\n",
+      "mode": "strict",
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::DefinitionValidationError",
+          "message": "Profile validation failed:\n  - Missing 'name' field"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "missing_name",
+      "yaml": "version: '1.0'\nprofiles:\n  - name: default\n",
+      "mode": "lenient",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": null,
+            "version": "1.0",
+            "ukiryu_schema": null,
+            "self_uri": null,
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": "[Ukiryu] Profile validation failed:\n  - Missing 'name' field\n"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "missing_name",
+      "yaml": "version: '1.0'\nprofiles:\n  - name: default\n",
+      "mode": "none",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": null,
+            "version": "1.0",
+            "ukiryu_schema": null,
+            "self_uri": null,
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "missing_version",
+      "yaml": "name: t\nprofiles:\n  - name: default\n",
+      "mode": null,
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::DefinitionValidationError",
+          "message": "Profile validation failed:\n  - Missing 'version' field"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "missing_version",
+      "yaml": "name: t\nprofiles:\n  - name: default\n",
+      "mode": "strict",
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::DefinitionValidationError",
+          "message": "Profile validation failed:\n  - Missing 'version' field"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "missing_version",
+      "yaml": "name: t\nprofiles:\n  - name: default\n",
+      "mode": "lenient",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": null,
+            "ukiryu_schema": null,
+            "self_uri": null,
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": "[Ukiryu] Profile validation failed:\n  - Missing 'version' field\n"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "missing_version",
+      "yaml": "name: t\nprofiles:\n  - name: default\n",
+      "mode": "none",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": null,
+            "ukiryu_schema": null,
+            "self_uri": null,
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "missing_all",
+      "yaml": "display_name: x\n",
+      "mode": null,
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::DefinitionValidationError",
+          "message": "Profile validation failed:\n  - Missing 'name' field\n  - Missing 'version' field\n  - Missing 'profiles' field or profiles is empty"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "missing_all",
+      "yaml": "display_name: x\n",
+      "mode": "strict",
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::DefinitionValidationError",
+          "message": "Profile validation failed:\n  - Missing 'name' field\n  - Missing 'version' field\n  - Missing 'profiles' field or profiles is empty"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "missing_all",
+      "yaml": "display_name: x\n",
+      "mode": "lenient",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": null,
+            "version": null,
+            "ukiryu_schema": null,
+            "self_uri": null,
+            "profiles": []
+          },
+          "stderr": "[Ukiryu] Profile validation failed:\n  - Missing 'name' field\n  - Missing 'version' field\n  - Missing 'profiles' field or profiles is empty\n"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "missing_all",
+      "yaml": "display_name: x\n",
+      "mode": "none",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": null,
+            "version": null,
+            "ukiryu_schema": null,
+            "self_uri": null,
+            "profiles": []
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "empty_profiles",
+      "yaml": "name: t\nversion: '1'\nprofiles: []\n",
+      "mode": null,
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::DefinitionValidationError",
+          "message": "Profile validation failed:\n  - Missing 'profiles' field or profiles is empty"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "empty_profiles",
+      "yaml": "name: t\nversion: '1'\nprofiles: []\n",
+      "mode": "strict",
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::DefinitionValidationError",
+          "message": "Profile validation failed:\n  - Missing 'profiles' field or profiles is empty"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "empty_profiles",
+      "yaml": "name: t\nversion: '1'\nprofiles: []\n",
+      "mode": "lenient",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": null,
+            "self_uri": null,
+            "profiles": []
+          },
+          "stderr": "[Ukiryu] Profile validation failed:\n  - Missing 'profiles' field or profiles is empty\n"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "empty_profiles",
+      "yaml": "name: t\nversion: '1'\nprofiles: []\n",
+      "mode": "none",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": null,
+            "self_uri": null,
+            "profiles": []
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "null_profiles",
+      "yaml": "name: t\nversion: '1'\nprofiles:\n",
+      "mode": null,
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::DefinitionValidationError",
+          "message": "Profile validation failed:\n  - Missing 'profiles' field or profiles is empty"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "null_profiles",
+      "yaml": "name: t\nversion: '1'\nprofiles:\n",
+      "mode": "strict",
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::DefinitionValidationError",
+          "message": "Profile validation failed:\n  - Missing 'profiles' field or profiles is empty"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "null_profiles",
+      "yaml": "name: t\nversion: '1'\nprofiles:\n",
+      "mode": "lenient",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": null,
+            "self_uri": null,
+            "profiles": []
+          },
+          "stderr": "[Ukiryu] Profile validation failed:\n  - Missing 'profiles' field or profiles is empty\n"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "null_profiles",
+      "yaml": "name: t\nversion: '1'\nprofiles:\n",
+      "mode": "none",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": null,
+            "self_uri": null,
+            "profiles": []
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "schema_ok",
+      "yaml": "ukiryu_schema: '1.2'\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": null,
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": "1.2",
+            "self_uri": null,
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "schema_ok",
+      "yaml": "ukiryu_schema: '1.2'\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": "strict",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": "1.2",
+            "self_uri": null,
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "schema_ok",
+      "yaml": "ukiryu_schema: '1.2'\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": "lenient",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": "1.2",
+            "self_uri": null,
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "schema_ok",
+      "yaml": "ukiryu_schema: '1.2'\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": "none",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": "1.2",
+            "self_uri": null,
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "schema_three_part",
+      "yaml": "ukiryu_schema: '1.0.0'\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": null,
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::DefinitionValidationError",
+          "message": "Profile validation failed:\n  - Invalid ukiryu_schema format: 1.0.0"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "schema_three_part",
+      "yaml": "ukiryu_schema: '1.0.0'\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": "strict",
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::DefinitionValidationError",
+          "message": "Profile validation failed:\n  - Invalid ukiryu_schema format: 1.0.0"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "schema_three_part",
+      "yaml": "ukiryu_schema: '1.0.0'\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": "lenient",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": "1.0.0",
+            "self_uri": null,
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": "[Ukiryu] Profile validation failed:\n  - Invalid ukiryu_schema format: 1.0.0\n"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "schema_three_part",
+      "yaml": "ukiryu_schema: '1.0.0'\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": "none",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": "1.0.0",
+            "self_uri": null,
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "schema_v",
+      "yaml": "ukiryu_schema: v1\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": null,
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::DefinitionValidationError",
+          "message": "Profile validation failed:\n  - Invalid ukiryu_schema format: v1"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "schema_v",
+      "yaml": "ukiryu_schema: v1\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": "strict",
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::DefinitionValidationError",
+          "message": "Profile validation failed:\n  - Invalid ukiryu_schema format: v1"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "schema_v",
+      "yaml": "ukiryu_schema: v1\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": "lenient",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": "v1",
+            "self_uri": null,
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": "[Ukiryu] Profile validation failed:\n  - Invalid ukiryu_schema format: v1\n"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "schema_v",
+      "yaml": "ukiryu_schema: v1\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": "none",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": "v1",
+            "self_uri": null,
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "schema_multiline",
+      "yaml": "ukiryu_schema: \"junk\\n1.0\"\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": null,
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": "junk\n1.0",
+            "self_uri": null,
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "schema_multiline",
+      "yaml": "ukiryu_schema: \"junk\\n1.0\"\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": "strict",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": "junk\n1.0",
+            "self_uri": null,
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "schema_multiline",
+      "yaml": "ukiryu_schema: \"junk\\n1.0\"\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": "lenient",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": "junk\n1.0",
+            "self_uri": null,
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "schema_multiline",
+      "yaml": "ukiryu_schema: \"junk\\n1.0\"\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": "none",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": "junk\n1.0",
+            "self_uri": null,
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "self_https",
+      "yaml": "$self: https://x/y\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": null,
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": null,
+            "self_uri": "https://x/y",
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "self_https",
+      "yaml": "$self: https://x/y\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": "strict",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": null,
+            "self_uri": "https://x/y",
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "self_https",
+      "yaml": "$self: https://x/y\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": "lenient",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": null,
+            "self_uri": "https://x/y",
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "self_https",
+      "yaml": "$self: https://x/y\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": "none",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": null,
+            "self_uri": "https://x/y",
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "self_file",
+      "yaml": "$self: file:///y\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": null,
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": null,
+            "self_uri": "file:///y",
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "self_file",
+      "yaml": "$self: file:///y\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": "strict",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": null,
+            "self_uri": "file:///y",
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "self_file",
+      "yaml": "$self: file:///y\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": "lenient",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": null,
+            "self_uri": "file:///y",
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "self_file",
+      "yaml": "$self: file:///y\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": "none",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": null,
+            "self_uri": "file:///y",
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "self_ftp",
+      "yaml": "$self: ftp://x\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": null,
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::DefinitionValidationError",
+          "message": "Profile validation failed:\n  - Invalid $self URI format: ftp://x"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "self_ftp",
+      "yaml": "$self: ftp://x\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": "strict",
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::DefinitionValidationError",
+          "message": "Profile validation failed:\n  - Invalid $self URI format: ftp://x"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "self_ftp",
+      "yaml": "$self: ftp://x\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": "lenient",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": null,
+            "self_uri": "ftp://x",
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "self_ftp",
+      "yaml": "$self: ftp://x\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": "none",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": null,
+            "self_uri": "ftp://x",
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "self_ftp_and_missing",
+      "yaml": "$self: ftp://x\nukiryu_schema: x\n",
+      "mode": null,
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::DefinitionValidationError",
+          "message": "Profile validation failed:\n  - Missing 'name' field\n  - Missing 'version' field\n  - Missing 'profiles' field or profiles is empty\n  - Invalid ukiryu_schema format: x\n  - Invalid $self URI format: ftp://x"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "self_ftp_and_missing",
+      "yaml": "$self: ftp://x\nukiryu_schema: x\n",
+      "mode": "strict",
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::DefinitionValidationError",
+          "message": "Profile validation failed:\n  - Missing 'name' field\n  - Missing 'version' field\n  - Missing 'profiles' field or profiles is empty\n  - Invalid ukiryu_schema format: x\n  - Invalid $self URI format: ftp://x"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "self_ftp_and_missing",
+      "yaml": "$self: ftp://x\nukiryu_schema: x\n",
+      "mode": "lenient",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": null,
+            "version": null,
+            "ukiryu_schema": "x",
+            "self_uri": "ftp://x",
+            "profiles": []
+          },
+          "stderr": "[Ukiryu] Profile validation failed:\n  - Missing 'name' field\n  - Missing 'version' field\n  - Missing 'profiles' field or profiles is empty\n  - Invalid ukiryu_schema format: x\n"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "self_ftp_and_missing",
+      "yaml": "$self: ftp://x\nukiryu_schema: x\n",
+      "mode": "none",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": null,
+            "version": null,
+            "ukiryu_schema": "x",
+            "self_uri": "ftp://x",
+            "profiles": []
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "self_multiline",
+      "yaml": "$self: \"bad\\nhttp://x\"\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": null,
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": null,
+            "self_uri": "bad\nhttp://x",
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "self_multiline",
+      "yaml": "$self: \"bad\\nhttp://x\"\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": "strict",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": null,
+            "self_uri": "bad\nhttp://x",
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "self_multiline",
+      "yaml": "$self: \"bad\\nhttp://x\"\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": "lenient",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": null,
+            "self_uri": "bad\nhttp://x",
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "self_multiline",
+      "yaml": "$self: \"bad\\nhttp://x\"\nname: t\nversion: '1'\nprofiles:\n  - name: default\n",
+      "mode": "none",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": null,
+            "self_uri": "bad\nhttp://x",
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "empty_name",
+      "yaml": "name: ''\nversion: ''\nprofiles:\n  - name: default\n",
+      "mode": null,
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "",
+            "version": "",
+            "ukiryu_schema": null,
+            "self_uri": null,
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "empty_name",
+      "yaml": "name: ''\nversion: ''\nprofiles:\n  - name: default\n",
+      "mode": "strict",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "",
+            "version": "",
+            "ukiryu_schema": null,
+            "self_uri": null,
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "empty_name",
+      "yaml": "name: ''\nversion: ''\nprofiles:\n  - name: default\n",
+      "mode": "lenient",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "",
+            "version": "",
+            "ukiryu_schema": null,
+            "self_uri": null,
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "empty_name",
+      "yaml": "name: ''\nversion: ''\nprofiles:\n  - name: default\n",
+      "mode": "none",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "",
+            "version": "",
+            "ukiryu_schema": null,
+            "self_uri": null,
+            "profiles": [
+              {
+                "name": "default",
+                "inherits": null,
+                "commands": []
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "syntax_error",
+      "yaml": "name: [unclosed\n",
+      "mode": null,
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::DefinitionLoadError",
+          "message": "Invalid YAML format in string:string:675bea8d60c3788ef3aea01d8a4a9f3fa62285c374655f22fca20cdf567c3a63: input format is invalid, try to pass correct `yaml` format \n(<unknown>): unexpected parser state at line 1 column 16\n\n"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "syntax_error",
+      "yaml": "name: [unclosed\n",
+      "mode": "strict",
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::DefinitionLoadError",
+          "message": "Invalid YAML format in string:string:675bea8d60c3788ef3aea01d8a4a9f3fa62285c374655f22fca20cdf567c3a63: input format is invalid, try to pass correct `yaml` format \n(<unknown>): unexpected parser state at line 1 column 16\n\n"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "syntax_error",
+      "yaml": "name: [unclosed\n",
+      "mode": "lenient",
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::DefinitionLoadError",
+          "message": "Invalid YAML format in string:string:675bea8d60c3788ef3aea01d8a4a9f3fa62285c374655f22fca20cdf567c3a63: input format is invalid, try to pass correct `yaml` format \n(<unknown>): unexpected parser state at line 1 column 16\n\n"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "syntax_error",
+      "yaml": "name: [unclosed\n",
+      "mode": "none",
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::DefinitionLoadError",
+          "message": "Invalid YAML format in string:string:675bea8d60c3788ef3aea01d8a4a9f3fa62285c374655f22fca20cdf567c3a63: input format is invalid, try to pass correct `yaml` format \n(<unknown>): unexpected parser state at line 1 column 16\n\n"
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "inherit",
+      "yaml": "name: t\nversion: '1'\nprofiles:\n  - name: child\n    inherits: base\n    commands:\n      - name: b\n      - name: c\n  - name: base\n    commands:\n      - name: a\n      - name: b\n      - name: d\n  - name: orphan\n    inherits: nowhere\n    commands:\n      - name: z\n",
+      "mode": null,
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": null,
+            "self_uri": null,
+            "profiles": [
+              {
+                "name": "child",
+                "inherits": "base",
+                "commands": [
+                  "b",
+                  "c",
+                  "a",
+                  "d"
+                ]
+              },
+              {
+                "name": "base",
+                "inherits": null,
+                "commands": [
+                  "a",
+                  "b",
+                  "d"
+                ]
+              },
+              {
+                "name": "orphan",
+                "inherits": "nowhere",
+                "commands": [
+                  "z"
+                ]
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "inherit",
+      "yaml": "name: t\nversion: '1'\nprofiles:\n  - name: child\n    inherits: base\n    commands:\n      - name: b\n      - name: c\n  - name: base\n    commands:\n      - name: a\n      - name: b\n      - name: d\n  - name: orphan\n    inherits: nowhere\n    commands:\n      - name: z\n",
+      "mode": "strict",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": null,
+            "self_uri": null,
+            "profiles": [
+              {
+                "name": "child",
+                "inherits": "base",
+                "commands": [
+                  "b",
+                  "c",
+                  "a",
+                  "d"
+                ]
+              },
+              {
+                "name": "base",
+                "inherits": null,
+                "commands": [
+                  "a",
+                  "b",
+                  "d"
+                ]
+              },
+              {
+                "name": "orphan",
+                "inherits": "nowhere",
+                "commands": [
+                  "z"
+                ]
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "inherit",
+      "yaml": "name: t\nversion: '1'\nprofiles:\n  - name: child\n    inherits: base\n    commands:\n      - name: b\n      - name: c\n  - name: base\n    commands:\n      - name: a\n      - name: b\n      - name: d\n  - name: orphan\n    inherits: nowhere\n    commands:\n      - name: z\n",
+      "mode": "lenient",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": null,
+            "self_uri": null,
+            "profiles": [
+              {
+                "name": "child",
+                "inherits": "base",
+                "commands": [
+                  "b",
+                  "c",
+                  "a",
+                  "d"
+                ]
+              },
+              {
+                "name": "base",
+                "inherits": null,
+                "commands": [
+                  "a",
+                  "b",
+                  "d"
+                ]
+              },
+              {
+                "name": "orphan",
+                "inherits": "nowhere",
+                "commands": [
+                  "z"
+                ]
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string",
+      "id": "inherit",
+      "yaml": "name: t\nversion: '1'\nprofiles:\n  - name: child\n    inherits: base\n    commands:\n      - name: b\n      - name: c\n  - name: base\n    commands:\n      - name: a\n      - name: b\n      - name: d\n  - name: orphan\n    inherits: nowhere\n    commands:\n      - name: z\n",
+      "mode": "none",
+      "result": {
+        "ok": {
+          "definition": {
+            "name": "t",
+            "version": "1",
+            "ukiryu_schema": null,
+            "self_uri": null,
+            "profiles": [
+              {
+                "name": "child",
+                "inherits": "base",
+                "commands": [
+                  "b",
+                  "c",
+                  "a",
+                  "d"
+                ]
+              },
+              {
+                "name": "base",
+                "inherits": null,
+                "commands": [
+                  "a",
+                  "b",
+                  "d"
+                ]
+              },
+              {
+                "name": "orphan",
+                "inherits": "nowhere",
+                "commands": [
+                  "z"
+                ]
+              }
+            ]
+          },
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "op": "load_from_string_empty",
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::DefinitionLoadError",
+          "message": "Definition content cannot be empty"
+        }
+      }
+    },
+    {
+      "op": "cache_bypasses_validation",
+      "result": {
+        "ok": [
+          true,
+          "Ukiryu::Errors::DefinitionValidationError"
+        ]
+      }
+    },
+    {
+      "op": "cache_identity",
+      "result": {
+        "ok": [
+          true,
+          false
+        ]
+      }
+    },
+    {
+      "op": "load_from_file",
+      "path": "<ROOT>/t.yaml",
+      "result": {
+        "ok": {
+          "name": "t",
+          "version": "1.0",
+          "ukiryu_schema": null,
+          "self_uri": null,
+          "profiles": [
+            {
+              "name": "default",
+              "inherits": null,
+              "commands": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "op": "load_from_file",
+      "path": "<ROOT>/nope.yaml",
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::DefinitionNotFoundError",
+          "message": "Definition file not found: <ROOT>/nope.yaml"
+        }
+      }
+    }
+  ]
+}

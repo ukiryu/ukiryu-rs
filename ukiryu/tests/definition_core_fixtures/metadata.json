@@ -1,0 +1,1050 @@
+{
+  "provenance": {
+    "oracle_sha": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+    "files": [
+      "lib/ukiryu/definition/metadata.rb"
+    ],
+    "capture": "capture/metadata.rb",
+    "ruby": "4.0.1",
+    "tz": "UTC"
+  },
+  "cases": [
+    {
+      "op": "new",
+      "spec": [
+        "a",
+        "1.0",
+        "x.yaml",
+        "user"
+      ],
+      "result": {
+        "ok": {
+          "name": "a",
+          "version": "1.0",
+          "path": "<ROOT>/x.yaml",
+          "source_type": "user",
+          "to_s": "a/1.0 (user) - <ROOT>/x.yaml",
+          "inspect": "#<Ukiryu::Definition::DefinitionMetadata name=\"a\" version=\"1.0\" path=\"<ROOT>/x.yaml\" source_type=:user>",
+          "priority": 1
+        }
+      }
+    },
+    {
+      "op": "new",
+      "spec": [
+        "a",
+        "2.0",
+        "y.yaml",
+        "user"
+      ],
+      "result": {
+        "ok": {
+          "name": "a",
+          "version": "2.0",
+          "path": "<ROOT>/y.yaml",
+          "source_type": "user",
+          "to_s": "a/2.0 (user) - <ROOT>/y.yaml",
+          "inspect": "#<Ukiryu::Definition::DefinitionMetadata name=\"a\" version=\"2.0\" path=\"<ROOT>/y.yaml\" source_type=:user>",
+          "priority": 1
+        }
+      }
+    },
+    {
+      "op": "new",
+      "spec": [
+        "a",
+        "1.10",
+        "z.yaml",
+        "user"
+      ],
+      "result": {
+        "ok": {
+          "name": "a",
+          "version": "1.10",
+          "path": "<ROOT>/z.yaml",
+          "source_type": "user",
+          "to_s": "a/1.10 (user) - <ROOT>/z.yaml",
+          "inspect": "#<Ukiryu::Definition::DefinitionMetadata name=\"a\" version=\"1.10\" path=\"<ROOT>/z.yaml\" source_type=:user>",
+          "priority": 1
+        }
+      }
+    },
+    {
+      "op": "new",
+      "spec": [
+        "a",
+        "1.9",
+        "w.yaml",
+        "bundled"
+      ],
+      "result": {
+        "ok": {
+          "name": "a",
+          "version": "1.9",
+          "path": "<ROOT>/w.yaml",
+          "source_type": "bundled",
+          "to_s": "a/1.9 (bundled) - <ROOT>/w.yaml",
+          "inspect": "#<Ukiryu::Definition::DefinitionMetadata name=\"a\" version=\"1.9\" path=\"<ROOT>/w.yaml\" source_type=:bundled>",
+          "priority": 2
+        }
+      }
+    },
+    {
+      "op": "new",
+      "spec": [
+        "b",
+        "1.0",
+        "b.yaml",
+        "local_system"
+      ],
+      "result": {
+        "ok": {
+          "name": "b",
+          "version": "1.0",
+          "path": "<ROOT>/b.yaml",
+          "source_type": "local_system",
+          "to_s": "b/1.0 (local_system) - <ROOT>/b.yaml",
+          "inspect": "#<Ukiryu::Definition::DefinitionMetadata name=\"b\" version=\"1.0\" path=\"<ROOT>/b.yaml\" source_type=:local_system>",
+          "priority": 3
+        }
+      }
+    },
+    {
+      "op": "new",
+      "spec": [
+        "c",
+        "1.0",
+        "c.yaml",
+        "system"
+      ],
+      "result": {
+        "ok": {
+          "name": "c",
+          "version": "1.0",
+          "path": "<ROOT>/c.yaml",
+          "source_type": "system",
+          "to_s": "c/1.0 (system) - <ROOT>/c.yaml",
+          "inspect": "#<Ukiryu::Definition::DefinitionMetadata name=\"c\" version=\"1.0\" path=\"<ROOT>/c.yaml\" source_type=:system>",
+          "priority": 4
+        }
+      }
+    },
+    {
+      "op": "new",
+      "spec": [
+        "d",
+        "1.0",
+        "d.yaml",
+        "register"
+      ],
+      "result": {
+        "ok": {
+          "name": "d",
+          "version": "1.0",
+          "path": "<ROOT>/d.yaml",
+          "source_type": "register",
+          "to_s": "d/1.0 (register) - <ROOT>/d.yaml",
+          "inspect": "#<Ukiryu::Definition::DefinitionMetadata name=\"d\" version=\"1.0\" path=\"<ROOT>/d.yaml\" source_type=:register>",
+          "priority": 5
+        }
+      }
+    },
+    {
+      "op": "new",
+      "spec": [
+        "e",
+        "1.0",
+        "e.yaml",
+        "other"
+      ],
+      "result": {
+        "ok": {
+          "name": "e",
+          "version": "1.0",
+          "path": "<ROOT>/e.yaml",
+          "source_type": "other",
+          "to_s": "e/1.0 (other) - <ROOT>/e.yaml",
+          "inspect": "#<Ukiryu::Definition::DefinitionMetadata name=\"e\" version=\"1.0\" path=\"<ROOT>/e.yaml\" source_type=:other>",
+          "priority": 999
+        }
+      }
+    },
+    {
+      "op": "new",
+      "spec": [
+        "a",
+        "1.0.0",
+        "v.yaml",
+        "user"
+      ],
+      "result": {
+        "ok": {
+          "name": "a",
+          "version": "1.0.0",
+          "path": "<ROOT>/v.yaml",
+          "source_type": "user",
+          "to_s": "a/1.0.0 (user) - <ROOT>/v.yaml",
+          "inspect": "#<Ukiryu::Definition::DefinitionMetadata name=\"a\" version=\"1.0.0\" path=\"<ROOT>/v.yaml\" source_type=:user>",
+          "priority": 1
+        }
+      }
+    },
+    {
+      "op": "new",
+      "spec": [
+        "A",
+        "1.0",
+        "q.yaml",
+        "user"
+      ],
+      "result": {
+        "ok": {
+          "name": "A",
+          "version": "1.0",
+          "path": "<ROOT>/q.yaml",
+          "source_type": "user",
+          "to_s": "A/1.0 (user) - <ROOT>/q.yaml",
+          "inspect": "#<Ukiryu::Definition::DefinitionMetadata name=\"A\" version=\"1.0\" path=\"<ROOT>/q.yaml\" source_type=:user>",
+          "priority": 1
+        }
+      }
+    },
+    {
+      "op": "relative_path",
+      "cwd": "<ROOT>",
+      "path": "rel/../t.yaml",
+      "result": {
+        "ok": {
+          "name": "n",
+          "version": "1",
+          "path": "<ROOT>/t.yaml",
+          "source_type": "user",
+          "to_s": "n/1 (user) - <ROOT>/t.yaml",
+          "inspect": "#<Ukiryu::Definition::DefinitionMetadata name=\"n\" version=\"1\" path=\"<ROOT>/t.yaml\" source_type=:user>",
+          "priority": 1
+        }
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 0,
+      "b": 0,
+      "result": {
+        "ok": 0
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 0,
+      "b": 1,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 0,
+      "b": 2,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 0,
+      "b": 3,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 0,
+      "b": 4,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 0,
+      "b": 5,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 0,
+      "b": 6,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 0,
+      "b": 7,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 0,
+      "b": 8,
+      "result": {
+        "ok": 0
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 0,
+      "b": 9,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 1,
+      "b": 0,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 1,
+      "b": 1,
+      "result": {
+        "ok": 0
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 1,
+      "b": 2,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 1,
+      "b": 3,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 1,
+      "b": 4,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 1,
+      "b": 5,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 1,
+      "b": 6,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 1,
+      "b": 7,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 1,
+      "b": 8,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 1,
+      "b": 9,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 2,
+      "b": 0,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 2,
+      "b": 1,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 2,
+      "b": 2,
+      "result": {
+        "ok": 0
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 2,
+      "b": 3,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 2,
+      "b": 4,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 2,
+      "b": 5,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 2,
+      "b": 6,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 2,
+      "b": 7,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 2,
+      "b": 8,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 2,
+      "b": 9,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 3,
+      "b": 0,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 3,
+      "b": 1,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 3,
+      "b": 2,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 3,
+      "b": 3,
+      "result": {
+        "ok": 0
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 3,
+      "b": 4,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 3,
+      "b": 5,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 3,
+      "b": 6,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 3,
+      "b": 7,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 3,
+      "b": 8,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 3,
+      "b": 9,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 4,
+      "b": 0,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 4,
+      "b": 1,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 4,
+      "b": 2,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 4,
+      "b": 3,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 4,
+      "b": 4,
+      "result": {
+        "ok": 0
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 4,
+      "b": 5,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 4,
+      "b": 6,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 4,
+      "b": 7,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 4,
+      "b": 8,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 4,
+      "b": 9,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 5,
+      "b": 0,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 5,
+      "b": 1,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 5,
+      "b": 2,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 5,
+      "b": 3,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 5,
+      "b": 4,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 5,
+      "b": 5,
+      "result": {
+        "ok": 0
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 5,
+      "b": 6,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 5,
+      "b": 7,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 5,
+      "b": 8,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 5,
+      "b": 9,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 6,
+      "b": 0,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 6,
+      "b": 1,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 6,
+      "b": 2,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 6,
+      "b": 3,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 6,
+      "b": 4,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 6,
+      "b": 5,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 6,
+      "b": 6,
+      "result": {
+        "ok": 0
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 6,
+      "b": 7,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 6,
+      "b": 8,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 6,
+      "b": 9,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 7,
+      "b": 0,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 7,
+      "b": 1,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 7,
+      "b": 2,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 7,
+      "b": 3,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 7,
+      "b": 4,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 7,
+      "b": 5,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 7,
+      "b": 6,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 7,
+      "b": 7,
+      "result": {
+        "ok": 0
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 7,
+      "b": 8,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 7,
+      "b": 9,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 8,
+      "b": 0,
+      "result": {
+        "ok": 0
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 8,
+      "b": 1,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 8,
+      "b": 2,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 8,
+      "b": 3,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 8,
+      "b": 4,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 8,
+      "b": 5,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 8,
+      "b": 6,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 8,
+      "b": 7,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 8,
+      "b": 8,
+      "result": {
+        "ok": 0
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 8,
+      "b": 9,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 9,
+      "b": 0,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 9,
+      "b": 1,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 9,
+      "b": 2,
+      "result": {
+        "ok": 1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 9,
+      "b": 3,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 9,
+      "b": 4,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 9,
+      "b": 5,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 9,
+      "b": 6,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 9,
+      "b": 7,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 9,
+      "b": 8,
+      "result": {
+        "ok": -1
+      }
+    },
+    {
+      "op": "cmp",
+      "a": 9,
+      "b": 9,
+      "result": {
+        "ok": 0
+      }
+    },
+    {
+      "op": "eq",
+      "result": {
+        "ok": [
+          true,
+          false,
+          false
+        ]
+      }
+    },
+    {
+      "op": "exists_mtime",
+      "result": {
+        "ok": [
+          true,
+          "2020-09-13 12:26:40 +0000",
+          false,
+          null
+        ]
+      }
+    }
+  ]
+}
