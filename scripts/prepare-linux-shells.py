@@ -43,13 +43,15 @@ for archive in sorted(packages.glob('*.deb')):
 libpaths = [str(path) for path in (prefix / 'usr/lib/x86_64-linux-gnu',
                                  prefix / 'lib/x86_64-linux-gnu') if path.is_dir()]
 env = dict(os.environ)
-env['PATH'] = str(prefix / 'usr/bin') + os.pathsep + env['PATH']
+binpaths = [str(prefix / 'usr/bin'), str(prefix / 'bin')]
+env['PATH'] = os.pathsep.join(binpaths + [env['PATH']])
 env['LD_LIBRARY_PATH'] = os.pathsep.join(libpaths + ([env['LD_LIBRARY_PATH']] if env.get('LD_LIBRARY_PATH') else []))
 for shell in ['bash', 'dash', 'zsh', 'fish', 'tcsh']:
     # Command execution proves this private prefix's binaries can actually load.
     subprocess.run([shell, '-c', 'echo ukiryu-shell-ready'], env=env, check=True)
 with open(os.environ['GITHUB_PATH'], 'a') as stream:
-    stream.write(str(prefix / 'usr/bin') + '\n')
+    for directory in binpaths:
+        stream.write(directory + '\n')
 with open(os.environ['GITHUB_ENV'], 'a') as stream:
     stream.write('LD_LIBRARY_PATH=' + env['LD_LIBRARY_PATH'] + '\n')
     stream.write('UKIRYU_REQUIRE_SHELL_TESTS=1\n')
