@@ -5,18 +5,23 @@
 #[path = "executable_oracle.rs"]
 mod oracle;
 
+#[cfg(unix)]
 use std::cell::RefCell;
 use std::collections::BTreeMap;
+#[cfg(unix)]
 use std::rc::Rc;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 use serde_json::Value;
 use ukiryu::executable::{
-    alias_target_command, candidate_paths, find, find_in_path, find_with_info, first_output_line,
-    is_executable, join_path, path_extensions, probe_search_paths, resolve_executable_name,
-    search_path_candidates, split_search_path, AliasInfo, AliasProbe, DiscoveryContext,
-    ExecutableInfo, ExecutableSource, NoAliases, NoSystemCommands, Platform, SearchPathError,
-    SystemCommandRunner,
+    alias_target_command, candidate_paths, find, find_in_path, first_output_line, join_path,
+    path_extensions, probe_search_paths, resolve_executable_name, search_path_candidates,
+    split_search_path, DiscoveryContext, ExecutableInfo, ExecutableSource, NoAliases,
+    NoSystemCommands, Platform, SearchPathError,
+};
+#[cfg(unix)]
+use ukiryu::executable::{
+    find_with_info, is_executable, AliasInfo, AliasProbe, SystemCommandRunner,
 };
 
 fn golden() -> Value {
@@ -64,14 +69,17 @@ impl TempRoot {
         TempRoot(dir)
     }
 
+    #[cfg(unix)]
     fn path(&self) -> &str {
         self.0.to_str().unwrap()
     }
 
+    #[cfg(unix)]
     fn sub(&self, value: &str) -> String {
         value.replace("<ROOT>", self.path())
     }
 
+    #[cfg(unix)]
     fn rel(&self, value: &str) -> String {
         value.replace(self.path(), "<ROOT>")
     }
@@ -220,13 +228,16 @@ fn unix_filesystem_lookup_matches_ruby() {
     assert!(checked >= 19);
 }
 
+#[cfg(unix)]
 type Events = Rc<RefCell<Vec<Vec<String>>>>;
 
+#[cfg(unix)]
 struct TableAliases {
     table: BTreeMap<String, AliasInfo>,
     events: Events,
 }
 
+#[cfg(unix)]
 impl AliasProbe for TableAliases {
     fn detect_alias(&mut self, command: &str) -> Option<AliasInfo> {
         self.events
@@ -236,11 +247,13 @@ impl AliasProbe for TableAliases {
     }
 }
 
+#[cfg(unix)]
 struct TableRunner {
     responses: Vec<(String, Vec<String>, bool, String)>,
     events: Events,
 }
 
+#[cfg(unix)]
 impl SystemCommandRunner for TableRunner {
     fn run(&mut self, executable: &str, args: &[String]) -> Option<String> {
         let mut event = vec!["system".to_owned(), executable.to_owned()];
