@@ -1,0 +1,87 @@
+name: Corpus (Ruby oracle)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'corpus/**'
+      - '.gitattributes'
+      - '.github/workflows/corpus-ruby-oracle.yml'
+  pull_request:
+    paths:
+      - 'corpus/**'
+      - '.gitattributes'
+      - '.github/workflows/corpus-ruby-oracle.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: verify (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-2022]
+    defaults:
+      run:
+        working-directory: corpus/oracle-ruby
+    env:
+      BUNDLE_FROZEN: 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '4.0.1'
+          bundler-cache: true
+          working-directory: corpus/oracle-ruby
+      - name: Record actual oracle runtime inputs
+        shell: bash
+        run: |
+          bundle exec ruby -r ./capture -e 'puts JSON.pretty_generate(UkiryuOracle::Capture.oracle_info)' > "$RUNNER_TEMP/oracle-runtime.json"
+          cat "$RUNNER_TEMP/oracle-runtime.json"
+      - name: Replay corpus against the pinned Ruby oracle
+        shell: bash
+        run: |
+          export UKIRYU_CONFORMANCE_DIR="$GITHUB_WORKSPACE/corpus/conformance"
+          bundle exec ruby verify.rb --report "$RUNNER_TEMP/corpus-report.json"
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: corpus-report-${{ matrix.os }}
+          path: |
+            ${{ runner.temp }}/corpus-report.json
+            ${{ runner.temp }}/oracle-runtime.json
+          if-no-files-found: error
+
+  controls:
+    name: negative controls and regeneration
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: corpus/oracle-ruby
+    env:
+      BUNDLE_FROZEN: 'true'
+      # The oracle must isolate output from inherited host/terminal state.
+      THOR_COLUMNS: '40'
+      PSModulePath: '/nonexistent/corpus-host-shell'
+      MSYSTEM: 'CORPUS_POISON'
+      MINGW_PREFIX: '/nonexistent/corpus-host-shell'
+      WSL_DISTRO: 'corpus-poison'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '4.0.1'
+          bundler-cache: true
+          working-directory: corpus/oracle-ruby
+      - name: Negative controls
+        run: UKIRYU_CONFORMANCE_DIR="$GITHUB_WORKSPACE/corpus/conformance" bundle exec ruby selftest.rb
+      - name: Regeneration is byte-identical
+        run: bundle exec ruby capture.rb --check
