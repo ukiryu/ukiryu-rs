@@ -2,6 +2,7 @@
 //! reimplementing configuration or maintaining another YAML stack.
 pub mod config;
 pub mod extractors;
+pub mod options;
 pub mod shell;
 pub mod version_detection;
 pub mod version_ranges;
