@@ -1,8 +1,10 @@
 //! Ukiryu's shared core. Runtime adapters call this crate rather than
 //! reimplementing configuration or maintaining another YAML stack.
 pub mod config;
+pub mod extractors;
 pub mod schema;
 pub mod shell;
+pub mod types;
 pub mod version_detection;
 pub mod version_ranges;
 pub mod wire;
