@@ -7,6 +7,7 @@ pub mod executable;
 pub mod extractors;
 pub mod options;
 pub mod register;
+pub mod render;
 pub mod routing;
 pub mod schema;
 pub mod shell;
