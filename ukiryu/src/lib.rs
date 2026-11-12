@@ -6,6 +6,8 @@ pub mod definition;
 pub mod executable;
 pub mod extractors;
 pub mod models;
+pub mod options;
+pub mod render;
 pub mod routing;
 pub mod schema;
 pub mod shell;
