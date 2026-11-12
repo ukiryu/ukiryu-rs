@@ -175,8 +175,7 @@ checksum = "a2c754d6c33795a1c324727428e5a7dedb5b06195f9890bdbcba760d3e246563"
 [[package]]
 name = "yeptris"
 version = "0.6.63"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d2f8fc4bcc3bdec0d38a6f787d3a49108bf24583a57c03be69a00ed846eaba42"
+source = "git+https://github.com/leptris/yeptris-rs?rev=6a62ea753276b2e03ae1c7fb88a15d22f3e822a9#6a62ea753276b2e03ae1c7fb88a15d22f3e822a9"
 dependencies = [
  "cc",
  "serde",
