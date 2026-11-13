@@ -870,7 +870,7 @@ fn negative_controls_reject_broken_corpora() {
     let file = "cases/validate.jsonl";
 
     let mut c = base.clone();
-    mutate_case_line(&mut c, file, |l| l.replacen("\"ok\":", "\"ok\": ", 1));
+    mutate_case_line(&mut c, file, |l| l.replacen("\"api\":", "\"api\": ", 1));
     expect_problem(&c, "sha256", "unsealed edit");
 
     let mut c = base.clone();
@@ -937,6 +937,7 @@ fn negative_controls_reject_broken_corpora() {
     let first_line = String::from_utf8(base.case_files[file].clone()).unwrap();
     let first_line = first_line.split('\n').next().unwrap();
     for needle in [
+        "\"api\":",
         "{\"id\":",
         "\"op\":\"type.validate\"",
         "\"platforms\":[\"linux\",\"macos\",\"windows\"]",
