@@ -22,8 +22,14 @@ use super::harness::{input_str, Ctx, Outcome, RowError};
 use super::json::Oj;
 
 pub fn load(input: &Oj, ctx: &Ctx) -> Outcome {
-    let text = ctx.read_input(input_str(input, "file")?)?;
-    let data = safe_load(&text, Permitted::DOCUMENT).map_err(schema_error)?;
+    load_text(&ctx.read_input(input_str(input, "file")?)?)
+}
+
+/// `YAML.safe_load(text, permitted_classes: [Symbol, Date, Time])` through
+/// the core reader, in the corpus encoding. Also the type-sensitive
+/// canonical form the harness compares emitted YAML by.
+pub fn load_text(text: &str) -> Outcome {
+    let data = safe_load(text, Permitted::DOCUMENT).map_err(|e| schema_error(e, "document"))?;
     data_to_oj(&data)
 }
 
@@ -75,9 +81,17 @@ fn model_error(e: ModelError) -> RowError {
     RowError::new(e.ruby_class(), e.message)
 }
 
-fn schema_error(e: SchemaError) -> RowError {
+/// A core reader/schema error in the corpus shape, with the failure
+/// category and the stage that failed as `detail` (frozen by the R2
+/// yaml-reader migrations; compared only where frozen).
+pub fn schema_error(e: SchemaError, stage: &str) -> RowError {
+    let category = match &e {
+        SchemaError::YamlSyntax { .. } => "YamlSyntax",
+        _ => "Other",
+    };
+    let detail = Oj::obj(vec![("category", Oj::s(category)), ("stage", Oj::s(stage))]);
     match e.ruby_class() {
-        Some(class) => RowError::new(class, e.message()),
+        Some(class) => RowError::new(class, e.message()).with_detail(detail),
         None => RowError::harness(format!("core unsupported: {}", e.message())),
     }
 }

@@ -7,10 +7,11 @@ use std::path::PathBuf;
 use ukiryu::definition::definition_validator;
 use ukiryu::definition::linter::{DefinitionLinter, LintError, LintResult};
 use ukiryu::definition::{LintIssueHash, ValidatorEnv};
-use ukiryu::schema::{self, safe_load, Permitted, SchemaError, ValidateOptions};
+use ukiryu::schema::{self, safe_load, Permitted, ValidateOptions};
 
 use super::harness::{Ctx, Outcome, RowError};
 use super::json::Oj;
+use super::ops_yaml::schema_error;
 
 /// The oracle's `read_input`: inline `yaml` when given, else the `file`.
 fn read_text(input: &Oj, ctx: &Ctx) -> Result<String, RowError> {
@@ -78,13 +79,6 @@ fn lint_error(e: LintError) -> RowError {
     }
 }
 
-fn schema_error(e: SchemaError) -> RowError {
-    match e.ruby_class() {
-        Some(class) => RowError::new(class, e.message()),
-        None => RowError::harness(e.message()),
-    }
-}
-
 /// `DefinitionLinter.lint_string(text).to_h`.
 pub fn lint_string(input: &Oj, ctx: &Ctx) -> Outcome {
     let text = read_text(input, ctx)?;
@@ -105,7 +99,7 @@ pub fn validate_profile(input: &Oj, ctx: &Ctx) -> Outcome {
             )))
         }
     };
-    let profile = safe_load(&text, Permitted::DOCUMENT).map_err(schema_error)?;
+    let profile = safe_load(&text, Permitted::DOCUMENT).map_err(|e| schema_error(e, "profile"))?;
     let messages = schema::validate_profile(
         &profile,
         &ValidateOptions {
@@ -113,7 +107,7 @@ pub fn validate_profile(input: &Oj, ctx: &Ctx) -> Outcome {
             strict: false,
         },
     )
-    .map_err(schema_error)?;
+    .map_err(|e| schema_error(e, "schema"))?;
     Ok(Oj::Arr(messages.into_iter().map(Oj::Str).collect()))
 }
 
@@ -137,7 +131,7 @@ pub fn definition_validate(input: &Oj, ctx: &Ctx) -> Outcome {
         schema_path.as_deref(),
         &ValidatorEnv::default(),
     )
-    .map_err(schema_error)?;
+    .map_err(|e| schema_error(e, "definition"))?;
     let strings = |v: &[String]| Oj::Arr(v.iter().map(|m| Oj::s(m.as_str())).collect());
     Ok(sym_map(vec![
         ("valid", Oj::Bool(result.is_valid())),

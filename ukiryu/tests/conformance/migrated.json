@@ -164,6 +164,161 @@
         "variant": "Unknown",
         "stage": "TestOverride"
       }
+    },
+    {
+      "id": "yaml.load.schemas-v1-tool-schema",
+      "basis": "yaml-reader",
+      "trace": "R2 root ruling 2026-11-13 (Psych wording rows): the core reads YAML only through Yeptris (DECISIONS.md Runtime YAML reader; QUEUE root rendering contract), keeping the exact failure category and stage and freezing the exact Yeptris diagnostic; ukiryu#23, ukiryu#24",
+      "frozen_expect_sha256": "e4ad86945aa56cdb3ddc2a3d7f391b71c2cdfd476564b701038aae2df20c1ba5",
+      "expect": {
+        "error": {
+          "class": "Psych::SyntaxError",
+          "message": "unexpected parser state (line 287, column 32)"
+        }
+      },
+      "detail": {
+        "category": "YamlSyntax",
+        "stage": "document"
+      }
+    },
+    {
+      "id": "schema.bundled.profiles-ghostscript-10-0",
+      "basis": "yaml-reader",
+      "trace": "R2 root ruling 2026-11-13 (Psych wording rows): the core reads YAML only through Yeptris (DECISIONS.md Runtime YAML reader; QUEUE root rendering contract), keeping the exact failure category and stage and freezing the exact Yeptris diagnostic; ukiryu#23, ukiryu#24",
+      "frozen_expect_sha256": "e4ad86945aa56cdb3ddc2a3d7f391b71c2cdfd476564b701038aae2df20c1ba5",
+      "expect": {
+        "error": {
+          "class": "Psych::SyntaxError",
+          "message": "unexpected parser state (line 287, column 32)"
+        }
+      },
+      "detail": {
+        "category": "YamlSyntax",
+        "stage": "schema"
+      }
+    },
+    {
+      "id": "schema.bundled.profiles-inkscape-1-0",
+      "basis": "yaml-reader",
+      "trace": "R2 root ruling 2026-11-13 (Psych wording rows): the core reads YAML only through Yeptris (DECISIONS.md Runtime YAML reader; QUEUE root rendering contract), keeping the exact failure category and stage and freezing the exact Yeptris diagnostic; ukiryu#23, ukiryu#24",
+      "frozen_expect_sha256": "e4ad86945aa56cdb3ddc2a3d7f391b71c2cdfd476564b701038aae2df20c1ba5",
+      "expect": {
+        "error": {
+          "class": "Psych::SyntaxError",
+          "message": "unexpected parser state (line 287, column 32)"
+        }
+      },
+      "detail": {
+        "category": "YamlSyntax",
+        "stage": "schema"
+      }
+    },
+    {
+      "id": "schema.synthetic.invalid-yaml",
+      "basis": "yaml-reader",
+      "trace": "R2 root ruling 2026-11-13 (Psych wording rows): the core reads YAML only through Yeptris (DECISIONS.md Runtime YAML reader; QUEUE root rendering contract), keeping the exact failure category and stage and freezing the exact Yeptris diagnostic; ukiryu#23, ukiryu#24",
+      "frozen_expect_sha256": "84694215581a371beefe4daf6fa86be255992520d5d6aa226457b63acb46495c",
+      "expect": {
+        "error": {
+          "class": "Psych::SyntaxError",
+          "message": "unexpected parser state (line 1, column 14)"
+        }
+      },
+      "detail": {
+        "category": "YamlSyntax",
+        "stage": "profile"
+      }
+    },
+    {
+      "id": "lint.synthetic.invalid-yaml",
+      "basis": "yaml-reader",
+      "trace": "R2 root ruling 2026-11-13 (Psych wording rows): the core reads YAML only through Yeptris (DECISIONS.md Runtime YAML reader; QUEUE root rendering contract), keeping the exact failure category and stage and freezing the exact Yeptris diagnostic; ukiryu#23, ukiryu#24. Ok value: only the engine text after \"Invalid YAML: \" changes; the issue's severity, location, suggestion, rule_id and counts stay frozen.",
+      "frozen_expect_sha256": "ed86ddc9a90d605e2022637ddecb8b908c61acbdc6769b1ba55eddfa18faa224",
+      "expect": {
+        "ok": {
+          "$map": [
+            [
+              {
+                "$sym": "issues"
+              },
+              [
+                {
+                  "$map": [
+                    [
+                      {
+                        "$sym": "severity"
+                      },
+                      {
+                        "$sym": "error"
+                      }
+                    ],
+                    [
+                      {
+                        "$sym": "severity_string"
+                      },
+                      "ERROR"
+                    ],
+                    [
+                      {
+                        "$sym": "message"
+                      },
+                      "Invalid YAML: unexpected parser state (line 1, column 14)"
+                    ],
+                    [
+                      {
+                        "$sym": "location"
+                      },
+                      null
+                    ],
+                    [
+                      {
+                        "$sym": "suggestion"
+                      },
+                      null
+                    ],
+                    [
+                      {
+                        "$sym": "rule_id"
+                      },
+                      null
+                    ]
+                  ]
+                }
+              ]
+            ],
+            [
+              {
+                "$sym": "total_count"
+              },
+              1
+            ],
+            [
+              {
+                "$sym": "error_count"
+              },
+              1
+            ],
+            [
+              {
+                "$sym": "warning_count"
+              },
+              0
+            ],
+            [
+              {
+                "$sym": "info_count"
+              },
+              0
+            ],
+            [
+              {
+                "$sym": "style_count"
+              },
+              0
+            ]
+          ]
+        }
+      }
     }
   ]
 }

@@ -43,6 +43,8 @@ mod ops_shell;
 mod ops_validate;
 #[path = "conformance/ops_yaml.rs"]
 mod ops_yaml;
+#[path = "conformance/plan.rs"]
+mod plan;
 #[path = "conformance/sha256.rs"]
 mod sha256;
 
@@ -161,6 +163,21 @@ struct Corpus {
     /// Manifest input path to bytes (None when missing).
     inputs: BTreeMap<String, Option<Vec<u8>>>,
     migrated: Oj,
+    /// `tests/conformance/projection.json` (R2 Lutaml projection).
+    projection: Oj,
+    /// `tests/conformance/emitter.json` (R2 emitter pins).
+    emitter: Oj,
+}
+
+/// Where this engine's own comparison files live.
+fn engine_dir() -> PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/conformance")
+}
+
+fn engine_json(name: &str) -> Oj {
+    let text = std::fs::read_to_string(engine_dir().join(name))
+        .unwrap_or_else(|e| panic!("read {name}: {e}"));
+    parse(&text).unwrap_or_else(|e| panic!("{name}: {e}"))
 }
 
 fn corpus_dir() -> PathBuf {
@@ -197,16 +214,14 @@ fn load_corpus() -> Corpus {
         let bytes = std::fs::read(dir.join("inputs").join(&rel)).ok();
         inputs.insert(rel, bytes);
     }
-    let migrated_path =
-        Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/conformance/migrated.json");
-    let migrated = parse(&std::fs::read_to_string(migrated_path).expect("migrated.json"))
-        .expect("migrated.json JSON");
     Corpus {
         dir,
         manifest,
         case_files,
         inputs,
-        migrated,
+        migrated: engine_json("migrated.json"),
+        projection: engine_json("projection.json"),
+        emitter: engine_json("emitter.json"),
     }
 }
 
@@ -426,6 +441,24 @@ fn integrity(c: &Corpus) -> (Vec<Row>, Vec<String>) {
         }
     }
     problems.extend(migration_problems(c, &rows));
+    let by_id: BTreeMap<&str, (&str, &Oj)> = rows
+        .iter()
+        .map(|r| (r.id.as_str(), (r.op.as_str(), &r.expect)))
+        .collect();
+    problems.extend(plan::projection_problems(&c.projection, &by_id));
+    problems.extend(plan::emitter_problems(&c.emitter, &engine_dir(), &by_id));
+    let projected = plan::projected_rows(&c.projection);
+    let pinned_emitter = plan::emitter_pins(&c.emitter, &engine_dir());
+    for id in migrations(c).keys() {
+        if projected.contains(id) || pinned_emitter.contains_key(id) {
+            problems.push(format!("{id}: under more than one comparison rule"));
+        }
+    }
+    for id in &projected {
+        if pinned_emitter.contains_key(id) {
+            problems.push(format!("{id}: under more than one comparison rule"));
+        }
+    }
     (rows, problems)
 }
 
@@ -440,7 +473,16 @@ fn applies(r: &Row, platform: &str) -> bool {
 
 /// Bases a migrated expectation may cite. D1/D2 entries are allowed only on
 /// rows the corpus itself marks with that decision.
-const MIGRATION_BASES: [&str; 4] = ["D1", "D2", "version", "emitter"];
+const MIGRATION_BASES: [&str; 5] = ["D1", "D2", "version", "emitter", "yaml-reader"];
+
+/// Structured error facts a migrated error must freeze, by basis.
+fn required_detail(basis: &str) -> &'static [&'static str] {
+    match basis {
+        "D1" | "D2" => &["code", "variant", "stage"],
+        "yaml-reader" => &["category", "stage"],
+        _ => &[],
+    }
+}
 
 struct Migration {
     expect: Oj,
@@ -513,9 +555,9 @@ fn migration_problems(c: &Corpus, rows: &[Row]) -> Vec<String> {
         // A decision-traced error must freeze its exact code, variant and
         // stage, not only the class and message.
         let is_error = m.get("expect").and_then(|e| e.get("error")).is_some();
-        if (basis == "D1" || basis == "D2") && is_error {
+        if is_error {
             let detail = m.get("detail");
-            for key in ["code", "variant", "stage"] {
+            for key in required_detail(basis) {
                 if detail.and_then(|d| d.get(key)).and_then(Oj::str).is_none() {
                     problems.push(format!("migrated {id}: error must freeze detail.{key}"));
                 }
@@ -662,13 +704,66 @@ struct RunReport {
     failures: Vec<Failure>,
 }
 
+/// How each row's outcome is judged: against its frozen expectation, or by
+/// one explicitly listed rule (traced migration, R2 Lutaml projection, R2
+/// emitter pin). A row is under at most one rule (integrity checks this).
+struct Plan {
+    migrated: BTreeMap<String, Migration>,
+    projections: Vec<plan::Projection>,
+    projected: BTreeSet<String>,
+    emitter: BTreeMap<String, plan::EmitterPin>,
+}
+
+impl Plan {
+    fn load(c: &Corpus) -> Plan {
+        Plan {
+            migrated: migrations(c),
+            projections: plan::projections(&c.projection),
+            projected: plan::projected_rows(&c.projection),
+            emitter: plan::emitter_pins(&c.emitter, &engine_dir()),
+        }
+    }
+
+    /// Frozen expectations only.
+    fn frozen() -> Plan {
+        Plan {
+            migrated: BTreeMap::new(),
+            projections: Vec::new(),
+            projected: BTreeSet::new(),
+            emitter: BTreeMap::new(),
+        }
+    }
+
+    /// The mismatch reason (None when satisfied) and whether a listed rule
+    /// rather than the frozen expectation decided it.
+    fn judge(&self, row: &Row, outcome: &Outcome) -> (Option<String>, bool) {
+        if let Some(m) = self.migrated.get(&row.id) {
+            let reason = mismatch(&m.expect, &row.error_match, m.detail.as_ref(), outcome);
+            return (reason, true);
+        }
+        if self.projected.contains(&row.id) {
+            let reason = match plan::project(&row.expect, &self.projections) {
+                Ok(e) => mismatch(&e, &row.error_match, None, outcome),
+                Err(e) => Some(format!("projection: {e}")),
+            };
+            return (reason, true);
+        }
+        if let Some(pin) = self.emitter.get(&row.id) {
+            let golden = std::fs::read(&pin.golden).ok();
+            return (
+                plan::emitter_mismatch(&row.expect, golden.as_deref(), outcome),
+                true,
+            );
+        }
+        (
+            mismatch(&row.expect, &row.error_match, None, outcome),
+            false,
+        )
+    }
+}
+
 /// Executes every row that applies to this engine on this platform.
-fn run_rows(
-    rows: &[Row],
-    migrated: &BTreeMap<String, Migration>,
-    ctx: &Ctx,
-    run: &Runner,
-) -> RunReport {
+fn run_rows(rows: &[Row], plan: &Plan, ctx: &Ctx, run: &Runner) -> RunReport {
     let applicable: Vec<&Row> = rows.iter().filter(|r| applies(r, ctx.platform)).collect();
     let threads = std::thread::available_parallelism()
         .map(|n| n.get())
@@ -684,12 +779,8 @@ fn run_rows(
                         let i = next.fetch_add(1, Ordering::Relaxed);
                         let Some(row) = applicable.get(i) else { break };
                         let outcome = execute(&row.op, &row.input, ctx, run);
-                        let (expect, detail, is_migrated) = match migrated.get(&row.id) {
-                            Some(m) => (&m.expect, m.detail.as_ref(), true),
-                            None => (&row.expect, None, false),
-                        };
-                        let reason = mismatch(expect, &row.error_match, detail, &outcome);
-                        out.push((i, reason, is_migrated));
+                        let (reason, by_rule) = plan.judge(row, &outcome);
+                        out.push((i, reason, by_rule));
                     }
                     out
                 })
@@ -807,8 +898,8 @@ fn every_applicable_row_matches_through_the_core() {
     let (rows, problems) = integrity(&c);
     assert!(problems.is_empty(), "integrity: {}", problems.join("\n"));
     let ctx = context(&c);
-    let migrated = migrations(&c);
-    let report = run_rows(&rows, &migrated, &ctx, &dispatch);
+    let plan = Plan::load(&c);
+    let report = run_rows(&rows, &plan, &ctx, &dispatch);
     write_report(ctx.platform, &rows, &report);
 
     let want = pinned(&ENGINE_EXECUTED, ctx.platform);
@@ -850,12 +941,22 @@ fn every_applicable_row_matches_through_the_core() {
         shown.len(),
         shown.join("\n")
     );
-    // Every migrated expectation must apply to a row this engine ran.
-    let ran: BTreeSet<&str> = report.executed.iter().map(|e| e.0.as_str()).collect();
-    for id in migrated.keys() {
-        let row = rows.iter().find(|r| &r.id == id).expect("migrated row");
+    // Every listed rule must have decided a row this engine ran.
+    let by_rule: BTreeSet<&str> = report
+        .executed
+        .iter()
+        .filter(|e| e.2)
+        .map(|e| e.0.as_str())
+        .collect();
+    let listed = plan
+        .migrated
+        .keys()
+        .chain(&plan.projected)
+        .chain(plan.emitter.keys());
+    for id in listed {
+        let row = rows.iter().find(|r| &r.id == id).expect("listed row");
         if applies(row, ctx.platform) {
-            assert!(ran.contains(id.as_str()), "migrated {id} never ran");
+            assert!(by_rule.contains(id.as_str()), "rule for {id} never applied");
         }
     }
 }
@@ -1140,7 +1241,7 @@ fn negative_controls_fail_broken_engines() {
     let c = load_corpus();
     let (rows, _) = integrity(&c);
     let ctx = context(&c);
-    let none = BTreeMap::new();
+    let none = Plan::frozen();
 
     // An engine with no adapter for an op fails every row of it.
     let unknown =
@@ -1184,4 +1285,166 @@ fn negative_controls_fail_broken_engines() {
             "swapped formatter passed every {op} row"
         );
     }
+}
+
+/// Applies `f` to the ivars of every object of `class` inside `v`.
+fn edit_ivars(v: &Oj, class: &str, f: &dyn Fn(&mut Vec<(String, Oj)>)) -> Oj {
+    match v {
+        Oj::Arr(items) => Oj::Arr(items.iter().map(|x| edit_ivars(x, class, f)).collect()),
+        Oj::Obj(pairs) => {
+            let is_class = v.get("class").and_then(Oj::str) == Some(class);
+            Oj::Obj(
+                pairs
+                    .iter()
+                    .map(|(k, x)| {
+                        let mut x = edit_ivars(x, class, f);
+                        if is_class && k == "ivars" {
+                            if let Oj::Obj(ivars) = &mut x {
+                                f(ivars);
+                            }
+                        }
+                        (k.clone(), x)
+                    })
+                    .collect(),
+            )
+        }
+        other => other.clone(),
+    }
+}
+
+#[test]
+fn negative_controls_reject_r2_rule_violations() {
+    let base = load_corpus();
+    let (rows, problems) = integrity(&base);
+    assert!(problems.is_empty(), "integrity: {}", problems.join("\n"));
+    let plan = Plan::load(&base);
+    let vd = "Ukiryu::Models::VersionDetection";
+    let cm = "class_and_message";
+
+    // Lutaml projection: exhaustive, and only framework-private ivars go.
+    let id = plan.projected.iter().next().expect("a projected row");
+    let row = rows.iter().find(|r| &r.id == id).unwrap();
+    let projected = plan::project(&row.expect, &plan.projections).expect("projects");
+    let ok = |v: Oj| -> Outcome { Ok(v) };
+    let want = Oj::obj(vec![("ok", projected.get("ok").unwrap().clone())]);
+    let actual = projected.get("ok").unwrap().clone();
+    assert!(mismatch(&want, cm, None, &ok(actual.clone())).is_none());
+    let extra = edit_ivars(&row.expect, vd, &|iv| iv.push(("@other".into(), Oj::Null)));
+    assert!(
+        plan::project(&extra, &plan.projections).is_err(),
+        "an undeclared, unproven ivar was projected away"
+    );
+    let leaked = edit_ivars(&actual, vd, &|iv| {
+        iv.push(("@lutaml_register".into(), Oj::sym("default")))
+    });
+    assert!(mismatch(&want, cm, None, &ok(leaked)).is_some());
+    let missing = edit_ivars(&actual, vd, &|iv| iv.retain(|(k, _)| k != "@source"));
+    assert!(mismatch(&want, cm, None, &ok(missing)).is_some());
+    let changed = edit_ivars(&actual, vd, &|iv| {
+        for (k, x) in iv.iter_mut() {
+            if k == "@source" {
+                *x = Oj::s("not-the-source");
+            }
+        }
+    });
+    assert!(mismatch(&want, cm, None, &ok(changed)).is_some());
+
+    // A projection that removes nothing, or names a declared field private.
+    let unprojected = rows
+        .iter()
+        .find(|r| r.op == "yaml.model_load" && !plan.projected.contains(&r.id))
+        .unwrap();
+    let mut c = base.clone();
+    if let Some(Oj::Arr(ids)) = field_mut(&mut c.projection, "rows") {
+        ids.push(Oj::s(unprojected.id.clone()));
+    }
+    expect_problem(
+        &c,
+        "removes nothing",
+        "projection of a row without private ivars",
+    );
+    let mut c = base.clone();
+    if let Some(Oj::Arr(classes)) = field_mut(&mut c.projection, "classes") {
+        if let Some(Oj::Arr(private)) = field_mut(&mut classes[0], "framework_private") {
+            private.push(Oj::s("@source"));
+        }
+    }
+    expect_problem(
+        &c,
+        "declared field is listed as private",
+        "private declared field",
+    );
+
+    // A row under two rules.
+    let mut c = base.clone();
+    if let Some(Oj::Arr(entries)) = field_mut(&mut c.migrated, "rows") {
+        entries.push(Oj::obj(vec![
+            ("id", Oj::s(id.clone())),
+            ("basis", Oj::s("version")),
+            ("trace", Oj::s("#23")),
+            (
+                "frozen_expect_sha256",
+                Oj::s(sha256::hex(canonical(&row.expect).as_bytes())),
+            ),
+            ("expect", want.clone()),
+        ]));
+    }
+    expect_problem(&c, "more than one comparison rule", "overlapping rules");
+
+    // A yaml-reader error migration must freeze its category and stage.
+    let mut c = base.clone();
+    if let Some(Oj::Arr(entries)) = field_mut(&mut c.migrated, "rows") {
+        for e in entries.iter_mut() {
+            if e.get("basis") == Some(&Oj::s("yaml-reader")) {
+                if let Oj::Obj(pairs) = e {
+                    pairs.retain(|(k, _)| k != "detail");
+                }
+            }
+        }
+    }
+    expect_problem(
+        &c,
+        "must freeze detail.category",
+        "yaml-reader error without category",
+    );
+
+    // Emitter rule: canonical type-sensitive equality and exact bytes.
+    let (eid, _) = plan.emitter.iter().next().expect("an emitter row");
+    let erow = rows.iter().find(|r| &r.id == eid).unwrap();
+    let frozen = erow.expect.get("ok").unwrap();
+    let psych = frozen.get("emitted").and_then(Oj::str).unwrap().to_string();
+    let outcome = |text: &str, reparsed: bool| -> Outcome {
+        Ok(Oj::obj(vec![
+            ("emitted", Oj::s(text)),
+            ("reparsed_equal", Oj::Bool(reparsed)),
+        ]))
+    };
+    let same = outcome(&psych, true);
+    assert!(plan::emitter_mismatch(&erow.expect, Some(psych.as_bytes()), &same).is_none());
+    assert!(plan::emitter_mismatch(&erow.expect, None, &same).is_some());
+    let mut other_bytes = psych.clone().into_bytes();
+    other_bytes.push(b'\n');
+    assert!(plan::emitter_mismatch(&erow.expect, Some(&other_bytes), &same).is_some());
+    assert!(plan::emitter_mismatch(
+        &erow.expect,
+        Some(psych.as_bytes()),
+        &outcome(&psych, false)
+    )
+    .is_some());
+    // '10.0'/'1.0' (String) re-emitted as a Float must fail canonical equality.
+    let start = psych.find("\nversion: '").expect("quoted version") + "\nversion: ".len();
+    let end = start + 1 + psych[start + 1..].find('\'').expect("closing quote");
+    let retyped = format!(
+        "{}{}{}",
+        &psych[..start],
+        &psych[start + 1..end],
+        &psych[end + 1..]
+    );
+    assert_ne!(retyped, psych, "probe did not change the emitted text");
+    assert!(plan::emitter_mismatch(
+        &erow.expect,
+        Some(retyped.as_bytes()),
+        &outcome(&retyped, true)
+    )
+    .is_some());
 }
