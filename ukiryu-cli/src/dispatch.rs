@@ -18,6 +18,9 @@ use crate::commands::author::{
     self, AuthorContext, AuthorError, Confirm, DefinitionsInput, ExtractInput, LintInput,
     LintOptions, LintTarget, ValidateInput, ValidateOptions, ValidateTarget,
 };
+use crate::commands::execute::{
+    self, CacheAction, CacheInput, ExecInput, ExecuteContext, ExecuteError, RunFileInput,
+};
 use crate::commands::inspect::{
     self, ConfigInput, HandlerContext, InspectError, SystemInput, VersionInput,
 };
@@ -28,10 +31,10 @@ use serde_json::Value;
 use std::ffi::OsString;
 use std::io::{self, BufRead, IsTerminal, Write};
 use ukiryu::config::{self, OverrideResolver, Values};
-use ukiryu::definition::DiscoveryEnv;
+use ukiryu::definition::{DefinitionCache, DefinitionMetadata, DiscoveryEnv};
 use ukiryu::environment::Environment;
 use ukiryu::extractors::base::ProcessHost;
-use ukiryu::render::OutputWrite;
+use ukiryu::render::{OutputWrite, PaintSupport};
 use ukiryu::runtime::{Clock, Host, Runtime};
 
 /// Exit status of a verb whose handler is not integrated in this build.
@@ -39,16 +42,13 @@ pub const GATED_EXIT: i32 = 2;
 
 /// Verbs of the source CLI whose handlers are not merged yet, with the
 /// component they wait for.
-const GATED_VERBS: [(&str, &str); 11] = [
-    ("run-file", "the run-file handler (K22-CLI-EXECUTE)"),
-    ("exec", "the exec handler (K22-CLI-EXECUTE)"),
+const GATED_VERBS: [(&str, &str); 8] = [
     ("list", "the register and tool APIs (K22-CLI-INSPECT)"),
     ("info", "the register and tool APIs (K22-CLI-INSPECT)"),
     ("commands", "the register and tool APIs (K22-CLI-INSPECT)"),
     ("opts", "the register and tool APIs (K22-CLI-INSPECT)"),
     ("describe", "the tool API (K22-CLI-AUTHOR)"),
     ("which", "the register and tool APIs (K22-CLI-INSPECT)"),
-    ("cache", "the cache handler (K22-CLI-EXECUTE)"),
     ("resolve", "the register and tool APIs (K22-CLI-INSPECT)"),
     ("register", "the register API (K22-CLI-INSPECT)"),
 ];
@@ -166,6 +166,9 @@ fn dispatch(verb: &str, sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Fai
         "lint" => lint(sub, io),
         "definitions" => definitions(sub, io),
         "extract" => extract(sub, io),
+        "exec" => exec(sub, io),
+        "run-file" => run_file(sub, io),
+        "cache" => cache(sub, io),
         other => {
             let needs = GATED_VERBS
                 .iter()
@@ -380,7 +383,112 @@ fn extract(sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Failure> {
     author_outcome("extract", author::extract(input, &ctx, &mut process), io)
 }
 
+/// The process facts `exec`, `run-file` and `cache` read. The `paint` gem is
+/// taken as available, as in the captures (the Ruby CLI ran with it
+/// installed).
+fn execute_context() -> Result<ExecuteContext, Failure> {
+    Ok(ExecuteContext {
+        host: Host::native().map_err(|e| Failure::Message(format!("ukiryu: {e}")))?,
+        stdout_tty: io::stdout().is_terminal(),
+        paint: PaintSupport::AVAILABLE,
+    })
+}
+
+fn exec(sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Failure> {
+    let arguments = match sub.try_get_many::<OsString>("arguments") {
+        Ok(Some(values)) => values
+            .map(|value| {
+                value.to_str().map(str::to_owned).ok_or_else(|| {
+                    Failure::Message(format!(
+                        "ukiryu: argument is not valid UTF-8: {}",
+                        value.to_string_lossy()
+                    ))
+                })
+            })
+            .collect::<Result<Vec<_>, _>>()?,
+        _ => Vec::new(),
+    };
+    let input = ExecInput {
+        tool: required(sub, "tool")?,
+        arguments,
+        register: text(sub, "register")?,
+        definition: text(sub, "definition")?,
+        format: text(sub, "format")?,
+        output: text(sub, "output")?,
+        dry_run: flag(sub, "dry-run"),
+        shell: text(sub, "shell")?,
+        stdin: flag(sub, "stdin"),
+        raw: flag(sub, "raw"),
+    };
+    let ctx = execute_context()?;
+    let result = execute::exec(input, &ctx, &mut io::stdin().lock());
+    execute_outcome("exec", result, io)
+}
+
+fn run_file(sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Failure> {
+    let input = RunFileInput {
+        request_file: required(sub, "request-file")?,
+        register: text(sub, "register")?,
+        output: text(sub, "output")?,
+        format: text(sub, "format")?,
+        dry_run: flag(sub, "dry-run"),
+        shell: text(sub, "shell")?,
+    };
+    let ctx = execute_context()?;
+    execute_outcome("run-file", execute::run_file(input, &ctx), io)
+}
+
+/// A CLI process starts with an empty definition cache (nothing populates the
+/// source's singleton before the command runs).
+fn cache(sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Failure> {
+    let (action, leaf) = match sub.subcommand() {
+        Some(("info", leaf)) => (CacheAction::Info, leaf),
+        Some(("stats", leaf)) => (CacheAction::Stats, leaf),
+        Some(("clear", leaf)) => (CacheAction::Clear, leaf),
+        _ => return Err(Failure::Help("cache")),
+    };
+    let input = CacheInput {
+        action,
+        dry_run: flag(leaf, "dry-run"),
+        verbose: flag(leaf, "verbose"),
+    };
+    let ctx = execute_context()?;
+    let definitions: DefinitionCache<DefinitionMetadata> = DefinitionCache::default();
+    execute_outcome("cache", execute::cache(input, &ctx, &definitions), io)
+}
+
 // ------------------------------------------------------------------ outcomes
+
+/// A handler's outcome: its writes and status; an uncaught source exception
+/// is its `[Class] message` line on stderr and status 1; a gated or
+/// unsupported path reports the gate after the writes made before it.
+fn execute_outcome(
+    verb: &str,
+    result: Result<CommandOutcome, ExecuteError>,
+    io: &mut ProcessIo,
+) -> Result<i32, Failure> {
+    let error = match result {
+        Ok(outcome) => return Ok(io.perform(&outcome.writes).unwrap_or(outcome.exit_code)),
+        Err(error) => error,
+    };
+    if let Some(code) = io.perform(error.partial()) {
+        return Ok(code);
+    }
+    match error {
+        ExecuteError::Raised { .. } => {
+            io.stderr(&format!("{}\n", error.friendly_message()));
+            Ok(1)
+        }
+        ExecuteError::Gated { stage, detail, .. } => Err(Failure::Gated {
+            what: format!("{verb} ({stage}: {detail})"),
+            needs: "the register behaviour named here",
+        }),
+        ExecuteError::Unsupported { feature } => Err(Failure::Gated {
+            what: format!("{verb} ({feature})"),
+            needs: "a core API that reproduces this source behaviour",
+        }),
+    }
+}
 
 fn inspect_outcome(
     result: Result<CommandOutcome, InspectError>,
