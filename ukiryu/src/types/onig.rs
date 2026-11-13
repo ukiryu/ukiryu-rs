@@ -749,7 +749,7 @@ mod tests {
     #[test]
     fn preprocess_matches_re_c() {
         let p = |s: &str, o| preprocess(s.as_bytes(), o).map(|p| (p.bytes, p.fixed));
-        assert_eq!(p(r"aA", 0), Ok((br"a\x41".to_vec(), false)));
+        assert_eq!(p(r"a\u0041", 0), Ok((br"a\x41".to_vec(), false)));
         assert_eq!(p(r"\u{e9 41}", 0), Ok(("\u{e9}\\x41".into(), true)));
         assert_eq!(p(r"\xC3\xA9", 0), Ok(("\u{e9}".into(), true)));
         assert_eq!(p(r"\x41(?#c)\1", 0), Ok((br"\x41\1".to_vec(), false)));
