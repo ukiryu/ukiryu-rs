@@ -19,19 +19,31 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicUsize, Ordering};
 
-// Shared helpers: each op adapter uses a different subset.
+// A test crate root resolves modules next to itself, so the adapters
+// under `conformance/` are named by path. Shared helpers: each op adapter
+// uses a different subset.
 #[allow(dead_code)]
+#[path = "conformance/codec.rs"]
 mod codec;
 #[allow(dead_code)]
+#[path = "conformance/harness.rs"]
 mod harness;
 #[allow(dead_code)]
+#[path = "conformance/json.rs"]
 mod json;
+#[path = "conformance/ops_build.rs"]
 mod ops_build;
+#[path = "conformance/ops_lint_schema.rs"]
 mod ops_lint_schema;
+#[path = "conformance/ops_resolve.rs"]
 mod ops_resolve;
+#[path = "conformance/ops_shell.rs"]
 mod ops_shell;
+#[path = "conformance/ops_validate.rs"]
 mod ops_validate;
+#[path = "conformance/ops_yaml.rs"]
 mod ops_yaml;
+#[path = "conformance/sha256.rs"]
 mod sha256;
 
 use harness::{Ctx, Outcome, RowError, UNKNOWN_OP};
