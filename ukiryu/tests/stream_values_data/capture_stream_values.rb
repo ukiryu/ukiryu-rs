@@ -112,13 +112,15 @@ def render(response)
   end
   # The YAML documents as Psych loads them: the port compares loaded values
   # (Yeptris emits its own quoting and line breaks); the bytes stay recorded.
+  # The bytes depend on the host's libyaml: 0.2.5 writes a NUL unquoted, and
+  # Psych then cannot load the document (recorded as the error).
   rows['yaml']['psych_load_json'] = psych_load(rows['yaml']['stdout_hex'])
   rows['yaml_file']['psych_load_json'] = psych_load(rows['yaml_file']['file_hex'])
   rows
 end
 
 def psych_load(yaml_hex)
-  JSON.generate(YAML.safe_load([yaml_hex].pack('H*').force_encoding('UTF-8')))
+  attempt { JSON.generate(YAML.safe_load([yaml_hex].pack('H*').force_encoding('UTF-8'))) }
 end
 
 def stage_rows(result)
@@ -202,6 +204,7 @@ doc = {
     'ruby' => RUBY_DESCRIPTION,
     'host' => RbConfig::CONFIG['host_os'],
     'bash' => `bash --version`.lines.first.strip,
+    'libyaml' => Psych::LIBYAML_VERSION,
     'capture_script' => 'ukiryu/tests/stream_values_data/capture_stream_values.rb'
   },
   'needles_hex' => NEEDLES.map { |n| hex(n) },

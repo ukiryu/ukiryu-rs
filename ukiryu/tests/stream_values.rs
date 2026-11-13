@@ -352,14 +352,20 @@ fn every_stage_matches_the_ruby_capture() {
                 let mut got = writes(&model, format, file);
                 if format == OutputFormat::Yaml {
                     // Root rendering contract: YAML is written by Yeptris and
-                    // compared as values (Psych's load of the Ruby document
-                    // against Yeptris's load of ours); the Ruby bytes stay in
-                    // the golden file as evidence.
+                    // compared as values. The source's YAML bytes depend on the
+                    // host libyaml (kept in the golden file as evidence), so
+                    // the values come from the JSON format of the same
+                    // response, and from Psych's load where it can load them.
                     let doc = if file { "file_hex" } else { "stdout_hex" };
                     let yaml = String::from_utf8(unhex(s(&got[doc]))).unwrap();
                     let loaded: Json = yeptris::from_str(&yaml).expect("Yeptris loads its YAML");
-                    let psych: Json = serde_json::from_str(s(&want["psych_load_json"])).unwrap();
-                    assert_eq!(loaded, psych, "{id} {key}: loaded values");
+                    let ruby_json = unhex(s(&row["render"]["json"]["stdout_hex"]));
+                    let values: Json = serde_json::from_slice(&ruby_json).unwrap();
+                    assert_eq!(loaded, values, "{id} {key}: loaded values");
+                    if let Some(psych) = want["psych_load_json"].as_str() {
+                        let psych: Json = serde_json::from_str(psych).unwrap();
+                        assert_eq!(loaded, psych, "{id} {key}: Psych values");
+                    }
                     got[doc] = want[doc].clone();
                     got["psych_load_json"] = want["psych_load_json"].clone();
                 }

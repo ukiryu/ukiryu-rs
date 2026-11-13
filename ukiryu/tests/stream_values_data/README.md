@@ -11,6 +11,11 @@ ab6df353c6dc2d7faf7817a86aafcafa82579896, Ruby 4.0.1, the locked
   `Execution::Result` readers, `to_h` and `to_json`,
   `SuccessResponse.from_result`, and the raw, YAML and JSON response formats,
   with and without an output file.
+  The file is the capture from GitHub Actions (ubuntu-24.04, libyaml
+  0.2.5). The YAML bytes depend on the host's libyaml: libyaml 0.2.5 writes a
+  NUL unquoted, so Psych cannot load the document back, while libyaml 0.2.2
+  writes `"a\0b"`. The test therefore compares the YAML format by loaded
+  values, against the JSON format of the same response.
 - `cli.json` comes from `cli/capture_cli.py`, which runs the real
   `ukiryu exec` command against the `emit` tool in `cli/register`
   (`cli/bin/emit` must be on `PATH`). Paths under `cli/` are recorded as

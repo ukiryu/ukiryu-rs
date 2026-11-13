@@ -14,6 +14,7 @@
     "ruby": "ruby 4.0.1 (2026-01-13 revision e04267a14b) +PRISM [x86_64-linux]",
     "host": "linux",
     "bash": "GNU bash, version 5.1.16(1)-release (x86_64-pc-linux-gnu)",
+    "libyaml": "0.2.2",
     "capture_script": "ukiryu/tests/stream_values_data/capture_stream_values.rb"
   },
   "needles_hex": [
