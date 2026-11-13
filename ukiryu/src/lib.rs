@@ -32,7 +32,7 @@ pub mod wire;
 pub mod wasm;
 pub use yeptris::{from_slice as from_yaml_slice, from_str as from_yaml, DeserError as YamlError};
 
-#[cfg(feature = "c")]
+#[cfg(any(feature = "c", feature = "ruby"))]
 pub mod ffi;
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
