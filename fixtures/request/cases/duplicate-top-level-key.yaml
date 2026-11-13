@@ -1,0 +1,4 @@
+tool: a
+tool: c
+command: b
+arguments: {}

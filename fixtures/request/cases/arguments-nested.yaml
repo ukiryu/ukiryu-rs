@@ -1,0 +1,11 @@
+tool: a
+command: b
+arguments:
+  list: [1, two, 3.0, null, false, [nested], {k: v}]
+  map:
+    inner:
+      deep: [x]
+    flag: false
+    none: ~
+  empty_list: []
+  empty_map: {}

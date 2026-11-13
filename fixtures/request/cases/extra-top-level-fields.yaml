@@ -1,0 +1,5 @@
+tool: a
+command: b
+arguments: {x: 1}
+timeout: 5
+extra: [1]
