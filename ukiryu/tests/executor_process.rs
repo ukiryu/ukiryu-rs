@@ -63,7 +63,7 @@ fn unix_shells_pass_arguments_and_environment() {
         }
         let execution = execute(request(shell, "printf", &["%s", value]))
             .unwrap_or_else(|e| panic!("{shell}: {e}"));
-        assert_eq!(execution.result.stdout(), value, "{shell}");
+        assert_eq!(execution.result.stdout(), value.as_bytes(), "{shell}");
         assert_eq!(
             execution.result.command_info.shell.as_deref(),
             Some(shell.as_str())
@@ -78,7 +78,11 @@ fn unix_shells_pass_arguments_and_environment() {
             Seconds::Int(120),
         ))
         .unwrap_or_else(|e| panic!("{shell}: {e}"));
-        assert_eq!(execution.result.stdout(), "value-\u{e9} 1\n", "{shell}");
+        assert_eq!(
+            execution.result.stdout(),
+            "value-\u{e9} 1\n".as_bytes(),
+            "{shell}"
+        );
 
         let execution = execute(request(shell, "sh", &["-c", "exit 7"]).allow_failure(true))
             .unwrap_or_else(|e| panic!("{shell}: {e}"));
@@ -106,11 +110,11 @@ fn cmd_status_output_stdin_and_timeout() {
     }
 
     let execution = execute(request(ShellName::Cmd, "echo", &["hello"])).expect("cmd echo");
-    assert_eq!(execution.result.stdout().trim(), "hello");
+    assert_eq!(utf8(execution.result.stdout()).trim(), "hello");
 
     let execution =
         execute(request(ShellName::Cmd, "more", &[]).stdin_bytes("test data")).expect("cmd stdin");
-    assert_eq!(execution.result.stdout().trim(), "test data");
+    assert_eq!(utf8(execution.result.stdout()).trim(), "test data");
 
     let start = Instant::now();
     let err = execute(ExecuteRequest::new(
@@ -175,6 +179,12 @@ fn unhex(text: &str) -> Vec<u8> {
         .collect()
 }
 
+/// A stream that must be valid UTF-8 for the assertion to apply.
+#[allow(dead_code)]
+fn utf8(bytes: &[u8]) -> &str {
+    std::str::from_utf8(bytes).expect("UTF-8 stream")
+}
+
 fn hex(bytes: &[u8]) -> String {
     bytes.iter().map(|b| format!("{b:02x}")).collect()
 }
@@ -218,17 +228,17 @@ fn native_shell_rows_match_ruby_bytes() {
             "EVIDENCE {name} {id}: raw_stdout={} raw_stderr={} stdout={} stderr={} status={}",
             hex(&execution.stdout),
             hex(&execution.stderr),
-            hex(result.stdout().as_bytes()),
-            hex(result.stderr().as_bytes()),
+            hex(result.stdout()),
+            hex(result.stderr()),
             result.exit_status()
         );
         assert_eq!(
-            hex(result.stdout().as_bytes()),
+            hex(result.stdout()),
             row["stdout_hex"].as_str().unwrap(),
             "{id} stdout"
         );
         assert_eq!(
-            hex(result.stderr().as_bytes()),
+            hex(result.stderr()),
             row["stderr_hex"].as_str().unwrap(),
             "{id} stderr"
         );
@@ -291,7 +301,7 @@ fn child_stdin_bytes_match_ruby() {
                 .stdin_bytes(unhex(row["stdin_hex"].as_str().unwrap())),
         )
         .unwrap_or_else(|e| panic!("{id}: {e}"));
-        let stdout = hex(execution.result.stdout().as_bytes());
+        let stdout = hex(execution.result.stdout());
         println!(
             "EVIDENCE {name} {id}: raw_stdout={} stdout={stdout}",
             hex(&execution.stdout)
