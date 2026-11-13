@@ -20,9 +20,6 @@ use ukiryu::types::{OptionSource, Time};
 
 /// Tag rows the port reports as unsupported instead of guessing.
 const GAPS: &[&str] = &[
-    // `!!str` on a plain scalar: Psych keeps the source text; Yeptris
-    // resolves the node to an Integer first and the text is gone.
-    "tag-str-plain-int",
     // Psych reads a leading-zero `!!int` string as octal.
     "tag-int-octal-string",
     // Binary String, Time, Set and Omap objects are outside the value domain.

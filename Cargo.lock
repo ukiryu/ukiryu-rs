@@ -328,8 +328,8 @@ dependencies = [
 
 [[package]]
 name = "yeptris"
-version = "0.6.63"
-source = "git+https://github.com/leptris/yeptris-rs?rev=6a62ea753276b2e03ae1c7fb88a15d22f3e822a9#6a62ea753276b2e03ae1c7fb88a15d22f3e822a9"
+version = "0.6.65"
+source = "git+https://github.com/leptris/yeptris-rs?rev=936b4a0b435d538cad1e4777c3f076e5de3c812c#936b4a0b435d538cad1e4777c3f076e5de3c812c"
 dependencies = [
  "cc",
  "serde",
