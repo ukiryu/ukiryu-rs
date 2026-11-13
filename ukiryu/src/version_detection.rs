@@ -9,6 +9,7 @@
 //! injected ([`CommandRunner`], [`ManPageDates`], explicit platform and
 //! optional shell values), so this module never starts a process or decides
 //! the owner-pending shell policy.
+mod bytes;
 mod detector;
 mod index;
 mod pattern;
@@ -16,6 +17,9 @@ mod profile;
 mod runner;
 pub mod text;
 
+pub use bytes::{
+    extract_version_from_encoded, EncodedText, ExtractedVersion, ExtractionError, ExtractionStage,
+};
 pub use detector::{
     detect_info, detect_with_methods, DetectedVersion, DetectionError, DetectionMethod,
     InfoRequest, MethodSpec, MethodsRequest, PatternSpec, MAN_TAIL_CHARS,

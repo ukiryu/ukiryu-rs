@@ -85,7 +85,7 @@ impl Drop for Compiled {
 
 impl Compiled {
     /// `onig_new` with Ruby's syntax and default case-fold flag.
-    fn new(pattern: &[u8], options: u32, utf8: bool) -> Result<Compiled, String> {
+    fn new(pattern: &[u8], options: u32, encoding: Encoding) -> Result<Compiled, String> {
         let _guard = COMPILE.lock().unwrap_or_else(|e| e.into_inner());
         let mut reg: *mut c_void = std::ptr::null_mut();
         let mut message = [0u8; ONIG_MAX_ERROR_MESSAGE_LEN];
@@ -97,7 +97,7 @@ impl Compiled {
                 pattern.as_ptr(),
                 pattern.len(),
                 options & REG_OPTION_MASK,
-                c_int::from(utf8),
+                encoding as c_int,
                 message.as_mut_ptr(),
             )
         };
@@ -124,9 +124,13 @@ impl Compiled {
 
     /// `onig_search` over the whole of `haystack`; `None` on an engine error.
     fn search(&self, haystack: &str) -> Option<Option<Captures>> {
+        self.search_bytes(haystack.as_bytes()).ok()
+    }
+
+    fn search_bytes(&self, haystack: &[u8]) -> Result<Option<Captures>, String> {
         let _guard = self.lock.lock().unwrap_or_else(|e| e.into_inner());
         let mut spans: Vec<c_longlong> = vec![-1; self.regions * 2];
-        let capacity = c_int::try_from(self.regions).ok()?;
+        let capacity = c_int::try_from(self.regions).map_err(|e| e.to_string())?;
         // SAFETY: `spans` holds 2 * regions slots, as `capacity` says.
         let r = unsafe {
             ukiryu_onigmo_search(
@@ -138,10 +142,10 @@ impl Compiled {
             )
         };
         if r == ONIG_MISMATCH {
-            return Some(None);
+            return Ok(None);
         }
         if r < 0 {
-            return None;
+            return Err(format!("Onigmo search error {r}"));
         }
         let groups = spans
             .chunks(2)
@@ -150,8 +154,36 @@ impl Compiled {
                 _ => None,
             })
             .collect();
-        Some(Some(Captures { groups }))
+        Ok(Some(Captures { groups }))
     }
+}
+
+/// ASCII-compatible Ruby encodings used by the process/string boundary.
+/// The numeric values are the private scalar C glue's encoding selector.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(i32)]
+pub enum Encoding {
+    UsAscii = 0,
+    Utf8 = 1,
+    Binary = 2,
+}
+
+impl Encoding {
+    pub fn name(self) -> &'static str {
+        match self {
+            Self::UsAscii => "US-ASCII",
+            Self::Utf8 => "UTF-8",
+            Self::Binary => "ASCII-8BIT",
+        }
+    }
+}
+
+/// Ruby rejects a match before it reaches Onigmo when the string and regexp
+/// have incompatible encodings. Engine failures are errors, never no-match.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct MatchError {
+    pub class: &'static str,
+    pub message: String,
 }
 
 /// A compiled Ruby regular expression.
@@ -165,6 +197,7 @@ pub struct OnigRegex {
     created: Compiled,
     /// `rb_reg_prepare_re` for non-ASCII text when `created` is US-ASCII.
     utf8: OnceLock<Option<Compiled>>,
+    binary: OnceLock<Result<Compiled, String>>,
 }
 
 /// A successful match: the byte span of each group (`None` when the group
@@ -203,13 +236,22 @@ impl OnigRegex {
             return Err("incompatible character encoding".into());
         }
         let fixed = pre.fixed || options & ENCODING_FIXED != 0;
-        let created = Compiled::new(&pre.bytes, options, fixed)?;
+        let created = Compiled::new(
+            &pre.bytes,
+            options,
+            if fixed {
+                Encoding::Utf8
+            } else {
+                Encoding::UsAscii
+            },
+        )?;
         Ok(OnigRegex {
             source: source.to_owned(),
             options,
             fixed,
             created,
             utf8: OnceLock::new(),
+            binary: OnceLock::new(),
         })
     }
 
@@ -221,9 +263,63 @@ impl OnigRegex {
         self.utf8
             .get_or_init(|| {
                 let pre = preprocess(self.source.as_bytes(), 0).ok()?;
-                Compiled::new(&pre.bytes, self.options, true).ok()
+                Compiled::new(&pre.bytes, self.options, Encoding::Utf8).ok()
             })
             .as_ref()
+    }
+
+    /// Match raw Ruby string bytes without coercing or replacing their encoding.
+    /// Callers implementing String#scrub do that before this operation.
+    pub fn captures_bytes(
+        &self,
+        haystack: &[u8],
+        encoding: Encoding,
+    ) -> Result<Option<Captures>, MatchError> {
+        let non_ascii = !haystack.is_ascii();
+        if encoding == Encoding::Utf8 && std::str::from_utf8(haystack).is_err()
+            || encoding == Encoding::UsAscii && non_ascii
+        {
+            return Err(MatchError {
+                class: "ArgumentError",
+                message: format!("invalid byte sequence in {}", encoding.name()),
+            });
+        }
+        if encoding == Encoding::Binary && non_ascii {
+            if self.fixed {
+                return Err(MatchError { class: "Encoding::CompatibilityError", message: "incompatible encoding regexp match (UTF-8 regexp with BINARY (ASCII-8BIT) string)".into() });
+            }
+            let compiled = self
+                .binary
+                .get_or_init(|| {
+                    let pre = preprocess(self.source.as_bytes(), 0)?;
+                    Compiled::new(&pre.bytes, self.options, Encoding::Binary)
+                })
+                .as_ref()
+                .map_err(|message| MatchError {
+                    class: "RegexpError",
+                    message: message.clone(),
+                })?;
+            return compiled
+                .search_bytes(haystack)
+                .map_err(|message| MatchError {
+                    class: "RuntimeError",
+                    message,
+                });
+        }
+        let text = std::str::from_utf8(haystack).map_err(|e| MatchError {
+            class: "ArgumentError",
+            message: e.to_string(),
+        })?;
+        self.prepared(text)
+            .ok_or_else(|| MatchError {
+                class: "RegexpError",
+                message: "unable to prepare regexp encoding".into(),
+            })?
+            .search_bytes(haystack)
+            .map_err(|message| MatchError {
+                class: "RuntimeError",
+                message,
+            })
     }
 
     /// `haystack =~ self` as a boolean; `None` when Onigmo reports an error.
