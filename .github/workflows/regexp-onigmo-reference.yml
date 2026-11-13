@@ -82,6 +82,7 @@ jobs:
             cp ukiryu/vendor/onigmo/NOTICE "$d/ONIGMO-NOTICE"
             cp ukiryu/vendor/onigmo/PROVENANCE "$d/ONIGMO-PROVENANCE"
           done
+          python3 scripts/artifact_licenses.py stage regexp-wasm-node regexp-wasm-web
       - name: Run in Node (imports audited)
         run: node tests/regexp-onigmo-wasm/node.mjs
       - name: Run in Chromium
@@ -91,6 +92,8 @@ jobs:
           # ES modules resolve packages from the script's directory upwards.
           ln -s ../wasm-runtime/node_modules tests/regexp-onigmo-wasm/node_modules
           node tests/regexp-onigmo-wasm/browser.mjs
+      - name: Verify complete engine notices and negative controls
+        run: python3 scripts/artifact_licenses.py verify --npm regexp-wasm-node regexp-wasm-web
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -1,0 +1,1877 @@
+{
+  "provenance": {
+    "oracle": "ukiryu/ukiryu ab6df353c6dc2d7faf7817a86aafcafa82579896",
+    "source": "lib/ukiryu/definition/definition_validator.rb",
+    "ruby": "4.0.1",
+    "psych": "5.3.1",
+    "json-schema": "6.2.1",
+    "remote_fallback": "download_and_load_schema stubbed to return nil (download failed); each call observed",
+    "capture": "ukiryu/tests/definition_validator_data/capture.rb <ukiryu/tests> <cases.json>"
+  },
+  "cases": [
+    {
+      "id": "structure.name_ok",
+      "input": {
+        "id": "structure.name_ok",
+        "yaml": "name: tool\n"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": []
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.name_whitespace",
+      "input": {
+        "id": "structure.name_whitespace",
+        "yaml": "name: a b\n"
+      },
+      "ok": {
+        "valid": false,
+        "errors": [
+          "Tool name must not contain whitespace"
+        ],
+        "warnings": [
+          "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+        ],
+        "schema_path": null,
+        "error_count": 1,
+        "warning_count": 1
+      },
+      "stages": {
+        "structure": {
+          "errors": [
+            "Tool name must not contain whitespace"
+          ],
+          "warnings": [
+            "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+          ]
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.name_digit",
+      "input": {
+        "id": "structure.name_digit",
+        "yaml": "name: 1tool\n"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Tool name starting with number may cause issues"
+        ],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 1
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": [
+            "Tool name starting with number may cause issues"
+          ]
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.name_upper",
+      "input": {
+        "id": "structure.name_upper",
+        "yaml": "name: Tool\n"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+        ],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 1
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": [
+            "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+          ]
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.name_multiline_lower",
+      "input": {
+        "id": "structure.name_multiline_lower",
+        "yaml": "name: \"a\\nb\"\n"
+      },
+      "ok": {
+        "valid": false,
+        "errors": [
+          "Tool name must not contain whitespace"
+        ],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 1,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [
+            "Tool name must not contain whitespace"
+          ],
+          "warnings": []
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.name_multiline_digit_upper",
+      "input": {
+        "id": "structure.name_multiline_digit_upper",
+        "yaml": "name: \"9\\nX\"\n"
+      },
+      "ok": {
+        "valid": false,
+        "errors": [
+          "Tool name must not contain whitespace"
+        ],
+        "warnings": [
+          "Tool name starting with number may cause issues"
+        ],
+        "schema_path": null,
+        "error_count": 1,
+        "warning_count": 1
+      },
+      "stages": {
+        "structure": {
+          "errors": [
+            "Tool name must not contain whitespace"
+          ],
+          "warnings": [
+            "Tool name starting with number may cause issues"
+          ]
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.name_trailing_newline",
+      "input": {
+        "id": "structure.name_trailing_newline",
+        "yaml": "name: \"tool\\n\"\n"
+      },
+      "ok": {
+        "valid": false,
+        "errors": [
+          "Tool name must not contain whitespace"
+        ],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 1,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [
+            "Tool name must not contain whitespace"
+          ],
+          "warnings": []
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.name_tab",
+      "input": {
+        "id": "structure.name_tab",
+        "yaml": "name: \"a\\tb\"\n"
+      },
+      "ok": {
+        "valid": false,
+        "errors": [
+          "Tool name must not contain whitespace"
+        ],
+        "warnings": [
+          "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+        ],
+        "schema_path": null,
+        "error_count": 1,
+        "warning_count": 1
+      },
+      "stages": {
+        "structure": {
+          "errors": [
+            "Tool name must not contain whitespace"
+          ],
+          "warnings": [
+            "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+          ]
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.name_integer",
+      "input": {
+        "id": "structure.name_integer",
+        "yaml": "name: 123\n"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Tool name starting with number may cause issues"
+        ],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 1
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": [
+            "Tool name starting with number may cause issues"
+          ]
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.name_float",
+      "input": {
+        "id": "structure.name_float",
+        "yaml": "name: 1.5\n"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Tool name starting with number may cause issues",
+          "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+        ],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 2
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": [
+            "Tool name starting with number may cause issues",
+            "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+          ]
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.name_symbol",
+      "input": {
+        "id": "structure.name_symbol",
+        "yaml": "name: :sym\n"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": []
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.name_null",
+      "input": {
+        "id": "structure.name_null",
+        "yaml": "name: ~\n"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": []
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.name_false",
+      "input": {
+        "id": "structure.name_false",
+        "yaml": "name: false\n"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": []
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.name_true",
+      "input": {
+        "id": "structure.name_true",
+        "yaml": "name: true\n"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": []
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.name_empty",
+      "input": {
+        "id": "structure.name_empty",
+        "yaml": "name: ''\n"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+        ],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 1
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": [
+            "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+          ]
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.name_array",
+      "input": {
+        "id": "structure.name_array",
+        "yaml": "name: [a, b]\n"
+      },
+      "ok": {
+        "valid": false,
+        "errors": [
+          "Tool name must not contain whitespace"
+        ],
+        "warnings": [
+          "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+        ],
+        "schema_path": null,
+        "error_count": 1,
+        "warning_count": 1
+      },
+      "stages": {
+        "structure": {
+          "errors": [
+            "Tool name must not contain whitespace"
+          ],
+          "warnings": [
+            "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+          ]
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.name_hash",
+      "input": {
+        "id": "structure.name_hash",
+        "yaml": "name: {a: 1}\n"
+      },
+      "ok": {
+        "valid": false,
+        "errors": [
+          "Tool name must not contain whitespace"
+        ],
+        "warnings": [
+          "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+        ],
+        "schema_path": null,
+        "error_count": 1,
+        "warning_count": 1
+      },
+      "stages": {
+        "structure": {
+          "errors": [
+            "Tool name must not contain whitespace"
+          ],
+          "warnings": [
+            "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+          ]
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.name_date",
+      "input": {
+        "id": "structure.name_date",
+        "yaml": "name: 2026-01-02\n"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Tool name starting with number may cause issues"
+        ],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 1
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": [
+            "Tool name starting with number may cause issues"
+          ]
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.name_unicode",
+      "input": {
+        "id": "structure.name_unicode",
+        "yaml": "name: tööl\n"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+        ],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 1
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": [
+            "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+          ]
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.symbol_key_wins",
+      "input": {
+        "id": "structure.symbol_key_wins",
+        "yaml": ":name: Sym\nname: other\n"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+        ],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 1
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": [
+            "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+          ]
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.symbol_key_falsy",
+      "input": {
+        "id": "structure.symbol_key_falsy",
+        "yaml": ":name: ~\nname: Other\n"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+        ],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 1
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": [
+            "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+          ]
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.schema_string_ok",
+      "input": {
+        "id": "structure.schema_string_ok",
+        "yaml": "ukiryu_schema: '1.0'\n"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": []
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.schema_float_ok",
+      "input": {
+        "id": "structure.schema_float_ok",
+        "yaml": "ukiryu_schema: 1.0\n"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": []
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.schema_integer",
+      "input": {
+        "id": "structure.schema_integer",
+        "yaml": "ukiryu_schema: 1\n"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Invalid schema version format: 1 (expected format: '1.0')"
+        ],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 1
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": [
+            "Invalid schema version format: 1 (expected format: '1.0')"
+          ]
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.schema_three_parts",
+      "input": {
+        "id": "structure.schema_three_parts",
+        "yaml": "ukiryu_schema: '1.0.0'\n"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Invalid schema version format: 1.0.0 (expected format: '1.0')"
+        ],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 1
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": [
+            "Invalid schema version format: 1.0.0 (expected format: '1.0')"
+          ]
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.schema_null",
+      "input": {
+        "id": "structure.schema_null",
+        "yaml": "ukiryu_schema: ~\n"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Invalid schema version format:  (expected format: '1.0')"
+        ],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 1
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": [
+            "Invalid schema version format:  (expected format: '1.0')"
+          ]
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.schema_false",
+      "input": {
+        "id": "structure.schema_false",
+        "yaml": "ukiryu_schema: false\n"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Invalid schema version format: false (expected format: '1.0')"
+        ],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 1
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": [
+            "Invalid schema version format: false (expected format: '1.0')"
+          ]
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.schema_symbol_key",
+      "input": {
+        "id": "structure.schema_symbol_key",
+        "yaml": ":ukiryu_schema: '2.0'\n"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": []
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.schema_symbol_key_null",
+      "input": {
+        "id": "structure.schema_symbol_key_null",
+        "yaml": ":ukiryu_schema: ~\n"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Invalid schema version format:  (expected format: '1.0')"
+        ],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 1
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": [
+            "Invalid schema version format:  (expected format: '1.0')"
+          ]
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.schema_multiline",
+      "input": {
+        "id": "structure.schema_multiline",
+        "yaml": "ukiryu_schema: \"x\\n1.2\"\n"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": []
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.schema_date",
+      "input": {
+        "id": "structure.schema_date",
+        "yaml": "ukiryu_schema: 2026-01-01\n"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Invalid schema version format: 2026-01-01 (expected format: '1.0')"
+        ],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 1
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": [
+            "Invalid schema version format: 2026-01-01 (expected format: '1.0')"
+          ]
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.schema_array",
+      "input": {
+        "id": "structure.schema_array",
+        "yaml": "ukiryu_schema: [1]\n"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Invalid schema version format: [1] (expected format: '1.0')"
+        ],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 1
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": [
+            "Invalid schema version format: [1] (expected format: '1.0')"
+          ]
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.schema_v_prefix",
+      "input": {
+        "id": "structure.schema_v_prefix",
+        "yaml": "ukiryu_schema: v1.0\n"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Invalid schema version format: v1.0 (expected format: '1.0')"
+        ],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 1
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": [
+            "Invalid schema version format: v1.0 (expected format: '1.0')"
+          ]
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.both_warnings",
+      "input": {
+        "id": "structure.both_warnings",
+        "yaml": "name: 9 Lives\nukiryu_schema: x\n"
+      },
+      "ok": {
+        "valid": false,
+        "errors": [
+          "Tool name must not contain whitespace"
+        ],
+        "warnings": [
+          "Tool name starting with number may cause issues",
+          "Tool name should contain only lowercase letters, numbers, hyphens, and underscores",
+          "Invalid schema version format: x (expected format: '1.0')"
+        ],
+        "schema_path": null,
+        "error_count": 1,
+        "warning_count": 3
+      },
+      "stages": {
+        "structure": {
+          "errors": [
+            "Tool name must not contain whitespace"
+          ],
+          "warnings": [
+            "Tool name starting with number may cause issues",
+            "Tool name should contain only lowercase letters, numbers, hyphens, and underscores",
+            "Invalid schema version format: x (expected format: '1.0')"
+          ]
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.scalar",
+      "input": {
+        "id": "structure.scalar",
+        "yaml": "hello\n"
+      },
+      "ok": {
+        "valid": false,
+        "errors": [
+          "Definition must be a hash/object"
+        ],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 1,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [
+            "Definition must be a hash/object"
+          ],
+          "warnings": []
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.array",
+      "input": {
+        "id": "structure.array",
+        "yaml": "- a\n"
+      },
+      "ok": {
+        "valid": false,
+        "errors": [
+          "Definition must be a hash/object"
+        ],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 1,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [
+            "Definition must be a hash/object"
+          ],
+          "warnings": []
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.empty",
+      "input": {
+        "id": "structure.empty",
+        "yaml": ""
+      },
+      "ok": {
+        "valid": false,
+        "errors": [
+          "Definition must be a hash/object"
+        ],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 1,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [
+            "Definition must be a hash/object"
+          ],
+          "warnings": []
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "structure.integer_keys",
+      "input": {
+        "id": "structure.integer_keys",
+        "yaml": "1: a\nname: ok\n"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": []
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "load.invalid_yaml",
+      "input": {
+        "id": "load.invalid_yaml",
+        "yaml": "a: [1\n"
+      },
+      "ok": {
+        "valid": false,
+        "errors": [
+          "Invalid YAML: (<unknown>): did not find expected ',' or ']' while parsing a flow sequence at line 1 column 4"
+        ],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 1,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": null,
+        "schema_stage": null,
+        "schema": null
+      }
+    },
+    {
+      "id": "load.alias",
+      "input": {
+        "id": "load.alias",
+        "yaml": "a: &x 1\nb: *x\n"
+      },
+      "error": {
+        "class": "Psych::AliasesNotEnabled",
+        "message": "Alias parsing was not enabled. To enable it, pass `aliases: true` to `Psych::load` or `Psych::safe_load`."
+      }
+    },
+    {
+      "id": "load.time_name",
+      "input": {
+        "id": "load.time_name",
+        "yaml": "name: 2026-01-01 10:00:00\n"
+      },
+      "ok": {
+        "valid": false,
+        "errors": [
+          "Tool name must not contain whitespace"
+        ],
+        "warnings": [
+          "Tool name starting with number may cause issues",
+          "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+        ],
+        "schema_path": null,
+        "error_count": 1,
+        "warning_count": 2
+      },
+      "stages": {
+        "structure": {
+          "errors": [
+            "Tool name must not contain whitespace"
+          ],
+          "warnings": [
+            "Tool name starting with number may cause issues",
+            "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+          ]
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "schema.fixture_profile_ok",
+      "input": {
+        "id": "schema.fixture_profile_ok",
+        "file": "schema_golden/inputs/oracle/profiles/ghostscript_10.0.yaml",
+        "schema": "schema_golden/inputs/oracle/fixture-tool.schema.yaml"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": []
+        },
+        "schema_stage": "given",
+        "schema": {
+          "errors": [],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "schema.fixture_minimal",
+      "input": {
+        "id": "schema.fixture_minimal",
+        "yaml": "name: tool\n",
+        "schema": "schema_golden/inputs/oracle/fixture-tool.schema.yaml"
+      },
+      "ok": {
+        "valid": false,
+        "errors": [
+          "The property '#/' did not contain a required property of 'version' in schema 65374841-8a1a-55cc-a90f-6366ed0ed76a (at #/)",
+          "The property '#/' did not contain a required property of 'profiles' in schema 65374841-8a1a-55cc-a90f-6366ed0ed76a (at #/)"
+        ],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 2,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": []
+        },
+        "schema_stage": "given",
+        "schema": {
+          "errors": [
+            "The property '#/' did not contain a required property of 'version' in schema 65374841-8a1a-55cc-a90f-6366ed0ed76a (at #/)",
+            "The property '#/' did not contain a required property of 'profiles' in schema 65374841-8a1a-55cc-a90f-6366ed0ed76a (at #/)"
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "schema.fixture_structure_and_schema",
+      "input": {
+        "id": "schema.fixture_structure_and_schema",
+        "yaml": "name: a B\nukiryu_schema: x\n",
+        "schema": "schema_golden/inputs/oracle/fixture-tool.schema.yaml"
+      },
+      "ok": {
+        "valid": false,
+        "errors": [
+          "Tool name must not contain whitespace",
+          "The property '#/' did not contain a required property of 'version' in schema 65374841-8a1a-55cc-a90f-6366ed0ed76a (at #/)",
+          "The property '#/' did not contain a required property of 'profiles' in schema 65374841-8a1a-55cc-a90f-6366ed0ed76a (at #/)"
+        ],
+        "warnings": [
+          "Tool name should contain only lowercase letters, numbers, hyphens, and underscores",
+          "Invalid schema version format: x (expected format: '1.0')"
+        ],
+        "schema_path": null,
+        "error_count": 3,
+        "warning_count": 2
+      },
+      "stages": {
+        "structure": {
+          "errors": [
+            "Tool name must not contain whitespace"
+          ],
+          "warnings": [
+            "Tool name should contain only lowercase letters, numbers, hyphens, and underscores",
+            "Invalid schema version format: x (expected format: '1.0')"
+          ]
+        },
+        "schema_stage": "given",
+        "schema": {
+          "errors": [
+            "The property '#/' did not contain a required property of 'version' in schema 65374841-8a1a-55cc-a90f-6366ed0ed76a (at #/)",
+            "The property '#/' did not contain a required property of 'profiles' in schema 65374841-8a1a-55cc-a90f-6366ed0ed76a (at #/)"
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "schema.fixture_not_hash",
+      "input": {
+        "id": "schema.fixture_not_hash",
+        "yaml": "- a\n",
+        "schema": "schema_golden/inputs/oracle/fixture-tool.schema.yaml"
+      },
+      "ok": {
+        "valid": false,
+        "errors": [
+          "Definition must be a hash/object",
+          "The property '#/' of type array did not match the following type: object in schema 65374841-8a1a-55cc-a90f-6366ed0ed76a (at #/)"
+        ],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 2,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [
+            "Definition must be a hash/object"
+          ],
+          "warnings": []
+        },
+        "schema_stage": "given",
+        "schema": {
+          "errors": [
+            "The property '#/' of type array did not match the following type: object in schema 65374841-8a1a-55cc-a90f-6366ed0ed76a (at #/)"
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "schema.draft4_ok",
+      "input": {
+        "id": "schema.draft4_ok",
+        "file": "definition_validator_data/defs/draft4_ok.yaml",
+        "schema": "schema_golden/inputs/synthetic/draft4_basic.yaml"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": []
+        },
+        "schema_stage": "given",
+        "schema": {
+          "errors": [],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "schema.draft4_bad",
+      "input": {
+        "id": "schema.draft4_bad",
+        "file": "definition_validator_data/defs/draft4_bad.yaml",
+        "schema": "schema_golden/inputs/synthetic/draft4_basic.yaml"
+      },
+      "ok": {
+        "valid": false,
+        "errors": [
+          "The property '#/' contains additional properties [\"extra\"] outside of the schema when none are allowed in schema d8dc47ea-8dda-5a89-ae61-5f607e0fd71c (at #/)",
+          "The property '#/size' did not have a minimum value of 0, inclusively in schema d8dc47ea-8dda-5a89-ae61-5f607e0fd71c (at #/size)",
+          "The property '#/mode' value \"medium\" did not match one of the following values: fast, slow in schema d8dc47ea-8dda-5a89-ae61-5f607e0fd71c (at #/mode)"
+        ],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 3,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": []
+        },
+        "schema_stage": "given",
+        "schema": {
+          "errors": [
+            "The property '#/' contains additional properties [\"extra\"] outside of the schema when none are allowed in schema d8dc47ea-8dda-5a89-ae61-5f607e0fd71c (at #/)",
+            "The property '#/size' did not have a minimum value of 0, inclusively in schema d8dc47ea-8dda-5a89-ae61-5f607e0fd71c (at #/size)",
+            "The property '#/mode' value \"medium\" did not match one of the following values: fast, slow in schema d8dc47ea-8dda-5a89-ae61-5f607e0fd71c (at #/mode)"
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "schema.draft4_symbol_keys",
+      "input": {
+        "id": "schema.draft4_symbol_keys",
+        "yaml": ":name: tool\n:size: 2\n",
+        "schema": "schema_golden/inputs/synthetic/draft4_basic.yaml"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": []
+        },
+        "schema_stage": "given",
+        "schema": {
+          "errors": [],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "schema.json_schema",
+      "input": {
+        "id": "schema.json_schema",
+        "yaml": "size: 1\n",
+        "schema": "schema_golden/inputs/synthetic/json_content.json"
+      },
+      "ok": {
+        "valid": false,
+        "errors": [
+          "The property '#/' did not contain a required property of 'name' in schema 0b01a71e-409a-5ef0-9a1a-c6b73812e5d0 (at #/)"
+        ],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 1,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": []
+        },
+        "schema_stage": "given",
+        "schema": {
+          "errors": [
+            "The property '#/' did not contain a required property of 'name' in schema 0b01a71e-409a-5ef0-9a1a-c6b73812e5d0 (at #/)"
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "schema.missing_file",
+      "input": {
+        "id": "schema.missing_file",
+        "yaml": "name: Tool\n",
+        "schema": "definition_validator_data/none.yaml"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+        ],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 1
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": [
+            "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+          ]
+        },
+        "schema_stage": "given_not_loaded",
+        "schema": null
+      }
+    },
+    {
+      "id": "schema.empty_path",
+      "input": {
+        "id": "schema.empty_path",
+        "yaml": "name: Tool\n",
+        "schema": ""
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+        ],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 1
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": [
+            "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+          ]
+        },
+        "schema_stage": "given_not_loaded",
+        "schema": null
+      }
+    },
+    {
+      "id": "schema.unknown_extension",
+      "input": {
+        "id": "schema.unknown_extension",
+        "yaml": "name: Tool\n",
+        "schema": "definition_validator_data/defs/schema.txt"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+        ],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 1
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": [
+            "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+          ]
+        },
+        "schema_stage": "given_not_loaded",
+        "schema": null
+      }
+    },
+    {
+      "id": "schema.invalid_yaml_schema",
+      "input": {
+        "id": "schema.invalid_yaml_schema",
+        "yaml": "name: Tool\n",
+        "schema": "schema_golden/inputs/synthetic/invalid.yaml"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+        ],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 1
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": [
+            "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+          ]
+        },
+        "schema_stage": "given_not_loaded",
+        "schema": null
+      }
+    },
+    {
+      "id": "schema.original_v1_unparseable",
+      "input": {
+        "id": "schema.original_v1_unparseable",
+        "yaml": "name: tool\n",
+        "schema": "schema_golden/inputs/oracle/v1/tool.schema.yaml"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": []
+        },
+        "schema_stage": "given_not_loaded",
+        "schema": null
+      }
+    },
+    {
+      "id": "schema.false_schema",
+      "input": {
+        "id": "schema.false_schema",
+        "yaml": "name: Tool\n",
+        "schema": "schema_golden/inputs/synthetic/false.yaml"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+        ],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 1
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": [
+            "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+          ]
+        },
+        "schema_stage": "given_not_loaded",
+        "schema": null
+      }
+    },
+    {
+      "id": "schema.null_schema",
+      "input": {
+        "id": "schema.null_schema",
+        "yaml": "name: Tool\n",
+        "schema": "schema_golden/inputs/synthetic/null.yaml"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [
+          "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+        ],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 1
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": [
+            "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
+          ]
+        },
+        "schema_stage": "given_not_loaded",
+        "schema": null
+      }
+    },
+    {
+      "id": "schema.draft7_raises",
+      "input": {
+        "id": "schema.draft7_raises",
+        "yaml": "name: tool\n",
+        "schema": "schema_golden/inputs/synthetic/draft7.yaml"
+      },
+      "error": {
+        "class": "JSON::Schema::SchemaError",
+        "message": "Schema not found: http://json-schema.org/draft-07/schema#"
+      }
+    },
+    {
+      "id": "schema.draft3_unsupported",
+      "input": {
+        "id": "schema.draft3_unsupported",
+        "yaml": "name: tool\n",
+        "schema": "schema_golden/inputs/synthetic/draft3.yaml"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": []
+        },
+        "schema_stage": "given",
+        "schema": {
+          "errors": [],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "schema.given_beats_env",
+      "input": {
+        "id": "schema.given_beats_env",
+        "yaml": "size: 1\n",
+        "schema": "schema_golden/inputs/synthetic/json_content.json",
+        "env": "schema_golden/inputs/synthetic/draft4_basic.yaml"
+      },
+      "ok": {
+        "valid": false,
+        "errors": [
+          "The property '#/' did not contain a required property of 'name' in schema 0b01a71e-409a-5ef0-9a1a-c6b73812e5d0 (at #/)"
+        ],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 1,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": []
+        },
+        "schema_stage": "given",
+        "schema": {
+          "errors": [
+            "The property '#/' did not contain a required property of 'name' in schema 0b01a71e-409a-5ef0-9a1a-c6b73812e5d0 (at #/)"
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "schema.given_missing_no_env_fallback",
+      "input": {
+        "id": "schema.given_missing_no_env_fallback",
+        "yaml": "size: 1\n",
+        "schema": "definition_validator_data/none.yaml",
+        "env": "schema_golden/inputs/synthetic/json_content.json"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": []
+        },
+        "schema_stage": "given_not_loaded",
+        "schema": null
+      }
+    },
+    {
+      "id": "env.schema_used",
+      "input": {
+        "id": "env.schema_used",
+        "yaml": "size: 1\n",
+        "env": "schema_golden/inputs/synthetic/json_content.json"
+      },
+      "ok": {
+        "valid": false,
+        "errors": [
+          "The property '#/' did not contain a required property of 'name' in schema 0b01a71e-409a-5ef0-9a1a-c6b73812e5d0 (at #/)"
+        ],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 1,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": []
+        },
+        "schema_stage": "env",
+        "schema": {
+          "errors": [
+            "The property '#/' did not contain a required property of 'name' in schema 0b01a71e-409a-5ef0-9a1a-c6b73812e5d0 (at #/)"
+          ],
+          "warnings": []
+        }
+      }
+    },
+    {
+      "id": "env.missing_file_remote",
+      "input": {
+        "id": "env.missing_file_remote",
+        "yaml": "size: 1\n",
+        "env": "definition_validator_data/none.json"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": []
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "env.empty_remote",
+      "input": {
+        "id": "env.empty_remote",
+        "yaml": "size: 1\n",
+        "env_literal": ""
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": []
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "env.invalid_schema_remote",
+      "input": {
+        "id": "env.invalid_schema_remote",
+        "yaml": "size: 1\n",
+        "env": "schema_golden/inputs/synthetic/invalid.yaml"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": []
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "env.false_schema_remote",
+      "input": {
+        "id": "env.false_schema_remote",
+        "yaml": "size: 1\n",
+        "env": "schema_golden/inputs/synthetic/false.yaml"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": []
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "file.minimal",
+      "input": {
+        "id": "file.minimal",
+        "file": "definition_validator_data/defs/minimal.yaml"
+      },
+      "ok": {
+        "valid": true,
+        "errors": [],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 0,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": {
+          "errors": [],
+          "warnings": []
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "file.bad_name",
+      "input": {
+        "id": "file.bad_name",
+        "file": "definition_validator_data/defs/bad_name.yaml"
+      },
+      "ok": {
+        "valid": false,
+        "errors": [
+          "Tool name must not contain whitespace"
+        ],
+        "warnings": [
+          "Tool name should contain only lowercase letters, numbers, hyphens, and underscores",
+          "Invalid schema version format: v1 (expected format: '1.0')"
+        ],
+        "schema_path": null,
+        "error_count": 1,
+        "warning_count": 2
+      },
+      "stages": {
+        "structure": {
+          "errors": [
+            "Tool name must not contain whitespace"
+          ],
+          "warnings": [
+            "Tool name should contain only lowercase letters, numbers, hyphens, and underscores",
+            "Invalid schema version format: v1 (expected format: '1.0')"
+          ]
+        },
+        "schema_stage": "remote_fallback",
+        "schema": null
+      }
+    },
+    {
+      "id": "file.broken_yaml",
+      "input": {
+        "id": "file.broken_yaml",
+        "file": "definition_validator_data/defs/broken.yaml"
+      },
+      "ok": {
+        "valid": false,
+        "errors": [
+          "Invalid YAML: (<unknown>): did not find expected ',' or ']' while parsing a flow sequence at line 1 column 7"
+        ],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 1,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": null,
+        "schema_stage": null,
+        "schema": null
+      }
+    },
+    {
+      "id": "file.missing",
+      "input": {
+        "id": "file.missing",
+        "file": "definition_validator_data/defs/missing.yaml"
+      },
+      "ok": {
+        "valid": false,
+        "errors": [
+          "File not found: {root}/definition_validator_data/defs/missing.yaml"
+        ],
+        "warnings": [],
+        "schema_path": null,
+        "error_count": 1,
+        "warning_count": 0
+      },
+      "stages": {
+        "structure": null,
+        "schema_stage": null,
+        "schema": null
+      }
+    },
+    {
+      "id": "file.directory",
+      "input": {
+        "id": "file.directory",
+        "file": "definition_validator_data/defs"
+      },
+      "error": {
+        "class": "Errno::EISDIR",
+        "message": "Is a directory @ io_fread - {root}/definition_validator_data/defs"
+      }
+    }
+  ]
+}

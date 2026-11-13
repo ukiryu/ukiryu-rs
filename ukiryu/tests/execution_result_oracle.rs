@@ -12,7 +12,7 @@ use serde_json::Value;
 use ukiryu::execution::results::ruby::{json_float, time_iso8601};
 use ukiryu::execution::{
     exit_code_meaning, format_duration, format_meaning, CommandInfo, ExecutionMetadata,
-    ExecutionResult, ExitCodeTable, Output, PathStyle, Seconds,
+    ExecutionResult, ExitCodeTable, Output, PathStyle, ResultPartsError, Seconds,
 };
 use ukiryu::models::success_response::ExecutionResultParts;
 use ukiryu::models::value::RubyValue;
@@ -116,12 +116,12 @@ fn output_matches_oracle() {
         let o = output_from(&row["input"]);
         let e = &row["expect"];
         let ctx = &row["input"];
-        assert_eq!(o.stdout(), text(&e["stdout"]), "{ctx}");
-        assert_eq!(o.stderr(), text(&e["stderr"]), "{ctx}");
-        assert_eq!(o.stdout_lines(), strings(&e["stdout_lines"]), "{ctx}");
-        assert_eq!(o.stderr_lines(), strings(&e["stderr_lines"]), "{ctx}");
-        assert_eq!(o.is_stdout_empty(), e["stdout_empty"] == true, "{ctx}");
-        assert_eq!(o.is_stderr_empty(), e["stderr_empty"] == true, "{ctx}");
+        assert_eq!(o.stdout(), Ok(text(&e["stdout"])), "{ctx}");
+        assert_eq!(o.stderr(), Ok(text(&e["stderr"])), "{ctx}");
+        assert_eq!(o.stdout_lines(), Ok(strings(&e["stdout_lines"])), "{ctx}");
+        assert_eq!(o.stderr_lines(), Ok(strings(&e["stderr_lines"])), "{ctx}");
+        assert_eq!(o.is_stdout_empty(), Ok(e["stdout_empty"] == true), "{ctx}");
+        assert_eq!(o.is_stderr_empty(), Ok(e["stderr_empty"] == true), "{ctx}");
         assert_eq!(
             o.stdout_length() as u64,
             e["stdout_length"].as_u64().unwrap()
@@ -133,7 +133,7 @@ fn output_matches_oracle() {
         assert_eq!(o.is_success(), e["success"] == true, "{ctx}");
         assert_eq!(o.is_failure(), e["failure"] == true, "{ctx}");
         assert_eq!(
-            serde_json::to_string(&o.to_h()).unwrap(),
+            serde_json::to_string(&o.to_h().unwrap()).unwrap(),
             text(&e["to_h_json"]),
             "{ctx}"
         );
@@ -142,24 +142,24 @@ fn output_matches_oracle() {
         for (i, p) in patterns.iter().enumerate() {
             assert_eq!(
                 o.stdout_contains(p.as_str()),
-                e["stdout_contains"][i] == true,
+                Ok(e["stdout_contains"][i] == true),
                 "{ctx} {p:?}"
             );
             assert_eq!(
                 o.stderr_contains(p.as_str()),
-                e["stderr_contains"][i] == true,
+                Ok(e["stderr_contains"][i] == true),
                 "{ctx} {p:?}"
             );
         }
         for (i, r) in regexes.iter().enumerate() {
             assert_eq!(
                 o.stdout_contains(r),
-                e["stdout_matches"][i] == true,
+                Ok(e["stdout_matches"][i] == true),
                 "{ctx} {r}"
             );
             assert_eq!(
                 o.stderr_contains(r),
-                e["stderr_matches"][i] == true,
+                Ok(e["stderr_matches"][i] == true),
                 "{ctx} {r}"
             );
         }
@@ -274,8 +274,8 @@ fn result_matches_oracle() {
             r.command_info.executable_name_with(PathStyle::Posix),
             text(&e["executable_name"])
         );
-        assert_eq!(r.stdout(), text(&e["stdout"]));
-        assert_eq!(r.stderr(), text(&e["stderr"]));
+        assert_eq!(r.stdout(), text(&e["stdout"]).as_bytes());
+        assert_eq!(r.stderr(), text(&e["stderr"]).as_bytes());
         assert_eq!(r.status(), e["status"].as_i64().unwrap());
         assert_eq!(r.exit_code(), e["exit_code"].as_i64().unwrap());
         assert_eq!(r.exit_status(), e["exit_status"].as_i64().unwrap());
@@ -283,10 +283,10 @@ fn result_matches_oracle() {
         assert_eq!(float_s(r.execution_time()), e["execution_time"]);
         assert_eq!(r.is_success(), e["success"] == true);
         assert_eq!(r.is_failure(), e["failure"] == true);
-        assert_eq!(r.output(), text(&e["output"]));
-        assert_eq!(r.error_output(), text(&e["error_output"]));
-        assert_eq!(r.stdout_lines(), strings(&e["stdout_lines"]));
-        assert_eq!(r.stderr_lines(), strings(&e["stderr_lines"]));
+        assert_eq!(r.output(), Ok(text(&e["output"])));
+        assert_eq!(r.error_output(), Ok(text(&e["error_output"])));
+        assert_eq!(r.stdout_lines(), Ok(strings(&e["stdout_lines"])));
+        assert_eq!(r.stderr_lines(), Ok(strings(&e["stderr_lines"])));
         assert_eq!(
             r.to_json_with(PathStyle::Posix).unwrap(),
             text(&e["to_json"]),
@@ -303,7 +303,7 @@ fn result_matches_oracle() {
             parts.shell,
             input["command_info"]["shell"].as_str().unwrap_or("")
         );
-        assert_eq!(parts.stdout, text(&e["stdout"]));
+        assert_eq!(parts.stdout, text(&e["stdout"]).as_bytes());
         assert_eq!(parts.error_output, text(&e["error_output"]));
         assert_eq!(float_s(Some(parts.duration)), e["duration"]);
         assert_eq!(parts.formatted_duration, r.metadata.formatted_duration());
@@ -325,7 +325,10 @@ fn result_without_times_cannot_project_to_success_parts() {
         ExecutionMetadata::new(None, None, None),
     );
     let err = ExecutionResultParts::try_from(&r).unwrap_err();
-    assert_eq!(err.kind, ModelErrorKind::NoMethod);
+    match err {
+        ResultPartsError::Model(e) => assert_eq!(e.kind, ModelErrorKind::NoMethod),
+        other => panic!("expected NoMethodError, got {other:?}"),
+    }
 }
 
 #[test]
@@ -357,7 +360,7 @@ fn non_finite_timeout_fails_json_like_the_gem() {
             .to_json()
             .expect_err("non-finite timeout must not serialise");
         assert_eq!(err.ruby_class(), text(&row["expect"]["class"]));
-        assert_eq!(err.message, text(&row["expect"]["message"]));
+        assert_eq!(err.message(), text(&row["expect"]["message"]));
     }
 }
 
@@ -517,7 +520,7 @@ fn executor_real_runs_match_message_builders() {
             "allow_failure" => {
                 let o = Output::new(text(&e["stdout"]), "", e["status"].as_i64().unwrap());
                 assert_eq!(o.is_success(), e["success"] == true);
-                assert_eq!(o.stdout_lines(), vec!["a", "b"]);
+                assert_eq!(o.stdout_lines(), Ok(vec!["a".to_owned(), "b".to_owned()]));
                 assert_eq!(e["duration_class"], "Float");
             }
             other => panic!("unknown case {other}"),
