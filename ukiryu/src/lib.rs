@@ -19,6 +19,7 @@ pub mod routing;
 pub mod runtime;
 pub mod schema;
 pub mod shell;
+pub mod tool;
 pub mod types;
 pub mod version_detection;
 pub mod version_ranges;
