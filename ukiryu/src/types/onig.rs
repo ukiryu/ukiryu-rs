@@ -437,7 +437,7 @@ impl Translator {
                 }
                 _ => return None,
             },
-            c if matches!(c, 'i' | 'm' | 'x' | '-') => {
+            'i' | 'm' | 'x' | '-' => {
                 self.pos -= 1;
                 let mut on = true;
                 let mut flags = String::new();
