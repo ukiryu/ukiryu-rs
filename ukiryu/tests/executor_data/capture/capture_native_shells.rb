@@ -36,8 +36,10 @@ def capture(id, shell, executable, args, stdin)
 end
 
 cat = WINDOWS ? 'more' : 'cat'
-echo = WINDOWS ? ['cmd', ['/c', 'echo', 'hello']] : ['echo', ['hello']]
-fail_cmd = WINDOWS ? ['cmd', ['/c', 'echo oops 1>&2 & exit 3']] : ['sh', ['-c', 'echo oops >&2; exit 3']]
+# `cmd.exe`, not `cmd`: PowerShell resolves a bare `cmd` through PATH, and
+# Ruby's setup puts MSYS2's extensionless `usr/bin/cmd` ahead of System32.
+echo = WINDOWS ? ['cmd.exe', ['/c', 'echo', 'hello']] : ['echo', ['hello']]
+fail_cmd = WINDOWS ? ['cmd.exe', ['/c', 'echo oops 1>&2 & exit 3']] : ['sh', ['-c', 'echo oops >&2; exit 3']]
 inputs = {
   'ascii' => 'test data',
   'multiline' => "line1\nline2\n",
