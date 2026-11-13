@@ -8,7 +8,7 @@
 //! register/tool integration and stays with its owner. The tables themselves
 //! are `Ukiryu::Models::ExitCodes` ([`crate::models::ExitCodes`]), which
 //! implements [`ExitCodeTable`].
-use crate::models::value::RubyValue;
+use crate::models::value::Value;
 use crate::models::ExitCodes;
 
 /// A table that maps an exit status to its meaning
@@ -39,8 +39,8 @@ pub fn format_meaning(meaning: Option<&str>) -> String {
 /// as its `to_s`.
 impl ExitCodeTable for ExitCodes {
     fn meaning(&self, code: i64) -> Option<String> {
-        ExitCodes::meaning(self, &RubyValue::Int(code.into()))
+        ExitCodes::meaning(self, &Value::int(code))
             .filter(|v| v.truthy())
-            .map(RubyValue::to_ruby_s)
+            .map(Value::to_ruby_s)
     }
 }

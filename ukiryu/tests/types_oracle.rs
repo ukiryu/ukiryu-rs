@@ -13,11 +13,12 @@ use std::str::FromStr;
 
 use num_bigint::BigInt;
 use serde_json::{json, Value as Json};
+use ukiryu::models::{ArgumentDefinition, Model, OptionDefinition};
 use ukiryu::types::constraints::Constraint;
 use ukiryu::types::ruby;
 use ukiryu::types::{
-    build_constraints, valid_type, validate, Error, ErrorClass, Host, Regexp, Time, Validator,
-    Value,
+    build_constraints, valid_type, validate, Error, ErrorClass, Host, OptionSource, Regexp, Time,
+    Validator, Value,
 };
 
 fn corpus_dir() -> PathBuf {
@@ -334,28 +335,29 @@ fn type_file_real_filesystem() {
 }
 
 /// Production callers pass `ArgumentDefinition`/`OptionDefinition` models as
-/// the options; `Model#[]` returns the attribute or nil. None of the keys
-/// `Type` reads has a model default, so until the models module is wired in
-/// these rows run with a Hash holding exactly the assigned attributes.
+/// the options; `Model#[]` returns the attribute or nil. Each row builds the
+/// named model from its attributes (`Model.from_hash`) and validates through
+/// the model's [`OptionSource`] implementation.
 #[test]
 fn type_model_shaped_options() {
     let mut tally = Tally::default();
     for row in rows("type_model_options.jsonl") {
         let id = row["id"].as_str().unwrap();
         let input = &row["input"];
-        let attrs = match decode(&input["attrs"]) {
-            Value::Hash(pairs) => Value::Hash(
-                pairs
-                    .into_iter()
-                    .map(|(k, v)| (Value::Symbol(ruby::to_s(&k)), v))
-                    .collect(),
-            ),
-            other => panic!("attrs {other:?}"),
+        let attrs = decode(&input["attrs"]);
+        let model: Box<dyn OptionSource> = match input["model"].as_str().unwrap() {
+            "ArgumentDefinition" => {
+                Box::new(ArgumentDefinition::from_ruby(&attrs).expect("ArgumentDefinition"))
+            }
+            "OptionDefinition" => {
+                Box::new(OptionDefinition::from_ruby(&attrs).expect("OptionDefinition"))
+            }
+            other => panic!("model {other}"),
         };
         let r = validate(
             &decode(&input["value"]),
             &decode(&input["type"]),
-            &attrs,
+            model.as_ref(),
             &OracleHost,
         );
         tally.record(id, &row["expect"], &outcome(&r), is_unsupported(&r));

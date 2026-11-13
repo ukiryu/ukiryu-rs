@@ -5,7 +5,7 @@
 //! serde_json. The attribute semantics observed at the pinned oracle
 //! (defaults, explicit nulls, omission of empty values, scalar casting,
 //! single-value wrapping for collections) live in [`attr`]. Plain Ruby
-//! classes that hold raw YAML Hashes keep them as [`RubyValue`].
+//! classes that hold raw YAML Hashes keep them as [`Value`].
 //!
 //! Where lutaml keeps an uncastable raw object (for example a mapping in a
 //! `:string` attribute or `"off"` in a `:boolean` attribute) the port fails
@@ -82,7 +82,7 @@ pub use success_response::{ExecutionResultParts, SuccessResponse};
 pub use tool_definition::ToolDefinition;
 pub use tool_metadata::ToolMetadata;
 pub use validation_result::ValidationResult;
-pub use value::{RubyValue, Text};
+pub use value::{Text, Value};
 pub use version_compatibility::{Constraint, RequirementParser, VersionCompatibility};
 pub use version_detection::{VersionDetection, VersionDetectionMethod};
 pub use version_info::VersionInfo;

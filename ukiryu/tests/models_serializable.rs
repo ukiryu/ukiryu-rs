@@ -119,12 +119,12 @@ fn tool_metadata(m: &ToolMetadata) -> Json {
         Json::Object(o) => o,
         _ => unreachable!(),
     };
-    o.insert("aliases".into(), enc(&RubyValue::Array(m.aliases())));
+    o.insert("aliases".into(), enc(&Value::Array(m.aliases())));
     o.insert("tool_name".into(), enc_text(m.tool_name().as_ref()));
     let dc = m.default_command().expect("default_command");
     o.insert(
         "default_command".into(),
-        enc(&dc.map_or(RubyValue::Nil, RubyValue::Sym)),
+        enc(&dc.map_or(Value::Nil, Value::Symbol)),
     );
     o.insert("may_provide".into(), attr_text(&m.may_provide));
     Json::Object(o)

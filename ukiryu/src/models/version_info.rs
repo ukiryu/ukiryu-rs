@@ -1,21 +1,17 @@
 //! Source: lib/ukiryu/models/version_info.rb (`Ukiryu::Models::VersionInfo`).
-use super::value::RubyValue;
+use super::value::Value;
 
 /// A detected version and the method that found it (`:command`,
 /// `:man_page`, `:profile`).
 #[derive(Clone, Debug, PartialEq)]
 pub struct VersionInfo {
-    pub value: RubyValue,
-    pub method_used: RubyValue,
-    pub available_methods: Vec<RubyValue>,
+    pub value: Value,
+    pub method_used: Value,
+    pub available_methods: Vec<Value>,
 }
 
 impl VersionInfo {
-    pub fn new(
-        value: RubyValue,
-        method_used: RubyValue,
-        available_methods: Vec<RubyValue>,
-    ) -> Self {
+    pub fn new(value: Value, method_used: Value, available_methods: Vec<Value>) -> Self {
         VersionInfo {
             value,
             method_used,
@@ -24,7 +20,7 @@ impl VersionInfo {
     }
 
     fn method_is(&self, m: &str) -> bool {
-        matches!(&self.method_used, RubyValue::Sym(s) if s == m)
+        matches!(&self.method_used, Value::Symbol(s) if s == m)
     }
 
     /// `#from_command?`
@@ -43,22 +39,22 @@ impl VersionInfo {
     }
 
     /// `#to_s` (returns the value itself unless it came from a man page).
-    pub fn to_ruby_s(&self) -> RubyValue {
+    pub fn to_ruby_s(&self) -> Value {
         if self.is_from_man_page() {
-            RubyValue::Str(format!("{} (man page)", self.value.to_ruby_s()))
+            Value::String(format!("{} (man page)", self.value.to_ruby_s()))
         } else {
             self.value.clone()
         }
     }
 
     /// `#to_h` (`{value:, method:, available_methods:}`).
-    pub fn to_h(&self) -> RubyValue {
-        RubyValue::Hash(vec![
-            (RubyValue::sym("value"), self.value.clone()),
-            (RubyValue::sym("method"), self.method_used.clone()),
+    pub fn to_h(&self) -> Value {
+        Value::Hash(vec![
+            (Value::sym("value"), self.value.clone()),
+            (Value::sym("method"), self.method_used.clone()),
             (
-                RubyValue::sym("available_methods"),
-                RubyValue::Array(self.available_methods.clone()),
+                Value::sym("available_methods"),
+                Value::Array(self.available_methods.clone()),
             ),
         ])
     }

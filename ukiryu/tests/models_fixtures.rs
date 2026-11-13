@@ -20,7 +20,7 @@ fn text(rel: &str) -> String {
     std::fs::read_to_string(fixture(rel)).unwrap()
 }
 
-fn opt_enc(v: Option<&RubyValue>) -> Json {
+fn opt_enc(v: Option<&Value>) -> Json {
     v.map_or(Json::Null, enc)
 }
 
@@ -73,15 +73,15 @@ fn index_snapshot(i: &ImplementationIndex) -> Json {
         "names": i.implementation_names().iter().map(enc).collect::<Vec<_>>(),
         "to_s": i.to_ruby_s(),
         "inspect": i.inspect(),
-        "default": opt_enc(i.implementation(&RubyValue::str("default"))),
-        "missing": opt_enc(i.implementation(&RubyValue::str("zz"))),
+        "default": opt_enc(i.implementation(&Value::str("default"))),
+        "missing": opt_enc(i.implementation(&Value::str("zz"))),
     })
 }
 
 fn interface_snapshot(i: &Interface) -> Json {
     let first = match &i.actions {
-        RubyValue::Array(items) => match items.first() {
-            Some(h @ RubyValue::Hash(_)) => h.get_sym("name").cloned(),
+        Value::Array(items) => match items.first() {
+            Some(h @ Value::Hash(_)) => h.get_sym("name").cloned(),
             _ => None,
         },
         _ => None,
@@ -103,7 +103,7 @@ fn interface_snapshot(i: &Interface) -> Json {
         "inspect": i.inspect().unwrap_or_else(raise),
         "first_action": first.as_ref().map_or(Json::Null, enc),
         "action_first": action_first,
-        "action_q": i.has_action(&RubyValue::str("zz")).map_or_else(|e| json!(raise(e)), |b| json!(b)),
+        "action_q": i.has_action(&Value::str("zz")).map_or_else(|e| json!(raise(e)), |b| json!(b)),
     })
 }
 
@@ -205,7 +205,7 @@ fn four_model_families_match_the_oracle() {
                         }
                         let mut profile = Map::new();
                         for p in v.execution_profiles.as_array().unwrap_or(&[]) {
-                            let name = p.get_sym("name").cloned().unwrap_or(RubyValue::Nil);
+                            let name = p.get_sym("name").cloned().unwrap_or(Value::Nil);
                             profile.insert(name.to_ruby_s(), opt_enc(v.profile(&name).unwrap()));
                         }
                         let actual = json!({
@@ -214,7 +214,7 @@ fn four_model_families_match_the_oracle() {
                             "inspect": v.inspect().unwrap(),
                             "compatible": compatible,
                             "profile": profile,
-                            "profile_missing": opt_enc(v.profile(&RubyValue::str("zz")).unwrap()),
+                            "profile_missing": opt_enc(v.profile(&Value::str("zz")).unwrap()),
                         });
                         let mut exp = expected.clone();
                         let vd = exp
@@ -270,15 +270,13 @@ fn missing_files_and_non_mapping_roots_fail_like_ruby() {
         ModelErrorKind::Io
     );
     assert_eq!(
-        ImplementationIndex::from_hash(&RubyValue::Nil)
+        ImplementationIndex::from_hash(&Value::Nil)
             .unwrap_err()
             .ruby_class(),
         "NoMethodError"
     );
     assert_eq!(
-        Interface::from_hash(&RubyValue::Nil)
-            .unwrap_err()
-            .ruby_class(),
+        Interface::from_hash(&Value::Nil).unwrap_err().ruby_class(),
         "NoMethodError"
     );
     // The register returns nil for an empty or null document.

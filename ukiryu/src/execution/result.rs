@@ -6,7 +6,7 @@ use super::results::metadata::{ExecutionMetadata, ExecutionMetadataHash};
 use super::results::output::{Output, OutputHash, Pattern};
 use super::results::ruby::{time_iso8601, to_ruby_json, JsonGeneratorError, PathStyle};
 use crate::models::success_response::ExecutionResultParts;
-use crate::models::value::RubyValue;
+use crate::models::value::Value;
 use crate::models::ModelError;
 use crate::types::value::Time;
 
@@ -191,7 +191,7 @@ impl TryFrom<&ExecutionResult> for ExecutionResultParts {
     type Error = ModelError;
 
     fn try_from(r: &ExecutionResult) -> Result<Self, Self::Error> {
-        let nil_iso8601 = || ModelError::no_method("iso8601", &RubyValue::Nil);
+        let nil_iso8601 = || ModelError::no_method("iso8601", &Value::Nil);
         let started = r.started_at().map(time_iso8601).ok_or_else(nil_iso8601)?;
         let finished = r.finished_at().map(time_iso8601).ok_or_else(nil_iso8601)?;
         Ok(ExecutionResultParts {

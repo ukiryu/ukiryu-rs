@@ -3,7 +3,7 @@ use super::argument::Argument;
 use super::attr::{de_fns as d, omit_list, ser_model_list, Model};
 use super::command_definition::CommandDefinition;
 use super::error::ModelError;
-use super::value::{RubyValue, Text};
+use super::value::{Text, Value};
 use serde::{Deserialize, Serialize};
 
 /// Structured request arguments of a success response.
@@ -52,7 +52,7 @@ pub enum ArgumentKind {
 fn name_matches(name: &Option<Text>, key: &str) -> Result<bool, ModelError> {
     match name {
         Some(t) => Ok(t.to_sym()? == key),
-        None => Err(ModelError::no_method("to_sym", &RubyValue::Nil)),
+        None => Err(ModelError::no_method("to_sym", &Value::Nil)),
     }
 }
 
@@ -60,7 +60,7 @@ impl Arguments {
     /// `Arguments.from_params(params, command_definition)`; `params` keys are
     /// the Ruby Symbol names, in Hash order.
     pub fn from_params(
-        params: &[(String, RubyValue)],
+        params: &[(String, Value)],
         command_definition: Option<&CommandDefinition>,
     ) -> Result<Arguments, ModelError> {
         let mut options = Vec::new();
@@ -99,7 +99,7 @@ impl Arguments {
     /// `Arguments.determine_argument_type(key, value, command_definition)`.
     pub fn determine_argument_type(
         key: &str,
-        value: &RubyValue,
+        value: &Value,
         command_definition: Option<&CommandDefinition>,
     ) -> Result<ArgumentKind, ModelError> {
         if let Some(cmd) = command_definition {
@@ -120,17 +120,17 @@ impl Arguments {
             }
         }
         Ok(match value {
-            RubyValue::Bool(_) => ArgumentKind::Flag,
+            Value::Bool(_) => ArgumentKind::Flag,
             _ => ArgumentKind::Option,
         })
     }
 
     /// `Arguments.stringify_value(value)`.
-    pub fn stringify_value(value: &RubyValue) -> String {
+    pub fn stringify_value(value: &Value) -> String {
         match value {
-            RubyValue::Array(items) => items
+            Value::Array(items) => items
                 .iter()
-                .map(RubyValue::to_ruby_s)
+                .map(Value::to_ruby_s)
                 .collect::<Vec<_>>()
                 .join(", "),
             other => other.to_ruby_s(),
