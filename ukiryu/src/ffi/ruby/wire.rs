@@ -57,8 +57,9 @@ fn parse_yaml(ruby: &Ruby, yaml: RString) -> Result<RValue, Error> {
     to_ruby(ruby, &json_value(ruby, &reply["value"])?)
 }
 
-/// One shell formatter call: `escape("bash", :quote, {string: "a b"})`.
-/// `arguments` holds the method's own fields (`string`, `for_exe`, `path`,
+/// One shell formatter call: `escape("bash", :quote, {string: "a b"})`,
+/// sent as the wire's `{shell:, operation: {method:, ...}}`. `arguments`
+/// holds the method's own fields (`string`, `for_exe`, `path`,
 /// `name`, `executable`, `args`), with Symbol or String keys.
 fn escape(ruby: &Ruby, shell: RString, method: RValue, arguments: RHash) -> Result<RValue, Error> {
     let method = match from_ruby(ruby, method)? {
@@ -70,14 +71,14 @@ fn escape(ruby: &Ruby, shell: RString, method: RValue, arguments: RHash) -> Resu
             ))
         }
     };
-    let mut request = layer(ruby, arguments)?;
-    request.insert("op".into(), Json::String("escape".into()));
-    request.insert(
-        "shell".into(),
-        Json::String(super::values::text(ruby, shell)?),
-    );
-    request.insert("method".into(), Json::String(method));
-    let reply = call(ruby, Json::Object(request))?;
+    let mut operation = layer(ruby, arguments)?;
+    operation.insert("method".into(), Json::String(method));
+    let request = json!({
+        "op": "escape",
+        "shell": super::values::text(ruby, shell)?,
+        "operation": operation,
+    });
+    let reply = call(ruby, request)?;
     to_ruby(ruby, &json_value(ruby, &reply["value"])?)
 }
 

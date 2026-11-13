@@ -127,11 +127,15 @@ end
 # Rows where the core's register load path returns a different value than the
 # Ruby source, observed through this binding (reported to the core owner, not
 # fixed here): Yeptris yields a String for an integer outside i64/u64, and
-# reads the YAML 1.2 float `1e300`, which Psych (YAML 1.1) keeps as a String.
+# reads the YAML 1.2 float `1e300`, which Psych (YAML 1.1) keeps as a String;
+# a !!binary payload loses its ASCII-8BIT encoding.
 $known_divergences = []
 KNOWN_CORE_DIVERGENCES = {
   'bigint' => { 'ok' => { '$hash' => [[{ '$sym' => 'v' }, { '$str' => '123456789012345678901234567890', 'encoding' => 'UTF-8' }]] } },
   'negative-bigint' => { 'ok' => { '$hash' => [[{ '$sym' => 'v' }, { '$str' => '-123456789012345678901234567890', 'encoding' => 'UTF-8' }]] } },
+  # Psych returns an ASCII-8BIT String for !!binary; the core value has text
+  # Strings only, so the bytes come back as UTF-8.
+  'tag-binary' => { 'ok' => { '$hash' => [[{ '$sym' => 'v' }, { '$str' => 'hi', 'encoding' => 'UTF-8' }]] } },
   'floats' => { 'ok' => { '$hash' => [[{ '$sym' => 'v' }, { '$array' => [{ '$float' => '1.0' }, { '$float' => '2.5' }, { '$float' => '-0.0' }, { '$float' => '1.0e+300' }] }]] } }
 }.freeze
 REFERENCE.fetch('registers').each do |row|
@@ -339,21 +343,24 @@ config_requests.each_with_index do |(environment, programmatic, cli), index|
           native_error.message == reply['error']['message'], "wire #{reply.inspect}, native #{native_error.inspect}")
   end
 end
+# [shell, method, arguments, wire reply expected ok]
 escape_requests = [
-  ['bash', :escape, { string: "it's $HOME" }],
-  ['/bin/bash', :quote, { string: 'a b' }],
-  ['zsh', :needs_quoting, { string: 'plain' }],
-  ['fish', :env_var, { name: 'PATH' }],
-  ['bash', :join, { executable: '/usr/bin/x y', args: ['a b', "c'd"] }],
-  ['sh', :format_path, { path: '/tmp/a b' }],
-  ['powershell', :quote, { string: 'a"b', for_exe: true }],
-  ['powershell', :escape_for_double_quotes, { string: 'a"$b' }],
-  ['bash', :escape_for_double_quotes, { string: 'x' }],
-  ['bash', :quote, { string: 'x', for_exe: false }],
-  ['nosuch', :escape, { string: 'x' }]
+  ['bash', :escape, { string: "it's $HOME" }, true],
+  ['/bin/bash', :quote, { string: 'a b' }, true],
+  ['zsh', :needs_quoting, { string: 'plain' }, true],
+  ['fish', :env_var, { name: 'PATH' }, true],
+  ['bash', :join, { executable: '/usr/bin/x y', args: ['a b', "c'd"] }, true],
+  ['sh', :format_path, { path: '/tmp/a b' }, true],
+  ['powershell', :quote, { string: 'a"b', for_exe: true }, true],
+  ['powershell', :escape_for_double_quotes, { string: 'a"$b' }, true],
+  ['bash', :escape_for_double_quotes, { string: 'x' }, false],
+  ['bash', :quote, { string: 'x', for_exe: false }, false],
+  ['nosuch', :escape, { string: 'x' }, false]
 ]
-escape_requests.each_with_index do |(shell, method, arguments), index|
-  reply = wire.call({ op: 'escape', shell: shell, method: method.to_s }.merge(stringify.call(arguments)))
+escape_requests.each_with_index do |(shell, method, arguments, expect_ok), index|
+  operation = { method: method.to_s }.merge(arguments)
+  reply = wire.call({ op: 'escape', shell: shell, operation: stringify.call(operation) })
+  check('correspondence', "escape.#{index}.wire-outcome", reply['ok'] == expect_ok, reply.inspect)
   native_error = raised { NATIVE.escape(shell, method, arguments) }
   if reply['ok']
     native = NATIVE.escape(shell, method, arguments)
