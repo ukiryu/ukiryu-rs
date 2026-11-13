@@ -174,7 +174,15 @@ fn powershell_status_output_and_stdin() {
     let cat = if cfg!(windows) { "more" } else { "cat" };
     let execution = execute(request(ShellName::PowerShell, cat, &[]).stdin_bytes("test data"))
         .expect("powershell stdin");
-    assert_eq!(execution.result.stdout().trim(), "test data");
+    // Windows PowerShell 5.1 prefixes text it pipes into a native command
+    // with UTF-8 byte order marks (observed on windows-2022 CI: two of
+    // them). That comes from the source's `Get-Content | & cmd` pipeline,
+    // which the port keeps, so the marks are stripped before comparing.
+    let stdout = execution.result.stdout().trim();
+    assert_eq!(stdout.trim_start_matches('\u{feff}'), "test data");
+    if !cfg!(windows) {
+        assert_eq!(stdout, "test data");
+    }
 }
 
 #[test]
