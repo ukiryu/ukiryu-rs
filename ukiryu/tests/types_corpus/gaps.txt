@@ -1,15 +1,2 @@
 # Rows the Rust port answers with Unsupported instead of reproducing Ruby.
 # Every id must exist; the oracle test fails if this list and the port disagree.
-# /i with a character whose full case folding has several characters (U+FB06 "st"):
-# Onigmo folds it to ASCII, the portable engine uses simple folding.
-datetime.parse.130
-datetime.parse.131
-regexp.match.057
-regexp.match.058
-# Back-references (\1, \k<name>), \p{...} and non-ASCII pattern text under /i
-# are refused by the portable Onigmo translation (types/onig.rs).
-regexp.match.067
-regexp.match.068
-regexp.match.069
-regexp.match.075
-regexp.match.082

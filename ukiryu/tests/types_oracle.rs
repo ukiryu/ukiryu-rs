@@ -326,7 +326,7 @@ fn datetime_parse_matrix() {
 }
 
 /// `Type.validate(value, :string, { pattern:, allow_empty: true })`
-/// (`regexp_match.jsonl`): `String#=~` on the portable engine.
+/// (`regexp_match.jsonl`): `String#=~` on Ruby's Onigmo.
 #[test]
 fn regexp_match_matrix() {
     let mut tally = Tally::default();

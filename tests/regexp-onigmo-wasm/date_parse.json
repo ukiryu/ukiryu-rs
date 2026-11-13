@@ -1,0 +1,58 @@
+{
+  "source": {
+    "ruby": "4.0.1",
+    "revision": "e04267a14b1a5dea2d2c368e48d41bd3db441f4f",
+    "date": "3.5.1",
+    "api": "Date._parse(input, true)"
+  },
+  "rows": [
+    {
+      "input": "1ﬆ Jan 2024",
+      "expect": {
+        "year": "2024",
+        "mon": "1",
+        "mday": "1"
+      }
+    },
+    {
+      "input": "Jan 1ﬆ",
+      "expect": {
+        "year": null,
+        "mon": "1",
+        "mday": "1"
+      }
+    },
+    {
+      "input": "1st Jan 2024",
+      "expect": {
+        "year": "2024",
+        "mon": "1",
+        "mday": "1"
+      }
+    },
+    {
+      "input": "2ﬆﬆ Feb 2020",
+      "expect": {
+        "year": "2020",
+        "mon": "2",
+        "mday": "2"
+      }
+    },
+    {
+      "input": "3RD MÄR 2021",
+      "expect": {
+        "year": null,
+        "mon": null,
+        "mday": "3"
+      }
+    },
+    {
+      "input": "été 5 May 2022",
+      "expect": {
+        "year": "2022",
+        "mon": "5",
+        "mday": "5"
+      }
+    }
+  ]
+}

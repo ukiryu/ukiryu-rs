@@ -21,9 +21,10 @@ pub trait Host {
     /// `File.exist?(path)` (follows symlinks).
     fn file_exists(&self, path: &str) -> bool;
 
-    /// `string =~ regexp`. The default runs the portable Onigmo-compatible
-    /// engine ([`super::onig`]); `None` means the answer could differ from
-    /// Ruby's, and validation then fails with an `Unsupported` error.
+    /// `string =~ regexp`. The default runs Ruby 4.0.1's Onigmo
+    /// ([`super::onig`]); `None` means no answer (Ruby would not create the
+    /// `Regexp`, or the engine failed), and validation then fails with an
+    /// `Unsupported` error.
     fn regexp_match(&self, regexp: &Regexp, string: &str) -> Option<bool> {
         onig::regexp_match(regexp, string)
     }
