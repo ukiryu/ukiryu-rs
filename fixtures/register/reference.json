@@ -1,0 +1,3573 @@
+{
+  "source_revision": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+  "fixture": {
+    "source": "manual",
+    "exists": true,
+    "valid": true,
+    "tool_names": [
+      "bzip2",
+      "bzip2_busybox",
+      "bzip2_gnu",
+      "exiftool",
+      "ffmpeg",
+      "ghostscript",
+      "gzip",
+      "gzip_busybox",
+      "gzip_gnu",
+      "imagemagick",
+      "inkscape",
+      "jq",
+      "pdf2ps",
+      "ping",
+      "ping_bsd",
+      "ping_gnu",
+      "ping_windows",
+      "sort",
+      "tar",
+      "unzip",
+      "yq"
+    ],
+    "tool?": {
+      "bzip2": true,
+      "bzip2_busybox": true,
+      "bzip2_gnu": true,
+      "exiftool": true,
+      "ffmpeg": true,
+      "ghostscript": true,
+      "gzip": true,
+      "gzip_busybox": true,
+      "gzip_gnu": true,
+      "imagemagick": true,
+      "inkscape": true,
+      "jq": true,
+      "pdf2ps": true,
+      "ping": true,
+      "ping_bsd": true,
+      "ping_gnu": true,
+      "ping_windows": true,
+      "sort": true,
+      "tar": true,
+      "unzip": true,
+      "yq": true,
+      "missing": false,
+      "interfaces": false
+    },
+    "list_versions": {
+      "bzip2": [
+        [
+          "<FIXTURE>/tools/bzip2/default/1.0.yaml",
+          {
+            "type": "string",
+            "value": "1.0"
+          }
+        ]
+      ],
+      "bzip2_busybox": [
+        [
+          "<FIXTURE>/tools/bzip2_busybox/default/1.0.yaml",
+          {
+            "type": "string",
+            "value": "1.0"
+          }
+        ]
+      ],
+      "bzip2_gnu": [
+        [
+          "<FIXTURE>/tools/bzip2_gnu/default/1.0.yaml",
+          {
+            "type": "string",
+            "value": "1.0"
+          }
+        ]
+      ],
+      "exiftool": [
+        [
+          "<FIXTURE>/tools/exiftool/default/1.0.yaml",
+          {
+            "type": "string",
+            "value": "1.0"
+          }
+        ]
+      ],
+      "ffmpeg": [
+        [
+          "<FIXTURE>/tools/ffmpeg/default/1.0.yaml",
+          {
+            "type": "string",
+            "value": "1.0"
+          }
+        ]
+      ],
+      "ghostscript": [
+        [
+          "<FIXTURE>/tools/ghostscript/default/10.0.yaml",
+          {
+            "type": "string",
+            "value": "10.0"
+          }
+        ]
+      ],
+      "gzip": [
+        [
+          "<FIXTURE>/tools/gzip/default/1.0.yaml",
+          {
+            "type": "string",
+            "value": "1.0"
+          }
+        ]
+      ],
+      "gzip_busybox": [
+        [
+          "<FIXTURE>/tools/gzip_busybox/default/1.0.yaml",
+          {
+            "type": "string",
+            "value": "1.0"
+          }
+        ]
+      ],
+      "gzip_gnu": [
+        [
+          "<FIXTURE>/tools/gzip_gnu/default/1.0.yaml",
+          {
+            "type": "string",
+            "value": "1.0"
+          }
+        ]
+      ],
+      "imagemagick": [],
+      "inkscape": [
+        [
+          "<FIXTURE>/tools/inkscape/default/0.92.yaml",
+          {
+            "type": "string",
+            "value": "0.92"
+          }
+        ],
+        [
+          "<FIXTURE>/tools/inkscape/default/1.0.yaml",
+          {
+            "type": "string",
+            "value": "1.0"
+          }
+        ]
+      ],
+      "jq": [
+        [
+          "<FIXTURE>/tools/jq/default/1.0.yaml",
+          {
+            "type": "string",
+            "value": "1.0"
+          }
+        ]
+      ],
+      "pdf2ps": [
+        [
+          "<FIXTURE>/tools/pdf2ps/default/1.0.yaml",
+          {
+            "type": "string",
+            "value": "1.0"
+          }
+        ]
+      ],
+      "ping": [
+        [
+          "<FIXTURE>/tools/ping/bsd/1.0.yaml",
+          {
+            "type": "string",
+            "value": "1.0.0"
+          }
+        ],
+        [
+          "<FIXTURE>/tools/ping/gnu/2024.01.17.yaml",
+          {
+            "type": "string",
+            "value": "2024.01.17"
+          }
+        ],
+        [
+          "<FIXTURE>/tools/ping/windows/1.0.yaml",
+          {
+            "type": "string",
+            "value": "1.0.0"
+          }
+        ]
+      ],
+      "ping_bsd": [
+        [
+          "<FIXTURE>/tools/ping_bsd/default/1.0.yaml",
+          {
+            "type": "string",
+            "value": "1.0"
+          }
+        ]
+      ],
+      "ping_gnu": [
+        [
+          "<FIXTURE>/tools/ping_gnu/default/1.0.yaml",
+          {
+            "type": "string",
+            "value": "1.0"
+          }
+        ]
+      ],
+      "ping_windows": [
+        [
+          "<FIXTURE>/tools/ping_windows/default/1.0.yaml",
+          {
+            "type": "string",
+            "value": "1.0"
+          }
+        ]
+      ],
+      "sort": [
+        [
+          "<FIXTURE>/tools/sort/default/1.0.yaml",
+          {
+            "type": "string",
+            "value": "1.0"
+          }
+        ]
+      ],
+      "tar": [
+        [
+          "<FIXTURE>/tools/tar/default/1.0.yaml",
+          {
+            "type": "string",
+            "value": "1.0"
+          }
+        ]
+      ],
+      "unzip": [
+        [
+          "<FIXTURE>/tools/unzip/default/1.0.yaml",
+          {
+            "type": "string",
+            "value": "1.0"
+          }
+        ],
+        [
+          "<FIXTURE>/tools/unzip/default/6.0.yaml",
+          {
+            "type": "string",
+            "value": "6.0"
+          }
+        ]
+      ],
+      "yq": [
+        [
+          "<FIXTURE>/tools/yq/default/1.0.yaml",
+          {
+            "type": "string",
+            "value": "1.0"
+          }
+        ]
+      ],
+      "missing": []
+    },
+    "load_tool_yaml": {
+      "bzip2": {
+        "<latest>": "<FIXTURE>/tools/bzip2/default/1.0.yaml",
+        "1.0": "<FIXTURE>/tools/bzip2/default/1.0.yaml",
+        "6.9": null,
+        "7.1": null,
+        "10.0": null,
+        "0.92": null,
+        "2024.01.17": null,
+        "missing": null
+      },
+      "bzip2_busybox": {
+        "<latest>": "<FIXTURE>/tools/bzip2_busybox/default/1.0.yaml",
+        "1.0": "<FIXTURE>/tools/bzip2_busybox/default/1.0.yaml",
+        "6.9": null,
+        "7.1": null,
+        "10.0": null,
+        "0.92": null,
+        "2024.01.17": null,
+        "missing": null
+      },
+      "bzip2_gnu": {
+        "<latest>": "<FIXTURE>/tools/bzip2_gnu/default/1.0.yaml",
+        "1.0": "<FIXTURE>/tools/bzip2_gnu/default/1.0.yaml",
+        "6.9": null,
+        "7.1": null,
+        "10.0": null,
+        "0.92": null,
+        "2024.01.17": null,
+        "missing": null
+      },
+      "exiftool": {
+        "<latest>": "<FIXTURE>/tools/exiftool/default/1.0.yaml",
+        "1.0": "<FIXTURE>/tools/exiftool/default/1.0.yaml",
+        "6.9": null,
+        "7.1": null,
+        "10.0": null,
+        "0.92": null,
+        "2024.01.17": null,
+        "missing": null
+      },
+      "ffmpeg": {
+        "<latest>": "<FIXTURE>/tools/ffmpeg/default/1.0.yaml",
+        "1.0": "<FIXTURE>/tools/ffmpeg/default/1.0.yaml",
+        "6.9": null,
+        "7.1": null,
+        "10.0": null,
+        "0.92": null,
+        "2024.01.17": null,
+        "missing": null
+      },
+      "ghostscript": {
+        "<latest>": "<FIXTURE>/tools/ghostscript/default/10.0.yaml",
+        "1.0": null,
+        "6.9": null,
+        "7.1": null,
+        "10.0": "<FIXTURE>/tools/ghostscript/default/10.0.yaml",
+        "0.92": null,
+        "2024.01.17": null,
+        "missing": null
+      },
+      "gzip": {
+        "<latest>": "<FIXTURE>/tools/gzip/default/1.0.yaml",
+        "1.0": "<FIXTURE>/tools/gzip/default/1.0.yaml",
+        "6.9": null,
+        "7.1": null,
+        "10.0": null,
+        "0.92": null,
+        "2024.01.17": null,
+        "missing": null
+      },
+      "gzip_busybox": {
+        "<latest>": "<FIXTURE>/tools/gzip_busybox/default/1.0.yaml",
+        "1.0": "<FIXTURE>/tools/gzip_busybox/default/1.0.yaml",
+        "6.9": null,
+        "7.1": null,
+        "10.0": null,
+        "0.92": null,
+        "2024.01.17": null,
+        "missing": null
+      },
+      "gzip_gnu": {
+        "<latest>": "<FIXTURE>/tools/gzip_gnu/default/1.0.yaml",
+        "1.0": "<FIXTURE>/tools/gzip_gnu/default/1.0.yaml",
+        "6.9": null,
+        "7.1": null,
+        "10.0": null,
+        "0.92": null,
+        "2024.01.17": null,
+        "missing": null
+      },
+      "imagemagick": {
+        "<latest>": null,
+        "1.0": null,
+        "6.9": null,
+        "7.1": null,
+        "10.0": null,
+        "0.92": null,
+        "2024.01.17": null,
+        "missing": null
+      },
+      "inkscape": {
+        "<latest>": "<FIXTURE>/tools/inkscape/default/1.0.yaml",
+        "1.0": "<FIXTURE>/tools/inkscape/default/1.0.yaml",
+        "6.9": null,
+        "7.1": null,
+        "10.0": null,
+        "0.92": "<FIXTURE>/tools/inkscape/default/0.92.yaml",
+        "2024.01.17": null,
+        "missing": null
+      },
+      "jq": {
+        "<latest>": "<FIXTURE>/tools/jq/default/1.0.yaml",
+        "1.0": "<FIXTURE>/tools/jq/default/1.0.yaml",
+        "6.9": null,
+        "7.1": null,
+        "10.0": null,
+        "0.92": null,
+        "2024.01.17": null,
+        "missing": null
+      },
+      "pdf2ps": {
+        "<latest>": "<FIXTURE>/tools/pdf2ps/default/1.0.yaml",
+        "1.0": "<FIXTURE>/tools/pdf2ps/default/1.0.yaml",
+        "6.9": null,
+        "7.1": null,
+        "10.0": null,
+        "0.92": null,
+        "2024.01.17": null,
+        "missing": null
+      },
+      "ping": {
+        "<latest>": "<FIXTURE>/tools/ping/windows/1.0.yaml",
+        "1.0": "<FIXTURE>/tools/ping/bsd/1.0.yaml",
+        "6.9": null,
+        "7.1": null,
+        "10.0": null,
+        "0.92": null,
+        "2024.01.17": "<FIXTURE>/tools/ping/gnu/2024.01.17.yaml",
+        "missing": null
+      },
+      "ping_bsd": {
+        "<latest>": "<FIXTURE>/tools/ping_bsd/default/1.0.yaml",
+        "1.0": "<FIXTURE>/tools/ping_bsd/default/1.0.yaml",
+        "6.9": null,
+        "7.1": null,
+        "10.0": null,
+        "0.92": null,
+        "2024.01.17": null,
+        "missing": null
+      },
+      "ping_gnu": {
+        "<latest>": "<FIXTURE>/tools/ping_gnu/default/1.0.yaml",
+        "1.0": "<FIXTURE>/tools/ping_gnu/default/1.0.yaml",
+        "6.9": null,
+        "7.1": null,
+        "10.0": null,
+        "0.92": null,
+        "2024.01.17": null,
+        "missing": null
+      },
+      "ping_windows": {
+        "<latest>": "<FIXTURE>/tools/ping_windows/default/1.0.yaml",
+        "1.0": "<FIXTURE>/tools/ping_windows/default/1.0.yaml",
+        "6.9": null,
+        "7.1": null,
+        "10.0": null,
+        "0.92": null,
+        "2024.01.17": null,
+        "missing": null
+      },
+      "sort": {
+        "<latest>": "<FIXTURE>/tools/sort/default/1.0.yaml",
+        "1.0": "<FIXTURE>/tools/sort/default/1.0.yaml",
+        "6.9": null,
+        "7.1": null,
+        "10.0": null,
+        "0.92": null,
+        "2024.01.17": null,
+        "missing": null
+      },
+      "tar": {
+        "<latest>": "<FIXTURE>/tools/tar/default/1.0.yaml",
+        "1.0": "<FIXTURE>/tools/tar/default/1.0.yaml",
+        "6.9": null,
+        "7.1": null,
+        "10.0": null,
+        "0.92": null,
+        "2024.01.17": null,
+        "missing": null
+      },
+      "unzip": {
+        "<latest>": "<FIXTURE>/tools/unzip/default/6.0.yaml",
+        "1.0": "<FIXTURE>/tools/unzip/default/1.0.yaml",
+        "6.9": null,
+        "7.1": null,
+        "10.0": null,
+        "0.92": null,
+        "2024.01.17": null,
+        "missing": null
+      },
+      "yq": {
+        "<latest>": "<FIXTURE>/tools/yq/default/1.0.yaml",
+        "1.0": "<FIXTURE>/tools/yq/default/1.0.yaml",
+        "6.9": null,
+        "7.1": null,
+        "10.0": null,
+        "0.92": null,
+        "2024.01.17": null,
+        "missing": null
+      },
+      "missing": {
+        "<latest>": null,
+        "1.0": null,
+        "6.9": null,
+        "7.1": null,
+        "10.0": null,
+        "0.92": null,
+        "2024.01.17": null,
+        "missing": null
+      }
+    },
+    "implementation_index": {
+      "bzip2": {
+        "name": {
+          "type": "string",
+          "value": "bzip2"
+        },
+        "interface": {
+          "type": "string",
+          "value": "bzip2"
+        },
+        "interface_version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "implementations": [
+          {
+            "name": {
+              "type": "string",
+              "value": "default"
+            },
+            "default": {
+              "type": "string",
+              "value": "1.0.yaml"
+            },
+            "versions": [
+              {
+                "equals": {
+                  "type": "string",
+                  "value": "1.0"
+                },
+                "file": {
+                  "type": "string",
+                  "value": "1.0.yaml"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "bzip2_busybox": {
+        "name": {
+          "type": "string",
+          "value": "bzip2_busybox"
+        },
+        "interface": {
+          "type": "string",
+          "value": "bzip2"
+        },
+        "interface_version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "implementations": [
+          {
+            "name": {
+              "type": "string",
+              "value": "default"
+            },
+            "default": {
+              "type": "string",
+              "value": "1.0.yaml"
+            },
+            "versions": [
+              {
+                "equals": {
+                  "type": "string",
+                  "value": "1.0"
+                },
+                "file": {
+                  "type": "string",
+                  "value": "1.0.yaml"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "bzip2_gnu": {
+        "name": {
+          "type": "string",
+          "value": "bzip2_gnu"
+        },
+        "interface": {
+          "type": "string",
+          "value": "bzip2"
+        },
+        "interface_version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "implementations": [
+          {
+            "name": {
+              "type": "string",
+              "value": "default"
+            },
+            "default": {
+              "type": "string",
+              "value": "1.0.yaml"
+            },
+            "versions": [
+              {
+                "equals": {
+                  "type": "string",
+                  "value": "1.0"
+                },
+                "file": {
+                  "type": "string",
+                  "value": "1.0.yaml"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "exiftool": {
+        "name": {
+          "type": "string",
+          "value": "exiftool"
+        },
+        "interface": {
+          "type": "string",
+          "value": "exiftool"
+        },
+        "interface_version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "implementations": [
+          {
+            "name": {
+              "type": "string",
+              "value": "default"
+            },
+            "default": {
+              "type": "string",
+              "value": "1.0.yaml"
+            },
+            "versions": [
+              {
+                "equals": {
+                  "type": "string",
+                  "value": "1.0"
+                },
+                "file": {
+                  "type": "string",
+                  "value": "1.0.yaml"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "ffmpeg": {
+        "name": {
+          "type": "string",
+          "value": "ffmpeg"
+        },
+        "interface": {
+          "type": "string",
+          "value": "ffmpeg"
+        },
+        "interface_version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "implementations": [
+          {
+            "name": {
+              "type": "string",
+              "value": "default"
+            },
+            "default": {
+              "type": "string",
+              "value": "1.0.yaml"
+            },
+            "versions": [
+              {
+                "equals": {
+                  "type": "string",
+                  "value": "1.0"
+                },
+                "file": {
+                  "type": "string",
+                  "value": "1.0.yaml"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "ghostscript": {
+        "name": {
+          "type": "string",
+          "value": "ghostscript"
+        },
+        "interface": {
+          "type": "string",
+          "value": "gs"
+        },
+        "interface_version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "implementations": [
+          {
+            "name": {
+              "type": "string",
+              "value": "default"
+            },
+            "default": {
+              "type": "string",
+              "value": "10.0.yaml"
+            },
+            "versions": [
+              {
+                "equals": {
+                  "type": "string",
+                  "value": "10.0"
+                },
+                "file": {
+                  "type": "string",
+                  "value": "10.0.yaml"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gzip": {
+        "name": {
+          "type": "string",
+          "value": "gzip"
+        },
+        "interface": {
+          "type": "string",
+          "value": "gzip"
+        },
+        "interface_version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "implementations": [
+          {
+            "name": {
+              "type": "string",
+              "value": "default"
+            },
+            "default": {
+              "type": "string",
+              "value": "1.0.yaml"
+            },
+            "versions": [
+              {
+                "equals": {
+                  "type": "string",
+                  "value": "1.0"
+                },
+                "file": {
+                  "type": "string",
+                  "value": "1.0.yaml"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gzip_busybox": {
+        "name": {
+          "type": "string",
+          "value": "gzip_busybox"
+        },
+        "interface": {
+          "type": "string",
+          "value": "gzip"
+        },
+        "interface_version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "implementations": [
+          {
+            "name": {
+              "type": "string",
+              "value": "default"
+            },
+            "default": {
+              "type": "string",
+              "value": "1.0.yaml"
+            },
+            "versions": [
+              {
+                "equals": {
+                  "type": "string",
+                  "value": "1.0"
+                },
+                "file": {
+                  "type": "string",
+                  "value": "1.0.yaml"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gzip_gnu": {
+        "name": {
+          "type": "string",
+          "value": "gzip_gnu"
+        },
+        "interface": {
+          "type": "string",
+          "value": "gzip"
+        },
+        "interface_version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "implementations": [
+          {
+            "name": {
+              "type": "string",
+              "value": "default"
+            },
+            "default": {
+              "type": "string",
+              "value": "1.0.yaml"
+            },
+            "versions": [
+              {
+                "equals": {
+                  "type": "string",
+                  "value": "1.0"
+                },
+                "file": {
+                  "type": "string",
+                  "value": "1.0.yaml"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "imagemagick": {
+        "name": {
+          "type": "string",
+          "value": "imagemagick"
+        },
+        "interface": {
+          "type": "string",
+          "value": "imagemagick"
+        },
+        "interface_version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "implementations": [
+          {
+            "name": {
+              "type": "string",
+              "value": "default"
+            },
+            "default": {
+              "type": "string",
+              "value": "7.1.yaml"
+            },
+            "versions": [
+              {
+                "after": {
+                  "type": "string",
+                  "value": "7.0"
+                },
+                "file": {
+                  "type": "string",
+                  "value": "7.1.yaml"
+                }
+              },
+              {
+                "after": {
+                  "type": "string",
+                  "value": "6.0"
+                },
+                "file": {
+                  "type": "string",
+                  "value": "6.9.yaml"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "inkscape": {
+        "name": {
+          "type": "string",
+          "value": "inkscape"
+        },
+        "interface": {
+          "type": "string",
+          "value": "inkscape"
+        },
+        "interface_version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "implementations": [
+          {
+            "name": {
+              "type": "string",
+              "value": "default"
+            },
+            "default": {
+              "type": "string",
+              "value": "1.0.yaml"
+            },
+            "versions": [
+              {
+                "equals": {
+                  "type": "string",
+                  "value": "0.92"
+                },
+                "file": {
+                  "type": "string",
+                  "value": "0.92.yaml"
+                }
+              },
+              {
+                "equals": {
+                  "type": "string",
+                  "value": "1.0"
+                },
+                "file": {
+                  "type": "string",
+                  "value": "1.0.yaml"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "jq": {
+        "name": {
+          "type": "string",
+          "value": "jq"
+        },
+        "interface": {
+          "type": "string",
+          "value": "jq"
+        },
+        "interface_version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "implementations": [
+          {
+            "name": {
+              "type": "string",
+              "value": "default"
+            },
+            "default": {
+              "type": "string",
+              "value": "1.0.yaml"
+            },
+            "versions": [
+              {
+                "equals": {
+                  "type": "string",
+                  "value": "1.0"
+                },
+                "file": {
+                  "type": "string",
+                  "value": "1.0.yaml"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "pdf2ps": {
+        "name": {
+          "type": "string",
+          "value": "pdf2ps"
+        },
+        "interface": {
+          "type": "string",
+          "value": "pdf2ps"
+        },
+        "interface_version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "implementations": [
+          {
+            "name": {
+              "type": "string",
+              "value": "default"
+            },
+            "default": {
+              "type": "string",
+              "value": "1.0.yaml"
+            },
+            "versions": [
+              {
+                "equals": {
+                  "type": "string",
+                  "value": "1.0"
+                },
+                "file": {
+                  "type": "string",
+                  "value": "1.0.yaml"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "ping": {
+        "name": {
+          "type": "string",
+          "value": "ping"
+        },
+        "interface": {
+          "type": "string",
+          "value": "ping"
+        },
+        "interface_version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "implementations": [
+          {
+            "name": {
+              "type": "string",
+              "value": "bsd"
+            },
+            "default": {
+              "type": "string",
+              "value": "1.0.yaml"
+            },
+            "versions": [
+              {
+                "equals": {
+                  "type": "string",
+                  "value": "1.0.0"
+                },
+                "file": {
+                  "type": "string",
+                  "value": "1.0.yaml"
+                }
+              },
+              {
+                "after": {
+                  "type": "string",
+                  "value": "1.0.0"
+                },
+                "file": {
+                  "type": "string",
+                  "value": "latest.yaml"
+                }
+              }
+            ]
+          },
+          {
+            "name": {
+              "type": "string",
+              "value": "gnu"
+            },
+            "default": {
+              "type": "string",
+              "value": "2024.01.17.yaml"
+            },
+            "versions": [
+              {
+                "equals": {
+                  "type": "string",
+                  "value": "2024.01.17"
+                },
+                "file": {
+                  "type": "string",
+                  "value": "2024.01.17.yaml"
+                }
+              },
+              {
+                "after": {
+                  "type": "string",
+                  "value": "2024.01.01"
+                },
+                "file": {
+                  "type": "string",
+                  "value": "latest.yaml"
+                }
+              }
+            ]
+          },
+          {
+            "name": {
+              "type": "string",
+              "value": "windows"
+            },
+            "default": {
+              "type": "string",
+              "value": "1.0.yaml"
+            },
+            "versions": [
+              {
+                "equals": {
+                  "type": "string",
+                  "value": "1.0.0"
+                },
+                "file": {
+                  "type": "string",
+                  "value": "1.0.yaml"
+                }
+              },
+              {
+                "after": {
+                  "type": "string",
+                  "value": "1.0.0"
+                },
+                "file": {
+                  "type": "string",
+                  "value": "latest.yaml"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "ping_bsd": {
+        "name": {
+          "type": "string",
+          "value": "ping_bsd"
+        },
+        "interface": {
+          "type": "string",
+          "value": "ping"
+        },
+        "interface_version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "implementations": [
+          {
+            "name": {
+              "type": "string",
+              "value": "default"
+            },
+            "default": {
+              "type": "string",
+              "value": "1.0.yaml"
+            },
+            "versions": [
+              {
+                "equals": {
+                  "type": "string",
+                  "value": "1.0"
+                },
+                "file": {
+                  "type": "string",
+                  "value": "1.0.yaml"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "ping_gnu": {
+        "name": {
+          "type": "string",
+          "value": "ping_gnu"
+        },
+        "interface": {
+          "type": "string",
+          "value": "ping"
+        },
+        "interface_version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "implementations": [
+          {
+            "name": {
+              "type": "string",
+              "value": "default"
+            },
+            "default": {
+              "type": "string",
+              "value": "1.0.yaml"
+            },
+            "versions": [
+              {
+                "equals": {
+                  "type": "string",
+                  "value": "1.0"
+                },
+                "file": {
+                  "type": "string",
+                  "value": "1.0.yaml"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "ping_windows": {
+        "name": {
+          "type": "string",
+          "value": "ping_windows"
+        },
+        "interface": {
+          "type": "string",
+          "value": "ping"
+        },
+        "interface_version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "implementations": [
+          {
+            "name": {
+              "type": "string",
+              "value": "default"
+            },
+            "default": {
+              "type": "string",
+              "value": "1.0.yaml"
+            },
+            "versions": [
+              {
+                "equals": {
+                  "type": "string",
+                  "value": "1.0"
+                },
+                "file": {
+                  "type": "string",
+                  "value": "1.0.yaml"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "sort": {
+        "name": {
+          "type": "string",
+          "value": "sort"
+        },
+        "interface": {
+          "type": "string",
+          "value": "sort"
+        },
+        "interface_version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "implementations": [
+          {
+            "name": {
+              "type": "string",
+              "value": "default"
+            },
+            "default": {
+              "type": "string",
+              "value": "1.0.yaml"
+            },
+            "versions": [
+              {
+                "equals": {
+                  "type": "string",
+                  "value": "1.0"
+                },
+                "file": {
+                  "type": "string",
+                  "value": "1.0.yaml"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "tar": {
+        "name": {
+          "type": "string",
+          "value": "tar"
+        },
+        "interface": {
+          "type": "string",
+          "value": "tar"
+        },
+        "interface_version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "implementations": [
+          {
+            "name": {
+              "type": "string",
+              "value": "default"
+            },
+            "default": {
+              "type": "string",
+              "value": "1.0.yaml"
+            },
+            "versions": [
+              {
+                "equals": {
+                  "type": "string",
+                  "value": "1.0"
+                },
+                "file": {
+                  "type": "string",
+                  "value": "1.0.yaml"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "unzip": {
+        "name": {
+          "type": "string",
+          "value": "unzip"
+        },
+        "interface": {
+          "type": "string",
+          "value": "unzip"
+        },
+        "interface_version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "implementations": [
+          {
+            "name": {
+              "type": "string",
+              "value": "default"
+            },
+            "default": {
+              "type": "string",
+              "value": "6.0.yaml"
+            },
+            "versions": [
+              {
+                "equals": {
+                  "type": "string",
+                  "value": "1.0"
+                },
+                "file": {
+                  "type": "string",
+                  "value": "1.0.yaml"
+                }
+              },
+              {
+                "equals": {
+                  "type": "string",
+                  "value": "6.0"
+                },
+                "file": {
+                  "type": "string",
+                  "value": "6.0.yaml"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "yq": {
+        "name": {
+          "type": "string",
+          "value": "yq"
+        },
+        "interface": {
+          "type": "string",
+          "value": "yq"
+        },
+        "interface_version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "implementations": [
+          {
+            "name": {
+              "type": "string",
+              "value": "default"
+            },
+            "default": {
+              "type": "string",
+              "value": "1.0.yaml"
+            },
+            "versions": [
+              {
+                "equals": {
+                  "type": "string",
+                  "value": "1.0"
+                },
+                "file": {
+                  "type": "string",
+                  "value": "1.0.yaml"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "missing": null
+    },
+    "interface": {
+      "bzip2": {
+        "name": {
+          "type": "string",
+          "value": "bzip2"
+        },
+        "version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "actions": null
+      },
+      "exiftool": {
+        "name": {
+          "type": "string",
+          "value": "exiftool"
+        },
+        "version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "actions": [
+          "read",
+          "write"
+        ]
+      },
+      "ffmpeg": {
+        "name": {
+          "type": "string",
+          "value": "ffmpeg"
+        },
+        "version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "actions": [
+          "convert"
+        ]
+      },
+      "gs": {
+        "name": {
+          "type": "string",
+          "value": "ghostscript"
+        },
+        "version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "actions": [
+          "convert"
+        ]
+      },
+      "gzip": {
+        "name": {
+          "type": "string",
+          "value": "gzip"
+        },
+        "version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "actions": [
+          "compress",
+          "decompress"
+        ]
+      },
+      "imagemagick": {
+        "name": {
+          "type": "string",
+          "value": "imagemagick"
+        },
+        "version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "actions": [
+          "convert",
+          "identify",
+          "mogrify"
+        ]
+      },
+      "inkscape": {
+        "name": {
+          "type": "string",
+          "value": "inkscape"
+        },
+        "version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "actions": [
+          "export",
+          "query"
+        ]
+      },
+      "jq": {
+        "name": {
+          "type": "string",
+          "value": "jq"
+        },
+        "version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "actions": [
+          "process"
+        ]
+      },
+      "pdf2ps": {
+        "name": {
+          "type": "string",
+          "value": "pdf2ps"
+        },
+        "version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "actions": [
+          "convert"
+        ]
+      },
+      "ping": {
+        "name": {
+          "type": "string",
+          "value": "ping"
+        },
+        "version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "actions": [
+          "ping"
+        ]
+      },
+      "sort": {
+        "name": {
+          "type": "string",
+          "value": "sort"
+        },
+        "version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "actions": [
+          "sort"
+        ]
+      },
+      "tar": {
+        "name": {
+          "type": "string",
+          "value": "tar"
+        },
+        "version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "actions": null
+      },
+      "unzip": {
+        "name": {
+          "type": "string",
+          "value": "unzip"
+        },
+        "version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "actions": [
+          "extract"
+        ]
+      },
+      "yq": {
+        "name": {
+          "type": "string",
+          "value": "yq"
+        },
+        "version": {
+          "type": "string",
+          "value": "1.0"
+        },
+        "actions": [
+          "eval",
+          "eval_all",
+          "eval_in_place"
+        ]
+      },
+      "missing": null
+    },
+    "implementation_version": [
+      {
+        "tool": "bzip2",
+        "implementation": "default",
+        "file": "1.0.yaml",
+        "loaded": {
+          "implements": {
+            "type": "string",
+            "value": "bzip2/1.0"
+          },
+          "version": {
+            "type": "string",
+            "value": "1.0"
+          },
+          "display_name": {
+            "type": "string",
+            "value": "bzip2"
+          },
+          "profiles": [
+            "default"
+          ]
+        }
+      },
+      {
+        "tool": "bzip2_busybox",
+        "implementation": "default",
+        "file": "1.0.yaml",
+        "loaded": {
+          "implements": {
+            "type": "string",
+            "value": "bzip2_busybox/1.0"
+          },
+          "version": {
+            "type": "string",
+            "value": "1.0"
+          },
+          "display_name": {
+            "type": "string",
+            "value": "BusyBox bzip2"
+          },
+          "profiles": [
+            "default"
+          ]
+        }
+      },
+      {
+        "tool": "bzip2_gnu",
+        "implementation": "default",
+        "file": "1.0.yaml",
+        "loaded": {
+          "implements": {
+            "type": "string",
+            "value": "bzip2_gnu/1.0"
+          },
+          "version": {
+            "type": "string",
+            "value": "1.0"
+          },
+          "display_name": {
+            "type": "string",
+            "value": "GNU bzip2"
+          },
+          "profiles": [
+            "default"
+          ]
+        }
+      },
+      {
+        "tool": "exiftool",
+        "implementation": "default",
+        "file": "1.0.yaml",
+        "loaded": {
+          "implements": {
+            "type": "string",
+            "value": "exiftool/1.0"
+          },
+          "version": {
+            "type": "string",
+            "value": "1.0"
+          },
+          "display_name": {
+            "type": "string",
+            "value": "ExifTool"
+          },
+          "profiles": [
+            "default"
+          ]
+        }
+      },
+      {
+        "tool": "ffmpeg",
+        "implementation": "default",
+        "file": "1.0.yaml",
+        "loaded": {
+          "implements": {
+            "type": "string",
+            "value": "ffmpeg/1.0"
+          },
+          "version": {
+            "type": "string",
+            "value": "1.0"
+          },
+          "display_name": {
+            "type": "string",
+            "value": "FFmpeg"
+          },
+          "profiles": [
+            "default"
+          ]
+        }
+      },
+      {
+        "tool": "ghostscript",
+        "implementation": "default",
+        "file": "10.0.yaml",
+        "loaded": {
+          "implements": {
+            "type": "string",
+            "value": "ghostscript/1.0"
+          },
+          "version": {
+            "type": "string",
+            "value": "1.0"
+          },
+          "display_name": {
+            "type": "string",
+            "value": "Ghostscript"
+          },
+          "profiles": [
+            "unix",
+            "windows"
+          ]
+        }
+      },
+      {
+        "tool": "gzip",
+        "implementation": "default",
+        "file": "1.0.yaml",
+        "loaded": {
+          "implements": {
+            "type": "string",
+            "value": "gzip/1.0"
+          },
+          "version": {
+            "type": "string",
+            "value": "1.0"
+          },
+          "display_name": {
+            "type": "string",
+            "value": "gzip"
+          },
+          "profiles": [
+            "default"
+          ]
+        }
+      },
+      {
+        "tool": "gzip_busybox",
+        "implementation": "default",
+        "file": "1.0.yaml",
+        "loaded": {
+          "implements": {
+            "type": "string",
+            "value": "gzip_busybox/1.0"
+          },
+          "version": {
+            "type": "string",
+            "value": "1.0"
+          },
+          "display_name": {
+            "type": "string",
+            "value": "BusyBox gzip"
+          },
+          "profiles": [
+            "default"
+          ]
+        }
+      },
+      {
+        "tool": "gzip_gnu",
+        "implementation": "default",
+        "file": "1.0.yaml",
+        "loaded": {
+          "implements": {
+            "type": "string",
+            "value": "gzip_gnu/1.0"
+          },
+          "version": {
+            "type": "string",
+            "value": "1.0"
+          },
+          "display_name": {
+            "type": "string",
+            "value": "GNU gzip"
+          },
+          "profiles": [
+            "default"
+          ]
+        }
+      },
+      {
+        "tool": "inkscape",
+        "implementation": "default",
+        "file": "0.92.yaml",
+        "loaded": {
+          "implements": {
+            "type": "string",
+            "value": "inkscape/1.0"
+          },
+          "version": {
+            "type": "string",
+            "value": "0.92"
+          },
+          "display_name": {
+            "type": "string",
+            "value": "Inkscape Vector Graphics Editor"
+          },
+          "profiles": [
+            "legacy_unix",
+            "legacy_windows"
+          ]
+        }
+      },
+      {
+        "tool": "inkscape",
+        "implementation": "default",
+        "file": "1.0.yaml",
+        "loaded": {
+          "implements": {
+            "type": "string",
+            "value": "inkscape/1.0"
+          },
+          "version": {
+            "type": "string",
+            "value": "1.0"
+          },
+          "display_name": {
+            "type": "string",
+            "value": "Inkscape Vector Graphics Editor"
+          },
+          "profiles": [
+            "modern_unix",
+            "modern_windows"
+          ]
+        }
+      },
+      {
+        "tool": "jq",
+        "implementation": "default",
+        "file": "1.0.yaml",
+        "loaded": {
+          "implements": {
+            "type": "string",
+            "value": "jq/1.0"
+          },
+          "version": {
+            "type": "string",
+            "value": "1.0"
+          },
+          "display_name": {
+            "type": "string",
+            "value": "jq (JSON Query)"
+          },
+          "profiles": [
+            "default"
+          ]
+        }
+      },
+      {
+        "tool": "pdf2ps",
+        "implementation": "default",
+        "file": "1.0.yaml",
+        "loaded": {
+          "implements": {
+            "type": "string",
+            "value": "pdf2ps/1.0"
+          },
+          "version": {
+            "type": "string",
+            "value": "1.0"
+          },
+          "display_name": {
+            "type": "string",
+            "value": "pdf2ps"
+          },
+          "profiles": [
+            "default"
+          ]
+        }
+      },
+      {
+        "tool": "ping",
+        "implementation": "bsd",
+        "file": "1.0.yaml",
+        "loaded": {
+          "implements": {
+            "type": "string",
+            "value": "ping"
+          },
+          "version": {
+            "type": "string",
+            "value": "1.0"
+          },
+          "display_name": {
+            "type": "string",
+            "value": "BSD Ping (macOS/BSD)"
+          },
+          "profiles": [
+            "default"
+          ]
+        }
+      },
+      {
+        "tool": "ping",
+        "implementation": "gnu",
+        "file": "2024.01.17.yaml",
+        "loaded": {
+          "implements": {
+            "type": "string",
+            "value": "ping"
+          },
+          "version": {
+            "type": "string",
+            "value": "2024.01.17"
+          },
+          "display_name": {
+            "type": "string",
+            "value": "GNU Ping (iputils)"
+          },
+          "profiles": [
+            "default"
+          ]
+        }
+      },
+      {
+        "tool": "ping",
+        "implementation": "windows",
+        "file": "1.0.yaml",
+        "loaded": {
+          "implements": {
+            "type": "string",
+            "value": "ping"
+          },
+          "version": {
+            "type": "string",
+            "value": "1.0"
+          },
+          "display_name": {
+            "type": "string",
+            "value": "Windows ping"
+          },
+          "profiles": [
+            "windows"
+          ]
+        }
+      },
+      {
+        "tool": "ping_bsd",
+        "implementation": "default",
+        "file": "1.0.yaml",
+        "loaded": {
+          "implements": {
+            "type": "string",
+            "value": "ping_bsd/1.0"
+          },
+          "version": {
+            "type": "string",
+            "value": "1.0"
+          },
+          "display_name": {
+            "type": "string",
+            "value": "BSD Ping (macOS/BSD)"
+          },
+          "profiles": [
+            "default"
+          ]
+        }
+      },
+      {
+        "tool": "ping_gnu",
+        "implementation": "default",
+        "file": "1.0.yaml",
+        "loaded": {
+          "implements": {
+            "type": "string",
+            "value": "ping_gnu/1.0"
+          },
+          "version": {
+            "type": "string",
+            "value": "1.0"
+          },
+          "display_name": {
+            "type": "string",
+            "value": "GNU Ping (iputils)"
+          },
+          "profiles": [
+            "default"
+          ]
+        }
+      },
+      {
+        "tool": "ping_windows",
+        "implementation": "default",
+        "file": "1.0.yaml",
+        "loaded": {
+          "implements": {
+            "type": "string",
+            "value": "ping_windows/1.0"
+          },
+          "version": {
+            "type": "string",
+            "value": "1.0"
+          },
+          "display_name": {
+            "type": "string",
+            "value": "Windows ping"
+          },
+          "profiles": [
+            "windows"
+          ]
+        }
+      },
+      {
+        "tool": "sort",
+        "implementation": "default",
+        "file": "1.0.yaml",
+        "loaded": {
+          "implements": {
+            "type": "string",
+            "value": "sort/1.0"
+          },
+          "version": {
+            "type": "string",
+            "value": "1.0"
+          },
+          "display_name": {
+            "type": "string",
+            "value": "Sort (Unix)"
+          },
+          "profiles": [
+            "default"
+          ]
+        }
+      },
+      {
+        "tool": "tar",
+        "implementation": "default",
+        "file": "1.0.yaml",
+        "loaded": {
+          "implements": {
+            "type": "string",
+            "value": "tar/1.0"
+          },
+          "version": {
+            "type": "string",
+            "value": "1.0"
+          },
+          "display_name": {
+            "type": "string",
+            "value": "tar (Tape Archive)"
+          },
+          "profiles": [
+            "default"
+          ]
+        }
+      },
+      {
+        "tool": "unzip",
+        "implementation": "default",
+        "file": "1.0.yaml",
+        "loaded": {
+          "implements": {
+            "type": "string",
+            "value": "unzip/1.0"
+          },
+          "version": {
+            "type": "string",
+            "value": "1.0"
+          },
+          "display_name": {
+            "type": "string",
+            "value": "unzip"
+          },
+          "profiles": [
+            "default"
+          ]
+        }
+      },
+      {
+        "tool": "unzip",
+        "implementation": "default",
+        "file": "6.0.yaml",
+        "loaded": {
+          "implements": {
+            "type": "string",
+            "value": "unzip/1.0"
+          },
+          "version": {
+            "type": "string",
+            "value": "6.0"
+          },
+          "display_name": {
+            "type": "string",
+            "value": "unzip (extract zip archives)"
+          },
+          "profiles": [
+            "unix",
+            "windows"
+          ]
+        }
+      },
+      {
+        "tool": "yq",
+        "implementation": "default",
+        "file": "1.0.yaml",
+        "loaded": {
+          "implements": {
+            "type": "string",
+            "value": "yq/1.0"
+          },
+          "version": {
+            "type": "string",
+            "value": "1.0"
+          },
+          "display_name": {
+            "type": "string",
+            "value": "yq (YAML Query)"
+          },
+          "profiles": [
+            "default"
+          ]
+        }
+      }
+    ],
+    "implementation_version_missing": null
+  },
+  "structure": {
+    "missing": {
+      "exists": false,
+      "valid": false,
+      "tool_names": {
+        "ok": []
+      }
+    },
+    "empty": {
+      "exists": true,
+      "valid": false,
+      "tool_names": {
+        "ok": []
+      }
+    },
+    "tools_empty": {
+      "exists": true,
+      "valid": false,
+      "tool_names": {
+        "ok": []
+      }
+    },
+    "tool_dir_no_yaml": {
+      "exists": true,
+      "valid": false,
+      "tool_names": {
+        "ok": []
+      }
+    },
+    "top_level_yaml_only": {
+      "exists": true,
+      "valid": false,
+      "tool_names": {
+        "ok": []
+      }
+    },
+    "nested_too_deep": {
+      "exists": true,
+      "valid": false,
+      "tool_names": {
+        "ok": []
+      }
+    },
+    "index_only": {
+      "exists": true,
+      "valid": true,
+      "tool_names": {
+        "ok": [
+          "demo"
+        ]
+      }
+    },
+    "other_yaml_only": {
+      "exists": true,
+      "valid": true,
+      "tool_names": {
+        "ok": []
+      }
+    },
+    "file_not_dir": {
+      "exists": false,
+      "valid": false,
+      "tool_names": {
+        "ok": []
+      }
+    }
+  },
+  "ordering": {
+    "tool_names": [
+      "dup",
+      "empty",
+      "noimpls",
+      "nullidx"
+    ],
+    "list_versions": {
+      "dup": {
+        "ok": [
+          [
+            "<TMP>/dup/tools/dup/zeta/2.0.yaml",
+            {
+              "type": "string",
+              "value": "z2"
+            }
+          ],
+          [
+            "<TMP>/dup/tools/dup/zeta/1.5.yaml",
+            {
+              "type": "float",
+              "value": "1.5"
+            }
+          ],
+          [
+            "<TMP>/dup/tools/dup/zeta/3.yaml",
+            {
+              "type": "integer",
+              "value": "3"
+            }
+          ],
+          [
+            "<TMP>/dup/tools/dup/alpha/1.0.yaml",
+            {
+              "type": "string",
+              "value": "1.0"
+            }
+          ]
+        ]
+      },
+      "empty": {
+        "ok": []
+      },
+      "nullidx": {
+        "ok": []
+      },
+      "noimpls": {
+        "ok": []
+      }
+    },
+    "load_tool_yaml": {
+      "<latest>": {
+        "ok": "file: alpha/1.0.yaml\n"
+      },
+      "2.0": {
+        "ok": "file: zeta/2.0.yaml\n"
+      },
+      "1.5": {
+        "ok": "file: top-level 1.5\n"
+      },
+      "3": {
+        "ok": "file: zeta/3.yaml\n"
+      },
+      "2.0-again": {
+        "ok": null
+      },
+      "z2": {
+        "ok": null
+      },
+      "4": {
+        "ok": null
+      },
+      "missing": {
+        "ok": null
+      }
+    },
+    "load_tool_yaml_empty": {
+      "ok": null
+    },
+    "interface_nested": {
+      "ok": {
+        "type": "string",
+        "value": "nested"
+      }
+    },
+    "interface_empty": {
+      "ok": null
+    },
+    "index_empty": {
+      "ok": null
+    },
+    "index_null": {
+      "ok": null
+    },
+    "index_noimpls": {
+      "ok": {
+        "implementations": 0,
+        "interface_version": {
+          "type": "string",
+          "value": "1.0"
+        }
+      }
+    }
+  },
+  "discovery": [
+    {
+      "env": "none",
+      "dev": "none",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/home-valid/.ukiryu/register",
+        "user"
+      ],
+      "resolve_path_without_clone": "<TMP>/home-valid/.ukiryu/register",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "none",
+      "dev": "none",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/home-invalid/.ukiryu/register",
+        "user"
+      ],
+      "resolve_path_without_clone": null,
+      "exists?": null
+    },
+    {
+      "env": "none",
+      "dev": "none",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/home-empty/.ukiryu/register",
+        "user"
+      ],
+      "resolve_path_without_clone": null,
+      "exists?": null
+    },
+    {
+      "env": "none",
+      "dev": "valid",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/valid",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/valid",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "none",
+      "dev": "valid",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/valid",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/valid",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "none",
+      "dev": "valid",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/valid",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/valid",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "none",
+      "dev": "invalid",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/invalid",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/invalid",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "none",
+      "dev": "invalid",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/invalid",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/invalid",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "none",
+      "dev": "invalid",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/invalid",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/invalid",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "none",
+      "dev": "missing",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/home-valid/.ukiryu/register",
+        "user"
+      ],
+      "resolve_path_without_clone": "<TMP>/home-valid/.ukiryu/register",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "none",
+      "dev": "missing",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/home-invalid/.ukiryu/register",
+        "user"
+      ],
+      "resolve_path_without_clone": null,
+      "exists?": null
+    },
+    {
+      "env": "none",
+      "dev": "missing",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/home-empty/.ukiryu/register",
+        "user"
+      ],
+      "resolve_path_without_clone": null,
+      "exists?": null
+    },
+    {
+      "env": "none",
+      "dev": "file",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/dev-file",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/dev-file",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "none",
+      "dev": "file",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/dev-file",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/dev-file",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "none",
+      "dev": "file",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/dev-file",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/dev-file",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "valid",
+      "dev": "none",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/valid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/valid",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "valid",
+      "dev": "none",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/valid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/valid",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "valid",
+      "dev": "none",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/valid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/valid",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "valid",
+      "dev": "valid",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/valid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/valid",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "valid",
+      "dev": "valid",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/valid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/valid",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "valid",
+      "dev": "valid",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/valid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/valid",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "valid",
+      "dev": "invalid",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/valid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/valid",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "valid",
+      "dev": "invalid",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/valid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/valid",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "valid",
+      "dev": "invalid",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/valid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/valid",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "valid",
+      "dev": "missing",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/valid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/valid",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "valid",
+      "dev": "missing",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/valid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/valid",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "valid",
+      "dev": "missing",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/valid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/valid",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "valid",
+      "dev": "file",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/valid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/valid",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "valid",
+      "dev": "file",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/valid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/valid",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "valid",
+      "dev": "file",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/valid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/valid",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "invalid",
+      "dev": "none",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/invalid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/invalid",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "invalid",
+      "dev": "none",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/invalid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/invalid",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "invalid",
+      "dev": "none",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/invalid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/invalid",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "invalid",
+      "dev": "valid",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/invalid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/invalid",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "invalid",
+      "dev": "valid",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/invalid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/invalid",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "invalid",
+      "dev": "valid",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/invalid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/invalid",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "invalid",
+      "dev": "invalid",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/invalid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/invalid",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "invalid",
+      "dev": "invalid",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/invalid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/invalid",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "invalid",
+      "dev": "invalid",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/invalid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/invalid",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "invalid",
+      "dev": "missing",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/invalid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/invalid",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "invalid",
+      "dev": "missing",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/invalid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/invalid",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "invalid",
+      "dev": "missing",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/invalid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/invalid",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "invalid",
+      "dev": "file",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/invalid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/invalid",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "invalid",
+      "dev": "file",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/invalid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/invalid",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "invalid",
+      "dev": "file",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/invalid",
+        "env"
+      ],
+      "resolve_path_without_clone": "<TMP>/invalid",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "missing",
+      "dev": "none",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/home-valid/.ukiryu/register",
+        "user"
+      ],
+      "resolve_path_without_clone": "<TMP>/home-valid/.ukiryu/register",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "missing",
+      "dev": "none",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/home-invalid/.ukiryu/register",
+        "user"
+      ],
+      "resolve_path_without_clone": null,
+      "exists?": null
+    },
+    {
+      "env": "missing",
+      "dev": "none",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/home-empty/.ukiryu/register",
+        "user"
+      ],
+      "resolve_path_without_clone": null,
+      "exists?": null
+    },
+    {
+      "env": "missing",
+      "dev": "valid",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/valid",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/valid",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "missing",
+      "dev": "valid",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/valid",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/valid",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "missing",
+      "dev": "valid",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/valid",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/valid",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "missing",
+      "dev": "invalid",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/invalid",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/invalid",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "missing",
+      "dev": "invalid",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/invalid",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/invalid",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "missing",
+      "dev": "invalid",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/invalid",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/invalid",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "missing",
+      "dev": "missing",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/home-valid/.ukiryu/register",
+        "user"
+      ],
+      "resolve_path_without_clone": "<TMP>/home-valid/.ukiryu/register",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "missing",
+      "dev": "missing",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/home-invalid/.ukiryu/register",
+        "user"
+      ],
+      "resolve_path_without_clone": null,
+      "exists?": null
+    },
+    {
+      "env": "missing",
+      "dev": "missing",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/home-empty/.ukiryu/register",
+        "user"
+      ],
+      "resolve_path_without_clone": null,
+      "exists?": null
+    },
+    {
+      "env": "missing",
+      "dev": "file",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/dev-file",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/dev-file",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "missing",
+      "dev": "file",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/dev-file",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/dev-file",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "missing",
+      "dev": "file",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/dev-file",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/dev-file",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "file",
+      "dev": "none",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/home-valid/.ukiryu/register",
+        "user"
+      ],
+      "resolve_path_without_clone": "<TMP>/home-valid/.ukiryu/register",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "file",
+      "dev": "none",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/home-invalid/.ukiryu/register",
+        "user"
+      ],
+      "resolve_path_without_clone": null,
+      "exists?": null
+    },
+    {
+      "env": "file",
+      "dev": "none",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/home-empty/.ukiryu/register",
+        "user"
+      ],
+      "resolve_path_without_clone": null,
+      "exists?": null
+    },
+    {
+      "env": "file",
+      "dev": "valid",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/valid",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/valid",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "file",
+      "dev": "valid",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/valid",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/valid",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "file",
+      "dev": "valid",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/valid",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/valid",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "file",
+      "dev": "invalid",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/invalid",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/invalid",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "file",
+      "dev": "invalid",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/invalid",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/invalid",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "file",
+      "dev": "invalid",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/invalid",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/invalid",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "file",
+      "dev": "missing",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/home-valid/.ukiryu/register",
+        "user"
+      ],
+      "resolve_path_without_clone": "<TMP>/home-valid/.ukiryu/register",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "file",
+      "dev": "missing",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/home-invalid/.ukiryu/register",
+        "user"
+      ],
+      "resolve_path_without_clone": null,
+      "exists?": null
+    },
+    {
+      "env": "file",
+      "dev": "missing",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/home-empty/.ukiryu/register",
+        "user"
+      ],
+      "resolve_path_without_clone": null,
+      "exists?": null
+    },
+    {
+      "env": "file",
+      "dev": "file",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/dev-file",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/dev-file",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "file",
+      "dev": "file",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/dev-file",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/dev-file",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "file",
+      "dev": "file",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/dev-file",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/dev-file",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "empty_string",
+      "dev": "none",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/home-valid/.ukiryu/register",
+        "user"
+      ],
+      "resolve_path_without_clone": "<TMP>/home-valid/.ukiryu/register",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "empty_string",
+      "dev": "none",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/home-invalid/.ukiryu/register",
+        "user"
+      ],
+      "resolve_path_without_clone": null,
+      "exists?": null
+    },
+    {
+      "env": "empty_string",
+      "dev": "none",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/home-empty/.ukiryu/register",
+        "user"
+      ],
+      "resolve_path_without_clone": null,
+      "exists?": null
+    },
+    {
+      "env": "empty_string",
+      "dev": "valid",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/valid",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/valid",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "empty_string",
+      "dev": "valid",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/valid",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/valid",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "empty_string",
+      "dev": "valid",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/valid",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/valid",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "empty_string",
+      "dev": "invalid",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/invalid",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/invalid",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "empty_string",
+      "dev": "invalid",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/invalid",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/invalid",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "empty_string",
+      "dev": "invalid",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/invalid",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/invalid",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "empty_string",
+      "dev": "missing",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/home-valid/.ukiryu/register",
+        "user"
+      ],
+      "resolve_path_without_clone": "<TMP>/home-valid/.ukiryu/register",
+      "exists?": {
+        "type": "boolean",
+        "value": true
+      }
+    },
+    {
+      "env": "empty_string",
+      "dev": "missing",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/home-invalid/.ukiryu/register",
+        "user"
+      ],
+      "resolve_path_without_clone": null,
+      "exists?": null
+    },
+    {
+      "env": "empty_string",
+      "dev": "missing",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/home-empty/.ukiryu/register",
+        "user"
+      ],
+      "resolve_path_without_clone": null,
+      "exists?": null
+    },
+    {
+      "env": "empty_string",
+      "dev": "file",
+      "home": "valid",
+      "discover_path": [
+        "<TMP>/dev-file",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/dev-file",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "empty_string",
+      "dev": "file",
+      "home": "invalid",
+      "discover_path": [
+        "<TMP>/dev-file",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/dev-file",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    },
+    {
+      "env": "empty_string",
+      "dev": "file",
+      "home": "empty",
+      "discover_path": [
+        "<TMP>/dev-file",
+        "dev"
+      ],
+      "resolve_path_without_clone": "<TMP>/dev-file",
+      "exists?": {
+        "type": "boolean",
+        "value": false
+      }
+    }
+  ],
+  "clone": {
+    "fresh": {
+      "ok": null
+    },
+    "fresh_after": {
+      "exists": true,
+      "valid": true,
+      "tool_names": [
+        "demo"
+      ]
+    },
+    "again": {
+      "error": {
+        "class": "Ukiryu::Register::CloneError",
+        "message": "Register already exists at <TMP>/clones/fresh/register",
+        "first_line": "Register already exists at <TMP>/clones/fresh/register",
+        "ukiryu_tail": ""
+      }
+    },
+    "ensure_exists_valid": {
+      "ok": null
+    },
+    "update": {
+      "ok": null
+    },
+    "update_after": [
+      "demo2"
+    ],
+    "update_missing_clones": {
+      "ok": [
+        "demo2"
+      ]
+    },
+    "update_not_git": {
+      "error": {
+        "class": "ArgumentError",
+        "message": "'<TMP>/clones/not-git' is not in a git working tree",
+        "first_line": "'<TMP>/clones/not-git' is not in a git working tree",
+        "ukiryu_tail": ""
+      }
+    },
+    "update_not_git_still_exists": true,
+    "ensure_exists_occupied": {
+      "error": {
+        "class": "Ukiryu::Register::CloneError",
+        "first_line": "Failed to clone register from <UPSTREAM>",
+        "ukiryu_tail": "To fix this:\n  1. Check your internet connection\n  2. Verify git is installed: git --version\n  3. Manually clone: git clone <UPSTREAM> <TMP>/clones/occupied\n  4. Or set UKIRYU_REGISTER to use a local register path\n\nExample:\n  export UKIRYU_REGISTER=/path/to/register\n"
+      }
+    },
+    "occupied_survives": false,
+    "bad_remote": {
+      "error": {
+        "class": "Ukiryu::Register::CloneError",
+        "first_line": "Failed to clone register from <TMP>/no-such-upstream",
+        "ukiryu_tail": "To fix this:\n  1. Check your internet connection\n  2. Verify git is installed: git --version\n  3. Manually clone: git clone <TMP>/no-such-upstream <TMP>/clones/bad/register\n  4. Or set UKIRYU_REGISTER to use a local register path\n\nExample:\n  export UKIRYU_REGISTER=/path/to/register\n"
+      }
+    },
+    "bad_remote_path_exists": false,
+    "bad_remote_parent_exists": true,
+    "no_tools": {
+      "error": {
+        "class": "Ukiryu::Register::CloneError",
+        "message": "Register clone validation failed",
+        "first_line": "Register clone validation failed",
+        "ukiryu_tail": ""
+      }
+    },
+    "no_tools_path_exists": true
+  },
+  "git_gem_version": "4.3.1"
+}
