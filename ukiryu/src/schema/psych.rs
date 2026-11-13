@@ -156,7 +156,7 @@ fn word_like(s: &str) -> bool {
 }
 
 /// Psych `ScalarScanner#tokenize` for a plain scalar.
-fn tokenize(s: &str, permitted: Permitted) -> Result<Data, SchemaError> {
+pub(crate) fn tokenize(s: &str, permitted: Permitted) -> Result<Data, SchemaError> {
     if s.is_empty() {
         return Ok(Data::Null);
     }

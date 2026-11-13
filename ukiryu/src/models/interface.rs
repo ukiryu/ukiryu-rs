@@ -4,6 +4,7 @@
 //! list stays raw Ruby data, as in the source.
 use super::error::{ModelError, ModelErrorKind};
 use super::ruby;
+use super::safe_load::{safe_load, LoadPolicy};
 use super::value::Value;
 use std::path::Path;
 
@@ -18,7 +19,9 @@ pub struct Interface {
     pub aliases: Vec<String>,
 }
 
-/// `Psych.safe_load_file` of a register YAML file (String keys).
+/// `Psych.safe_load_file(path, permitted_classes: [Symbol, String, Integer,
+/// Array, Hash, TrueClass, FalseClass])` of a register YAML file (String
+/// keys, aliases disabled): [`LoadPolicy::MODEL_FILE`].
 pub(crate) fn load_yaml_file(path: &Path) -> Result<Value, ModelError> {
     let text = std::fs::read_to_string(path).map_err(|e| {
         ModelError::new(
@@ -29,25 +32,16 @@ pub(crate) fn load_yaml_file(path: &Path) -> Result<Value, ModelError> {
             ),
         )
     })?;
-    if text.trim().is_empty() {
-        return Ok(Value::Nil);
-    }
-    let value: yeptris::Value = yeptris::from_str(&text)
-        .map_err(|e| ModelError::new(ModelErrorKind::Syntax, e.to_string()))?;
-    Value::from_yaml_value(&value)
+    safe_load(&text, LoadPolicy::MODEL_FILE)
 }
 
 /// The register's effective load path (`Register#load_interface`,
 /// `#load_implementation_index`, `#load_implementation_version`):
-/// `YAML.safe_load(text)` then `Utils.symbolize_keys`; `None` when the
+/// `YAML.safe_load(text, permitted_classes: [Symbol], aliases: true)`
+/// ([`LoadPolicy::REGISTER`]) then `Utils.symbolize_keys`; `None` when the
 /// document is empty or null (the register returns nil).
 pub fn register_hash(yaml: &str) -> Result<Option<Value>, ModelError> {
-    if yaml.trim().is_empty() {
-        return Ok(None);
-    }
-    let value: yeptris::Value = yeptris::from_str(yaml)
-        .map_err(|e| ModelError::new(ModelErrorKind::Syntax, e.to_string()))?;
-    let data = Value::from_yaml_value(&value)?;
+    let data = safe_load(yaml, LoadPolicy::REGISTER)?;
     if !data.truthy() {
         return Ok(None);
     }
