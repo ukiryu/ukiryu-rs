@@ -1,4 +1,5 @@
 //! `CommandBuilder#build_args` and its formatting helpers.
+use super::sort::ruby_sort_by;
 use super::spec::{ArgumentSpec, CommandSpec, FlagSpec, OptionSpec};
 use super::{line_starts, name_sym, nil_to_sym, param, BuildContext, Params};
 use crate::types::{self, ruby, Value};
@@ -45,9 +46,9 @@ pub fn build_args(
 
     let arguments = command.arguments.as_deref().unwrap_or_default();
     let last_arg = arguments.iter().find(|a| a.is_last());
-    let mut regular: Vec<&ArgumentSpec> = arguments.iter().filter(|a| !a.is_last()).collect();
-    // Stable, unlike Ruby's sort_by (see the module documentation).
-    regular.sort_by_key(|a| a.numeric_position());
+    let regular: Vec<&ArgumentSpec> = arguments.iter().filter(|a| !a.is_last()).collect();
+    // `sort_by(&:numeric_position)`, with MRI's order for equal positions.
+    let regular = ruby_sort_by(regular, |a| a.numeric_position());
 
     for arg in regular {
         let key = name_sym(&arg.name)?;
