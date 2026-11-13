@@ -18,6 +18,7 @@
 pub mod attr;
 pub mod error;
 pub mod ruby;
+pub mod safe_load;
 pub mod value;
 
 pub mod argument;
@@ -76,6 +77,7 @@ pub use output_info::OutputInfo;
 pub use platform_profile::PlatformProfile;
 pub use routing::Routing;
 pub use run_environment::RunEnvironment;
+pub use safe_load::LoadPolicy;
 pub use semantic_version::{SemanticVersion, VersionOperand};
 pub use stage_metrics::StageMetrics;
 pub use success_response::{ExecutionResultParts, SuccessResponse};

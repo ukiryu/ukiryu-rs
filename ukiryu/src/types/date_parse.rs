@@ -43,7 +43,7 @@ const ABBR_MONTHS: &str = "jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec";
 
 fn declined(what: &str, input: &str) -> Error {
     Error::unsupported(format!(
-        "Date._parse({}): {what} is outside the portable regexp engine",
+        "Date._parse({}): {what} failed in the Onigmo regexp engine",
         string_inspect(input)
     ))
 }
