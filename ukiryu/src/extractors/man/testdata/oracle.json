@@ -3,15 +3,16 @@
   "oracle": "ukiryu ab6df353c6dc2d7faf7817a86aafcafa82579896",
   "source": "lib/ukiryu/man_page_parser.rb (Ukiryu::ManPageParser.parse_date, parse_from_fallback, resolve_man_page_path, extract_date_from_dd_line)",
   "ruby": "ruby 4.0.1 (2026-01-13 revision e04267a14b) +PRISM [x86_64-linux]",
-  "date_gem": "3.6.0",
-  "captured_today": "2026-11-12",
-  "capture_script": "handoffs/batch-02/K21-MAN/capture.rb",
-  "host_dd_lines": "first .Dd line of each /usr/share/man/man*/*.gz on the capture host (Ubuntu 22.04)"
+  "date_gem": "3.5.1",
+  "captured_today": "2026-11-13",
+  "capture_script": "handoffs/batch-05/B05-DATE-SHARED/capture/capture.rb (derived from handoffs/batch-02/K21-MAN/capture.rb)",
+  "runtime": "Ruby 4.0.1 e04267a14b, date 3.5.1, Psych 5.3.1, corpus oracle Gemfile.lock fc3b12f2, TZ=UTC",
+  "host_dd_lines": "first .Dd line of each /usr/share/man/man*/*.gz on the K21-MAN capture host (Ubuntu 22.04), reused verbatim"
  },
  "today": {
   "year": 2026,
   "mon": 11,
-  "mday": 12
+  "mday": 13
  },
  "date_cases": [
   {
@@ -4911,6 +4912,1565 @@
     "ok": "2020-09-21"
    },
    "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464207878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878782053657074656d6265722032312c20323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-W53-7",
+   "fragments": {
+    "ok": {
+     "cwyear": "2020",
+     "cweek": "53",
+     "cwday": "7"
+    }
+   },
+   "date_parse": {
+    "ok": "2021-01-03"
+   },
+   "dd_line": ".Dd 2020-W53-7\n",
+   "extract": {
+    "ok": "2021-01-03"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d5735332d370a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2021-01-03"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2021-W53-1",
+   "fragments": {
+    "ok": {
+     "cwyear": "2021",
+     "cweek": "53",
+     "cwday": "1"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd 2021-W53-1\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032312d5735332d310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "99-W01-1",
+   "fragments": {
+    "ok": {
+     "cwyear": "1999",
+     "cweek": "1",
+     "cwday": "1"
+    }
+   },
+   "date_parse": {
+    "ok": "1999-01-04"
+   },
+   "dd_line": ".Dd 99-W01-1\n",
+   "extract": {
+    "ok": "1999-01-04"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642039392d5730312d310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "1999-01-04"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "00W01",
+   "fragments": {
+    "ok": {
+     "cwyear": "2000",
+     "cweek": "1"
+    }
+   },
+   "date_parse": {
+    "ok": "2000-01-03"
+   },
+   "dd_line": ".Dd 00W01\n",
+   "extract": {
+    "ok": "2000-01-03"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642030305730310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2000-01-03"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "69-W01-1",
+   "fragments": {
+    "ok": {
+     "cwyear": "1969",
+     "cweek": "1",
+     "cwday": "1"
+    }
+   },
+   "date_parse": {
+    "ok": "1968-12-30"
+   },
+   "dd_line": ".Dd 69-W01-1\n",
+   "extract": {
+    "ok": "1968-12-30"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642036392d5730312d310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "1968-12-30"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "68W01",
+   "fragments": {
+    "ok": {
+     "cwyear": "2068",
+     "cweek": "1"
+    }
+   },
+   "date_parse": {
+    "ok": "2068-01-02"
+   },
+   "dd_line": ".Dd 68W01\n",
+   "extract": {
+    "ok": "2068-01-02"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642036385730310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2068-01-02"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "W01-7",
+   "fragments": {
+    "ok": {
+     "cweek": "1",
+     "cwday": "7"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-01-04"
+   },
+   "dd_line": ".Dd W01-7\n",
+   "extract": {
+    "ok": "2026-01-04"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464205730312d370a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-01-04"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "w53",
+   "fragments": {
+    "ok": {
+     "cweek": "53"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-12-28"
+   },
+   "dd_line": ".Dd w53\n",
+   "extract": {
+    "ok": "2026-12-28"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464207735330a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-12-28"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "W38-1",
+   "fragments": {
+    "ok": {
+     "cweek": "38",
+     "cwday": "1"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-09-14"
+   },
+   "dd_line": ".Dd W38-1\n",
+   "extract": {
+    "ok": "2026-09-14"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464205733382d310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-09-14"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-W38-1 BC",
+   "fragments": {
+    "ok": {
+     "cwyear": "-2019",
+     "cweek": "38",
+     "cwday": "1"
+    }
+   },
+   "date_parse": {
+    "ok": "-2019-09-17"
+   },
+   "dd_line": ".Dd 2020-W38-1 BC\n",
+   "extract": {
+    "ok": "-2019-09-17"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d5733382d312042430a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "-2019-09-17"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "-W-7",
+   "fragments": {
+    "ok": {
+     "cwday": "7"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-11-15"
+   },
+   "dd_line": ".Dd -W-7\n",
+   "extract": {
+    "ok": "2026-11-15"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464202d572d370a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-11-15"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "-w-0",
+   "fragments": {
+    "ok": {
+     "cwday": "0"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd -w-0\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464202d772d300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-W38-8",
+   "fragments": {
+    "ok": {
+     "cwyear": "2020",
+     "cweek": "38",
+     "cwday": "8"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd 2020-W38-8\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d5733382d380a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-W00-1",
+   "fragments": {
+    "ok": {
+     "cwyear": "2020",
+     "cweek": "0",
+     "cwday": "1"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd 2020-W00-1\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d5730302d310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Monday W38",
+   "fragments": {
+    "ok": {
+     "wday": "1",
+     "cweek": "38"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd Monday W38\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204d6f6e646179205733380a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sat",
+   "fragments": {
+    "ok": {
+     "wday": "6"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-11-14"
+   },
+   "dd_line": ".Dd Sat\n",
+   "extract": {
+    "ok": "2026-11-14"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464205361740a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-11-14"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "sat.",
+   "fragments": {
+    "ok": {
+     "wday": "6"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-11-14"
+   },
+   "dd_line": ".Dd sat.\n",
+   "extract": {
+    "ok": "2026-11-14"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464207361742e0a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-11-14"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "thu 2020-W38",
+   "fragments": {
+    "ok": {
+     "wday": "4",
+     "cwyear": "2020",
+     "cweek": "38"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-17"
+   },
+   "dd_line": ".Dd thu 2020-W38\n",
+   "extract": {
+    "ok": "2020-09-17"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642074687520323032302d5733380a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-17"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2009-W01-1",
+   "fragments": {
+    "ok": {
+     "cwyear": "2009",
+     "cweek": "1",
+     "cwday": "1"
+    }
+   },
+   "date_parse": {
+    "ok": "2008-12-29"
+   },
+   "dd_line": ".Dd 2009-W01-1\n",
+   "extract": {
+    "ok": "2008-12-29"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323030392d5730312d310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2008-12-29"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "1582-W40-1",
+   "fragments": {
+    "ok": {
+     "cwyear": "1582",
+     "cweek": "40",
+     "cwday": "1"
+    }
+   },
+   "date_parse": {
+    "ok": "1582-10-01"
+   },
+   "dd_line": ".Dd 1582-W40-1\n",
+   "extract": {
+    "ok": "1582-10-01"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420313538322d5734302d310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "1582-10-01"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "1582-W41-1",
+   "fragments": {
+    "ok": {
+     "cwyear": "1582",
+     "cweek": "41",
+     "cwday": "1"
+    }
+   },
+   "date_parse": {
+    "ok": "1582-10-18"
+   },
+   "dd_line": ".Dd 1582-W41-1\n",
+   "extract": {
+    "ok": "1582-10-18"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420313538322d5734312d310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "1582-10-18"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "0001-W01-1",
+   "fragments": {
+    "ok": {
+     "cwyear": "2001",
+     "cweek": "1",
+     "cwday": "1"
+    }
+   },
+   "date_parse": {
+    "ok": "2001-01-01"
+   },
+   "dd_line": ".Dd 0001-W01-1\n",
+   "extract": {
+    "ok": "2001-01-01"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420303030312d5730312d310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2001-01-01"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-W38-1 10:00",
+   "fragments": {
+    "ok": {
+     "hour": "10",
+     "min": "0",
+     "cwyear": "2020",
+     "cweek": "38",
+     "cwday": "1"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-14"
+   },
+   "dd_line": ".Dd 2020-W38-1 10:00\n",
+   "extract": {
+    "ok": "2020-09-14"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d5733382d312031303a30300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-14"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Monday 2020-09-21",
+   "fragments": {
+    "ok": {
+     "wday": "1",
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd Monday 2020-09-21\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204d6f6e64617920323032302d30392d32310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Tue 2020-09-21",
+   "fragments": {
+    "ok": {
+     "wday": "2",
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd Tue 2020-09-21\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642054756520323032302d30392d32310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "wednesday",
+   "fragments": {
+    "ok": {
+     "wday": "3"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-11-11"
+   },
+   "dd_line": ".Dd wednesday\n",
+   "extract": {
+    "ok": "2026-11-11"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464207765646e65736461790a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-11-11"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "fri 21",
+   "fragments": {
+    "ok": {
+     "wday": "5",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-11-21"
+   },
+   "dd_line": ".Dd fri 21\n",
+   "extract": {
+    "ok": "2026-11-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464206672692032310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-11-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "sun 2020",
+   "fragments": {
+    "ok": {
+     "wday": "0",
+     "mon": "20",
+     "mday": "20"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd sun 2020\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642073756e20323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "1ﬆ Jan 2024",
+   "fragments": {
+    "ok": {
+     "year": "2024",
+     "mon": "1",
+     "mday": "1"
+    }
+   },
+   "date_parse": {
+    "ok": "2024-01-01"
+   },
+   "dd_line": ".Dd 1ﬆ Jan 2024\n",
+   "extract": {
+    "ok": "2024-01-01"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642031efac86204a616e20323032340a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2024-01-01"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Jan 1ﬆ",
+   "fragments": {
+    "ok": {
+     "mon": "1",
+     "mday": "1"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-01-01"
+   },
+   "dd_line": ".Dd Jan 1ﬆ\n",
+   "extract": {
+    "ok": "2026-01-01"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464204a616e2031efac860a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-01-01"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "3RD MÄR 2021",
+   "fragments": {
+    "ok": {
+     "mday": "3"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-11-03"
+   },
+   "dd_line": ".Dd 3RD MÄR 2021\n",
+   "extract": {
+    "ok": "2026-11-03"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420335244204dc3845220323032310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-11-03"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "été 5 May 2022",
+   "fragments": {
+    "ok": {
+     "year": "2022",
+     "mon": "5",
+     "mday": "5"
+    }
+   },
+   "date_parse": {
+    "ok": "2022-05-05"
+   },
+   "dd_line": ".Dd été 5 May 2022\n",
+   "extract": {
+    "ok": "2022-05-05"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420c3a974c3a92035204d617920323032320a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2022-05-05"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "ſun 2020-09-20",
+   "fragments": {
+    "ok": {
+     "wday": "7",
+     "year": "2020",
+     "mon": "9",
+     "mday": "20"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-20"
+   },
+   "dd_line": ".Dd ſun 2020-09-20\n",
+   "extract": {
+    "ok": "2020-09-20"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420c5bf756e20323032302d30392d32300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-20"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "ſat W38",
+   "fragments": {
+    "ok": {
+     "wday": "7",
+     "cweek": "38"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd ſat W38\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420c5bf6174205733380a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "K 2020",
+   "fragments": {
+    "ok": {
+     "mon": "20",
+     "mday": "20"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd K 2020\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420e284aa20323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "２０２０-09-21",
+   "fragments": {
+    "ok": {
+     "mday": "9",
+     "zone": "-21"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-11-09"
+   },
+   "dd_line": ".Dd ２０２０-09-21\n",
+   "extract": {
+    "ok": "2026-11-09"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420efbc92efbc90efbc92efbc902d30392d32310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-11-09"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sep 21 ２０２０",
+   "fragments": {
+    "ok": {
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-09-21"
+   },
+   "dd_line": ".Dd Sep 21 ２０２０\n",
+   "extract": {
+    "ok": "2026-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642053657020323120efbc92efbc90efbc92efbc900a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sep 21 2020",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd Sep 21 2020\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420536570c2a03231c2a0323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "　Sep 21 2020",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 　Sep 21 2020\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420e3808053657020323120323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sep 21 2020​",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd Sep 21 2020​\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464205365702032312032303230e2808b0a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Μάρ 21 2020",
+   "fragments": {
+    "ok": {
+     "mday": "21",
+     "hour": "20",
+     "min": "20"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-11-21"
+   },
+   "dd_line": ".Dd Μάρ 21 2020\n",
+   "extract": {
+    "ok": "2026-11-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420ce9cceaccf8120323120323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-11-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "21 Sep 2020 日本",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 21 Sep 2020 日本\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323120536570203230323020e697a5e69cac0a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "ß Sep 21 2020",
+   "fragments": {
+    "ok": {
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd ß Sep 21 2020\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420c39f2053657020323120323032300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-09-21 10:00 +09:00",
+   "fragments": {
+    "ok": {
+     "zone": "+09:00",
+     "hour": "10",
+     "min": "0",
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 2020-09-21 10:00 +09:00\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d30392d32312031303a3030202b30393a30300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-09-21 10:00 EST",
+   "fragments": {
+    "ok": {
+     "zone": "EST",
+     "hour": "10",
+     "min": "0",
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 2020-09-21 10:00 EST\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d30392d32312031303a3030204553540a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-09-21 10:00 Eastern Daylight Time",
+   "fragments": {
+    "ok": {
+     "zone": "Eastern Daylight Time",
+     "hour": "10",
+     "min": "0",
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 2020-09-21 10:00 Eastern Daylight Time\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d30392d32312031303a3030204561737465726e204461796c696768742054696d650a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-09-21 10:00 GMT+9",
+   "fragments": {
+    "ok": {
+     "zone": "GMT+9",
+     "hour": "10",
+     "min": "0",
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 2020-09-21 10:00 GMT+9\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d30392d32312031303a303020474d542b390a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-09-21 10:00 utc-5:30",
+   "fragments": {
+    "ok": {
+     "zone": "utc-5:30",
+     "hour": "10",
+     "min": "0",
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 2020-09-21 10:00 utc-5:30\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d30392d32312031303a3030207574632d353a33300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-09-21 10:00 CEST dst",
+   "fragments": {
+    "ok": {
+     "zone": "CEST dst",
+     "hour": "10",
+     "min": "0",
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 2020-09-21 10:00 CEST dst\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d30392d32312031303a30302043455354206473740a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-09-21 10:00:00,5",
+   "fragments": {
+    "ok": {
+     "hour": "10",
+     "min": "0",
+     "sec": "0",
+     "sec_fraction": "1/2",
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 2020-09-21 10:00:00,5\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d30392d32312031303a30303a30302c350a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-09-21T10:00:00.000000001Z",
+   "fragments": {
+    "ok": {
+     "zone": "Z",
+     "hour": "10",
+     "min": "0",
+     "sec": "0",
+     "sec_fraction": "1/1000000000",
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 2020-09-21T10:00:00.000000001Z\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d30392d32315431303a30303a30302e3030303030303030315a0a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "20200921 [+5:30:IST]",
+   "fragments": {
+    "ok": {
+     "hour": "5",
+     "min": "30",
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 20200921 [+5:30:IST]\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464203230323030393231205b2b353a33303a4953545d0a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-09-21 10:00 z",
+   "fragments": {
+    "ok": {
+     "zone": "z",
+     "hour": "10",
+     "min": "0",
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 2020-09-21 10:00 z\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d30392d32312031303a3030207a0a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-09-21 10:00 +0530",
+   "fragments": {
+    "ok": {
+     "zone": "+0530",
+     "hour": "10",
+     "min": "0",
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 2020-09-21 10:00 +0530\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d30392d32312031303a3030202b303533300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-09-21 10:00 -11",
+   "fragments": {
+    "ok": {
+     "zone": "-11",
+     "hour": "10",
+     "min": "0",
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 2020-09-21 10:00 -11\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d30392d32312031303a3030202d31310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-09-21 10:00 UTC+14:00:30",
+   "fragments": {
+    "ok": {
+     "zone": "UTC+14:00:30",
+     "hour": "10",
+     "min": "0",
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 2020-09-21 10:00 UTC+14:00:30\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d30392d32312031303a3030205554432b31343a30303a33300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "12:00 pm",
+   "fragments": {
+    "ok": {
+     "hour": "12",
+     "min": "0"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd 12:00 pm\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642031323a303020706d0a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "12 am",
+   "fragments": {
+    "ok": {
+     "hour": "0"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd 12 am\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420313220616d0a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "0 am",
+   "fragments": {
+    "ok": {
+     "hour": "0"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd 0 am\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464203020616d0a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "13 pm",
+   "fragments": {
+    "ok": {
+     "hour": "13"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd 13 pm\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420313320706d0a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-09-21 25:00",
+   "fragments": {
+    "ok": {
+     "hour": "25",
+     "min": "0",
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 2020-09-21 25:00\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d30392d32312032353a30300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-260T10",
+   "fragments": {
+    "ok": {
+     "mon": "20",
+     "mday": "20"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd 2020-260T10\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d3236305431300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "10:00 Sep 21",
+   "fragments": {
+    "ok": {
+     "zone": "Sep",
+     "hour": "10",
+     "min": "0",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-11-21"
+   },
+   "dd_line": ".Dd 10:00 Sep 21\n",
+   "extract": {
+    "ok": "2026-11-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642031303a3030205365702032310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-11-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "10h 21",
+   "fragments": {
+    "ok": {
+     "hour": "10",
+     "min": "21"
+    }
+   },
+   "date_parse": {
+    "error": {
+     "class": "Date::Error",
+     "message": "invalid date"
+    }
+   },
+   "dd_line": ".Dd 10h 21\n",
+   "extract": {
+    "ok": null
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e4464203130682032310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": null
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "10:00 21",
+   "fragments": {
+    "ok": {
+     "hour": "10",
+     "min": "0",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-11-21"
+   },
+   "dd_line": ".Dd 10:00 21\n",
+   "extract": {
+    "ok": "2026-11-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642031303a30302032310a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-11-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "21 10:00",
+   "fragments": {
+    "ok": {
+     "hour": "10",
+     "min": "0",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2026-11-21"
+   },
+   "dd_line": ".Dd 21 10:00\n",
+   "extract": {
+    "ok": "2026-11-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642032312031303a30300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2026-11-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "Sep 21 2020 10:00:60",
+   "fragments": {
+    "ok": {
+     "hour": "10",
+     "min": "0",
+     "sec": "60",
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd Sep 21 2020 10:00:60\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e44642053657020323120323032302031303a30303a36300a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
+   "parse_date": {
+    "ok": "2020-09-21"
+   }
+  },
+  {
+   "origin": "edge",
+   "date_str": "2020-09-21 10:00 Mitteleurop. Sommerzeit",
+   "fragments": {
+    "ok": {
+     "zone": "Mitteleurop",
+     "hour": "10",
+     "min": "0",
+     "year": "2020",
+     "mon": "9",
+     "mday": "21"
+    }
+   },
+   "date_parse": {
+    "ok": "2020-09-21"
+   },
+   "dd_line": ".Dd 2020-09-21 10:00 Mitteleurop. Sommerzeit\n",
+   "extract": {
+    "ok": "2020-09-21"
+   },
+   "content_hex": "2e5c222073796e746865746963206d646f6320706167650a2e446420323032302d30392d32312031303a3030204d697474656c6575726f702e20536f6d6d65727a6569740a2e447420544f4f4c20310a2e4f730a2e5368204e414d450a",
    "parse_date": {
     "ok": "2020-09-21"
    }
