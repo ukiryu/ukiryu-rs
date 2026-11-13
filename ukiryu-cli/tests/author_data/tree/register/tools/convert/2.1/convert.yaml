@@ -1,0 +1,32 @@
+ukiryu_schema: '1.0'
+name: convert
+display_name: Convert
+description: Image conversion tool
+homepage: https://example.org/convert
+version: '2.1'
+version_detection:
+  command: --version
+  pattern: convert ([\d.]+)
+profiles:
+  - name: default
+    platforms: [linux, macos]
+    shells: [bash, zsh]
+    commands:
+      - name: resize
+        description: Resize an image
+        arguments:
+          - name: input
+            type: file
+            position: 1
+          - name: output
+            type: file
+            position: last
+        options:
+          - name: width
+            cli: --width
+            type: integer
+            description: Target width
+        flags:
+          - name: verbose
+            cli: -v
+            description: Verbose output
