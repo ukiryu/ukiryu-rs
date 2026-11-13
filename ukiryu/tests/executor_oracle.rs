@@ -70,7 +70,7 @@ fn assert_result(id: &str, execution: &Execution) {
     assert_eq!(row["outcome"], "result", "{id}");
     let result = &execution.result;
     if let Some(stdout) = row["stdout"].as_str() {
-        assert_eq!(result.stdout(), stdout, "{id} stdout");
+        assert_eq!(result.stdout(), stdout.as_bytes(), "{id} stdout");
     }
     assert_eq!(
         hex(&execution.stdout),
@@ -79,7 +79,7 @@ fn assert_result(id: &str, execution: &Execution) {
     );
     assert_eq!(
         result.stderr(),
-        row["stderr"].as_str().expect("stderr"),
+        row["stderr"].as_str().expect("stderr").as_bytes(),
         "{id}"
     );
     assert_eq!(
@@ -265,7 +265,7 @@ fn exit_status_rows() {
             Seconds::Int(30),
         )),
     );
-    assert_eq!(failed.result.stderr(), "error\n");
+    assert_eq!(failed.result.stderr(), b"error\n");
     assert_failed(
         "false_raises",
         execute(bash("false", &[], Seconds::Int(30))),
@@ -310,9 +310,8 @@ fn missing_executable_is_status_127() {
         execution.result.exit_status(),
         row["exit_status"].as_i64().unwrap()
     );
-    assert!(execution
-        .result
-        .stderr()
+    assert!(std::str::from_utf8(execution.result.stderr())
+        .expect("UTF-8 stderr")
         .contains("ukiryu_no_such_exe_xyz: command not found"));
     assert!(row["stderr"]
         .as_str()
@@ -575,7 +574,7 @@ fn stdin_from_reader() {
     );
     let pipe_like = std::io::Cursor::new(b"pipe data".to_vec());
     let execution = run(bash("/bin/cat", &[], Seconds::Int(90)).stdin_reader(pipe_like));
-    assert_eq!(execution.result.stdout(), "pipe data");
+    assert_eq!(execution.result.stdout(), b"pipe data");
 }
 
 #[test]
@@ -601,7 +600,8 @@ fn utf8_and_invalid_output() {
     );
     let execution = run(bash("printf", &["a\\377b"], Seconds::Int(30)));
     assert_result("stdout_invalid_utf8", &execution);
-    assert_eq!(execution.result.stdout(), "a\u{fffd}b");
+    // Ruby keeps the invalid byte (row stdout_bytes 61ff62); no U+FFFD.
+    assert_eq!(execution.result.stdout(), b"a\xffb");
 }
 
 #[test]
