@@ -34,12 +34,7 @@ pub(super) fn now(clock: Option<Clock>) -> Time {
         Some(Clock::System { utc_offset_secs }) => utc_offset_secs,
         _ => native_utc_offset(seconds).unwrap_or(0),
     };
-    Time {
-        seconds,
-        nanos,
-        utc_offset,
-        utc: false,
-    }
+    Time::new(seconds, nanos, utc_offset, false)
 }
 
 /// The host's UTC offset, in seconds, at a Unix time.

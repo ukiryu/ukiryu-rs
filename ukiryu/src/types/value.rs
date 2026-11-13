@@ -18,18 +18,7 @@ use serde::de::{self, Deserializer, EnumAccess, MapAccess, SeqAccess, VariantAcc
 use serde::ser::{SerializeMap, SerializeSeq, Serializer};
 use serde::{Deserialize, Serialize};
 
-/// A Ruby `Time`: an instant plus the UTC offset it is displayed in.
-///
-/// `seconds` is floored Unix time, `nanos` the non-negative sub-second part.
-/// `utc` distinguishes a UTC time (`2024-01-17 10:20:30 UTC`) from a local
-/// time whose offset happens to be zero (`2024-01-17 10:20:30 +0000`).
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Time {
-    pub seconds: i64,
-    pub nanos: u32,
-    pub utc_offset: i32,
-    pub utc: bool,
-}
+pub use super::time::{SubNanos, Time};
 
 /// A Ruby `Regexp` literal: its source and option bits
 /// (`1` IGNORECASE, `2` EXTENDED, `4` MULTILINE, as `Regexp#options`).
@@ -402,7 +391,7 @@ pub fn eql(a: &Value, b: &Value) -> bool {
         (Value::Float(x), Value::Float(y)) => x == y,
         (Value::String(x), Value::String(y)) => x == y,
         (Value::Symbol(x), Value::Symbol(y)) => x == y,
-        (Value::Time(x), Value::Time(y)) => x.seconds == y.seconds && x.nanos == y.nanos,
+        (Value::Time(x), Value::Time(y)) => x.instant_eql(y),
         (Value::Regexp(x), Value::Regexp(y)) => x == y,
         (Value::Array(x), Value::Array(y)) => {
             x.len() == y.len() && x.iter().zip(y).all(|(p, q)| eql(p, q))

@@ -3,6 +3,7 @@
 #[path = "models_data/support.rs"]
 mod support;
 
+use num_bigint::BigInt;
 use serde_json::{json, Value as Json};
 use std::cmp::Ordering;
 use support::*;
@@ -134,8 +135,14 @@ fn parsed(p: ParsedPosition) -> Json {
     match p {
         ParsedPosition::Last => json!({"$sym": "last"}),
         ParsedPosition::First => json!({"$sym": "first"}),
-        ParsedPosition::Index(i) => json!(i as i64),
+        ParsedPosition::Index(i) => int(&i),
     }
+}
+
+/// An Integer as the capture encodes it: a JSON number in the i64 range
+/// (every helper case), its decimal string otherwise.
+fn int(n: &BigInt) -> Json {
+    i64::try_from(n).map_or_else(|_| Json::String(n.to_string()), Json::from)
 }
 
 fn params(case: i64) -> Vec<(String, Value)> {
@@ -278,7 +285,7 @@ fn evaluate(group: &str, i: &Json) -> Json {
                         enc_text(a.position.get()),
                         a.is_last(),
                         parsed(a.parsed_position()),
-                        a.numeric_position() as i64
+                        int(&a.numeric_position())
                     ])
                 })
                 .collect();
@@ -311,7 +318,7 @@ fn evaluate(group: &str, i: &Json) -> Json {
             json!({"index_name": opt_enc(a.index("name")), "index_type": opt_enc(a.index("type")),
                    "index_missing": opt_enc(a.index("nope")), "index_private": opt_enc(a.index("format_duration")),
                    "name_sym": sym(a.name_sym()), "type_sym": sym(a.type_sym()), "last": a.is_last(),
-                   "parsed": parsed(a.parsed_position()), "numeric": a.numeric_position() as i64})
+                   "parsed": parsed(a.parsed_position()), "numeric": int(&a.numeric_position())})
         }
         "option_definition" => {
             let o: OptionDefinition = from(&i["yaml"]);

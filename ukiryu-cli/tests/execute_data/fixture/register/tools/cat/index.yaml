@@ -1,0 +1,16 @@
+---
+ukiryu_schema: '1.0'
+name: cat
+interface: cat
+implementations:
+- name: default
+  display_name: Cat
+  detection:
+    pattern: cat ([\d.]+)
+  version_scheme: semantic
+  versions:
+  - equals: '0.1'
+    file: 0.1.yaml
+  - equals: generic
+    file: generic.yaml
+  default: generic.yaml

@@ -1,0 +1,103 @@
+---
+ukiryu_schema: '1.0'
+name: cat
+display_name: cat (concatenate files)
+homepage: https://www.gnu.org/software/coreutils/
+version: '0.1'
+aliases:
+- cat
+version_detection:
+  command: "--version"
+  pattern: cat \(GNU coreutils\) ([\d.]+)
+  man_date: true
+  system_tool: true
+  modern_threshold: '8.0'
+search_paths:
+implements: cat/1.0
+execution_profiles:
+- name: unix
+  platforms:
+  - macos
+  - linux
+  shells:
+  - bash
+  - zsh
+  - fish
+  - sh
+  option_style: double_dash_equals
+  executable_name: cat
+  commands:
+  - description: Concatenate and print files
+    usage: cat [options] [file...]
+    arguments:
+    - name: files
+      type: file
+      variadic: true
+      position: last
+      description: Files to display
+    options:
+    - name: number_nonblank
+      cli: "-b"
+      assignment_delimiter: none
+      description: Number non-blank lines
+    - name: show_all
+      cli: "-A"
+      assignment_delimiter: none
+      description: Show all characters
+    - name: show_ends
+      cli: "-E"
+      assignment_delimiter: none
+      description: Show line endings
+    - name: number
+      cli: "-n"
+      assignment_delimiter: none
+      description: Number all lines
+    - name: squeeze_blank
+      cli: "-s"
+      assignment_delimiter: none
+      description: Squeeze blank lines
+    - name: show_tabs
+      cli: "-T"
+      assignment_delimiter: none
+      description: Show tabs as ^I
+    - name: show_nonprinting
+      cli: "-v"
+      assignment_delimiter: none
+      description: Show non-printing characters
+    flags:
+    - name: number_nonblank
+      cli: "-b"
+      description: Number non-blank output lines
+      default: false
+      assignment_delimiter: none
+    - name: show_all
+      cli: "-A"
+      description: Show all
+      default: false
+      assignment_delimiter: none
+    - name: show_ends
+      cli: "-E"
+      description: Show ends
+      default: false
+      assignment_delimiter: none
+    - name: number
+      cli: "-n"
+      description: Number output lines
+      default: false
+      assignment_delimiter: none
+    - name: squeeze_blank
+      cli: "-s"
+      description: Squeeze blank lines
+      default: false
+      assignment_delimiter: none
+    - name: show_tabs
+      cli: "-T"
+      description: Show tabs
+      default: false
+      assignment_delimiter: none
+    - name: show_nonprinting
+      cli: "-v"
+      description: Show non-printing
+      default: false
+      assignment_delimiter: none
+    name: concatenate

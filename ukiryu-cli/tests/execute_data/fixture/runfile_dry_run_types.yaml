@@ -1,0 +1,9 @@
+tool: 12
+command: :sym
+extra: 1
+arguments:
+  a: 1
+  :b: two
+  c: [1, 2]
+  'd': {x: y}
+  e: null

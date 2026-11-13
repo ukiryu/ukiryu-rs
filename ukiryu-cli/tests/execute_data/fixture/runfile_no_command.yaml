@@ -1,0 +1,2 @@
+tool: cat
+arguments: {a: 1}
