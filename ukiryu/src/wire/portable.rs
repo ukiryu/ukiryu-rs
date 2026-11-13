@@ -22,6 +22,7 @@ pub enum EscapeOperation {
     },
     Quote {
         string: String,
+        #[serde(default, deserialize_with = "optional_bool")]
         for_exe: Option<bool>,
     },
     NeedsQuoting {
@@ -40,6 +41,12 @@ pub enum EscapeOperation {
     EscapeForDoubleQuotes {
         string: String,
     },
+}
+
+fn optional_bool<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<Option<bool>, D::Error> {
+    bool::deserialize(deserializer).map(Some)
 }
 
 pub fn escape(request: EscapeRequest) -> Value {

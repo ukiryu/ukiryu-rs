@@ -83,6 +83,16 @@ for shell in ['', 'unix', 'windows', 'pwsh', 'mybash', '/bin/mybash', 'BASH', 'b
     actual = request({'op': 'escape', 'shell': shell, 'operation': {'method': 'escape', 'string': 'x'}})
     assert actual['ok'] is False and actual['error']['code'] == 'UNKNOWN_SHELL', actual
     assert actual['error']['source_class'] == 'Ukiryu::Errors::UnknownShellError', actual
+    basename = shell.rsplit('/', 1)[-1]
+    expected_message = (f'Shell platform group is not a concrete shell: {basename}'
+                        if basename in ['unix', 'windows'] else f'Unknown shell: {basename}')
+    assert actual['error']['message'] == expected_message, actual
+for operation in [{'method': 'escape', 'string': False}, {'method': 'join', 'executable': 'x', 'args': [1]}, {'method': 'quote', 'string': 'x', 'extra': 1}, {'method': 'quote', 'string': 'x', 'for_exe': None}, {'method': 'execute', 'string': 'x'}, {'method': 'escape'}]:
+    actual = request({'op': 'escape', 'shell': 'bash', 'operation': operation})
+    assert actual['ok'] is False and actual['error']['code'] == 'INVALID_REQUEST', actual
+for shell in coverage:
+    operation = {'method': 'quote', 'string': 'Ω\0$\n\'"'}
+    assert request({'op': 'escape', 'shell': shell, 'operation': operation}) == request({'op': 'escape', 'shell': '/tools/' + shell, 'operation': operation})
 assert calls == frees
 print(json.dumps({'source_cases': len(ids), 'coverage': coverage, 'methods': sorted(methods),
                   'calls': calls, 'owned_replies_freed': frees, 'library': str(path),

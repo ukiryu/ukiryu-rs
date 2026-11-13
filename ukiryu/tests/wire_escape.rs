@@ -171,6 +171,7 @@ fn strict_names_types_and_operations() {
         json!({"method":"join","executable":"x","args":[1]}),
         json!({"method":"quote","string":"x","extra":1}),
         json!({"method":"execute","string":"x"}),
+        json!({"method":"quote","string":"x","for_exe":null}),
         json!({"method":"escape"}),
     ] {
         let reply = ukiryu::wire::process(

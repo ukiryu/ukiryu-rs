@@ -44,8 +44,21 @@ export function checkEscape(module, rows) {
   }
   for (const shell of ['', 'unix', 'windows', 'pwsh', 'mybash', '/bin/mybash', 'BASH', 'bash.exe']) {
     const actual = JSON.parse(module.process(JSON.stringify({op:'escape',shell,operation:{method:'escape',string:'x'}})));
-    if (actual.ok !== false || actual.error?.code !== 'UNKNOWN_SHELL' || actual.error?.source_class !== 'Ukiryu::Errors::UnknownShellError') failures.push({shell, actual});
+    const basename = shell.split('/').at(-1);
+    const message = ['unix','windows'].includes(basename) ? `Shell platform group is not a concrete shell: ${basename}` : `Unknown shell: ${basename}`;
+    if (actual.ok !== false || actual.error?.code !== 'UNKNOWN_SHELL' || actual.error?.source_class !== 'Ukiryu::Errors::UnknownShellError' || actual.error?.message !== message) failures.push({shell, actual});
+  }
+  let malformedControls = 0;
+  for (const operation of [{method:'escape',string:false},{method:'join',executable:'x',args:[1]},{method:'quote',string:'x',extra:1},{method:'quote',string:'x',for_exe:null},{method:'execute',string:'x'},{method:'escape'}]) {
+    const actual = JSON.parse(module.process(JSON.stringify({op:'escape',shell:'bash',operation})));
+    if (actual.ok !== false || actual.error?.code !== 'INVALID_REQUEST') failures.push({operation,actual});
+    malformedControls++;
+  }
+  for (const shell of ['bash','zsh','fish','sh','dash','tcsh','powershell','cmd']) {
+    const row = rows.find(row => row.request.shell === shell && row.request.operation.method === 'quote');
+    const actual = JSON.parse(module.process(JSON.stringify({...row.request,shell:'/tools/' + shell})));
+    if (actual.ok !== true || actual.value !== row.value) failures.push({shell,actual,expected:row.value});
   }
   if (failures.length) throw new Error(`${failures.length} escape failures: ${JSON.stringify(failures.slice(0,12))}`);
-  return {sourceCases:rows.length, unknownShellControls:8};
+  return {sourceCases:rows.length, unknownShellControls:8, malformedControls, basenameControls:8};
 }
