@@ -16,7 +16,7 @@ use super::errors::wire_error;
 use super::values::{from_ruby, to_ruby};
 use crate::config::Attribute;
 use crate::types::Value;
-use magnus::{function, prelude::*, Error, RHash, RModule, Ruby, Value as RValue};
+use magnus::{function, prelude::*, Error, RHash, RModule, RString, Ruby, Value as RValue};
 use num_bigint::BigInt;
 use serde_json::{json, Map, Number, Value as Json};
 use std::str::FromStr;
@@ -51,7 +51,7 @@ fn abi_version(ruby: &Ruby) -> Result<u64, Error> {
 }
 
 /// The wire's JSON value profile: string keys, finite numbers, no tags.
-fn parse_yaml(ruby: &Ruby, yaml: magnus::RString) -> Result<RValue, Error> {
+fn parse_yaml(ruby: &Ruby, yaml: RString) -> Result<RValue, Error> {
     let yaml = super::values::text(ruby, yaml)?;
     let reply = call(ruby, json!({"op": "parse_yaml", "yaml": yaml}))?;
     to_ruby(ruby, &json_value(ruby, &reply["value"])?)
