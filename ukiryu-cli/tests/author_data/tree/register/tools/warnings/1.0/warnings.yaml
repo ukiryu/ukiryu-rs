@@ -1,0 +1,11 @@
+ukiryu_schema: 'v1'
+name: Fancy-Tool
+version: '1.0'
+profiles:
+  - name: default
+    platforms: [linux]
+    commands:
+      - name: Run-It
+        subcommand: rm -rf
+        arguments:
+          - name: target
