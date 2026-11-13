@@ -59,6 +59,7 @@ jobs:
           wasm-pack build ukiryu --target web --out-dir ../wasm-web --no-opt -- --locked --features wasm
           cp LICENSE wasm-node/LICENSE
           cp LICENSE wasm-web/LICENSE
+          python3 scripts/artifact_licenses.py stage wasm-node wasm-web
           python3 scripts/stamp-wasm-build.py
       - name: Execute Node core and audit imports
         run: node tests/wasm-runtime/node.mjs
