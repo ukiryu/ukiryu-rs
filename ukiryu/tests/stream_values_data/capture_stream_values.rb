@@ -15,6 +15,7 @@ require 'json'
 require 'rbconfig'
 require 'stringio'
 require 'tmpdir'
+require 'yaml'
 require 'ukiryu'
 
 E = Ukiryu::Executor
@@ -109,7 +110,15 @@ def render(response)
       rows["#{format}_file"] = with_file
     end
   end
+  # The YAML documents as Psych loads them: the port compares loaded values
+  # (Yeptris emits its own quoting and line breaks); the bytes stay recorded.
+  rows['yaml']['psych_load_json'] = psych_load(rows['yaml']['stdout_hex'])
+  rows['yaml_file']['psych_load_json'] = psych_load(rows['yaml_file']['file_hex'])
   rows
+end
+
+def psych_load(yaml_hex)
+  JSON.generate(YAML.safe_load([yaml_hex].pack('H*').force_encoding('UTF-8')))
 end
 
 def stage_rows(result)

@@ -348,11 +348,22 @@ fn every_stage_matches_the_ruby_capture() {
                 } else {
                     name.to_owned()
                 };
-                assert_eq!(
-                    writes(&model, format, file),
-                    row["render"][&key],
-                    "{id} {key}"
-                );
+                let want = &row["render"][&key];
+                let mut got = writes(&model, format, file);
+                if format == OutputFormat::Yaml {
+                    // Root rendering contract: YAML is written by Yeptris and
+                    // compared as values (Psych's load of the Ruby document
+                    // against Yeptris's load of ours); the Ruby bytes stay in
+                    // the golden file as evidence.
+                    let doc = if file { "file_hex" } else { "stdout_hex" };
+                    let yaml = String::from_utf8(unhex(s(&got[doc]))).unwrap();
+                    let loaded: Json = yeptris::from_str(&yaml).expect("Yeptris loads its YAML");
+                    let psych: Json = serde_json::from_str(s(&want["psych_load_json"])).unwrap();
+                    assert_eq!(loaded, psych, "{id} {key}: loaded values");
+                    got[doc] = want[doc].clone();
+                    got["psych_load_json"] = want["psych_load_json"].clone();
+                }
+                assert_eq!(&got, want, "{id} {key}");
             }
         }
     }
