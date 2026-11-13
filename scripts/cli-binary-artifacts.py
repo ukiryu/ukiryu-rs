@@ -37,6 +37,18 @@ def digest(data):
     return hashlib.sha256(data).hexdigest()
 
 
+def lock_provenance():
+    # Repository bytes are the cross-platform source identity. Retain the
+    # actual checkout digest too: Git may materialize CRLF on Windows.
+    source = subprocess.check_output(['git', 'show', 'HEAD:Cargo.lock'])
+    checkout = Path('Cargo.lock').read_bytes()
+    allowed = [source]
+    if b'\r\n' not in source:
+        allowed.append(source.replace(b'\n', b'\r\n'))
+    require(checkout in allowed, 'checkout lock content differs from repository')
+    return digest(source), digest(checkout)
+
+
 def binary_target(data, target):
     kind, machine = TARGETS[target]
     if kind == 'elf':
@@ -55,6 +67,7 @@ def binary_target(data, target):
 
 def stage(directory, target):
     directory.mkdir(parents=True, exist_ok=False)
+    source_lock, checkout_lock = lock_provenance()
     metadata = json.loads(output('cargo', 'metadata', '--locked', '--format-version', '1'))
     core = next(p for p in metadata['packages'] if p['name'] == 'ukiryu')
     engine = next(p for p in metadata['packages'] if p['name'] == 'yeptris')
@@ -91,7 +104,7 @@ def stage(directory, target):
             'build_platform': platform.platform(), 'machine': platform.machine(),
             'runner_image': os.environ.get('ImageOS'),
             'runner_image_version': os.environ.get('ImageVersion'),
-            'lock_sha256': digest(Path('Cargo.lock').read_bytes()),
+            'lock_sha256': source_lock, 'checkout_lock_sha256': checkout_lock,
             'yeptris_source': engine['source'],
             'engine_ref': (engine_root / 'ENGINE_REF').read_text().strip(),
             'dependencies': dependencies,
@@ -152,7 +165,9 @@ def verify_payload(root, members, expected_commit):
     require(target in TARGETS, 'unknown target')
     require(marker['core_commit'] == expected_commit, 'source commit differs from checkout')
     require(re.fullmatch(r'[0-9a-f]{64}', marker['lock_sha256']), 'invalid lock digest')
-    require(marker['lock_sha256'] == digest(Path('Cargo.lock').read_bytes()), 'lock differs from checkout')
+    source_lock, _ = lock_provenance()
+    require(marker['lock_sha256'] == source_lock, 'lock differs from repository')
+    require(re.fullmatch(r'[0-9a-f]{64}', marker['checkout_lock_sha256']), 'invalid checkout lock digest')
     require(marker['profile'] == 'release', 'not a release build')
     require(root == f'ukiryu-{marker["crate_version"]}-{target}', 'archive name/target mismatch')
     require(marker['binary'] == ('ukiryu.exe' if target.endswith('msvc') else 'ukiryu'), 'wrong binary name')
