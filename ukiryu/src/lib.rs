@@ -9,6 +9,7 @@ pub mod errors;
 pub mod executable;
 pub mod execution;
 pub mod execution_context;
+pub mod executor;
 pub mod extractors;
 pub mod models;
 pub mod options;
