@@ -12,6 +12,7 @@ pub mod cache;
 pub mod composer;
 pub mod discovery;
 pub mod lint_issue;
+pub mod linter;
 pub mod loader;
 pub mod metadata;
 pub mod source;
