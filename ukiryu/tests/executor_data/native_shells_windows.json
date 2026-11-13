@@ -1,0 +1,186 @@
+{
+  "oracle": {
+    "repo": "ukiryu/ukiryu",
+    "sha": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+    "gem_path": "D:/a/ukiryu-rs/ukiryu-rs/corpus/oracle-ruby/vendor/bundle/ruby/4.0.0/bundler/gems/ukiryu-ab6df353c6dc",
+    "files": [
+      "lib/ukiryu/executor.rb",
+      "lib/ukiryu/shell/powershell.rb",
+      "lib/ukiryu/shell/cmd.rb"
+    ],
+    "ruby": "ruby 4.0.1 (2026-01-13 revision e04267a14b) +PRISM [x64-mingw-ucrt]",
+    "host_os": "mingw32",
+    "powershell_program": "powershell",
+    "powershell_version": "5.1.20348.5773"
+  },
+  "rows": [
+    {
+      "id": "powershell_stdin_ascii",
+      "shell": "powershell",
+      "executable": "more",
+      "arguments": [],
+      "stdin_hex": "746573742064617461",
+      "outcome": "result",
+      "stdout_hex": "efbbbfefbbbf7465737420646174610a0a",
+      "stderr_hex": "",
+      "stdout_encoding": "UTF-8",
+      "exit_status": 0,
+      "full_command": "more"
+    },
+    {
+      "id": "powershell_stdin_multiline",
+      "shell": "powershell",
+      "executable": "more",
+      "arguments": [],
+      "stdin_hex": "6c696e65310a6c696e65320a",
+      "outcome": "result",
+      "stdout_hex": "efbbbfefbbbf6c696e65310a6c696e65320a0a",
+      "stderr_hex": "",
+      "stdout_encoding": "UTF-8",
+      "exit_status": 0,
+      "full_command": "more"
+    },
+    {
+      "id": "powershell_stdin_unicode",
+      "shell": "powershell",
+      "executable": "more",
+      "arguments": [],
+      "stdin_hex": "68c3a96c6c6f20e4b896e7958c",
+      "outcome": "result",
+      "stdout_hex": "efbbbfefbbbf68c383c2a96c6c6f20c3a4c2b8e28093c3a7e280a2c5920a0a",
+      "stderr_hex": "",
+      "stdout_encoding": "UTF-8",
+      "exit_status": 0,
+      "full_command": "more"
+    },
+    {
+      "id": "powershell_stdin_empty",
+      "shell": "powershell",
+      "executable": "more",
+      "arguments": [],
+      "stdin_hex": "",
+      "outcome": "result",
+      "stdout_hex": "",
+      "stderr_hex": "",
+      "stdout_encoding": "UTF-8",
+      "exit_status": 0,
+      "full_command": "more"
+    },
+    {
+      "id": "powershell_echo",
+      "shell": "powershell",
+      "executable": "cmd",
+      "arguments": [
+        "/c",
+        "echo",
+        "hello"
+      ],
+      "stdin_hex": null,
+      "outcome": "result",
+      "stdout_hex": "",
+      "stderr_hex": "",
+      "stdout_encoding": "UTF-8",
+      "exit_status": 0,
+      "full_command": "cmd /c echo hello"
+    },
+    {
+      "id": "powershell_stderr_exit",
+      "shell": "powershell",
+      "executable": "cmd",
+      "arguments": [
+        "/c",
+        "echo oops 1>&2 & exit 3"
+      ],
+      "stdin_hex": null,
+      "outcome": "result",
+      "stdout_hex": "",
+      "stderr_hex": "",
+      "stdout_encoding": "UTF-8",
+      "exit_status": 0,
+      "full_command": "cmd /c \"echo oops 1>&2 & exit 3\""
+    },
+    {
+      "id": "cmd_stdin_ascii",
+      "shell": "cmd",
+      "executable": "more",
+      "arguments": [],
+      "stdin_hex": "746573742064617461",
+      "outcome": "result",
+      "stdout_hex": "746573742064617461",
+      "stderr_hex": "",
+      "stdout_encoding": "UTF-8",
+      "exit_status": 0,
+      "full_command": "more"
+    },
+    {
+      "id": "cmd_stdin_multiline",
+      "shell": "cmd",
+      "executable": "more",
+      "arguments": [],
+      "stdin_hex": "6c696e65310a6c696e65320a",
+      "outcome": "result",
+      "stdout_hex": "6c696e65310a6c696e65320a",
+      "stderr_hex": "",
+      "stdout_encoding": "UTF-8",
+      "exit_status": 0,
+      "full_command": "more"
+    },
+    {
+      "id": "cmd_stdin_unicode",
+      "shell": "cmd",
+      "executable": "more",
+      "arguments": [],
+      "stdin_hex": "68c3a96c6c6f20e4b896e7958c",
+      "outcome": "result",
+      "stdout_hex": "68c3a96c6c6f20e4b896e7958c",
+      "stderr_hex": "",
+      "stdout_encoding": "UTF-8",
+      "exit_status": 0,
+      "full_command": "more"
+    },
+    {
+      "id": "cmd_stdin_empty",
+      "shell": "cmd",
+      "executable": "more",
+      "arguments": [],
+      "stdin_hex": "",
+      "outcome": "result",
+      "stdout_hex": "",
+      "stderr_hex": "",
+      "stdout_encoding": "UTF-8",
+      "exit_status": 0,
+      "full_command": "more"
+    },
+    {
+      "id": "cmd_echo",
+      "shell": "cmd",
+      "executable": "echo",
+      "arguments": [
+        "hello"
+      ],
+      "stdin_hex": null,
+      "outcome": "result",
+      "stdout_hex": "68656c6c6f0a",
+      "stderr_hex": "",
+      "stdout_encoding": "UTF-8",
+      "exit_status": 0,
+      "full_command": "echo hello"
+    },
+    {
+      "id": "cmd_exit_42",
+      "shell": "cmd",
+      "executable": "cmd",
+      "arguments": [
+        "/c",
+        "exit 42"
+      ],
+      "stdin_hex": null,
+      "outcome": "result",
+      "stdout_hex": "",
+      "stderr_hex": "",
+      "stdout_encoding": "UTF-8",
+      "exit_status": 42,
+      "full_command": "cmd /c exit 42"
+    }
+  ]
+}

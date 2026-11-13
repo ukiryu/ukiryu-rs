@@ -55,6 +55,32 @@ if WINDOWS
 end
 
 ps = WINDOWS ? 'powershell' : 'pwsh'
+
+# Diagnostics (not golden rows): the script the source builds and the
+# command line the PowerShell process actually receives from Ruby.
+require 'open3'
+require 'stringio'
+probes = []
+[[echo[0], echo[1]], [fail_cmd[0], fail_cmd[1]]].each do |exe, args|
+  saved_err = $stderr
+  $stderr = StringIO.new
+  ENV['UKIRYU_DEBUG_EXECUTABLE'] = '1'
+  begin
+    Ukiryu::Shell::PowerShell.new.execute_command(exe, args, Ukiryu::Environment.from_env, 60)
+  rescue StandardError => e
+    $stderr.puts("raised #{e.class}: #{e.message}")
+  ensure
+    ENV.delete('UKIRYU_DEBUG_EXECUTABLE')
+    debug = $stderr.string
+    $stderr = saved_err
+  end
+  script = debug[/ps_command:\n(.*)\z/m, 1].to_s.strip
+  out, err, st = Open3.capture3(ps, '-NoLogo', '-Command', "[Environment]::CommandLine; #{script}")
+  probes << { 'executable' => exe, 'arguments' => args, 'debug' => debug, 'script' => script,
+              'probe_stdout_hex' => hex(out), 'probe_stdout' => out.dup.force_encoding('BINARY').encode('UTF-8', invalid: :replace, undef: :replace),
+              'probe_stderr' => err.dup.force_encoding('BINARY').encode('UTF-8', invalid: :replace, undef: :replace),
+              'probe_status' => st.exitstatus }
+end
 version = IO.popen([ps, '-NoLogo', '-NoProfile', '-Command', '$PSVersionTable.PSVersion.ToString()'], &:read).strip
 out = {
   'oracle' => {
@@ -67,6 +93,7 @@ out = {
     'powershell_program' => ps,
     'powershell_version' => version
   },
-  'rows' => rows
+  'rows' => rows,
+  'probes' => probes
 }
 File.binwrite(ARGV.fetch(0), JSON.pretty_generate(out) + "\n")
