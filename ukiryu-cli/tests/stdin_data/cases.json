@@ -1,0 +1,1546 @@
+{
+ "provenance": {
+  "source": "ukiryu/ukiryu lib/ukiryu/cli_commands/run_command.rb RunCommand#run stdin step",
+  "source_revision": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+  "source_changes": [],
+  "run_command_sha256": "e2ef20078339eba500e6b3e5d36811f30f9221920b13e2c7f2b661067bfd6c03",
+  "ruby": "4.0.1",
+  "platform": "x86_64-linux",
+  "gemfile_lock_sha256": "fc3b12f2ede259028b638d2f26c65ddf9506d142c20a8bf0c1b151741078b65e",
+  "command": "ukiryu exec jq process <params> -D filter=. (spec/fixtures/register, NO_COLOR=1)"
+ },
+ "cases": [
+  {
+   "id": "flag-payload",
+   "params": [
+    "--stdin"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": "7b226b223a2276227d"
+   },
+   "setup": {
+    "files": {},
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "filter"
+    ],
+    "stdin": null
+   },
+   "resolved": {
+    "keys": [
+     "filter",
+     "stdin"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "7b226b223a2276227d",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "exit_status": 0,
+   "stdout_hex": "4452592052554e202d20556b69727975205374727563747572656420457865637574696f6e20526571756573743a0a0a556b697279753a3a546f6f6c3a206a710a436f6d6d616e643a2070726f636573730a417267756d656e74733a0a202066696c7465723a20222e220a2020737464696e3a20227b5c226b5c223a5c22765c227d220a",
+   "stderr_hex": ""
+  },
+  {
+   "id": "flag-empty-eof",
+   "params": [
+    "--stdin"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": ""
+   },
+   "setup": {
+    "files": {},
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "filter"
+    ],
+    "stdin": null
+   },
+   "resolved": {
+    "keys": [
+     "filter",
+     "stdin"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "exit_status": 0,
+   "stdout_hex": "4452592052554e202d20556b69727975205374727563747572656420457865637574696f6e20526571756573743a0a0a556b697279753a3a546f6f6c3a206a710a436f6d6d616e643a2070726f636573730a417267756d656e74733a0a202066696c7465723a20222e220a2020737464696e3a2022220a",
+   "stderr_hex": ""
+  },
+  {
+   "id": "flag-invalid-bytes",
+   "params": [
+    "--stdin"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": "ff000d0a80"
+   },
+   "setup": {
+    "files": {},
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "filter"
+    ],
+    "stdin": null
+   },
+   "resolved": {
+    "keys": [
+     "filter",
+     "stdin"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "ff000d0a80",
+     "encoding": "UTF-8",
+     "valid_encoding": false
+    }
+   },
+   "exit_status": 0,
+   "stdout_hex": "4452592052554e202d20556b69727975205374727563747572656420457865637574696f6e20526571756573743a0a0a556b697279753a3a546f6f6c3a206a710a436f6d6d616e643a2070726f636573730a417267756d656e74733a0a202066696c7465723a20222e220a2020737464696e3a20225c7846465c75303030305c725c6e5c783830220a",
+   "stderr_hex": ""
+  },
+  {
+   "id": "flag-bom-crlf",
+   "params": [
+    "--stdin"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": "efbbbf610d0a"
+   },
+   "setup": {
+    "files": {},
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "filter"
+    ],
+    "stdin": null
+   },
+   "resolved": {
+    "keys": [
+     "filter",
+     "stdin"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "efbbbf610d0a",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "exit_status": 0,
+   "stdout_hex": "4452592052554e202d20556b69727975205374727563747572656420457865637574696f6e20526571756573743a0a0a556b697279753a3a546f6f6c3a206a710a436f6d6d616e643a2070726f636573730a417267756d656e74733a0a202066696c7465723a20222e220a2020737464696e3a2022efbbbf615c725c6e220a",
+   "stderr_hex": ""
+  },
+  {
+   "id": "flag-long",
+   "params": [
+    "--stdin"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": "7878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878"
+   },
+   "setup": {
+    "files": {},
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "filter"
+    ],
+    "stdin": null
+   },
+   "resolved": {
+    "keys": [
+     "filter",
+     "stdin"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "7878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "exit_status": 0,
+   "stdout_hex": "4452592052554e202d20556b69727975205374727563747572656420457865637574696f6e20526571756573743a0a0a556b697279753a3a546f6f6c3a206a710a436f6d6d616e643a2070726f636573730a417267756d656e74733a0a202066696c7465723a20222e220a2020737464696e3a202278787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878787878782e2e2e220a",
+   "stderr_hex": ""
+  },
+  {
+   "id": "flag-devnull",
+   "params": [
+    "--stdin"
+   ],
+   "pipe": {
+    "mode": "devnull"
+   },
+   "setup": {
+    "files": {},
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "filter"
+    ],
+    "stdin": null
+   },
+   "resolved": {
+    "keys": [
+     "filter",
+     "stdin"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "exit_status": 0,
+   "stdout_hex": "4452592052554e202d20556b69727975205374727563747572656420457865637574696f6e20526571756573743a0a0a556b697279753a3a546f6f6c3a206a710a436f6d6d616e643a2070726f636573730a417267756d656e74733a0a202066696c7465723a20222e220a2020737464696e3a2022220a",
+   "stderr_hex": ""
+  },
+  {
+   "id": "flag-closed-stdin",
+   "params": [
+    "--stdin"
+   ],
+   "pipe": {
+    "mode": "closed"
+   },
+   "setup": {
+    "files": {},
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "filter"
+    ],
+    "stdin": null
+   },
+   "resolved": {
+    "keys": [
+     "filter",
+     "stdin"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "exit_status": 0,
+   "stdout_hex": "4452592052554e202d20556b69727975205374727563747572656420457865637574696f6e20526571756573743a0a0a556b697279753a3a546f6f6c3a206a710a436f6d6d616e643a2070726f636573730a417267756d656e74733a0a202066696c7465723a20222e220a2020737464696e3a2022220a",
+   "stderr_hex": ""
+  },
+  {
+   "id": "flag-stdin-is-directory",
+   "params": [
+    "--stdin"
+   ],
+   "pipe": {
+    "mode": "directory",
+    "name": "sub"
+   },
+   "setup": {
+    "files": {},
+    "dirs": [
+     "sub"
+    ],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "filter"
+    ],
+    "stdin": null
+   },
+   "resolved": null,
+   "exit_status": 1,
+   "stdout_hex": "",
+   "stderr_hex": "5b4572726e6f3a3a4549534449525d2049732061206469726563746f7279204020696f5f6672656164202d203c535444494e3e0a"
+  },
+  {
+   "id": "dash-payload",
+   "params": [
+    "stdin=-"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": "7b226b223a2276227d"
+   },
+   "setup": {
+    "files": {},
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "2d",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "resolved": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "7b226b223a2276227d",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "exit_status": 0,
+   "stdout_hex": "4452592052554e202d20556b69727975205374727563747572656420457865637574696f6e20526571756573743a0a0a556b697279753a3a546f6f6c3a206a710a436f6d6d616e643a2070726f636573730a417267756d656e74733a0a2020737464696e3a20227b5c226b5c223a5c22765c227d220a202066696c7465723a20222e220a",
+   "stderr_hex": ""
+  },
+  {
+   "id": "dash-empty-eof",
+   "params": [
+    "stdin=-"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": ""
+   },
+   "setup": {
+    "files": {},
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "2d",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "resolved": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "exit_status": 0,
+   "stdout_hex": "4452592052554e202d20556b69727975205374727563747572656420457865637574696f6e20526571756573743a0a0a556b697279753a3a546f6f6c3a206a710a436f6d6d616e643a2070726f636573730a417267756d656e74733a0a2020737464696e3a2022220a202066696c7465723a20222e220a",
+   "stderr_hex": ""
+  },
+  {
+   "id": "dash-stdin-is-directory",
+   "params": [
+    "stdin=-"
+   ],
+   "pipe": {
+    "mode": "directory",
+    "name": "sub"
+   },
+   "setup": {
+    "files": {},
+    "dirs": [
+     "sub"
+    ],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "2d",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "resolved": null,
+   "exit_status": 1,
+   "stdout_hex": "",
+   "stderr_hex": "5b4572726e6f3a3a4549534449525d2049732061206469726563746f7279204020696f5f6672656164202d203c535444494e3e0a"
+  },
+  {
+   "id": "flag-and-dash",
+   "params": [
+    "stdin=-",
+    "--stdin"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": "6f6e6365"
+   },
+   "setup": {
+    "files": {},
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "2d",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "resolved": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "6f6e6365",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "exit_status": 0,
+   "stdout_hex": "4452592052554e202d20556b69727975205374727563747572656420457865637574696f6e20526571756573743a0a0a556b697279753a3a546f6f6c3a206a710a436f6d6d616e643a2070726f636573730a417267756d656e74733a0a2020737464696e3a20226f6e6365220a202066696c7465723a20222e220a",
+   "stderr_hex": ""
+  },
+  {
+   "id": "no-stdin-flag-with-dash",
+   "params": [
+    "--no-stdin",
+    "stdin=-"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": "7069706564"
+   },
+   "setup": {
+    "files": {},
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "2d",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "resolved": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "7069706564",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "exit_status": 0,
+   "stdout_hex": "4452592052554e202d20556b69727975205374727563747572656420457865637574696f6e20526571756573743a0a0a556b697279753a3a546f6f6c3a206a710a436f6d6d616e643a2070726f636573730a417267756d656e74733a0a2020737464696e3a20227069706564220a202066696c7465723a20222e220a",
+   "stderr_hex": ""
+  },
+  {
+   "id": "at-file",
+   "params": [
+    "stdin=@{dir}/in.json"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": "69676e6f726564"
+   },
+   "setup": {
+    "files": {
+     "in.json": "7b2266696c65223a2276616c7565227d"
+    },
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "407b6469727d2f696e2e6a736f6e",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "resolved": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "7b2266696c65223a2276616c7565227d",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "exit_status": 0,
+   "stdout_hex": "4452592052554e202d20556b69727975205374727563747572656420457865637574696f6e20526571756573743a0a0a556b697279753a3a546f6f6c3a206a710a436f6d6d616e643a2070726f636573730a417267756d656e74733a0a2020737464696e3a20227b5c2266696c655c223a5c2276616c75655c227d220a202066696c7465723a20222e220a",
+   "stderr_hex": ""
+  },
+  {
+   "id": "at-file-invalid-bytes",
+   "params": [
+    "stdin=@{dir}/bin.dat"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": ""
+   },
+   "setup": {
+    "files": {
+     "bin.dat": "ff000d0a80"
+    },
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "407b6469727d2f62696e2e646174",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "resolved": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "ff000d0a80",
+     "encoding": "UTF-8",
+     "valid_encoding": false
+    }
+   },
+   "exit_status": 0,
+   "stdout_hex": "4452592052554e202d20556b69727975205374727563747572656420457865637574696f6e20526571756573743a0a0a556b697279753a3a546f6f6c3a206a710a436f6d6d616e643a2070726f636573730a417267756d656e74733a0a2020737464696e3a20225c7846465c75303030305c725c6e5c783830220a202066696c7465723a20222e220a",
+   "stderr_hex": ""
+  },
+  {
+   "id": "at-file-bom-crlf",
+   "params": [
+    "stdin=@{dir}/bom.txt"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": ""
+   },
+   "setup": {
+    "files": {
+     "bom.txt": "efbbbf610d0a620d0a"
+    },
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "407b6469727d2f626f6d2e747874",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "resolved": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "efbbbf610d0a620d0a",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "exit_status": 0,
+   "stdout_hex": "4452592052554e202d20556b69727975205374727563747572656420457865637574696f6e20526571756573743a0a0a556b697279753a3a546f6f6c3a206a710a436f6d6d616e643a2070726f636573730a417267756d656e74733a0a2020737464696e3a2022efbbbf615c725c6e625c725c6e220a202066696c7465723a20222e220a",
+   "stderr_hex": ""
+  },
+  {
+   "id": "at-empty-file",
+   "params": [
+    "stdin=@{dir}/empty"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": "69676e6f726564"
+   },
+   "setup": {
+    "files": {
+     "empty": ""
+    },
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "407b6469727d2f656d707479",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "resolved": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "exit_status": 0,
+   "stdout_hex": "4452592052554e202d20556b69727975205374727563747572656420457865637574696f6e20526571756573743a0a0a556b697279753a3a546f6f6c3a206a710a436f6d6d616e643a2070726f636573730a417267756d656e74733a0a2020737464696e3a2022220a202066696c7465723a20222e220a",
+   "stderr_hex": ""
+  },
+  {
+   "id": "at-relative-path",
+   "params": [
+    "stdin=@rel.json"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": ""
+   },
+   "setup": {
+    "files": {
+     "rel.json": "72656c6174697665"
+    },
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": true
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "4072656c2e6a736f6e",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "resolved": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "72656c6174697665",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "exit_status": 0,
+   "stdout_hex": "4452592052554e202d20556b69727975205374727563747572656420457865637574696f6e20526571756573743a0a0a556b697279753a3a546f6f6c3a206a710a436f6d6d616e643a2070726f636573730a417267756d656e74733a0a2020737464696e3a202272656c6174697665220a202066696c7465723a20222e220a",
+   "stderr_hex": ""
+  },
+  {
+   "id": "flag-overrides-file",
+   "params": [
+    "stdin=@{dir}/in.json",
+    "--stdin"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": "7b2270697065223a2277696e73227d"
+   },
+   "setup": {
+    "files": {
+     "in.json": "7b2266696c65223a2276616c7565227d"
+    },
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "407b6469727d2f696e2e6a736f6e",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "resolved": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "7b2270697065223a2277696e73227d",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "exit_status": 0,
+   "stdout_hex": "4452592052554e202d20556b69727975205374727563747572656420457865637574696f6e20526571756573743a0a0a556b697279753a3a546f6f6c3a206a710a436f6d6d616e643a2070726f636573730a417267756d656e74733a0a2020737464696e3a20227b5c22706970655c223a5c2277696e735c227d220a202066696c7465723a20222e220a",
+   "stderr_hex": ""
+  },
+  {
+   "id": "flag-overrides-missing-file",
+   "params": [
+    "stdin=@{dir}/absent",
+    "--stdin"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": "70697065"
+   },
+   "setup": {
+    "files": {},
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "407b6469727d2f616273656e74",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "resolved": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "70697065",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "exit_status": 0,
+   "stdout_hex": "4452592052554e202d20556b69727975205374727563747572656420457865637574696f6e20526571756573743a0a0a556b697279753a3a546f6f6c3a206a710a436f6d6d616e643a2070726f636573730a417267756d656e74733a0a2020737464696e3a202270697065220a202066696c7465723a20222e220a",
+   "stderr_hex": ""
+  },
+  {
+   "id": "later-param-wins",
+   "params": [
+    "stdin=@{dir}/absent",
+    "stdin=-"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": "6c61746572"
+   },
+   "setup": {
+    "files": {},
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "2d",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "resolved": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "6c61746572",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "exit_status": 0,
+   "stdout_hex": "4452592052554e202d20556b69727975205374727563747572656420457865637574696f6e20526571756573743a0a0a556b697279753a3a546f6f6c3a206a710a436f6d6d616e643a2070726f636573730a417267756d656e74733a0a2020737464696e3a20226c61746572220a202066696c7465723a20222e220a",
+   "stderr_hex": ""
+  },
+  {
+   "id": "at-missing-file",
+   "params": [
+    "stdin=@{dir}/absent.json"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": ""
+   },
+   "setup": {
+    "files": {},
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "407b6469727d2f616273656e742e6a736f6e",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "resolved": null,
+   "exit_status": 1,
+   "stdout_hex": "",
+   "stderr_hex": "46696c65206e6f7420666f756e643a207b6469727d2f616273656e742e6a736f6e0a"
+  },
+  {
+   "id": "at-empty-path",
+   "params": [
+    "stdin=@"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": ""
+   },
+   "setup": {
+    "files": {},
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "40",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "resolved": null,
+   "exit_status": 1,
+   "stdout_hex": "",
+   "stderr_hex": "46696c65206e6f7420666f756e643a20"
+  },
+  {
+   "id": "at-tilde-not-expanded",
+   "params": [
+    "stdin=@~/ukiryu-stdin-absent-oracle.json"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": ""
+   },
+   "setup": {
+    "files": {},
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "407e2f756b697279752d737464696e2d616273656e742d6f7261636c652e6a736f6e",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "resolved": null,
+   "exit_status": 1,
+   "stdout_hex": "",
+   "stderr_hex": "46696c65206e6f7420666f756e643a207e2f756b697279752d737464696e2d616273656e742d6f7261636c652e6a736f6e0a"
+  },
+  {
+   "id": "at-dangling-symlink",
+   "params": [
+    "stdin=@{dir}/dangling"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": ""
+   },
+   "setup": {
+    "files": {},
+    "dirs": [],
+    "symlinks": {
+     "dangling": "nowhere"
+    },
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "407b6469727d2f64616e676c696e67",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "resolved": null,
+   "exit_status": 1,
+   "stdout_hex": "",
+   "stderr_hex": "46696c65206e6f7420666f756e643a207b6469727d2f64616e676c696e670a"
+  },
+  {
+   "id": "at-directory",
+   "params": [
+    "stdin=@{dir}/sub"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": ""
+   },
+   "setup": {
+    "files": {},
+    "dirs": [
+     "sub"
+    ],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "407b6469727d2f737562",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "resolved": null,
+   "exit_status": 1,
+   "stdout_hex": "",
+   "stderr_hex": "5b4572726e6f3a3a4549534449525d2049732061206469726563746f7279204020696f5f6672656164202d207b6469727d2f7375620a"
+  },
+  {
+   "id": "at-no-permission",
+   "params": [
+    "stdin=@{dir}/noperm"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": ""
+   },
+   "setup": {
+    "files": {
+     "noperm": "78"
+    },
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [
+     "noperm"
+    ],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "407b6469727d2f6e6f7065726d",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "resolved": null,
+   "exit_status": 1,
+   "stdout_hex": "",
+   "stderr_hex": "5b4572726e6f3a3a4541434345535d205065726d697373696f6e2064656e69656420402072625f7379736f70656e202d207b6469727d2f6e6f7065726d0a"
+  },
+  {
+   "id": "at-not-a-directory",
+   "params": [
+    "stdin=@{dir}/in.json/x"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": ""
+   },
+   "setup": {
+    "files": {
+     "in.json": "7b7d"
+    },
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "407b6469727d2f696e2e6a736f6e2f78",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "resolved": null,
+   "exit_status": 1,
+   "stdout_hex": "",
+   "stderr_hex": "5b4572726e6f3a3a454e4f544449525d204e6f742061206469726563746f727920402072625f7379736f70656e202d207b6469727d2f696e2e6a736f6e2f780a"
+  },
+  {
+   "id": "at-symlink-loop",
+   "params": [
+    "stdin=@{dir}/loop"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": ""
+   },
+   "setup": {
+    "files": {},
+    "dirs": [],
+    "symlinks": {
+     "loop": "loop"
+    },
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "407b6469727d2f6c6f6f70",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "resolved": null,
+   "exit_status": 1,
+   "stdout_hex": "",
+   "stderr_hex": "5b4572726e6f3a3a454c4f4f505d20546f6f206d616e79206c6576656c73206f662073796d626f6c6963206c696e6b7320402072625f7379736f70656e202d207b6469727d2f6c6f6f700a"
+  },
+  {
+   "id": "flag-with-stdin-false",
+   "params": [
+    "stdin=false",
+    "--stdin"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": "7069706564"
+   },
+   "setup": {
+    "files": {},
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "FalseClass"
+    }
+   },
+   "resolved": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "7069706564",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "exit_status": 0,
+   "stdout_hex": "4452592052554e202d20556b69727975205374727563747572656420457865637574696f6e20526571756573743a0a0a556b697279753a3a546f6f6c3a206a710a436f6d6d616e643a2070726f636573730a417267756d656e74733a0a2020737464696e3a20227069706564220a202066696c7465723a20222e220a",
+   "stderr_hex": ""
+  },
+  {
+   "id": "false-not-read",
+   "params": [
+    "stdin=false"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": "69676e6f726564"
+   },
+   "setup": {
+    "files": {},
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "FalseClass"
+    }
+   },
+   "resolved": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "FalseClass"
+    }
+   },
+   "exit_status": 0,
+   "stdout_hex": "4452592052554e202d20556b69727975205374727563747572656420457865637574696f6e20526571756573743a0a0a556b697279753a3a546f6f6c3a206a710a436f6d6d616e643a2070726f636573730a417267756d656e74733a0a2020737464696e3a20225b494f2053747265616d5d220a202066696c7465723a20222e220a",
+   "stderr_hex": ""
+  },
+  {
+   "id": "nil-not-read",
+   "params": [
+    "stdin="
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": "69676e6f726564"
+   },
+   "setup": {
+    "files": {},
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "NilClass"
+    }
+   },
+   "resolved": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "NilClass"
+    }
+   },
+   "exit_status": 0,
+   "stdout_hex": "4452592052554e202d20556b69727975205374727563747572656420457865637574696f6e20526571756573743a0a0a556b697279753a3a546f6f6c3a206a710a436f6d6d616e643a2070726f636573730a417267756d656e74733a0a2020737464696e3a20225b494f2053747265616d5d220a202066696c7465723a20222e220a",
+   "stderr_hex": ""
+  },
+  {
+   "id": "null-not-read",
+   "params": [
+    "stdin=null"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": "69676e6f726564"
+   },
+   "setup": {
+    "files": {},
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "NilClass"
+    }
+   },
+   "resolved": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "NilClass"
+    }
+   },
+   "exit_status": 0,
+   "stdout_hex": "4452592052554e202d20556b69727975205374727563747572656420457865637574696f6e20526571756573743a0a0a556b697279753a3a546f6f6c3a206a710a436f6d6d616e643a2070726f636573730a417267756d656e74733a0a2020737464696e3a20225b494f2053747265616d5d220a202066696c7465723a20222e220a",
+   "stderr_hex": ""
+  },
+  {
+   "id": "integer-not-read",
+   "params": [
+    "stdin=0"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": "69676e6f726564"
+   },
+   "setup": {
+    "files": {},
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "Integer"
+    }
+   },
+   "resolved": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "Integer"
+    }
+   },
+   "exit_status": 0,
+   "stdout_hex": "4452592052554e202d20556b69727975205374727563747572656420457865637574696f6e20526571756573743a0a0a556b697279753a3a546f6f6c3a206a710a436f6d6d616e643a2070726f636573730a417267756d656e74733a0a2020737464696e3a20225b494f2053747265616d5d220a202066696c7465723a20222e220a",
+   "stderr_hex": ""
+  },
+  {
+   "id": "hash-not-read",
+   "params": [
+    "stdin={\"k\": 1}"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": "69676e6f726564"
+   },
+   "setup": {
+    "files": {},
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "Hash"
+    }
+   },
+   "resolved": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "Hash"
+    }
+   },
+   "exit_status": 0,
+   "stdout_hex": "4452592052554e202d20556b69727975205374727563747572656420457865637574696f6e20526571756573743a0a0a556b697279753a3a546f6f6c3a206a710a436f6d6d616e643a2070726f636573730a417267756d656e74733a0a2020737464696e3a20225b494f2053747265616d5d220a202066696c7465723a20222e220a",
+   "stderr_hex": ""
+  },
+  {
+   "id": "dash-literal-not-read",
+   "params": [
+    "stdin=-literal"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": "69676e6f726564"
+   },
+   "setup": {
+    "files": {},
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "2d6c69746572616c",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "resolved": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "2d6c69746572616c",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "exit_status": 0,
+   "stdout_hex": "4452592052554e202d20556b69727975205374727563747572656420457865637574696f6e20526571756573743a0a0a556b697279753a3a546f6f6c3a206a710a436f6d6d616e643a2070726f636573730a417267756d656e74733a0a2020737464696e3a20222d6c69746572616c220a202066696c7465723a20222e220a",
+   "stderr_hex": ""
+  },
+  {
+   "id": "plain-string-not-read",
+   "params": [
+    "stdin=plain"
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": "69676e6f726564"
+   },
+   "setup": {
+    "files": {},
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "706c61696e",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "resolved": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "706c61696e",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "exit_status": 0,
+   "stdout_hex": "4452592052554e202d20556b69727975205374727563747572656420457865637574696f6e20526571756573743a0a0a556b697279753a3a546f6f6c3a206a710a436f6d6d616e643a2070726f636573730a417267756d656e74733a0a2020737464696e3a2022706c61696e220a202066696c7465723a20222e220a",
+   "stderr_hex": ""
+  },
+  {
+   "id": "quoted-at-not-file",
+   "params": [
+    "stdin=\"@x\""
+   ],
+   "pipe": {
+    "mode": "bytes",
+    "hex": "69676e6f726564"
+   },
+   "setup": {
+    "files": {},
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "stdin",
+     "filter"
+    ],
+    "stdin": {
+     "class": "String",
+     "bytes_hex": "4078",
+     "encoding": "UTF-8",
+     "valid_encoding": true
+    }
+   },
+   "resolved": null,
+   "exit_status": 1,
+   "stdout_hex": "",
+   "stderr_hex": "46696c65206e6f7420666f756e643a20780a"
+  },
+  {
+   "id": "no-stdin-param",
+   "params": [],
+   "pipe": {
+    "mode": "bytes",
+    "hex": "69676e6f726564"
+   },
+   "setup": {
+    "files": {},
+    "dirs": [],
+    "symlinks": {},
+    "chmod0": [],
+    "chdir": false
+   },
+   "parsed": {
+    "keys": [
+     "filter"
+    ],
+    "stdin": null
+   },
+   "resolved": {
+    "keys": [
+     "filter"
+    ],
+    "stdin": null
+   },
+   "exit_status": 0,
+   "stdout_hex": "4452592052554e202d20556b69727975205374727563747572656420457865637574696f6e20526571756573743a0a0a556b697279753a3a546f6f6c3a206a710a436f6d6d616e643a2070726f636573730a417267756d656e74733a0a202066696c7465723a20222e220a",
+   "stderr_hex": ""
+  }
+ ]
+}
