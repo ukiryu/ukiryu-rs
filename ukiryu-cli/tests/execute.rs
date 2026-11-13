@@ -217,6 +217,73 @@ fn mask(text: &str) -> String {
         .collect()
 }
 
+/// `value` with the timing fields replaced, at any depth.
+fn mask_value(value: &mut Json) {
+    match value {
+        Json::Object(map) => {
+            for (k, v) in map.iter_mut() {
+                if matches!(
+                    k.as_str(),
+                    "started_at" | "finished_at" | "duration_seconds" | "formatted_duration"
+                ) {
+                    *v = Json::String("<masked>".into());
+                } else {
+                    mask_value(v);
+                }
+            }
+        }
+        Json::Array(items) => items.iter_mut().for_each(mask_value),
+        _ => {}
+    }
+}
+
+/// A YAML response document as loaded values (Psych's and the pinned
+/// emitter's scalar styles differ; the root rendering contract compares
+/// YAML responses by value).
+fn yaml_values(text: &str) -> Option<Json> {
+    if !text.starts_with("---") {
+        return None;
+    }
+    let unmasked = text.replace(": <masked>", ": '<masked>'");
+    let mut value: Json = ukiryu::from_yaml(&unmasked).ok()?;
+    mask_value(&mut value);
+    Some(value)
+}
+
+fn json_values(text: &str) -> Option<Json> {
+    let mut value: Json = serde_json::from_str(text).ok()?;
+    mask_value(&mut value);
+    Some(value)
+}
+
+/// Equal output: bytes, except YAML responses (by value) and JSON files
+/// (timing masked).
+fn same(want: &Shown, got: &Shown) -> bool {
+    if want.status != got.status || want.stderr != got.stderr {
+        return false;
+    }
+    let stdout = match (yaml_values(&want.stdout), yaml_values(&got.stdout)) {
+        (Some(a), Some(b)) => a == b,
+        _ => want.stdout == got.stdout,
+    };
+    stdout
+        && want.files.len() == got.files.len()
+        && want
+            .files
+            .iter()
+            .zip(&got.files)
+            .all(|((wn, wc), (gn, gc))| {
+                wn == gn
+                    && match (wc, gc) {
+                        (Some(a), Some(b)) => match (json_values(a), json_values(b)) {
+                            (Some(x), Some(y)) => x == y,
+                            _ => a == b,
+                        },
+                        (a, b) => a == b,
+                    }
+            })
+}
+
 enum Outcome {
     Shown(Shown),
     Open(String),
@@ -343,7 +410,7 @@ fn execute_cases_match_ruby_captures() {
             Outcome::Shown(_) if unqualified => counts[2] += 1,
             Outcome::Shown(shown) => {
                 let want = expected(case);
-                if shown == want {
+                if same(&want, &shown) {
                     counts[0] += 1;
                 } else {
                     failures.push(format!(
