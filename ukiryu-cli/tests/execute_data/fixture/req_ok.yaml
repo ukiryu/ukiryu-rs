@@ -1,0 +1,5 @@
+tool: cat
+command: concatenate
+arguments:
+  number: true
+  stdin: "hi\n"

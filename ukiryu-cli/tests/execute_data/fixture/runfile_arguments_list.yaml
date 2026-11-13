@@ -1,0 +1,3 @@
+tool: cat
+command: x
+arguments: [1]
