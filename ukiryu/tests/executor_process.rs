@@ -191,6 +191,10 @@ fn native_shell_rows_match_ruby_bytes() {
     if !powershell_available() {
         return;
     }
+    let targets: serde_json::Value =
+        serde_json::from_str(include_str!("executor_data/native_shells_targets.json"))
+            .expect("targets json");
+    let targets = &targets[name.as_str()];
     let rows = golden["rows"].as_array().expect("rows");
     assert!(!rows.is_empty(), "{name}");
     for row in rows {
@@ -213,30 +217,101 @@ fn native_shell_rows_match_ruby_bytes() {
             req = req.stdin_bytes(unhex(input));
         }
         let execution = execute(req).unwrap_or_else(|e| panic!("{id}: {e}"));
+        let result = &execution.result;
         println!(
-            "EVIDENCE {name} {id}: stdout={} stderr={} status={}",
+            "EVIDENCE {name} {id}: raw_stdout={} raw_stderr={} stdout={} stderr={} status={}",
             hex(&execution.stdout),
             hex(&execution.stderr),
-            execution.result.exit_status()
+            hex(result.stdout().as_bytes()),
+            hex(result.stderr().as_bytes()),
+            result.exit_status()
         );
+        // A target row replaces the Ruby observation it names; every other
+        // row must equal the capture.
+        let expected = if targets[id].is_object() {
+            assert!(targets[id]["trace"].is_string(), "{id}");
+            &targets[id]
+        } else {
+            row
+        };
         assert_eq!(
-            hex(&execution.stdout),
-            row["stdout_hex"].as_str().unwrap(),
+            hex(result.stdout().as_bytes()),
+            expected["stdout_hex"].as_str().unwrap(),
             "{id} stdout"
         );
         assert_eq!(
-            hex(&execution.stderr),
-            row["stderr_hex"].as_str().unwrap(),
+            hex(result.stderr().as_bytes()),
+            expected["stderr_hex"].as_str().unwrap(),
             "{id} stderr"
         );
         assert_eq!(
-            execution.result.exit_status(),
-            row["exit_status"].as_i64().unwrap(),
+            result.exit_status(),
+            expected["exit_status"].as_i64().unwrap(),
             "{id}"
         );
         assert_eq!(
-            execution.result.command_info.full_command,
+            result.command_info.full_command,
             row["full_command"].as_str().unwrap(),
+            "{id}"
+        );
+    }
+}
+
+/// The bytes a child receives on stdin and the text read back from it,
+/// against the Ruby capture's `child_rows` (a Ruby child hex-dumps its
+/// binary stdin). On Windows this checks that cmd passes stdin unchanged,
+/// that the PowerShell stdin file is written in text mode (LF as CR LF), and
+/// that CR LF output reads as LF. Needs `ruby` on PATH (the executor
+/// reference workflow provides it).
+#[test]
+fn child_stdin_bytes_match_ruby() {
+    let Some((name, golden)) = native_golden() else {
+        eprintln!("UNVERIFIED executor_process: no Ruby capture for this host; not passed");
+        return;
+    };
+    let ruby_runs = std::process::Command::new("ruby")
+        .args(["-e", "exit 0"])
+        .status()
+        .map(|s| s.success())
+        .unwrap_or(false);
+    if !ruby_runs {
+        eprintln!("UNVERIFIED executor_process: ruby not on PATH; child stdin rows not passed");
+        return;
+    }
+    let dir = std::env::temp_dir().join(format!("ukiryu-stdin-probe-{}", std::process::id()));
+    std::fs::create_dir_all(&dir).unwrap();
+    let script = dir.join("ukiryu_stdin_probe.rb");
+    std::fs::write(
+        &script,
+        "STDOUT.binmode\nSTDIN.binmode\nprint STDIN.read.unpack1('H*')\nprint 13.chr, 10.chr\n",
+    )
+    .unwrap();
+    let script = script.to_string_lossy().replace('\\', "/");
+    for row in golden["child_rows"].as_array().expect("child_rows") {
+        let id = row["id"].as_str().unwrap();
+        let shell = match row["shell"].as_str().unwrap() {
+            "powershell" => ShellName::PowerShell,
+            "cmd" => ShellName::Cmd,
+            "bash" => ShellName::Bash,
+            other => panic!("{id}: shell {other}"),
+        };
+        if shell == ShellName::PowerShell && !powershell_available() {
+            continue;
+        }
+        let execution = execute(
+            request(shell, "ruby", &[script.as_str()])
+                .stdin_bytes(unhex(row["stdin_hex"].as_str().unwrap())),
+        )
+        .unwrap_or_else(|e| panic!("{id}: {e}"));
+        let stdout = hex(execution.result.stdout().as_bytes());
+        println!(
+            "EVIDENCE {name} {id}: raw_stdout={} stdout={stdout}",
+            hex(&execution.stdout)
+        );
+        assert_eq!(stdout, row["stdout_hex"].as_str().unwrap(), "{id}");
+        assert_eq!(
+            execution.result.exit_status(),
+            row["exit_status"].as_i64().unwrap(),
             "{id}"
         );
     }

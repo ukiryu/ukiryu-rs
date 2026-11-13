@@ -1,0 +1,21 @@
+{
+  "note": "Target rows that intentionally differ from the frozen Ruby capture in the named golden file. The Ruby row stays unchanged there; the test checks these values instead.",
+  "native_shells_windows.json": {
+    "powershell_echo": {
+      "trace": "ukiryu/ukiryu#20 (stdout/stderr capture)",
+      "source_observation": "Under Ruby on Windows, a native command that PowerShell runs without a pipeline writes nothing to the captured streams: stdout and stderr are empty and the status is 0, although PowerShell received the expected command line (probes in the capture).",
+      "target": "The command's output and status are captured.",
+      "stdout_hex": "68656c6c6f0a",
+      "stderr_hex": "",
+      "exit_status": 0
+    },
+    "powershell_stderr_exit": {
+      "trace": "ukiryu/ukiryu#20 (stdout/stderr capture, exit-code mapping)",
+      "source_observation": "Empty streams and status 0 instead of the command's stderr and exit status 3 (same cause as powershell_echo).",
+      "target": "stderr and the exit status are captured.",
+      "stdout_hex": "",
+      "stderr_hex": "6f6f7073200a",
+      "exit_status": 3
+    }
+  }
+}

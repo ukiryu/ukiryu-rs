@@ -83,6 +83,10 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: 1.95.0
+      # A Ruby child hex-dumps its stdin for child_stdin_bytes_match_ruby.
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '4.0.1'
       - name: Run the executor tests verbosely
         shell: bash
         run: |

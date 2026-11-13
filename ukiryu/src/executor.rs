@@ -41,7 +41,8 @@
 //! - The timeout must be a positive, finite number. The source treats `0` as
 //!   "no limit" and raises `ArgumentError` for a negative value.
 //! - Output is kept as bytes ([`Execution::stdout`]); the result's strings
-//!   are their UTF-8 decoding, with invalid sequences replaced.
+//!   are what Ruby reads from the pipe (on Windows, CR LF becomes LF),
+//!   decoded as UTF-8 with invalid sequences replaced.
 
 mod clock;
 mod invocation;
@@ -349,8 +350,8 @@ pub fn execute(request: ExecuteRequest) -> Result<Execution, ExecuteError> {
     })?;
 
     let status = extract_status(finished.status);
-    let stdout_text = String::from_utf8_lossy(&finished.stdout).into_owned();
-    let stderr_text = String::from_utf8_lossy(&finished.stderr).into_owned();
+    let stdout_text = pipe_text(&finished.stdout, host.windows);
+    let stderr_text = pipe_text(&finished.stderr, host.windows);
     let failure = (status != 0 && !allow_failure).then(|| {
         execution_failed_message(
             &executable,
@@ -386,6 +387,24 @@ pub fn execute(request: ExecuteRequest) -> Result<Execution, ExecuteError> {
         }),
         None => Ok(execution),
     }
+}
+
+/// The text Ruby reads from an `Open3` pipe. On Windows the pipe is in
+/// text mode, so every CR LF pair reads as LF (a lone CR stays). The raw
+/// bytes stay available in [`Execution::stdout`] and [`Execution::stderr`].
+fn pipe_text(bytes: &[u8], windows: bool) -> String {
+    if !windows {
+        return String::from_utf8_lossy(bytes).into_owned();
+    }
+    let mut text = Vec::with_capacity(bytes.len());
+    let mut iter = bytes.iter().peekable();
+    while let Some(&byte) = iter.next() {
+        if byte == b'\r' && iter.peek() == Some(&&b'\n') {
+            continue;
+        }
+        text.push(byte);
+    }
+    String::from_utf8_lossy(&text).into_owned()
 }
 
 /// The run limit for a timeout value.
@@ -431,6 +450,20 @@ impl StdinFile {
             COUNTER.fetch_add(1, Ordering::Relaxed)
         );
         let path = std::env::temp_dir().join(name);
+        // The source writes this file through Ruby's `Tempfile`, which on
+        // Windows is in text mode: every LF is written as CR LF.
+        let data = if cfg!(windows) {
+            let mut text = Vec::with_capacity(data.len());
+            for byte in data {
+                if byte == b'\n' {
+                    text.push(b'\r');
+                }
+                text.push(byte);
+            }
+            text
+        } else {
+            data
+        };
         std::fs::write(&path, data).map_err(ExecuteError::Stdin)?;
         let display = path.to_string_lossy().into_owned();
         Ok(StdinFile { path, display })
