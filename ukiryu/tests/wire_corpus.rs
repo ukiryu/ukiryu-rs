@@ -35,6 +35,14 @@ fn read_input(rel: &str) -> String {
     std::fs::read_to_string(inputs().join(rel)).expect("corpus input")
 }
 
+/// The oracle's `read_input`: the row's `yaml` text, else its `file`.
+fn document(i: &Value) -> String {
+    match i["yaml"].as_str() {
+        Some(yaml) => yaml.to_owned(),
+        None => read_input(i["file"].as_str().expect("file")),
+    }
+}
+
 fn rows(kind: &str) -> Vec<Value> {
     std::fs::read_to_string(corpus().join(format!("cases/{kind}.jsonl")))
         .expect("cases")
@@ -98,12 +106,12 @@ fn request(row: &Value) -> Option<Value> {
         }),
         "schema.validate_profile" => json!({
             "op": "schema", "method": "validate_profile",
-            "profile": read_input(i["file"].as_str().expect("file")),
+            "profile": document(i),
             "schema_path": i["schema"].as_str().map(input_path),
         }),
         "schema.definition_validate" => json!({
             "op": "validate", "method": "definition",
-            "yaml": read_input(i["file"].as_str().expect("file")),
+            "yaml": document(i),
             "schema_path": i["schema"].as_str().map(input_path),
         }),
         "resolve.extract_version" => json!({
