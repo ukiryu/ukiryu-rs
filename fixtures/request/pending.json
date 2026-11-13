@@ -11,11 +11,6 @@
       "owner": "Yeptris engine / shared loader",
       "reason": "Psych 5.3.1 (Ruby 4.0.1 x86_64-linux and Ruby 3.4.8 x64-mingw-ucrt) loads a UTF-8 BOM-prefixed request as {'tool' => 'a'} only, so 'command' is reported missing. Yeptris reads all three keys. Reproducing the libyaml BOM behaviour needs an engine/shared-loader decision."
     },
-    "custom-scalar-tag": {
-      "status": "pending",
-      "owner": "shared YAML tag policy",
-      "reason": "Shared safe_load caller policy (ukiryu::schema::safe_load, Permitted::SYMBOL) reports this YAML tag as Unsupported. Psych result needs a separate shared scalar/tag proposal (not part of the approved YAML-STR-TAG !!str scope); request.rs does not resolve tags itself. Psych drops the local tag !custom and keeps the String \"value\"."
-    },
     "flow-scalar-continuation-unindented": {
       "status": "pending",
       "owner": "Yeptris engine",
@@ -24,16 +19,6 @@
     "invalid-utf8": {
       "status": "detail",
       "reason": "Psych::SyntaxError text from libyaml vs the Yeptris diagnostic after 'Invalid YAML in request file: '. Class and public prefix match."
-    },
-    "ruby-object-tag": {
-      "status": "pending",
-      "owner": "shared YAML tag policy",
-      "reason": "Shared safe_load caller policy (ukiryu::schema::safe_load, Permitted::SYMBOL) reports this YAML tag as Unsupported. Psych result needs a separate shared scalar/tag proposal (not part of the approved YAML-STR-TAG !!str scope); request.rs does not resolve tags itself. Psych raises Psych::DisallowedClass 'Tried to load unspecified class: Object' (reported as 'Error loading request file: ...')."
-    },
-    "ruby-symbol-tag": {
-      "status": "pending",
-      "owner": "shared YAML tag policy",
-      "reason": "Shared safe_load caller policy (ukiryu::schema::safe_load, Permitted::SYMBOL) reports this YAML tag as Unsupported. Psych result needs a separate shared scalar/tag proposal (not part of the approved YAML-STR-TAG !!str scope); request.rs does not resolve tags itself. Psych with permitted Symbol yields :name for !ruby/symbol."
     },
     "syntax-bad-indent": {
       "status": "detail",

@@ -2,13 +2,18 @@
 //! and the models' YAML load/serialize paths.
 //!
 //! Tag rows in `models_data/register_tags.json` were captured by running
-//! the pinned Ruby (ukiryu/ukiryu ab6df353, Ruby 4.0.1, Psych 5.5.0): the
+//! the pinned Ruby (ukiryu/ukiryu ab6df353, Ruby 4.0.1, Psych 5.3.1): the
 //! register's `YAML.safe_load(text, permitted_classes: [Symbol], aliases:
 //! true)` followed by `Utils.symbolize_keys`. Ruby objects carry no tags, so
-//! a tag is applied or dropped, never kept as a one-entry Hash. Rows whose
-//! Psych result the port cannot reproduce exactly are listed in [`GAPS`]
-//! and must fail as `Unsupported`; an unlisted mismatch or a listed row that
-//! now passes fails the test.
+//! a tag is applied or dropped, never kept as a one-entry Hash.
+//!
+//! The register route (`register_hash`, the per-call policy loader in
+//! `models::safe_load`) reads each tag with its scalar's source text and
+//! reproduces every row, errors included. The serde route
+//! (`Deserialize for Value`) only sees the already-resolved payload, so it
+//! reports the rows listed in [`SERDE_GAPS`] as `Unsupported` instead of
+//! guessing; an unlisted mismatch or a listed row that now passes fails.
+//! The full per-policy matrix is `models_tag_policy.rs`.
 #[path = "models_data/support.rs"]
 mod support;
 
@@ -18,11 +23,11 @@ use ukiryu::models::*;
 use ukiryu::types::value::apply_yaml_tag;
 use ukiryu::types::{OptionSource, Time};
 
-/// Tag rows the port reports as unsupported instead of guessing.
-const GAPS: &[&str] = &[
+/// Tag rows the serde route reports as unsupported instead of guessing
+/// (their Psych result needs the scalar's source text or a class check).
+const SERDE_GAPS: &[&str] = &[
     // Psych reads a leading-zero `!!int` string as octal.
     "tag-int-octal-string",
-    // Binary String, Time, Set and Omap objects are outside the value domain.
     "tag-binary",
     "tag-timestamp",
     "tag-set",
@@ -39,12 +44,12 @@ fn tag_rows() -> Vec<Json> {
 }
 
 /// What the register load path yields for `v`, as Ruby `inspect`, or the
-/// error kind.
-fn register_outcome(yaml: &str) -> Result<String, ModelErrorKind> {
+/// raised Ruby exception class.
+fn register_outcome(yaml: &str) -> Result<String, &'static str> {
     match register_hash(yaml) {
         Ok(Some(h)) => Ok(h.get_sym("v").cloned().unwrap_or(Value::Nil).inspect()),
         Ok(None) => Ok("nil".into()),
-        Err(e) => Err(e.kind),
+        Err(e) => Err(e.ruby_class()),
     }
 }
 
@@ -55,15 +60,16 @@ fn register_yaml_tags_match_psych() {
         let id = row["id"].as_str().unwrap();
         let yaml = row["yaml"].as_str().unwrap();
         let got = register_outcome(yaml);
-        if GAPS.contains(&id) {
-            if got != Err(ModelErrorKind::Unsupported) {
-                failures.push(format!("{id}: listed gap, got {got:?}"));
-            }
-            continue;
-        }
-        let want = row["expect"]["inspect"].as_str();
-        if want.is_none() || got.as_deref().ok() != want {
-            failures.push(format!("{id}: want {:?}, got {got:?}", row["expect"]));
+        let want = match (
+            row["expect"]["inspect"].as_str(),
+            row["expect"]["error"].as_str(),
+        ) {
+            (Some(inspect), _) => Ok(inspect.to_owned()),
+            (None, Some(class)) => Err(class),
+            _ => panic!("{id}: malformed golden row"),
+        };
+        if got.as_ref().map_err(|c| *c) != want.as_ref().map_err(|c| *c) {
+            failures.push(format!("{id}: want {want:?}, got {got:?}"));
         }
     }
     assert!(failures.is_empty(), "{failures:#?}");
@@ -77,7 +83,7 @@ fn serde_yaml_tags_match_register_route() {
         let id = row["id"].as_str().unwrap();
         let yaml = row["yaml"].as_str().unwrap();
         let via_serde = yeptris::from_str::<Value>(yaml);
-        if GAPS.contains(&id) {
+        if SERDE_GAPS.contains(&id) {
             let err = via_serde.expect_err(id).to_string();
             assert!(err.contains("is not reproduced"), "{id}: {err}");
             continue;
