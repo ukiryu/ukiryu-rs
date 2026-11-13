@@ -27,7 +27,9 @@ use serde_json::{json, Map, Value as Json};
 use std::collections::BTreeSet;
 use std::path::PathBuf;
 use support::{canon, decode, golden, paint, render_case_id, responses, s};
-use ukiryu::render::{output_response, to_yaml, OutputFormat, OutputWrite, RenderSettings};
+use ukiryu::render::{
+    output_response, to_yaml, to_yaml_tree, OutputFormat, OutputWrite, RenderSettings,
+};
 use yeptris::{Mapping, Value};
 
 const TRACE: &str = "ukiryu/ukiryu#27: yaml format emitted by Yeptris with pinned EmitOptions \
@@ -100,7 +102,9 @@ fn compute() -> Json {
     let mut probe_loads = Map::new();
     for v in p["values"].as_array().unwrap() {
         let id = s(&v["id"]).to_owned();
-        match to_yaml(&probe_doc(&v["value"])) {
+        // Probe values are Yeptris trees (some tagged): emitted from the
+        // tree, so tags reach the engine (`render::to_yaml_tree`).
+        match to_yaml_tree(&probe_doc(&v["value"])) {
             Ok(yaml) => {
                 probe_loads.insert(id.clone(), load_canon(&yaml));
                 probe_yaml.insert(id, Json::String(yaml));

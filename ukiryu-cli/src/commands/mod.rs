@@ -9,3 +9,4 @@ pub struct CommandOutcome {
 }
 
 pub mod author;
+pub mod inspect;

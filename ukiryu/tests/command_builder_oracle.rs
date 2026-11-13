@@ -18,10 +18,11 @@
 use num_bigint::BigInt;
 use serde_json::Value as Json;
 use std::cell::RefCell;
-use std::collections::{BTreeMap, HashSet, VecDeque};
+use std::collections::{BTreeMap, VecDeque};
 use std::path::PathBuf;
 use ukiryu::command_builder::{
-    build_args, build_env_vars, ArgumentSpec, BuildContext, CommandSpec, EnvVarSpec, OptionSpec,
+    build_args, build_env_vars, ruby_sort_by, ArgumentSpec, BuildContext, CommandSpec, EnvVarSpec,
+    OptionSpec,
 };
 use ukiryu::shell::ShellFormatting;
 use ukiryu::types::{OptionSource, StdHost, Value};
@@ -33,9 +34,9 @@ const CORPUS_COMMANDS: usize = 40;
 const SYNTHETIC_BUILD_ROWS: usize = 657;
 const SYNTHETIC_ENV_ROWS: usize = 185;
 
-/// Rows where MRI's unstable `sort_by` emits equal-position arguments in a
-/// different order than declaration order; the port keeps declaration order.
-const SORT_ORDER_DIVERGENT: &[&str] = &["args.mixed-positions.20"];
+const ORDER_SORT_BY_ROWS: usize = 481;
+const ORDER_POSITION_ROWS: usize = 29;
+const ORDER_BUILD_ROWS: usize = 85;
 
 fn data(name: &str) -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
@@ -327,16 +328,12 @@ fn corpus_rows_match_conformance_dir() {
     }
 }
 
-#[test]
-fn synthetic_build_args_rows() {
-    let rows = jsonl(data("synthetic_build.jsonl"));
-    assert_eq!(
-        rows.len(),
-        SYNTHETIC_BUILD_ROWS,
-        "pinned synthetic build rows"
-    );
+/// Replays authored build rows and requires the exact ordered argv (or the
+/// exact error) for every row.
+fn replay_build_file(name: &str, pinned: usize) {
+    let rows = jsonl(data(name));
+    assert_eq!(rows.len(), pinned, "{name}: pinned row count");
     let mut failures = Vec::new();
-    let mut divergent = HashSet::new();
     let (mut ok_rows, mut err_rows) = (0, 0);
     for row in &rows {
         let id = row["id"].as_str().unwrap();
@@ -352,36 +349,80 @@ fn synthetic_build_args_rows() {
         } else {
             err_rows += 1;
         }
-        if SORT_ORDER_DIVERGENT.contains(&id) {
-            // Same elements, declaration order instead of MRI's order.
-            let mut a: Vec<_> = got["ok"]
-                .as_array()
-                .unwrap()
-                .iter()
-                .map(Json::to_string)
-                .collect();
-            let mut b: Vec<_> = row["expect"]["ok"]
-                .as_array()
-                .unwrap()
-                .iter()
-                .map(Json::to_string)
-                .collect();
-            assert_ne!(a, b, "{id}: no longer divergent; drop it from the list");
-            a.sort();
-            b.sort();
-            assert_eq!(a, b, "{id}: divergent row must be a reordering");
-            divergent.insert(id);
-            continue;
-        }
         if got != row["expect"] {
             failures.push(format!("{id}: got {got}, expected {}", row["expect"]));
         } else if !consumed {
             failures.push(format!("{id}: recorded format_path calls left over"));
         }
     }
-    assert_eq!(divergent.len(), SORT_ORDER_DIVERGENT.len());
-    finish("synthetic build_args", failures);
-    eprintln!("synthetic build_args: {ok_rows} ok rows, {err_rows} error rows");
+    finish(name, failures);
+    eprintln!("{name}: {ok_rows} ok rows, {err_rows} error rows");
+}
+
+#[test]
+fn synthetic_build_args_rows() {
+    replay_build_file("synthetic_build.jsonl", SYNTHETIC_BUILD_ROWS);
+}
+
+/// Positional ordering: ties, mixed and boundary positions, insertion-sort
+/// and partition sizes around 16, heapsort-depth inputs and Bignum
+/// positions, through `build_args`.
+#[test]
+fn order_build_args_rows() {
+    replay_build_file("order_build.jsonl", ORDER_BUILD_ROWS);
+}
+
+/// `Enumerable#sort_by` over Integer keys: the index order MRI produced.
+#[test]
+fn order_sort_by_rows() {
+    let rows = jsonl(data("order_sort_by.jsonl"));
+    assert_eq!(rows.len(), ORDER_SORT_BY_ROWS, "pinned sort_by rows");
+    let mut failures = Vec::new();
+    for row in &rows {
+        let id = row["id"].as_str().unwrap();
+        let keys: Vec<BigInt> = row["keys"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|k| k.to_string().parse().expect("integer key"))
+            .collect();
+        let expected: Vec<usize> = row["order"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|i| i.as_u64().unwrap() as usize)
+            .collect();
+        let got = ruby_sort_by((0..keys.len()).collect(), |&i| keys[i].clone());
+        if got != expected {
+            failures.push(format!("{id}: got {got:?}, expected {expected:?}"));
+        }
+    }
+    finish("order sort_by", failures);
+}
+
+/// `ArgumentDefinition#numeric_position` and `#last?` per position string.
+#[test]
+fn order_position_rows() {
+    let rows = jsonl(data("order_positions.jsonl"));
+    assert_eq!(rows.len(), ORDER_POSITION_ROWS, "pinned position rows");
+    let mut failures = Vec::new();
+    for row in &rows {
+        let arg = ArgumentSpec {
+            position: row["loaded"].as_str().map(str::to_string),
+            ..ArgumentSpec::default()
+        };
+        let expected: BigInt = row["numeric_position"].to_string().parse().unwrap();
+        if arg.numeric_position() != expected || arg.is_last() != row["last"].as_bool().unwrap() {
+            failures.push(format!(
+                "{:?}: got {} / last {}, expected {expected} / {}",
+                row["position"],
+                arg.numeric_position(),
+                arg.is_last(),
+                row["last"]
+            ));
+        }
+    }
+    finish("order positions", failures);
 }
 
 #[test]
