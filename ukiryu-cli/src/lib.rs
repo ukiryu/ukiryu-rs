@@ -4,3 +4,4 @@
 //! and cache Thor subcommands. Help wording follows clap; option names, aliases,
 //! defaults, argument order, and the explicit `--` boundary remain observable.
 pub mod arguments;
+pub mod commands;
