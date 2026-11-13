@@ -63,12 +63,7 @@ fn parse_time(iso: &str) -> Time {
     let s: i64 = iso[17..19].parse().unwrap();
     let nanos: u32 = iso[20..29].parse().unwrap();
     let days = days_from_civil(y, mo, d);
-    Time {
-        seconds: days * 86_400 + h * 3600 + mi * 60 + s,
-        nanos,
-        utc_offset: 0,
-        utc: true,
-    }
+    Time::new(days * 86_400 + h * 3600 + mi * 60 + s, nanos, 0, true)
 }
 
 fn days_from_civil(y: i64, m: u32, d: u32) -> i64 {
@@ -234,7 +229,7 @@ impl Host for PinnedNow {
     }
 
     fn now(&self) -> Option<Now> {
-        Some(self.0)
+        Some(self.0.clone())
     }
 }
 

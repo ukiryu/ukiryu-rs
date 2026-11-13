@@ -1,9 +1,5 @@
 # Rows the Rust port answers with Unsupported instead of reproducing Ruby.
 # Every id must exist; the oracle test fails if this list and the port disagree.
-# A fraction finer than a nanosecond: Ruby keeps an exact Rational sub-second
-# (Time#inspect prints it); types::Time holds nanoseconds.
-type.datetime.032
-datetime.parse.025
 # /i with a character whose full case folding has several characters (U+FB06 "st"):
 # Onigmo folds it to ASCII, the portable engine uses simple folding.
 datetime.parse.130

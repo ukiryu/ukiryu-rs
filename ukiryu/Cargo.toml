@@ -22,6 +22,8 @@ wasm = ["dep:wasm-bindgen"]
 serde.workspace = true
 serde_json.workspace = true
 num-bigint.workspace = true
+# Exact Ruby Time fractions finer than a nanosecond (types/time.rs).
+num-rational = { version = "0.4.2", default-features = false, features = ["num-bigint", "std"] }
 yeptris.workspace = true
 regex = "1"
 # Ruby (Onigmo) Regexp semantics on a pure-Rust engine (look-around,

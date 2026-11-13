@@ -133,12 +133,7 @@ fn symbol_serializes_as_its_name() {
 /// back as a String: no model attribute holds a Time.
 #[test]
 fn time_serializes_as_ruby_to_s() {
-    let t = Value::Time(Time {
-        seconds: 1_705_486_830,
-        nanos: 0,
-        utc_offset: 0,
-        utc: true,
-    });
+    let t = Value::Time(Time::new(1_705_486_830, 0, 0, true));
     let text = t.to_ruby_s();
     assert_eq!(serde_json::to_value(&t).unwrap(), json!(text));
     assert_eq!(

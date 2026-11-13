@@ -44,12 +44,12 @@ fn time(v: &Value) -> Option<Time> {
     if v.is_null() {
         return None;
     }
-    Some(Time {
-        seconds: v["seconds"].as_i64().unwrap(),
-        nanos: v["nanos"].as_u64().unwrap() as u32,
-        utc_offset: v["utc_offset"].as_i64().unwrap() as i32,
-        utc: v["utc"].as_bool().unwrap(),
-    })
+    Some(Time::new(
+        v["seconds"].as_i64().unwrap(),
+        v["nanos"].as_u64().unwrap() as u32,
+        v["utc_offset"].as_i64().unwrap() as i32,
+        v["utc"].as_bool().unwrap(),
+    ))
 }
 
 fn seconds(v: &Value) -> Option<Seconds> {
@@ -334,12 +334,7 @@ fn non_finite_timeout_fails_json_like_the_gem() {
     assert_eq!(rows.len(), 3);
     for row in &rows {
         let timeout: f64 = text(&row["timeout"]).parse().unwrap();
-        let utc = |seconds| Time {
-            seconds,
-            nanos: 0,
-            utc_offset: 0,
-            utc: true,
-        };
+        let utc = |seconds| Time::new(seconds, 0, 0, true);
         let r = ExecutionResult::new(
             CommandInfo {
                 executable: "x".into(),

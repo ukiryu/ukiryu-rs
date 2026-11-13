@@ -4,7 +4,6 @@
 //! message and returned Ruby type follows the pinned implementation, including
 //! its quirks (for example `of:` validates each element with the array's own
 //! options, and `allow_empty` does not skip a pattern check).
-use num_bigint::BigInt;
 
 use super::datetime::{self, Now};
 use super::error::{Error, ErrorClass, Result};
@@ -270,21 +269,13 @@ fn validate_integer(value: &Value, options: &dyn OptionSource) -> Result<Value> 
     Ok(integer)
 }
 
-/// `Time#to_f`: on 64-bit Ruby the time is an Integer count of nanoseconds
-/// and `to_f` is `Integer#quo(1e9)`, a Float division (`time.c`
-/// `rb_time_unmagnify_to_float`).
-fn time_to_f(t: &super::value::Time) -> f64 {
-    let ns = BigInt::from(t.seconds) * 1_000_000_000 + t.nanos;
-    bigint_to_f64(&ns) / 1e9
-}
-
 /// `Float(value)`; `Ok(None)` is a rescued ArgumentError/TypeError.
 fn kernel_float(value: &Value) -> Result<Option<f64>> {
     Ok(match value {
         Value::Float(f) => Some(*f),
         Value::Integer(i) => Some(bigint_to_f64(i)),
         Value::String(s) => parse_float(s)?,
-        Value::Time(t) => Some(time_to_f(t)),
+        Value::Time(t) => Some(t.to_f()),
         _ => None,
     })
 }

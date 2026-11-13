@@ -392,15 +392,12 @@ pub fn time_to_s(t: &Time) -> String {
     format!("{} {}", time_parts(t), time_zone(t))
 }
 
-/// `Time#inspect` (sub-second digits without trailing zeros; an offset with
-/// seconds prints them, `+053015`).
+/// `Time#inspect` (sub-second digits without trailing zeros, or the exact
+/// `Rational` of a fraction finer than a nanosecond, `10:20:30
+/// 1234567891/10000000000`; an offset with seconds prints them, `+053015`).
 pub fn time_inspect(t: &Time) -> String {
     let mut s = time_parts(t);
-    if t.nanos != 0 {
-        let frac = format!("{:09}", t.nanos);
-        s.push('.');
-        s.push_str(frac.trim_end_matches('0'));
-    }
+    s.push_str(&t.inspect_subsec());
     let mut zone = time_zone(t);
     if !t.utc && t.utc_offset % 60 != 0 {
         zone.push_str(&format!("{:02}", t.utc_offset.abs() % 60));
@@ -506,7 +503,7 @@ fn compare(a: &Value, b: &Value, op: &str) -> Result<Option<Ordering>> {
             _ => Err(cmp_failed(a, b)),
         },
         Value::Time(x) => match b {
-            Value::Time(y) => Ok(Some((x.seconds, x.nanos).cmp(&(y.seconds, y.nanos)))),
+            Value::Time(y) => Ok(Some(x.instant_cmp(y))),
             _ => Err(cmp_failed(a, b)),
         },
         Value::Hash(_) => Err(Error::unsupported(format!(
