@@ -56,6 +56,9 @@ if WINDOWS
   inputs.each { |name, data| rows << capture("cmd_stdin_#{name}", :cmd, 'more.com', [], data) }
   rows << capture('cmd_echo', :cmd, 'echo', ['hello'], nil)
   rows << capture('cmd_exit_42', :cmd, 'cmd', ['/c', 'exit 42'], nil)
+  # An executable path with spaces (the cmd join quotes it).
+  git = 'C:\\Program Files\\Git\\cmd\\git.exe'
+  rows << capture('cmd_executable_with_spaces', :cmd, git, ['--version'], nil) if File.exist?(git)
 end
 
 # What a child actually receives on stdin and writes on stdout, as bytes:
