@@ -80,6 +80,10 @@ fn model_kind_name(kind: ModelErrorKind) -> &'static str {
         ModelErrorKind::Syntax => "syntax",
         ModelErrorKind::Io => "io",
         ModelErrorKind::Unsupported => "unsupported",
+        ModelErrorKind::DisallowedClass => "disallowed_class",
+        ModelErrorKind::AliasesNotEnabled => "aliases_not_enabled",
+        ModelErrorKind::Argument => "argument",
+        ModelErrorKind::Type => "type",
     }
 }
 
@@ -100,13 +104,20 @@ pub(super) fn model_error(ruby: &Ruby, error: ModelError) -> Error {
     )
 }
 
-/// Raises a wire failure reply: as the Ruby class it names when it names one
-/// (`ArgumentError` from configuration), else as `Ukiryu::Native::WireError`.
+/// Raises a wire failure reply as the Ruby class it names when that is
+/// `ArgumentError` or a `Ukiryu::Errors` class, else as
+/// `Ukiryu::Native::WireError`.
 pub(super) fn wire_error(ruby: &Ruby, error: &serde_json::Value) -> Error {
     let code = error["code"].as_str().unwrap_or("INTERNAL_ERROR");
     let message = error["message"].as_str().unwrap_or("");
     match error["source_class"].as_str() {
         Some("ArgumentError") => Error::new(ruby.exception_arg_error(), message.to_owned()),
+        Some(class) if ErrorKind::from_ruby_class(class).is_some() => {
+            match error_class(ruby, class) {
+                Ok(class) => Error::new(class, message.to_owned()),
+                Err(error) => error,
+            }
+        }
         _ => build(
             ruby,
             "Ukiryu::Native::WireError",

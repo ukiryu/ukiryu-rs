@@ -7,6 +7,7 @@
 //!
 //! | wire op          | Ruby                                                       |
 //! |------------------|------------------------------------------------------------|
+//! | `escape`         | `Ukiryu::Native.escape(shell, method, arguments)`           |
 //! | `version`        | `Ukiryu::Native.core_version`, `.abi_version`               |
 //! | `parse_yaml`     | `Ukiryu::Native.parse_yaml(yaml)`                           |
 //! | `resolve_config` | `Ukiryu::Native.resolve_config(environment, programmatic, cli)` |
@@ -25,6 +26,7 @@ pub(super) fn define(_ruby: &Ruby, native: RModule) -> Result<(), Error> {
     native.define_module_function("abi_version", function!(abi_version, 0))?;
     native.define_module_function("parse_yaml", function!(parse_yaml, 1))?;
     native.define_module_function("resolve_config", function!(resolve_config, 3))?;
+    native.define_module_function("escape", function!(escape, 3))?;
     Ok(())
 }
 
@@ -52,6 +54,30 @@ fn abi_version(ruby: &Ruby) -> Result<u64, Error> {
 fn parse_yaml(ruby: &Ruby, yaml: magnus::RString) -> Result<RValue, Error> {
     let yaml = super::values::text(ruby, yaml)?;
     let reply = call(ruby, json!({"op": "parse_yaml", "yaml": yaml}))?;
+    to_ruby(ruby, &json_value(ruby, &reply["value"])?)
+}
+
+/// One shell formatter call: `escape("bash", :quote, {string: "a b"})`.
+/// `arguments` holds the method's own fields (`string`, `for_exe`, `path`,
+/// `name`, `executable`, `args`), with Symbol or String keys.
+fn escape(ruby: &Ruby, shell: RString, method: RValue, arguments: RHash) -> Result<RValue, Error> {
+    let method = match from_ruby(ruby, method)? {
+        Value::Symbol(s) | Value::String(s) => s,
+        _ => {
+            return Err(Error::new(
+                ruby.exception_type_error(),
+                "escape method must be a Symbol or String",
+            ))
+        }
+    };
+    let mut request = layer(ruby, arguments)?;
+    request.insert("op".into(), Json::String("escape".into()));
+    request.insert(
+        "shell".into(),
+        Json::String(super::values::text(ruby, shell)?),
+    );
+    request.insert("method".into(), Json::String(method));
+    let reply = call(ruby, Json::Object(request))?;
     to_ruby(ruby, &json_value(ruby, &reply["value"])?)
 }
 

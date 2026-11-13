@@ -124,13 +124,11 @@ refusals.each do |label, (value, klass)|
 end
 
 # --- 2. register load path against the Ruby source ---------------------------
-# Rows the core reports as unsupported instead of guessing (the same list as
-# ukiryu/tests/models_value_tags.rs); each must raise ModelError :unsupported.
-REGISTER_GAPS = %w[tag-int-octal-string tag-binary tag-timestamp tag-set tag-omap tag-ruby-symbol].freeze
 # Rows where the core's register load path returns a different value than the
 # Ruby source, observed through this binding (reported to the core owner, not
 # fixed here): Yeptris yields a String for an integer outside i64/u64, and
 # reads the YAML 1.2 float `1e300`, which Psych (YAML 1.1) keeps as a String.
+$known_divergences = []
 KNOWN_CORE_DIVERGENCES = {
   'bigint' => { 'ok' => { '$hash' => [[{ '$sym' => 'v' }, { '$str' => '123456789012345678901234567890', 'encoding' => 'UTF-8' }]] } },
   'negative-bigint' => { 'ok' => { '$hash' => [[{ '$sym' => 'v' }, { '$str' => '-123456789012345678901234567890', 'encoding' => 'UTF-8' }]] } },
@@ -145,12 +143,11 @@ REFERENCE.fetch('registers').each do |row|
     error = e
     { 'error' => { 'kind' => e.kind, 'source_class' => e.source_class } }
   end
-  if KNOWN_CORE_DIVERGENCES.key?(id)
-    # Still diverging exactly as recorded; a core fix must update this list.
-    check('register', "#{id}.known-core-divergence", actual == KNOWN_CORE_DIVERGENCES[id],
-          "recorded #{KNOWN_CORE_DIVERGENCES[id].inspect}, got #{actual.inspect}")
-  elsif REGISTER_GAPS.include?(id)
-    check('register', id, error && error.kind == :unsupported, "listed gap, got #{actual.inspect}")
+  if KNOWN_CORE_DIVERGENCES.key?(id) && actual == KNOWN_CORE_DIVERGENCES[id]
+    # Diverging exactly as recorded (reported); any other result is checked
+    # against the source below.
+    $known_divergences << id
+    check('register', "#{id}.known-core-divergence", true)
   elsif row['expect'].key?('error')
     check('register', id, error && error.source_class == row['expect']['error']['class'],
           "expected #{row['expect'].inspect}, got #{actual.inspect}")
@@ -342,6 +339,33 @@ config_requests.each_with_index do |(environment, programmatic, cli), index|
           native_error.message == reply['error']['message'], "wire #{reply.inspect}, native #{native_error.inspect}")
   end
 end
+escape_requests = [
+  ['bash', :escape, { string: "it's $HOME" }],
+  ['/bin/bash', :quote, { string: 'a b' }],
+  ['zsh', :needs_quoting, { string: 'plain' }],
+  ['fish', :env_var, { name: 'PATH' }],
+  ['bash', :join, { executable: '/usr/bin/x y', args: ['a b', "c'd"] }],
+  ['sh', :format_path, { path: '/tmp/a b' }],
+  ['powershell', :quote, { string: 'a"b', for_exe: true }],
+  ['powershell', :escape_for_double_quotes, { string: 'a"$b' }],
+  ['bash', :escape_for_double_quotes, { string: 'x' }],
+  ['bash', :quote, { string: 'x', for_exe: false }],
+  ['nosuch', :escape, { string: 'x' }]
+]
+escape_requests.each_with_index do |(shell, method, arguments), index|
+  reply = wire.call({ op: 'escape', shell: shell, method: method.to_s }.merge(stringify.call(arguments)))
+  native_error = raised { NATIVE.escape(shell, method, arguments) }
+  if reply['ok']
+    native = NATIVE.escape(shell, method, arguments)
+    check('correspondence', "escape.#{index}", native_error.nil? && native == reply['value'],
+          "wire #{reply.inspect}, native #{native.inspect}")
+  else
+    expected_class = reply['error']['source_class'] ? Object.const_get(reply['error']['source_class']) : NATIVE::WireError
+    ok = native_error.instance_of?(expected_class) && native_error.message == reply['error']['message'] &&
+         (expected_class != NATIVE::WireError || native_error.code == reply['error']['code'])
+    check('correspondence', "escape.#{index}", ok, "wire #{reply.inspect}, native #{native_error.inspect}")
+  end
+end
 symbol_value = raised { NATIVE.resolve_config({}, { output: :file }, {}) }
 check('correspondence', 'resolve_config.symbol-outside-schema', symbol_value.is_a?(TypeError), symbol_value.inspect)
 
@@ -378,6 +402,7 @@ check('ractor', 'same-results', in_ractor == main, "ractor #{in_ractor.inspect[0
 
 # --- summary -----------------------------------------------------------------
 summary = { 'ruby' => RUBY_VERSION, 'platform' => RUBY_PLATFORM, 'checks' => $counts,
+            'known_core_divergences' => $known_divergences,
             'model_outcomes' => outcomes, 'failures' => $failures.size }
 puts "RUBY-NATIVE-SUMMARY #{JSON.generate(summary)}"
 $failures.each { |failure| puts "FAIL #{failure}" }
