@@ -69,7 +69,7 @@
     {
       "id": "powershell_echo",
       "shell": "powershell",
-      "executable": "cmd",
+      "executable": "cmd.exe",
       "arguments": [
         "/c",
         "echo",
@@ -77,16 +77,16 @@
       ],
       "stdin_hex": null,
       "outcome": "result",
-      "stdout_hex": "",
+      "stdout_hex": "68656c6c6f0a",
       "stderr_hex": "",
       "stdout_encoding": "UTF-8",
       "exit_status": 0,
-      "full_command": "cmd /c echo hello"
+      "full_command": "cmd.exe /c echo hello"
     },
     {
       "id": "powershell_stderr_exit",
       "shell": "powershell",
-      "executable": "cmd",
+      "executable": "cmd.exe",
       "arguments": [
         "/c",
         "echo oops 1>&2 & exit 3"
@@ -94,10 +94,10 @@
       "stdin_hex": null,
       "outcome": "result",
       "stdout_hex": "",
-      "stderr_hex": "",
+      "stderr_hex": "6f6f707320200a",
       "stdout_encoding": "UTF-8",
-      "exit_status": 0,
-      "full_command": "cmd /c \"echo oops 1>&2 & exit 3\""
+      "exit_status": 3,
+      "full_command": "cmd.exe /c \"echo oops 1>&2 & exit 3\""
     },
     {
       "id": "cmd_stdin_ascii",
@@ -220,31 +220,31 @@
       "tempfile_write_hex": "610d0a620d0d0a63"
     },
     {
-      "executable": "cmd",
+      "executable": "cmd.exe",
       "arguments": [
         "/c",
         "echo",
         "hello"
       ],
-      "debug": "[UKIRYU DEBUG PowerShell#execute_command] executable: \"cmd\"\n[UKIRYU DEBUG PowerShell#execute_command] args: [\"/c\", \"echo\", \"hello\"]\n[UKIRYU DEBUG PowerShell#execute_command] args.class: Array\n[UKIRYU DEBUG PowerShell#execute_command] args[0]: \"/c\" (String)\n[UKIRYU DEBUG PowerShell#execute_command] args[1]: \"echo\" (String)\n[UKIRYU DEBUG PowerShell#execute_command] args[2]: \"hello\" (String)\n[UKIRYU DEBUG PowerShell#execute_command] full_command: \"'cmd' /c echo hello\"\n[UKIRYU DEBUG PowerShell#execute_command] ps_command:\n& 'cmd' /c echo hello; exit $LASTEXITCODE\n",
-      "script": "& 'cmd' /c echo hello; exit $LASTEXITCODE",
-      "probe_stdout_hex": "706f7765727368656c6c202d4e6f4c6f676f202d436f6d6d616e6420225b456e7669726f6e6d656e745d3a3a436f6d6d616e644c696e653b20262027636d6427202f63206563686f2068656c6c6f3b206578697420244c41535445584954434f4445220a",
-      "probe_stdout": "powershell -NoLogo -Command \"[Environment]::CommandLine; & 'cmd' /c echo hello; exit $LASTEXITCODE\"\n",
+      "debug": "[UKIRYU DEBUG PowerShell#execute_command] executable: \"cmd.exe\"\n[UKIRYU DEBUG PowerShell#execute_command] args: [\"/c\", \"echo\", \"hello\"]\n[UKIRYU DEBUG PowerShell#execute_command] args.class: Array\n[UKIRYU DEBUG PowerShell#execute_command] args[0]: \"/c\" (String)\n[UKIRYU DEBUG PowerShell#execute_command] args[1]: \"echo\" (String)\n[UKIRYU DEBUG PowerShell#execute_command] args[2]: \"hello\" (String)\n[UKIRYU DEBUG PowerShell#execute_command] full_command: \"'cmd.exe' /c echo hello\"\n[UKIRYU DEBUG PowerShell#execute_command] ps_command:\n& 'cmd.exe' /c echo hello; exit $LASTEXITCODE\n",
+      "script": "& 'cmd.exe' /c echo hello; exit $LASTEXITCODE",
+      "probe_stdout_hex": "706f7765727368656c6c202d4e6f4c6f676f202d436f6d6d616e6420225b456e7669726f6e6d656e745d3a3a436f6d6d616e644c696e653b20262027636d642e65786527202f63206563686f2068656c6c6f3b206578697420244c41535445584954434f4445220a68656c6c6f0a",
+      "probe_stdout": "powershell -NoLogo -Command \"[Environment]::CommandLine; & 'cmd.exe' /c echo hello; exit $LASTEXITCODE\"\nhello\n",
       "probe_stderr": "",
       "probe_status": 0
     },
     {
-      "executable": "cmd",
+      "executable": "cmd.exe",
       "arguments": [
         "/c",
         "echo oops 1>&2 & exit 3"
       ],
-      "debug": "[UKIRYU DEBUG PowerShell#execute_command] executable: \"cmd\"\n[UKIRYU DEBUG PowerShell#execute_command] args: [\"/c\", \"echo oops 1>&2 & exit 3\"]\n[UKIRYU DEBUG PowerShell#execute_command] args.class: Array\n[UKIRYU DEBUG PowerShell#execute_command] args[0]: \"/c\" (String)\n[UKIRYU DEBUG PowerShell#execute_command] args[1]: \"echo oops 1>&2 & exit 3\" (String)\n[UKIRYU DEBUG PowerShell#execute_command] full_command: \"'cmd' /c 'echo oops 1>&2 & exit 3'\"\n[UKIRYU DEBUG PowerShell#execute_command] ps_command:\n& 'cmd' /c 'echo oops 1>&2 & exit 3'; exit $LASTEXITCODE\n",
-      "script": "& 'cmd' /c 'echo oops 1>&2 & exit 3'; exit $LASTEXITCODE",
-      "probe_stdout_hex": "706f7765727368656c6c202d4e6f4c6f676f202d436f6d6d616e6420225b456e7669726f6e6d656e745d3a3a436f6d6d616e644c696e653b20262027636d6427202f6320276563686f206f6f707320313e2632202620657869742033273b206578697420244c41535445584954434f4445220a",
-      "probe_stdout": "powershell -NoLogo -Command \"[Environment]::CommandLine; & 'cmd' /c 'echo oops 1>&2 & exit 3'; exit $LASTEXITCODE\"\n",
-      "probe_stderr": "",
-      "probe_status": 0
+      "debug": "[UKIRYU DEBUG PowerShell#execute_command] executable: \"cmd.exe\"\n[UKIRYU DEBUG PowerShell#execute_command] args: [\"/c\", \"echo oops 1>&2 & exit 3\"]\n[UKIRYU DEBUG PowerShell#execute_command] args.class: Array\n[UKIRYU DEBUG PowerShell#execute_command] args[0]: \"/c\" (String)\n[UKIRYU DEBUG PowerShell#execute_command] args[1]: \"echo oops 1>&2 & exit 3\" (String)\n[UKIRYU DEBUG PowerShell#execute_command] full_command: \"'cmd.exe' /c 'echo oops 1>&2 & exit 3'\"\n[UKIRYU DEBUG PowerShell#execute_command] ps_command:\n& 'cmd.exe' /c 'echo oops 1>&2 & exit 3'; exit $LASTEXITCODE\n",
+      "script": "& 'cmd.exe' /c 'echo oops 1>&2 & exit 3'; exit $LASTEXITCODE",
+      "probe_stdout_hex": "706f7765727368656c6c202d4e6f4c6f676f202d436f6d6d616e6420225b456e7669726f6e6d656e745d3a3a436f6d6d616e644c696e653b20262027636d642e65786527202f6320276563686f206f6f707320313e2632202620657869742033273b206578697420244c41535445584954434f4445220a",
+      "probe_stdout": "powershell -NoLogo -Command \"[Environment]::CommandLine; & 'cmd.exe' /c 'echo oops 1>&2 & exit 3'; exit $LASTEXITCODE\"\n",
+      "probe_stderr": "oops  \n",
+      "probe_status": 3
     }
   ]
 }
