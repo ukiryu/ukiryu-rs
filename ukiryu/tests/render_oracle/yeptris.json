@@ -48,8 +48,8 @@
     "str-unicode": "---\nvalue: héllo ✓\n",
     "str-y": "---\nvalue: y\n",
     "str-yes": "---\nvalue: yes\n",
-    "tagged-local": "---\nvalue:\n  \"!custom\": x\n",
-    "tagged-str": "---\nvalue:\n  tag:yaml.org,2002:str: \"123\"\n"
+    "tagged-local": "---\nvalue: !custom x\n",
+    "tagged-str": "---\nvalue: !!str \"123\"\n"
   },
   "probe_yeptris_loads": {
     "bool-false": {
@@ -466,12 +466,8 @@
         [
           "value",
           {
-            "$map": [
-              [
-                "!custom",
-                "x"
-              ]
-            ]
+            "$tag": "!custom",
+            "value": "x"
           }
         ]
       ]
@@ -481,12 +477,8 @@
         [
           "value",
           {
-            "$map": [
-              [
-                "tag:yaml.org,2002:str",
-                "123"
-              ]
-            ]
+            "$tag": "tag:yaml.org,2002:str",
+            "value": "123"
           }
         ]
       ]
