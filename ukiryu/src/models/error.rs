@@ -19,6 +19,14 @@ pub enum ModelErrorKind {
     /// (for example a mapping assigned to a `:string` attribute). The port
     /// fails loudly instead of guessing; see the models module docs.
     Unsupported,
+    /// `Psych::DisallowedClass` (a class the `safe_load` call does not permit).
+    DisallowedClass,
+    /// `Psych::AliasesNotEnabled` (an alias under `aliases: false`).
+    AliasesNotEnabled,
+    /// `ArgumentError` (for example `Float("abc")` under a `!!float` tag).
+    Argument,
+    /// `TypeError` (for example `Float(nil)` under a `!!float` tag).
+    Type,
 }
 
 impl ModelErrorKind {
@@ -30,6 +38,10 @@ impl ModelErrorKind {
             ModelErrorKind::Syntax => "Psych::SyntaxError",
             ModelErrorKind::Io => "Errno::ENOENT",
             ModelErrorKind::Unsupported => "Ukiryu::Models::UnsupportedValue",
+            ModelErrorKind::DisallowedClass => "Psych::DisallowedClass",
+            ModelErrorKind::AliasesNotEnabled => "Psych::AliasesNotEnabled",
+            ModelErrorKind::Argument => "ArgumentError",
+            ModelErrorKind::Type => "TypeError",
         }
     }
 
@@ -41,16 +53,24 @@ impl ModelErrorKind {
             ModelErrorKind::Syntax => "[ukiryu:syntax]",
             ModelErrorKind::Io => "[ukiryu:io]",
             ModelErrorKind::Unsupported => "[ukiryu:unsupported]",
+            ModelErrorKind::DisallowedClass => "[ukiryu:disallowed_class]",
+            ModelErrorKind::AliasesNotEnabled => "[ukiryu:aliases_not_enabled]",
+            ModelErrorKind::Argument => "[ukiryu:argument]",
+            ModelErrorKind::Type => "[ukiryu:type]",
         }
     }
 
-    const ALL: [ModelErrorKind; 6] = [
+    const ALL: [ModelErrorKind; 10] = [
         ModelErrorKind::InvalidFormat,
         ModelErrorKind::IncorrectModel,
         ModelErrorKind::NoMethod,
         ModelErrorKind::Syntax,
         ModelErrorKind::Io,
         ModelErrorKind::Unsupported,
+        ModelErrorKind::DisallowedClass,
+        ModelErrorKind::AliasesNotEnabled,
+        ModelErrorKind::Argument,
+        ModelErrorKind::Type,
     ];
 
     /// Marks a serde custom error message so the kind survives the
