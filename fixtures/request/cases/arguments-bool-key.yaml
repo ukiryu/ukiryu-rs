@@ -1,0 +1,4 @@
+tool: a
+command: b
+arguments:
+  true: bool-key

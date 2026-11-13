@@ -1,0 +1,4 @@
+tool: a
+command: b
+arguments:
+  when: 2024-01-01 10:00:00 +00:00
