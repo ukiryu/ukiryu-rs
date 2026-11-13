@@ -1,0 +1,29 @@
+ukiryu_schema: '1.0'
+name: magick
+display_name: Magick
+description: Image toolkit
+homepage: https://example.org/magick
+version: '7.1'
+version_detection:
+  command: --version
+  pattern: Version ([\d.]+)
+profiles:
+  - name: unix
+    platforms: [linux, macos]
+    shells: [bash, zsh]
+    commands:
+      resize:
+        description: Resize an image
+        arguments:
+          - name: input
+            type: file
+            description: Input image
+        options:
+          - name: width
+            cli: --width
+            type: integer
+            description: Target width
+        flags:
+          - name: verbose
+            cli: -v
+            description: Verbose output

@@ -1,0 +1,4 @@
+#!/bin/sh
+# Fixture: --help exits 0 with only whitespace.
+printf '   \n'
+exit 0

@@ -1,0 +1,5 @@
+name: 7zip
+version: '9.20'
+profiles:
+  - name: default
+    platforms: [windows]
