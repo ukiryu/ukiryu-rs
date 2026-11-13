@@ -128,22 +128,19 @@ pub(super) fn argv(
     }
 }
 
-/// Environment changes applied over the inherited process environment.
+/// Variables set over the inherited process environment, in order.
 #[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub(super) struct EnvPlan {
-    /// Variables set for the child, in order.
     pub set: Vec<(String, String)>,
-    /// Variables removed from the child.
-    pub remove: Vec<String>,
 }
 
-/// `prepare_environment`: the caller's variables, then the shell's headless
-/// variables, with `DISPLAY` removed.
+/// `prepare_environment`: the caller's variables without `DISPLAY`, then
+/// the shell's headless variables.
 ///
-/// The source deletes `DISPLAY` from the hash it passes to `Open3`, which
-/// only stops it from being set: a `DISPLAY` inherited from the parent
-/// process still reaches the child. The target removes it from the child,
-/// which is what the source's comments say is intended.
+/// The source deletes `DISPLAY` only from the hash it passes to `Open3`.
+/// Nothing is removed from the child, so a `DISPLAY` inherited from the
+/// parent process still reaches it, and a caller's own `DISPLAY` (even an
+/// empty one) is dropped. The port keeps both observations.
 pub(super) fn env_plan(environment: &Environment, shell: ShellName, host: Host) -> EnvPlan {
     let mut env = environment.delete("DISPLAY");
     if shell == ShellName::Bash && host.macos {
@@ -157,6 +154,5 @@ pub(super) fn env_plan(environment: &Environment, shell: ShellName, host: Host) 
     }
     EnvPlan {
         set: env.to_pairs(),
-        remove: vec!["DISPLAY".to_owned()],
     }
 }

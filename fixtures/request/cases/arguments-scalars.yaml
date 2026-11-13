@@ -1,0 +1,42 @@
+tool: a
+command: b
+arguments:
+  str: text
+  quoted: 'yes'
+  dq: "line\nbreak"
+  int: 42
+  neg: -7
+  big: 123456789012345678901234567890
+  float: 1.5
+  exp: 1.0e3
+  nexp: 1e3
+  dotfloat: .5
+  inf: .inf
+  ninf: -.inf
+  nan: .nan
+  t: true
+  f: false
+  yes_: yes
+  no_: no
+  on_: on
+  off_: off
+  y_: y
+  n_: n
+  TRUE_: TRUE
+  nul: null
+  tilde: ~
+  empty:
+  octal: 0o17
+  leading_zero: 012
+  hex: 0x1F
+  underscore: 1_000
+  sexagesimal: 1:30
+  plus: +5
+  sym: :name
+  quoted_sym: ':name'
+  literal: |
+    a
+    b
+  folded: >
+    a
+    b

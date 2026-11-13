@@ -61,6 +61,7 @@ jobs:
         run: |
           cargo build --workspace --locked
           python scripts/check-c-api.py
+          python scripts/check-escape-c-api.py
           cargo run --locked -p ukiryu-cli -- --version
 
       - name: Build release native runtime candidate

@@ -1,0 +1,4 @@
+tool: a
+command: b
+arguments:
+  '1': quoted-key
