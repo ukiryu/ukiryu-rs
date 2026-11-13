@@ -24,5 +24,8 @@ serde_json.workspace = true
 num-bigint.workspace = true
 yeptris.workspace = true
 regex = "1"
+# Ruby (Onigmo) Regexp semantics on a pure-Rust engine (look-around,
+# possessive and atomic groups; also builds for wasm32). See types/onig.rs.
+fancy-regex = { version = "0.20.2", default-features = false, features = ["std", "unicode", "perf"] }
 # Match the already qualified Yeptris Rust/browser toolchain.
 wasm-bindgen = { version = "=0.2.105", optional = true }
