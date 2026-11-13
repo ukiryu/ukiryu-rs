@@ -191,10 +191,6 @@ fn native_shell_rows_match_ruby_bytes() {
     if !powershell_available() {
         return;
     }
-    let targets: serde_json::Value =
-        serde_json::from_str(include_str!("executor_data/native_shells_targets.json"))
-            .expect("targets json");
-    let targets = &targets[name.as_str()];
     let rows = golden["rows"].as_array().expect("rows");
     assert!(!rows.is_empty(), "{name}");
     for row in rows {
@@ -226,27 +222,19 @@ fn native_shell_rows_match_ruby_bytes() {
             hex(result.stderr().as_bytes()),
             result.exit_status()
         );
-        // A target row replaces the Ruby observation it names; every other
-        // row must equal the capture.
-        let expected = if targets[id].is_object() {
-            assert!(targets[id]["trace"].is_string(), "{id}");
-            &targets[id]
-        } else {
-            row
-        };
         assert_eq!(
             hex(result.stdout().as_bytes()),
-            expected["stdout_hex"].as_str().unwrap(),
+            row["stdout_hex"].as_str().unwrap(),
             "{id} stdout"
         );
         assert_eq!(
             hex(result.stderr().as_bytes()),
-            expected["stderr_hex"].as_str().unwrap(),
+            row["stderr_hex"].as_str().unwrap(),
             "{id} stderr"
         );
         assert_eq!(
             result.exit_status(),
-            expected["exit_status"].as_i64().unwrap(),
+            row["exit_status"].as_i64().unwrap(),
             "{id}"
         );
         assert_eq!(
