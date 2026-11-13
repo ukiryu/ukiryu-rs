@@ -212,7 +212,8 @@ fn regexp_in(ruby: &Ruby, regexp: RRegexp) -> Result<Value, Error> {
     // FIXEDENCODING is implied (and recreated) by non-ASCII source text; on an
     // ASCII source it records an explicit //u that the core value cannot hold.
     let dropped = bits & !KEPT_REGEXP_BITS;
-    if dropped != 0 && !(dropped == FIXEDENCODING && !source.is_ascii()) {
+    let implied_fixed_encoding = dropped == FIXEDENCODING && !source.is_ascii();
+    if dropped != 0 && !implied_fixed_encoding {
         return Err(arg_error(
             ruby,
             format!("Regexp options {bits} have no core value (i, x and m only)"),
