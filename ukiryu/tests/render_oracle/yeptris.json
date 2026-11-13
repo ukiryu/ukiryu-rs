@@ -3001,9 +3001,7 @@
           "v",
           {
             "$tag": "tag:yaml.org,2002:str",
-            "value": {
-              "$int": "123"
-            }
+            "value": "123"
           }
         ]
       ]
