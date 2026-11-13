@@ -1,0 +1,11 @@
+#!/bin/sh
+# Fixture: --ukiryu-definition succeeds with blank output.
+case "$1" in
+  --help)
+    echo "Usage: ukx-native-blank --ukiryu-definition"
+    exit 0 ;;
+  --ukiryu-definition)
+    printf '  \n\t\n'
+    exit 0 ;;
+esac
+exit 2

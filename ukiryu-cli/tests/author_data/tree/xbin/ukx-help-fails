@@ -1,0 +1,4 @@
+#!/bin/sh
+# Fixture: --help exits non-zero.
+echo "unknown option: $1" >&2
+exit 1
