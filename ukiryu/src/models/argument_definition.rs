@@ -1,7 +1,9 @@
 //! Source: lib/ukiryu/models/argument_definition.rb (`Ukiryu::Models::ArgumentDefinition`).
 use super::attr::{de_fns as d, omit_list, omit_opt, ser_int_list, Attr, Model};
 use super::error::ModelError;
+use super::ruby::str_to_bigint;
 use super::value::{Text, Value};
+use num_bigint::BigInt;
 use serde::{Deserialize, Serialize};
 
 fn default_type() -> Attr<Text> {
@@ -86,11 +88,12 @@ impl Default for ArgumentDefinition {
 }
 
 /// `#parsed_position` (`:last`, `:first` or an Integer).
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ParsedPosition {
     Last,
     First,
-    Index(i128),
+    /// Ruby `Integer`: exact at any size, like `position.to_i`.
+    Index(BigInt),
 }
 
 /// `/^\d+$/` with Ruby line anchors.
@@ -144,18 +147,19 @@ impl ArgumentDefinition {
         match self.position_str() {
             Some("last") => ParsedPosition::Last,
             Some("first") => ParsedPosition::First,
-            Some(p) if digits_line(p) => ParsedPosition::Index(super::ruby::str_to_i(p)),
-            _ => ParsedPosition::Index(99),
+            Some(p) if digits_line(p) => ParsedPosition::Index(str_to_bigint(p)),
+            _ => ParsedPosition::Index(BigInt::from(99)),
         }
     }
 
-    /// `#numeric_position` (`last` sorts as 999, `first` as 1).
-    pub fn numeric_position(&self) -> i128 {
+    /// `#numeric_position` (`last` sorts as 999, `first` as 1). Exact at any
+    /// size, like Ruby's `position.to_i`.
+    pub fn numeric_position(&self) -> BigInt {
         match self.position_str() {
-            Some("last") => 999,
-            Some("first") => 1,
-            Some(p) if digits_line(p) => super::ruby::str_to_i(p),
-            _ => 99,
+            Some("last") => BigInt::from(999),
+            Some("first") => BigInt::from(1),
+            Some(p) if digits_line(p) => str_to_bigint(p),
+            _ => BigInt::from(99),
         }
     }
 
