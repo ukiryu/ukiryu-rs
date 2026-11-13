@@ -17,8 +17,8 @@ mod runner;
 pub mod text;
 
 pub use detector::{
-    detect_info, detect_with_methods, DetectedVersion, DetectionMethod, InfoRequest, MethodSpec,
-    MethodsRequest, PatternSpec, MAN_TAIL_CHARS,
+    detect_info, detect_with_methods, DetectedVersion, DetectionError, DetectionMethod,
+    InfoRequest, MethodSpec, MethodsRequest, PatternSpec, MAN_TAIL_CHARS,
 };
 pub use index::{
     detection_output, extract_version_from_pattern, probe_index_detection, IndexDetection,

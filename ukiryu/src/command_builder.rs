@@ -15,17 +15,17 @@
 //! Parameter values are [`types::Value`]s and every value is validated by
 //! [`types::validate`], exactly where Ruby calls `Type.validate`.
 //!
-//! One deliberate difference from the pinned Ruby: positional arguments that
-//! share a position keep their declaration order (a stable sort). Ruby's
-//! `sort_by` is not stable, and for some larger argument lists MRI emits
-//! equal-position arguments in a different order. The oracle tests list
-//! those rows by id.
+//! Positional arguments are ordered by [`ruby_sort_by`], which reproduces
+//! MRI's `sort_by`, including the order it leaves arguments that share a
+//! position (MRI's sort is not stable).
 mod args;
 mod env;
+mod sort;
 mod spec;
 
 pub use args::{build_args, detect_delimiter, format_arg, format_flag, format_option, Delimiter};
 pub use env::{build_env_vars, EnvVars};
+pub use sort::ruby_sort_by;
 pub use spec::{ArgumentSpec, CommandSpec, EnvVarSets, EnvVarSpec, FlagSpec, OptionSpec};
 
 use crate::shell::ShellFormatting;

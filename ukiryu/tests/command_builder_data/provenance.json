@@ -5,6 +5,13 @@
     "corpus_commit": "f543c81a7e5fbc1b8cf090d6a91c9bfde4e5a5a2",
     "oracle": "ukiryu/ukiryu ab6df353c6dc2d7faf7817a86aafcafa82579896 lib/ukiryu/command_builder.rb CommandBuilder#build_args via corpus oracle-ruby Ops.load_tool"
   },
+  "order": {
+    "capture": "handoffs/batch-04/F9-ARGV-FIDELITY/capture_order.rb",
+    "gemfile_lock_sha256": "fc3b12f2ede259028b638d2f26c65ddf9506d142c20a8bf0c1b151741078b65e",
+    "oracle": "ukiryu/ukiryu ab6df353c6dc2d7faf7817a86aafcafa82579896 lib/ukiryu/command_builder.rb CommandBuilder#build_args (regular_args.sort_by(&:numeric_position)), lib/ukiryu/models/argument_definition.rb #numeric_position",
+    "ruby": "4.0.1 e04267a14b1a5dea2d2c368e48d41bd3db441f4f x86_64-linux",
+    "ukiryu_gem": "ab6df353c6dc2d7faf7817a86aafcafa82579896"
+  },
   "synthetic": {
     "capture": "handoffs/batch-03/K19-BUILD/capture_synthetic.rb",
     "oracle": "ukiryu/ukiryu ab6df353c6dc2d7faf7817a86aafcafa82579896 lib/ukiryu/command_builder.rb CommandBuilder#build_args and #build_env_vars over authored definitions"

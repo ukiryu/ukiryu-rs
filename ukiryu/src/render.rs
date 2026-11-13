@@ -12,16 +12,38 @@
 //!
 //! YAML goes through the Yeptris emitter with the pinned
 //! [`yaml_emit_options`], JSON through `serde_json`. Responses are consumed
-//! through the [`Renderable`] trait, so the typed response models (owned by
-//! the models module) plug in without a second model stack here.
+//! through the [`Renderable`] trait, which the models' own
+//! `SuccessResponse` and `ErrorResponse` implement (`render/adapters.rs`);
+//! dry-run values are the unified [`crate::types::Value`] through
+//! [`InspectValue`]. There is no second model stack here.
+//!
+//! YAML tags: Ruby objects carry none, and neither do the native models; a
+//! tag in loaded YAML is applied while loading
+//! ([`crate::types::value::apply_yaml_tag`], as Psych applies it), so the
+//! response path never meets one. A Yeptris tree that still holds tagged
+//! nodes is emitted with [`to_yaml_tree`], which keeps them; [`to_yaml`]
+//! goes through serde, which has no tag channel (Yeptris serializes a
+//! tagged node as a one-entry mapping, serde_yaml's convention).
 use serde::Serialize;
 use std::fmt;
 
+mod adapters;
 mod dry_run;
 mod emit;
 
 pub use dry_run::{render_dry_run, DryRunStyle, InspectValue};
 pub use emit::{to_json_pretty, to_yaml, yaml_emit_options};
+
+/// A Yeptris document tree as the `yaml` format writes it (pinned
+/// [`yaml_emit_options`], newline-terminated), emitted by the Yeptris
+/// engine from the tree itself: tagged nodes keep their tags and every
+/// other node is written exactly as [`to_yaml`] writes it.
+pub fn to_yaml_tree(tree: &yeptris::Value) -> Result<String, RenderError> {
+    let mut text = yeptris::to_string_with(tree, &yaml_emit_options())
+        .map_err(|e| RenderError::new(e.to_string()))?;
+    text.push('\n');
+    Ok(text)
+}
 
 /// `ResponseFormatter::OUTPUT_FORMATS`, in source order.
 pub const OUTPUT_FORMATS: [&str; 4] = ["yaml", "json", "table", "raw"];
@@ -44,10 +66,13 @@ impl OutputFormat {
             "json" => Ok(OutputFormat::Json),
             "table" => Ok(OutputFormat::Table),
             "raw" => Ok(OutputFormat::Raw),
-            other => Err(RenderError::new(format!(
-                "Invalid format: {other}. Must be one of: {}",
-                OUTPUT_FORMATS.join(", ")
-            ))),
+            other => Err(RenderError::with_kind(
+                RenderErrorKind::InvalidFormat,
+                format!(
+                    "Invalid format: {other}. Must be one of: {}",
+                    OUTPUT_FORMATS.join(", ")
+                ),
+            )),
         }
     }
 
@@ -61,17 +86,40 @@ impl OutputFormat {
     }
 }
 
-/// A rendering failure (an invalid format name or a serialization error).
+/// What failed while rendering.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum RenderErrorKind {
+    /// An output format outside [`OUTPUT_FORMATS`] (the source's
+    /// `Thor::Error`).
+    InvalidFormat,
+    /// A value JSON cannot carry, as the json gem's
+    /// `JSON::GeneratorError` (`NaN not allowed in JSON`).
+    Generator,
+    /// The response could not be serialized.
+    Serialize,
+}
+
+/// A rendering failure.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct RenderError {
+    kind: RenderErrorKind,
     message: String,
 }
 
 impl RenderError {
     pub(crate) fn new(message: impl Into<String>) -> Self {
+        RenderError::with_kind(RenderErrorKind::Serialize, message)
+    }
+
+    pub(crate) fn with_kind(kind: RenderErrorKind, message: impl Into<String>) -> Self {
         RenderError {
+            kind,
             message: message.into(),
         }
+    }
+
+    pub fn kind(&self) -> RenderErrorKind {
+        self.kind
     }
 
     pub fn message(&self) -> &str {

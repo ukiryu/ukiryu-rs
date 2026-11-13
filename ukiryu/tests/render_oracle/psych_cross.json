@@ -1,0 +1,4320 @@
+{
+  "about": "Psych (pinned oracle runtime) reading the exact Yeptris bytes of tests/render_oracle/yeptris.json (ukiryu#27 settings), in the canonical encoding of support.rs; YAML.unsafe_load, so Psych types (Time, Date, Symbol) stay visible. style_differences compares Psych.parse node styles of the Psych document and the Yeptris document per case (ukiryu-rs#23 render contract).",
+  "provenance": {
+    "ruby": "4.0.1",
+    "psych": "5.3.1",
+    "libyaml": "0.2.2",
+    "script": "handoffs/batch-03/K22-RENDER/capture/psych_cross.rb"
+  },
+  "verdicts": {
+    "yeptris_roundtrip_differs": [],
+    "psych_load_of_yeptris_differs": [
+      "str-no",
+      "str-yes",
+      "str-on",
+      "str-off",
+      "str-timestamp",
+      "str-timestamp-offset",
+      "str-date",
+      "str-underscore-int",
+      "str-sexagesimal",
+      "tagged-local",
+      "tagged-str",
+      "seq-mixed"
+    ],
+    "response_psych_load_differs": [
+      "success-basic",
+      "success-empty-output",
+      "success-full",
+      "success-long-line",
+      "success-metrics",
+      "success-newline-only",
+      "success-nonzero",
+      "success-quoting"
+    ],
+    "snippet_loads_differ": [
+      "plain-no",
+      "plain-yes",
+      "plain-on",
+      "plain-timestamp",
+      "plain-date",
+      "plain-octal-old",
+      "plain-octal",
+      "plain-underscore-int",
+      "plain-sexagesimal",
+      "plain-float-1e3",
+      "merge-key",
+      "tag-local",
+      "tag-str",
+      "tag-float",
+      "tag-int"
+    ]
+  },
+  "style_differences": [
+    {
+      "trace": "ukiryu#27",
+      "case": "error-basic",
+      "path": "/error",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "Ukiryu::Tool not found: nosuchtool"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "error-multiline",
+      "path": "/error",
+      "psych_style": "scalar:literal",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "first line\nsecond: line"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-basic",
+      "path": "/request/options/0/value",
+      "psych_style": "scalar:double_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": ".a"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-basic",
+      "path": "/command/executable",
+      "psych_style": "scalar:double_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "/usr/bin/jq"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-basic",
+      "path": "/command/arguments/options/0/value",
+      "psych_style": "scalar:double_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": ".a"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-basic",
+      "path": "/output/stdout",
+      "psych_style": "scalar:literal",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "line1\nline2\n"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-basic",
+      "path": "/metadata/started_at",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "2024-01-17T10:20:30Z"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-basic",
+      "path": "/metadata/finished_at",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "2024-01-17T10:20:31Z"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-empty-output",
+      "path": "/command/executable",
+      "psych_style": "scalar:double_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "/usr/bin/jq"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-empty-output",
+      "path": "/metadata/started_at",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "2024-01-17T10:20:30Z"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-empty-output",
+      "path": "/metadata/finished_at",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "2024-01-17T10:20:31Z"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-full",
+      "path": "/request/options/0/value",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "3"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-full",
+      "path": "/request/options/1/value",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "2.0e-05"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-full",
+      "path": "/command/executable",
+      "psych_style": "scalar:double_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "/usr/bin/jq"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-full",
+      "path": "/command/arguments/options/0/value",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "3"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-full",
+      "path": "/command/arguments/options/1/value",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "2.0e-05"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-full",
+      "path": "/output/stdout",
+      "psych_style": "scalar:single_quoted+multiline",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "{\"a\":1}\n"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-full",
+      "path": "/output/stderr",
+      "psych_style": "scalar:single_quoted+multiline",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "warning: deprecated flag\n"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-full",
+      "path": "/metadata/started_at",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "2024-01-17T10:20:30Z"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-full",
+      "path": "/metadata/finished_at",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "2024-01-17T10:20:31Z"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-long-line",
+      "path": "/command/executable",
+      "psych_style": "scalar:double_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "/usr/bin/jq"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-long-line",
+      "path": "/output/stdout",
+      "psych_style": "scalar:single_quoted+multiline",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12 word13 word14 word15 word16 word17 word18 word19 word20 word21 word22 word23 word24 word25 word26 word27 word28 word29 word30\n"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-long-line",
+      "path": "/metadata/started_at",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "2024-01-17T10:20:30Z"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-long-line",
+      "path": "/metadata/finished_at",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "2024-01-17T10:20:31Z"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-metrics",
+      "path": "/request/options/0/value",
+      "psych_style": "scalar:double_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "."
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-metrics",
+      "path": "/command/executable",
+      "psych_style": "scalar:double_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "/usr/bin/jq"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-metrics",
+      "path": "/command/arguments/options/0/value",
+      "psych_style": "scalar:double_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "."
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-metrics",
+      "path": "/output/stdout",
+      "psych_style": "scalar:single_quoted+multiline",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "ok\n"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-metrics",
+      "path": "/metadata/started_at",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "2024-01-17T10:20:30Z"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-metrics",
+      "path": "/metadata/finished_at",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "2024-01-17T10:20:31Z"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-metrics",
+      "path": "/execution_report/run_environment/working_directory",
+      "psych_style": "scalar:double_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "/work"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-metrics",
+      "path": "/execution_report/timestamp",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "2024-01-17T10:20:30+00:00"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-newline-only",
+      "path": "/command/executable",
+      "psych_style": "scalar:double_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "/usr/bin/jq"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-newline-only",
+      "path": "/output/stderr",
+      "psych_style": "scalar:literal",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "e1\ne2"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-newline-only",
+      "path": "/metadata/started_at",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "2024-01-17T10:20:30Z"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-newline-only",
+      "path": "/metadata/finished_at",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "2024-01-17T10:20:31Z"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-nonzero",
+      "path": "/command/executable",
+      "psych_style": "scalar:double_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "/usr/bin/jq"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-nonzero",
+      "path": "/output/stdout",
+      "psych_style": "scalar:literal",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "\n\nthird\n"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-nonzero",
+      "path": "/metadata/started_at",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "2024-01-17T10:20:30Z"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-nonzero",
+      "path": "/metadata/finished_at",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "2024-01-17T10:20:31Z"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-quoting",
+      "path": "/request/options/0/value",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "no"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-quoting",
+      "path": "/request/options/1/value",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "123"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-quoting",
+      "path": "/request/options/3/value",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "a: b"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-quoting",
+      "path": "/command/executable",
+      "psych_style": "scalar:double_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "/usr/bin/jq"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-quoting",
+      "path": "/command/arguments/options/0/value",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "no"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-quoting",
+      "path": "/command/arguments/options/1/value",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "123"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-quoting",
+      "path": "/command/arguments/options/3/value",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "a: b"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-quoting",
+      "path": "/command/full_command",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "echo \"a: b\" # c"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-quoting",
+      "path": "/output/stdout",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "yes"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-quoting",
+      "path": "/metadata/started_at",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "2024-01-17T10:20:30Z"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "success-quoting",
+      "path": "/metadata/finished_at",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "2024-01-17T10:20:31Z"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "str-no",
+      "path": "/value",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "no"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "str-yes",
+      "path": "/value",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "yes"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "str-y",
+      "path": "/value",
+      "psych_style": "scalar:double_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "y"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "str-n",
+      "path": "/value",
+      "psych_style": "scalar:double_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "n"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "str-on",
+      "path": "/value",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "on"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "str-off",
+      "path": "/value",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "off"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "str-true",
+      "path": "/value",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "true"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "str-null",
+      "path": "/value",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "null"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "str-empty",
+      "path": "/value",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:double_quoted",
+      "value": ""
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "str-timestamp",
+      "path": "/value",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "2024-01-17T10:20:30Z"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "str-timestamp-offset",
+      "path": "/value",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "2024-01-17T10:20:30+00:00"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "str-date",
+      "path": "/value",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "2024-01-17"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "str-int",
+      "path": "/value",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "123"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "str-octal-old",
+      "path": "/value",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "0123"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "str-octal",
+      "path": "/value",
+      "psych_style": "scalar:plain",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "0o17"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "str-hex",
+      "path": "/value",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "0x1A"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "str-underscore-int",
+      "path": "/value",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "1_000"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "str-sexagesimal",
+      "path": "/value",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "1:30"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "str-float",
+      "path": "/value",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "2.0e-05"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "str-float-plain",
+      "path": "/value",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "1.25"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "str-dot-path",
+      "path": "/value",
+      "psych_style": "scalar:double_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": ".a"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "str-abs-path",
+      "path": "/value",
+      "psych_style": "scalar:double_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "/usr/bin/jq"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "str-colon-space",
+      "path": "/value",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "a: b"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "str-hash",
+      "path": "/value",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "echo # c"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "multiline-trailing-newline",
+      "path": "/value",
+      "psych_style": "scalar:literal",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "line1\nline2\n"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "multiline-no-trailing",
+      "path": "/value",
+      "psych_style": "scalar:literal",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "a\nb"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "multiline-leading-blank",
+      "path": "/value",
+      "psych_style": "scalar:literal",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "\n\nthird\n"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "long-line",
+      "path": "/value",
+      "psych_style": "scalar:single_quoted+multiline",
+      "yeptris_style": "scalar:double_quoted",
+      "value": "word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12 word13 word14 word15 word16 word17 word18 word19 word20 word21 word22 word23 word24 word25 word26 word27 word28 word29 word30\n"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "seq-mixed",
+      "path": "/value/0",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "no"
+    },
+    {
+      "trace": "ukiryu#27",
+      "case": "seq-mixed",
+      "path": "/value/3",
+      "psych_style": "scalar:single_quoted",
+      "yeptris_style": "scalar:plain",
+      "value": "2024-01-17"
+    }
+  ],
+  "response_yaml": {
+    "error-basic": "---\nstatus: error\nexit_code: 1\nerror: \"Ukiryu::Tool not found: nosuchtool\"\n",
+    "error-multiline": "---\nstatus: error\nexit_code: 2\nerror: \"first line\\nsecond: line\"\n",
+    "error-nil": "---\n{}\n",
+    "success-basic": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: filter\n    value: .a\n    type: option\ncommand:\n  executable: /usr/bin/jq\n  arguments:\n    options:\n    - name: filter\n      value: .a\n      type: option\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: \"line1\\nline2\\n\"\nmetadata:\n  started_at: 2024-01-17T10:20:30Z\n  finished_at: 2024-01-17T10:20:31Z\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+    "success-empty-output": "---\nstatus: success\nexit_code: 0\ncommand:\n  executable: /usr/bin/jq\n  full_command: jq '.a' in.json\n  shell: bash\nmetadata:\n  started_at: 2024-01-17T10:20:30Z\n  finished_at: 2024-01-17T10:20:31Z\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+    "success-full": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: level\n    value: \"3\"\n    type: option\n  - name: ratio\n    value: \"2.0e-05\"\n    type: option\n  - name: list\n    value: a, 1, b\n    type: option\n  flags:\n  - verbose\n  positional:\n  - name: input\n    value: in put.json\n    type: positional\ncommand:\n  executable: /usr/bin/jq\n  arguments:\n    options:\n    - name: level\n      value: \"3\"\n      type: option\n    - name: ratio\n      value: \"2.0e-05\"\n      type: option\n    - name: list\n      value: a, 1, b\n      type: option\n    flags:\n    - verbose\n    positional:\n    - name: input\n      value: in put.json\n      type: positional\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: \"{\\\"a\\\":1}\\n\"\n  stderr: \"warning: deprecated flag\\n\"\nmetadata:\n  started_at: 2024-01-17T10:20:30Z\n  finished_at: 2024-01-17T10:20:31Z\n  duration_seconds: 0.000123\n  formatted_duration: 0.12ms\n",
+    "success-long-line": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: text\n    value: yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy\n    type: option\ncommand:\n  executable: /usr/bin/jq\n  arguments:\n    options:\n    - name: text\n      value: yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy\n      type: option\n  full_command: printf '%s' xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n  shell: bash\noutput:\n  stdout: \"word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12 word13 word14 word15 word16 word17 word18 word19 word20 word21 word22 word23 word24 word25 word26 word27 word28 word29 word30\\n\"\nmetadata:\n  started_at: 2024-01-17T10:20:30Z\n  finished_at: 2024-01-17T10:20:31Z\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+    "success-metrics": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: filter\n    value: .\n    type: option\ncommand:\n  executable: /usr/bin/jq\n  arguments:\n    options:\n    - name: filter\n      value: .\n      type: option\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: \"ok\\n\"\nmetadata:\n  started_at: 2024-01-17T10:20:30Z\n  finished_at: 2024-01-17T10:20:31Z\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\nexecution_report:\n  tool_resolution:\n    name: tool_resolution\n    duration: 0.001234\n    formatted_duration: 1.23ms\n    memory_before: 51200\n    memory_after: 51264\n    memory_delta: 64\n    success: true\n  command_building:\n    name: command_building\n    duration: 0.0005\n    formatted_duration: 0.5ms\n    memory_before: 51264\n    memory_after: 51264\n    memory_delta: 0\n    success: true\n  execution:\n    name: execution\n    duration: 1.5\n    formatted_duration: 1.5s\n    memory_before: 51264\n    memory_after: 52000\n    memory_delta: 736\n    success: true\n  response_building:\n    name: response_building\n    duration: 2.0e-05\n    formatted_duration: 0.02ms\n    memory_before: 52000\n    memory_after: 52000\n    memory_delta: 0\n    success: false\n    error: late failure\n  total_duration: 1.501754\n  formatted_total_duration: 1.5s\n  run_environment:\n    hostname: host.example\n    platform: x86_64-linux\n    os_version: Linux 6.8.0\n    shell: bash\n    shell_override: false\n    shell_version: 5.1.16\n    ruby_version: 4.0.1\n    ukiryu_version: 0.1.0\n    cpu_count: 8\n    total_memory: 16384\n    working_directory: /work\n  timestamp: 2024-01-17T10:20:30+00:00\n",
+    "success-newline-only": "---\nstatus: success\nexit_code: 0\ncommand:\n  executable: /usr/bin/jq\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: \"\\n\"\n  stderr: \"e1\\ne2\"\nmetadata:\n  started_at: 2024-01-17T10:20:30Z\n  finished_at: 2024-01-17T10:20:31Z\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+    "success-nonzero": "---\nstatus: success\nexit_code: 3\ncommand:\n  executable: /usr/bin/jq\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: \"\\n\\nthird\\n\"\nmetadata:\n  started_at: 2024-01-17T10:20:30Z\n  finished_at: 2024-01-17T10:20:31Z\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+    "success-quoting": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: flag\n    value: no\n    type: option\n  - name: num\n    value: \"123\"\n    type: option\n  - name: empty\n    type: option\n  - name: colon\n    value: \"a: b\"\n    type: option\ncommand:\n  executable: /usr/bin/jq\n  arguments:\n    options:\n    - name: flag\n      value: no\n      type: option\n    - name: num\n      value: \"123\"\n      type: option\n    - name: empty\n      type: option\n    - name: colon\n      value: \"a: b\"\n      type: option\n  full_command: \"echo \\\"a: b\\\" # c\"\n  shell: bash\noutput:\n  stdout: yes\n  stderr: héllo ✓\nmetadata:\n  started_at: 2024-01-17T10:20:30Z\n  finished_at: 2024-01-17T10:20:31Z\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n"
+  },
+  "response_psych_loads": {
+    "error-basic": {
+      "of_psych": {
+        "$map": [
+          [
+            "status",
+            "error"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "1"
+            }
+          ],
+          [
+            "error",
+            "Ukiryu::Tool not found: nosuchtool"
+          ]
+        ]
+      },
+      "of_yeptris": {
+        "$map": [
+          [
+            "status",
+            "error"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "1"
+            }
+          ],
+          [
+            "error",
+            "Ukiryu::Tool not found: nosuchtool"
+          ]
+        ]
+      }
+    },
+    "error-multiline": {
+      "of_psych": {
+        "$map": [
+          [
+            "status",
+            "error"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "2"
+            }
+          ],
+          [
+            "error",
+            "first line\nsecond: line"
+          ]
+        ]
+      },
+      "of_yeptris": {
+        "$map": [
+          [
+            "status",
+            "error"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "2"
+            }
+          ],
+          [
+            "error",
+            "first line\nsecond: line"
+          ]
+        ]
+      }
+    },
+    "error-nil": {
+      "of_psych": {
+        "$map": []
+      },
+      "of_yeptris": {
+        "$map": []
+      }
+    },
+    "success-basic": {
+      "of_psych": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "filter"
+                        ],
+                        [
+                          "value",
+                          ".a"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "filter"
+                              ],
+                              [
+                                "value",
+                                ".a"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "line1\nline2\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "of_yeptris": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "filter"
+                        ],
+                        [
+                          "value",
+                          ".a"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "filter"
+                              ],
+                              [
+                                "value",
+                                ".a"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "line1\nline2\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  {
+                    "$time": "2024-01-17T10:20:30.000000000Z"
+                  }
+                ],
+                [
+                  "finished_at",
+                  {
+                    "$time": "2024-01-17T10:20:31.000000000Z"
+                  }
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      }
+    },
+    "success-empty-output": {
+      "of_psych": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "of_yeptris": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  {
+                    "$time": "2024-01-17T10:20:30.000000000Z"
+                  }
+                ],
+                [
+                  "finished_at",
+                  {
+                    "$time": "2024-01-17T10:20:31.000000000Z"
+                  }
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      }
+    },
+    "success-full": {
+      "of_psych": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "level"
+                        ],
+                        [
+                          "value",
+                          "3"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    },
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "ratio"
+                        ],
+                        [
+                          "value",
+                          "2.0e-05"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    },
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "list"
+                        ],
+                        [
+                          "value",
+                          "a, 1, b"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ],
+                [
+                  "flags",
+                  [
+                    "verbose"
+                  ]
+                ],
+                [
+                  "positional",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "input"
+                        ],
+                        [
+                          "value",
+                          "in put.json"
+                        ],
+                        [
+                          "type",
+                          "positional"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "level"
+                              ],
+                              [
+                                "value",
+                                "3"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          },
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "ratio"
+                              ],
+                              [
+                                "value",
+                                "2.0e-05"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          },
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "list"
+                              ],
+                              [
+                                "value",
+                                "a, 1, b"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ],
+                      [
+                        "flags",
+                        [
+                          "verbose"
+                        ]
+                      ],
+                      [
+                        "positional",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "input"
+                              ],
+                              [
+                                "value",
+                                "in put.json"
+                              ],
+                              [
+                                "type",
+                                "positional"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "{\"a\":1}\n"
+                ],
+                [
+                  "stderr",
+                  "warning: deprecated flag\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3f201f31f46ed246"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "0.12ms"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "of_yeptris": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "level"
+                        ],
+                        [
+                          "value",
+                          "3"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    },
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "ratio"
+                        ],
+                        [
+                          "value",
+                          "2.0e-05"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    },
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "list"
+                        ],
+                        [
+                          "value",
+                          "a, 1, b"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ],
+                [
+                  "flags",
+                  [
+                    "verbose"
+                  ]
+                ],
+                [
+                  "positional",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "input"
+                        ],
+                        [
+                          "value",
+                          "in put.json"
+                        ],
+                        [
+                          "type",
+                          "positional"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "level"
+                              ],
+                              [
+                                "value",
+                                "3"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          },
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "ratio"
+                              ],
+                              [
+                                "value",
+                                "2.0e-05"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          },
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "list"
+                              ],
+                              [
+                                "value",
+                                "a, 1, b"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ],
+                      [
+                        "flags",
+                        [
+                          "verbose"
+                        ]
+                      ],
+                      [
+                        "positional",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "input"
+                              ],
+                              [
+                                "value",
+                                "in put.json"
+                              ],
+                              [
+                                "type",
+                                "positional"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "{\"a\":1}\n"
+                ],
+                [
+                  "stderr",
+                  "warning: deprecated flag\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  {
+                    "$time": "2024-01-17T10:20:30.000000000Z"
+                  }
+                ],
+                [
+                  "finished_at",
+                  {
+                    "$time": "2024-01-17T10:20:31.000000000Z"
+                  }
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3f201f31f46ed246"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "0.12ms"
+                ]
+              ]
+            }
+          ]
+        ]
+      }
+    },
+    "success-long-line": {
+      "of_psych": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "text"
+                        ],
+                        [
+                          "value",
+                          "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "text"
+                              ],
+                              [
+                                "value",
+                                "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "printf '%s' xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12 word13 word14 word15 word16 word17 word18 word19 word20 word21 word22 word23 word24 word25 word26 word27 word28 word29 word30\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "of_yeptris": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "text"
+                        ],
+                        [
+                          "value",
+                          "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "text"
+                              ],
+                              [
+                                "value",
+                                "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "printf '%s' xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12 word13 word14 word15 word16 word17 word18 word19 word20 word21 word22 word23 word24 word25 word26 word27 word28 word29 word30\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  {
+                    "$time": "2024-01-17T10:20:30.000000000Z"
+                  }
+                ],
+                [
+                  "finished_at",
+                  {
+                    "$time": "2024-01-17T10:20:31.000000000Z"
+                  }
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      }
+    },
+    "success-metrics": {
+      "of_psych": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "filter"
+                        ],
+                        [
+                          "value",
+                          "."
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "filter"
+                              ],
+                              [
+                                "value",
+                                "."
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "ok\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ],
+          [
+            "execution_report",
+            {
+              "$map": [
+                [
+                  "tool_resolution",
+                  {
+                    "$map": [
+                      [
+                        "name",
+                        "tool_resolution"
+                      ],
+                      [
+                        "duration",
+                        {
+                          "$float": "3f5437c5692b3cc5"
+                        }
+                      ],
+                      [
+                        "formatted_duration",
+                        "1.23ms"
+                      ],
+                      [
+                        "memory_before",
+                        {
+                          "$int": "51200"
+                        }
+                      ],
+                      [
+                        "memory_after",
+                        {
+                          "$int": "51264"
+                        }
+                      ],
+                      [
+                        "memory_delta",
+                        {
+                          "$int": "64"
+                        }
+                      ],
+                      [
+                        "success",
+                        true
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "command_building",
+                  {
+                    "$map": [
+                      [
+                        "name",
+                        "command_building"
+                      ],
+                      [
+                        "duration",
+                        {
+                          "$float": "3f40624dd2f1a9fc"
+                        }
+                      ],
+                      [
+                        "formatted_duration",
+                        "0.5ms"
+                      ],
+                      [
+                        "memory_before",
+                        {
+                          "$int": "51264"
+                        }
+                      ],
+                      [
+                        "memory_after",
+                        {
+                          "$int": "51264"
+                        }
+                      ],
+                      [
+                        "memory_delta",
+                        {
+                          "$int": "0"
+                        }
+                      ],
+                      [
+                        "success",
+                        true
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "execution",
+                  {
+                    "$map": [
+                      [
+                        "name",
+                        "execution"
+                      ],
+                      [
+                        "duration",
+                        {
+                          "$float": "3ff8000000000000"
+                        }
+                      ],
+                      [
+                        "formatted_duration",
+                        "1.5s"
+                      ],
+                      [
+                        "memory_before",
+                        {
+                          "$int": "51264"
+                        }
+                      ],
+                      [
+                        "memory_after",
+                        {
+                          "$int": "52000"
+                        }
+                      ],
+                      [
+                        "memory_delta",
+                        {
+                          "$int": "736"
+                        }
+                      ],
+                      [
+                        "success",
+                        true
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "response_building",
+                  {
+                    "$map": [
+                      [
+                        "name",
+                        "response_building"
+                      ],
+                      [
+                        "duration",
+                        {
+                          "$float": "3ef4f8b588e368f1"
+                        }
+                      ],
+                      [
+                        "formatted_duration",
+                        "0.02ms"
+                      ],
+                      [
+                        "memory_before",
+                        {
+                          "$int": "52000"
+                        }
+                      ],
+                      [
+                        "memory_after",
+                        {
+                          "$int": "52000"
+                        }
+                      ],
+                      [
+                        "memory_delta",
+                        {
+                          "$int": "0"
+                        }
+                      ],
+                      [
+                        "success",
+                        false
+                      ],
+                      [
+                        "error",
+                        "late failure"
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "total_duration",
+                  {
+                    "$float": "3ff8072f33ca31e8"
+                  }
+                ],
+                [
+                  "formatted_total_duration",
+                  "1.5s"
+                ],
+                [
+                  "run_environment",
+                  {
+                    "$map": [
+                      [
+                        "hostname",
+                        "host.example"
+                      ],
+                      [
+                        "platform",
+                        "x86_64-linux"
+                      ],
+                      [
+                        "os_version",
+                        "Linux 6.8.0"
+                      ],
+                      [
+                        "shell",
+                        "bash"
+                      ],
+                      [
+                        "shell_override",
+                        false
+                      ],
+                      [
+                        "shell_version",
+                        "5.1.16"
+                      ],
+                      [
+                        "ruby_version",
+                        "4.0.1"
+                      ],
+                      [
+                        "ukiryu_version",
+                        "0.1.0"
+                      ],
+                      [
+                        "cpu_count",
+                        {
+                          "$int": "8"
+                        }
+                      ],
+                      [
+                        "total_memory",
+                        {
+                          "$int": "16384"
+                        }
+                      ],
+                      [
+                        "working_directory",
+                        "/work"
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "timestamp",
+                  "2024-01-17T10:20:30+00:00"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "of_yeptris": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "filter"
+                        ],
+                        [
+                          "value",
+                          "."
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "filter"
+                              ],
+                              [
+                                "value",
+                                "."
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "ok\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  {
+                    "$time": "2024-01-17T10:20:30.000000000Z"
+                  }
+                ],
+                [
+                  "finished_at",
+                  {
+                    "$time": "2024-01-17T10:20:31.000000000Z"
+                  }
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ],
+          [
+            "execution_report",
+            {
+              "$map": [
+                [
+                  "tool_resolution",
+                  {
+                    "$map": [
+                      [
+                        "name",
+                        "tool_resolution"
+                      ],
+                      [
+                        "duration",
+                        {
+                          "$float": "3f5437c5692b3cc5"
+                        }
+                      ],
+                      [
+                        "formatted_duration",
+                        "1.23ms"
+                      ],
+                      [
+                        "memory_before",
+                        {
+                          "$int": "51200"
+                        }
+                      ],
+                      [
+                        "memory_after",
+                        {
+                          "$int": "51264"
+                        }
+                      ],
+                      [
+                        "memory_delta",
+                        {
+                          "$int": "64"
+                        }
+                      ],
+                      [
+                        "success",
+                        true
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "command_building",
+                  {
+                    "$map": [
+                      [
+                        "name",
+                        "command_building"
+                      ],
+                      [
+                        "duration",
+                        {
+                          "$float": "3f40624dd2f1a9fc"
+                        }
+                      ],
+                      [
+                        "formatted_duration",
+                        "0.5ms"
+                      ],
+                      [
+                        "memory_before",
+                        {
+                          "$int": "51264"
+                        }
+                      ],
+                      [
+                        "memory_after",
+                        {
+                          "$int": "51264"
+                        }
+                      ],
+                      [
+                        "memory_delta",
+                        {
+                          "$int": "0"
+                        }
+                      ],
+                      [
+                        "success",
+                        true
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "execution",
+                  {
+                    "$map": [
+                      [
+                        "name",
+                        "execution"
+                      ],
+                      [
+                        "duration",
+                        {
+                          "$float": "3ff8000000000000"
+                        }
+                      ],
+                      [
+                        "formatted_duration",
+                        "1.5s"
+                      ],
+                      [
+                        "memory_before",
+                        {
+                          "$int": "51264"
+                        }
+                      ],
+                      [
+                        "memory_after",
+                        {
+                          "$int": "52000"
+                        }
+                      ],
+                      [
+                        "memory_delta",
+                        {
+                          "$int": "736"
+                        }
+                      ],
+                      [
+                        "success",
+                        true
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "response_building",
+                  {
+                    "$map": [
+                      [
+                        "name",
+                        "response_building"
+                      ],
+                      [
+                        "duration",
+                        {
+                          "$float": "3ef4f8b588e368f1"
+                        }
+                      ],
+                      [
+                        "formatted_duration",
+                        "0.02ms"
+                      ],
+                      [
+                        "memory_before",
+                        {
+                          "$int": "52000"
+                        }
+                      ],
+                      [
+                        "memory_after",
+                        {
+                          "$int": "52000"
+                        }
+                      ],
+                      [
+                        "memory_delta",
+                        {
+                          "$int": "0"
+                        }
+                      ],
+                      [
+                        "success",
+                        false
+                      ],
+                      [
+                        "error",
+                        "late failure"
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "total_duration",
+                  {
+                    "$float": "3ff8072f33ca31e8"
+                  }
+                ],
+                [
+                  "formatted_total_duration",
+                  "1.5s"
+                ],
+                [
+                  "run_environment",
+                  {
+                    "$map": [
+                      [
+                        "hostname",
+                        "host.example"
+                      ],
+                      [
+                        "platform",
+                        "x86_64-linux"
+                      ],
+                      [
+                        "os_version",
+                        "Linux 6.8.0"
+                      ],
+                      [
+                        "shell",
+                        "bash"
+                      ],
+                      [
+                        "shell_override",
+                        false
+                      ],
+                      [
+                        "shell_version",
+                        "5.1.16"
+                      ],
+                      [
+                        "ruby_version",
+                        "4.0.1"
+                      ],
+                      [
+                        "ukiryu_version",
+                        "0.1.0"
+                      ],
+                      [
+                        "cpu_count",
+                        {
+                          "$int": "8"
+                        }
+                      ],
+                      [
+                        "total_memory",
+                        {
+                          "$int": "16384"
+                        }
+                      ],
+                      [
+                        "working_directory",
+                        "/work"
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "timestamp",
+                  {
+                    "$time": "2024-01-17T10:20:30.000000000Z"
+                  }
+                ]
+              ]
+            }
+          ]
+        ]
+      }
+    },
+    "success-newline-only": {
+      "of_psych": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "\n"
+                ],
+                [
+                  "stderr",
+                  "e1\ne2"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "of_yeptris": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "\n"
+                ],
+                [
+                  "stderr",
+                  "e1\ne2"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  {
+                    "$time": "2024-01-17T10:20:30.000000000Z"
+                  }
+                ],
+                [
+                  "finished_at",
+                  {
+                    "$time": "2024-01-17T10:20:31.000000000Z"
+                  }
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      }
+    },
+    "success-nonzero": {
+      "of_psych": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "3"
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "\n\nthird\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "of_yeptris": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "3"
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "\n\nthird\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  {
+                    "$time": "2024-01-17T10:20:30.000000000Z"
+                  }
+                ],
+                [
+                  "finished_at",
+                  {
+                    "$time": "2024-01-17T10:20:31.000000000Z"
+                  }
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      }
+    },
+    "success-quoting": {
+      "of_psych": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "flag"
+                        ],
+                        [
+                          "value",
+                          "no"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    },
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "num"
+                        ],
+                        [
+                          "value",
+                          "123"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    },
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "empty"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    },
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "colon"
+                        ],
+                        [
+                          "value",
+                          "a: b"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "flag"
+                              ],
+                              [
+                                "value",
+                                "no"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          },
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "num"
+                              ],
+                              [
+                                "value",
+                                "123"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          },
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "empty"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          },
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "colon"
+                              ],
+                              [
+                                "value",
+                                "a: b"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "echo \"a: b\" # c"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "yes"
+                ],
+                [
+                  "stderr",
+                  "héllo ✓"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "of_yeptris": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "flag"
+                        ],
+                        [
+                          "value",
+                          false
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    },
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "num"
+                        ],
+                        [
+                          "value",
+                          "123"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    },
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "empty"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    },
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "colon"
+                        ],
+                        [
+                          "value",
+                          "a: b"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "flag"
+                              ],
+                              [
+                                "value",
+                                false
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          },
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "num"
+                              ],
+                              [
+                                "value",
+                                "123"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          },
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "empty"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          },
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "colon"
+                              ],
+                              [
+                                "value",
+                                "a: b"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "echo \"a: b\" # c"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  true
+                ],
+                [
+                  "stderr",
+                  "héllo ✓"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  {
+                    "$time": "2024-01-17T10:20:30.000000000Z"
+                  }
+                ],
+                [
+                  "finished_at",
+                  {
+                    "$time": "2024-01-17T10:20:31.000000000Z"
+                  }
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      }
+    }
+  },
+  "probe_yaml": {
+    "str-no": "---\nvalue: no\n",
+    "str-yes": "---\nvalue: yes\n",
+    "str-y": "---\nvalue: y\n",
+    "str-n": "---\nvalue: n\n",
+    "str-on": "---\nvalue: on\n",
+    "str-off": "---\nvalue: off\n",
+    "str-true": "---\nvalue: \"true\"\n",
+    "str-null": "---\nvalue: \"null\"\n",
+    "str-tilde": "---\nvalue: \"~\"\n",
+    "str-empty": "---\nvalue: \"\"\n",
+    "str-timestamp": "---\nvalue: 2024-01-17T10:20:30Z\n",
+    "str-timestamp-offset": "---\nvalue: 2024-01-17T10:20:30+00:00\n",
+    "str-date": "---\nvalue: 2024-01-17\n",
+    "str-int": "---\nvalue: \"123\"\n",
+    "str-int-signed": "---\nvalue: \"-7\"\n",
+    "str-octal-old": "---\nvalue: \"0123\"\n",
+    "str-octal": "---\nvalue: \"0o17\"\n",
+    "str-hex": "---\nvalue: \"0x1A\"\n",
+    "str-underscore-int": "---\nvalue: 1_000\n",
+    "str-sexagesimal": "---\nvalue: 1:30\n",
+    "str-float": "---\nvalue: \"2.0e-05\"\n",
+    "str-float-plain": "---\nvalue: \"1.25\"\n",
+    "str-inf-word": "---\nvalue: \".inf\"\n",
+    "str-nan-word": "---\nvalue: \".nan\"\n",
+    "str-dot-path": "---\nvalue: .a\n",
+    "str-abs-path": "---\nvalue: /usr/bin/jq\n",
+    "str-colon-space": "---\nvalue: \"a: b\"\n",
+    "str-hash": "---\nvalue: \"echo # c\"\n",
+    "str-unicode": "---\nvalue: héllo ✓\n",
+    "multiline-trailing-newline": "---\nvalue: \"line1\\nline2\\n\"\n",
+    "multiline-no-trailing": "---\nvalue: \"a\\nb\"\n",
+    "multiline-only-newline": "---\nvalue: \"\\n\"\n",
+    "multiline-leading-blank": "---\nvalue: \"\\n\\nthird\\n\"\n",
+    "multiline-trailing-spaces": "---\nvalue: \"a \\nb\\n\"\n",
+    "long-line": "---\nvalue: \"word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12 word13 word14 word15 word16 word17 word18 word19 word20 word21 word22 word23 word24 word25 word26 word27 word28 word29 word30\\n\"\n",
+    "bool-false": "---\nvalue: false\n",
+    "bool-true": "---\nvalue: true\n",
+    "null": "---\nvalue: null\n",
+    "int": "---\nvalue: 123\n",
+    "int-max": "---\nvalue: 9223372036854775807\n",
+    "float-small": "---\nvalue: 2.0e-05\n",
+    "float-large": "---\nvalue: 1.0e+16\n",
+    "float-neg-zero": "---\nvalue: -0.0\n",
+    "float-plain": "---\nvalue: 1.25\n",
+    "float-nan": "---\nvalue: .nan\n",
+    "float-inf": "---\nvalue: .inf\n",
+    "float-neg-inf": "---\nvalue: -.inf\n",
+    "tagged-local": "---\nvalue: !custom x\n",
+    "tagged-str": "---\nvalue: !!str \"123\"\n",
+    "seq-mixed": "---\nvalue:\n- no\n- 1\n- null\n- 2024-01-17\n"
+  },
+  "probe_psych_emit": {
+    "str-no": "---\nvalue: 'no'\n",
+    "str-yes": "---\nvalue: 'yes'\n",
+    "str-y": "---\nvalue: \"y\"\n",
+    "str-n": "---\nvalue: \"n\"\n",
+    "str-on": "---\nvalue: 'on'\n",
+    "str-off": "---\nvalue: 'off'\n",
+    "str-true": "---\nvalue: 'true'\n",
+    "str-null": "---\nvalue: 'null'\n",
+    "str-tilde": "---\nvalue: \"~\"\n",
+    "str-empty": "---\nvalue: ''\n",
+    "str-timestamp": "---\nvalue: '2024-01-17T10:20:30Z'\n",
+    "str-timestamp-offset": "---\nvalue: '2024-01-17T10:20:30+00:00'\n",
+    "str-date": "---\nvalue: '2024-01-17'\n",
+    "str-int": "---\nvalue: '123'\n",
+    "str-int-signed": "---\nvalue: \"-7\"\n",
+    "str-octal-old": "---\nvalue: '0123'\n",
+    "str-octal": "---\nvalue: 0o17\n",
+    "str-hex": "---\nvalue: '0x1A'\n",
+    "str-underscore-int": "---\nvalue: '1_000'\n",
+    "str-sexagesimal": "---\nvalue: '1:30'\n",
+    "str-float": "---\nvalue: '2.0e-05'\n",
+    "str-float-plain": "---\nvalue: '1.25'\n",
+    "str-inf-word": "---\nvalue: \".inf\"\n",
+    "str-nan-word": "---\nvalue: \".nan\"\n",
+    "str-dot-path": "---\nvalue: \".a\"\n",
+    "str-abs-path": "---\nvalue: \"/usr/bin/jq\"\n",
+    "str-colon-space": "---\nvalue: 'a: b'\n",
+    "str-hash": "---\nvalue: 'echo # c'\n",
+    "str-unicode": "---\nvalue: héllo ✓\n",
+    "multiline-trailing-newline": "---\nvalue: |\n  line1\n  line2\n",
+    "multiline-no-trailing": "---\nvalue: |-\n  a\n  b\n",
+    "multiline-only-newline": "---\nvalue: \"\\n\"\n",
+    "multiline-leading-blank": "---\nvalue: |2\n\n\n  third\n",
+    "multiline-trailing-spaces": "---\nvalue: \"a \\nb\\n\"\n",
+    "long-line": "---\nvalue: 'word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12\n  word13 word14 word15 word16 word17 word18 word19 word20 word21 word22 word23 word24\n  word25 word26 word27 word28 word29 word30\n\n  '\n",
+    "bool-false": "---\nvalue: false\n",
+    "bool-true": "---\nvalue: true\n",
+    "null": "---\nvalue: \n",
+    "int": "---\nvalue: 123\n",
+    "int-max": "---\nvalue: 9223372036854775807\n",
+    "float-small": "---\nvalue: 2.0e-05\n",
+    "float-large": "---\nvalue: 1.0e+16\n",
+    "float-neg-zero": "---\nvalue: -0.0\n",
+    "float-plain": "---\nvalue: 1.25\n",
+    "float-nan": "---\nvalue: .nan\n",
+    "float-inf": "---\nvalue: .inf\n",
+    "float-neg-inf": "---\nvalue: -.inf\n",
+    "tagged-local": null,
+    "tagged-str": null,
+    "seq-mixed": "---\nvalue:\n- 'no'\n- 1\n- \n- '2024-01-17'\n"
+  },
+  "probe_psych_loads": {
+    "str-no": {
+      "$map": [
+        [
+          "value",
+          false
+        ]
+      ]
+    },
+    "str-yes": {
+      "$map": [
+        [
+          "value",
+          true
+        ]
+      ]
+    },
+    "str-y": {
+      "$map": [
+        [
+          "value",
+          "y"
+        ]
+      ]
+    },
+    "str-n": {
+      "$map": [
+        [
+          "value",
+          "n"
+        ]
+      ]
+    },
+    "str-on": {
+      "$map": [
+        [
+          "value",
+          true
+        ]
+      ]
+    },
+    "str-off": {
+      "$map": [
+        [
+          "value",
+          false
+        ]
+      ]
+    },
+    "str-true": {
+      "$map": [
+        [
+          "value",
+          "true"
+        ]
+      ]
+    },
+    "str-null": {
+      "$map": [
+        [
+          "value",
+          "null"
+        ]
+      ]
+    },
+    "str-tilde": {
+      "$map": [
+        [
+          "value",
+          "~"
+        ]
+      ]
+    },
+    "str-empty": {
+      "$map": [
+        [
+          "value",
+          ""
+        ]
+      ]
+    },
+    "str-timestamp": {
+      "$map": [
+        [
+          "value",
+          {
+            "$time": "2024-01-17T10:20:30.000000000Z"
+          }
+        ]
+      ]
+    },
+    "str-timestamp-offset": {
+      "$map": [
+        [
+          "value",
+          {
+            "$time": "2024-01-17T10:20:30.000000000Z"
+          }
+        ]
+      ]
+    },
+    "str-date": {
+      "$map": [
+        [
+          "value",
+          {
+            "$date": "2024-01-17"
+          }
+        ]
+      ]
+    },
+    "str-int": {
+      "$map": [
+        [
+          "value",
+          "123"
+        ]
+      ]
+    },
+    "str-int-signed": {
+      "$map": [
+        [
+          "value",
+          "-7"
+        ]
+      ]
+    },
+    "str-octal-old": {
+      "$map": [
+        [
+          "value",
+          "0123"
+        ]
+      ]
+    },
+    "str-octal": {
+      "$map": [
+        [
+          "value",
+          "0o17"
+        ]
+      ]
+    },
+    "str-hex": {
+      "$map": [
+        [
+          "value",
+          "0x1A"
+        ]
+      ]
+    },
+    "str-underscore-int": {
+      "$map": [
+        [
+          "value",
+          {
+            "$int": "1000"
+          }
+        ]
+      ]
+    },
+    "str-sexagesimal": {
+      "$map": [
+        [
+          "value",
+          {
+            "$int": "5400"
+          }
+        ]
+      ]
+    },
+    "str-float": {
+      "$map": [
+        [
+          "value",
+          "2.0e-05"
+        ]
+      ]
+    },
+    "str-float-plain": {
+      "$map": [
+        [
+          "value",
+          "1.25"
+        ]
+      ]
+    },
+    "str-inf-word": {
+      "$map": [
+        [
+          "value",
+          ".inf"
+        ]
+      ]
+    },
+    "str-nan-word": {
+      "$map": [
+        [
+          "value",
+          ".nan"
+        ]
+      ]
+    },
+    "str-dot-path": {
+      "$map": [
+        [
+          "value",
+          ".a"
+        ]
+      ]
+    },
+    "str-abs-path": {
+      "$map": [
+        [
+          "value",
+          "/usr/bin/jq"
+        ]
+      ]
+    },
+    "str-colon-space": {
+      "$map": [
+        [
+          "value",
+          "a: b"
+        ]
+      ]
+    },
+    "str-hash": {
+      "$map": [
+        [
+          "value",
+          "echo # c"
+        ]
+      ]
+    },
+    "str-unicode": {
+      "$map": [
+        [
+          "value",
+          "héllo ✓"
+        ]
+      ]
+    },
+    "multiline-trailing-newline": {
+      "$map": [
+        [
+          "value",
+          "line1\nline2\n"
+        ]
+      ]
+    },
+    "multiline-no-trailing": {
+      "$map": [
+        [
+          "value",
+          "a\nb"
+        ]
+      ]
+    },
+    "multiline-only-newline": {
+      "$map": [
+        [
+          "value",
+          "\n"
+        ]
+      ]
+    },
+    "multiline-leading-blank": {
+      "$map": [
+        [
+          "value",
+          "\n\nthird\n"
+        ]
+      ]
+    },
+    "multiline-trailing-spaces": {
+      "$map": [
+        [
+          "value",
+          "a \nb\n"
+        ]
+      ]
+    },
+    "long-line": {
+      "$map": [
+        [
+          "value",
+          "word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12 word13 word14 word15 word16 word17 word18 word19 word20 word21 word22 word23 word24 word25 word26 word27 word28 word29 word30\n"
+        ]
+      ]
+    },
+    "bool-false": {
+      "$map": [
+        [
+          "value",
+          false
+        ]
+      ]
+    },
+    "bool-true": {
+      "$map": [
+        [
+          "value",
+          true
+        ]
+      ]
+    },
+    "null": {
+      "$map": [
+        [
+          "value",
+          null
+        ]
+      ]
+    },
+    "int": {
+      "$map": [
+        [
+          "value",
+          {
+            "$int": "123"
+          }
+        ]
+      ]
+    },
+    "int-max": {
+      "$map": [
+        [
+          "value",
+          {
+            "$int": "9223372036854775807"
+          }
+        ]
+      ]
+    },
+    "float-small": {
+      "$map": [
+        [
+          "value",
+          {
+            "$float": "3ef4f8b588e368f1"
+          }
+        ]
+      ]
+    },
+    "float-large": {
+      "$map": [
+        [
+          "value",
+          {
+            "$float": "4341c37937e08000"
+          }
+        ]
+      ]
+    },
+    "float-neg-zero": {
+      "$map": [
+        [
+          "value",
+          {
+            "$float": "8000000000000000"
+          }
+        ]
+      ]
+    },
+    "float-plain": {
+      "$map": [
+        [
+          "value",
+          {
+            "$float": "3ff4000000000000"
+          }
+        ]
+      ]
+    },
+    "float-nan": {
+      "$map": [
+        [
+          "value",
+          {
+            "$float": "nan"
+          }
+        ]
+      ]
+    },
+    "float-inf": {
+      "$map": [
+        [
+          "value",
+          {
+            "$float": "inf"
+          }
+        ]
+      ]
+    },
+    "float-neg-inf": {
+      "$map": [
+        [
+          "value",
+          {
+            "$float": "-inf"
+          }
+        ]
+      ]
+    },
+    "tagged-local": {
+      "$map": [
+        [
+          "value",
+          "x"
+        ]
+      ]
+    },
+    "tagged-str": {
+      "$map": [
+        [
+          "value",
+          "123"
+        ]
+      ]
+    },
+    "seq-mixed": {
+      "$map": [
+        [
+          "value",
+          [
+            false,
+            {
+              "$int": "1"
+            },
+            null,
+            {
+              "$date": "2024-01-17"
+            }
+          ]
+        ]
+      ]
+    }
+  },
+  "snippet_psych_loads": {
+    "plain-no": {
+      "$map": [
+        [
+          "v",
+          false
+        ]
+      ]
+    },
+    "quoted-no": {
+      "$map": [
+        [
+          "v",
+          "no"
+        ]
+      ]
+    },
+    "plain-yes": {
+      "$map": [
+        [
+          "v",
+          true
+        ]
+      ]
+    },
+    "plain-y": {
+      "$map": [
+        [
+          "v",
+          "y"
+        ]
+      ]
+    },
+    "plain-on": {
+      "$map": [
+        [
+          "v",
+          true
+        ]
+      ]
+    },
+    "plain-timestamp": {
+      "$map": [
+        [
+          "v",
+          {
+            "$time": "2024-01-17T10:20:30.000000000Z"
+          }
+        ]
+      ]
+    },
+    "quoted-timestamp": {
+      "$map": [
+        [
+          "v",
+          "2024-01-17T10:20:30Z"
+        ]
+      ]
+    },
+    "plain-date": {
+      "$map": [
+        [
+          "v",
+          {
+            "$date": "2024-01-17"
+          }
+        ]
+      ]
+    },
+    "plain-octal-old": {
+      "$map": [
+        [
+          "v",
+          {
+            "$int": "83"
+          }
+        ]
+      ]
+    },
+    "plain-octal": {
+      "$map": [
+        [
+          "v",
+          "0o17"
+        ]
+      ]
+    },
+    "plain-underscore-int": {
+      "$map": [
+        [
+          "v",
+          {
+            "$int": "1000"
+          }
+        ]
+      ]
+    },
+    "plain-sexagesimal": {
+      "$map": [
+        [
+          "v",
+          {
+            "$int": "5400"
+          }
+        ]
+      ]
+    },
+    "plain-float-exp": {
+      "$map": [
+        [
+          "v",
+          {
+            "$float": "3ef4f8b588e368f1"
+          }
+        ]
+      ]
+    },
+    "plain-float-1e3": {
+      "$map": [
+        [
+          "v",
+          "1e3"
+        ]
+      ]
+    },
+    "plain-inf": {
+      "$map": [
+        [
+          "v",
+          {
+            "$float": "inf"
+          }
+        ]
+      ]
+    },
+    "plain-neg-inf": {
+      "$map": [
+        [
+          "v",
+          {
+            "$float": "-inf"
+          }
+        ]
+      ]
+    },
+    "plain-nan": {
+      "$map": [
+        [
+          "v",
+          {
+            "$float": "nan"
+          }
+        ]
+      ]
+    },
+    "plain-tilde": {
+      "$map": [
+        [
+          "v",
+          null
+        ]
+      ]
+    },
+    "literal-clip": {
+      "$map": [
+        [
+          "v",
+          "a\nb\n"
+        ]
+      ]
+    },
+    "literal-strip": {
+      "$map": [
+        [
+          "v",
+          "a\nb"
+        ]
+      ]
+    },
+    "literal-keep": {
+      "$map": [
+        [
+          "v",
+          "a\n\n"
+        ]
+      ]
+    },
+    "single-quoted-newline": {
+      "$map": [
+        [
+          "v",
+          "a\n"
+        ]
+      ]
+    },
+    "double-quoted-newline": {
+      "$map": [
+        [
+          "v",
+          "a\n"
+        ]
+      ]
+    },
+    "folded-psych": {
+      "$map": [
+        [
+          "v",
+          "word1 word2 word3\n"
+        ]
+      ]
+    },
+    "alias": {
+      "$map": [
+        [
+          "v",
+          [
+            {
+              "$int": "1"
+            },
+            {
+              "$int": "2"
+            }
+          ]
+        ],
+        [
+          "w",
+          [
+            {
+              "$int": "1"
+            },
+            {
+              "$int": "2"
+            }
+          ]
+        ]
+      ]
+    },
+    "alias-map": {
+      "$map": [
+        [
+          "base",
+          {
+            "$map": [
+              [
+                "k",
+                {
+                  "$int": "1"
+                }
+              ]
+            ]
+          }
+        ],
+        [
+          "other",
+          {
+            "$map": [
+              [
+                "k",
+                {
+                  "$int": "1"
+                }
+              ]
+            ]
+          }
+        ]
+      ]
+    },
+    "merge-key": {
+      "$map": [
+        [
+          "base",
+          {
+            "$map": [
+              [
+                "k",
+                {
+                  "$int": "1"
+                }
+              ]
+            ]
+          }
+        ],
+        [
+          "other",
+          {
+            "$map": [
+              [
+                "k",
+                {
+                  "$int": "1"
+                }
+              ],
+              [
+                "j",
+                {
+                  "$int": "2"
+                }
+              ]
+            ]
+          }
+        ]
+      ]
+    },
+    "tag-local": {
+      "$map": [
+        [
+          "v",
+          "x"
+        ]
+      ]
+    },
+    "tag-str": {
+      "$map": [
+        [
+          "v",
+          "123"
+        ]
+      ]
+    },
+    "tag-float": {
+      "$map": [
+        [
+          "v",
+          {
+            "$float": "3ff0000000000000"
+          }
+        ]
+      ]
+    },
+    "tag-int": {
+      "$map": [
+        [
+          "v",
+          {
+            "$int": "7"
+          }
+        ]
+      ]
+    },
+    "explicit-doc": {
+      "$map": []
+    }
+  }
+}

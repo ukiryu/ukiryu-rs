@@ -1,0 +1,66 @@
+name: Definition documentation reference
+
+# Runs the pinned Ruby oracle's DocumentationGenerator.generate_to_file on
+# every captured documentation case and measures the exact bytes File.write
+# produces on each OS, against the LF target text the Rust port matches.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ukiryu/src/definition/documentation/**'
+      - 'ukiryu/src/definition/documentation.rs'
+      - 'ukiryu/tests/definition_documentation_*.rs'
+      - 'corpus/oracle-ruby/Gemfile'
+      - 'corpus/oracle-ruby/Gemfile.lock'
+      - '.github/workflows/definition-reference.yml'
+  pull_request:
+    paths:
+      - 'ukiryu/src/definition/documentation/**'
+      - 'ukiryu/src/definition/documentation.rs'
+      - 'ukiryu/tests/definition_documentation_*.rs'
+      - 'corpus/oracle-ruby/Gemfile'
+      - 'corpus/oracle-ruby/Gemfile.lock'
+      - '.github/workflows/definition-reference.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  file-write:
+    name: generate_to_file bytes (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2022, ubuntu-24.04]
+    defaults:
+      run:
+        working-directory: corpus/oracle-ruby
+        shell: bash
+    env:
+      BUNDLE_FROZEN: 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '4.0.1'
+          bundler-cache: true
+          working-directory: corpus/oracle-ruby
+      - name: Measure oracle File.write bytes
+        run: |
+          doc="$GITHUB_WORKSPACE/ukiryu/src/definition/documentation"
+          record=()
+          if [ -f "$doc/file_write_record.json" ]; then record=("$doc/file_write_record.json"); fi
+          bundle exec ruby "$doc/file_write_capture.rb" "$doc/oracle_cases.json" "$RUNNER_TEMP/file-write" "${record[@]}"
+      - name: Upload exact bytes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: definition-documentation-file-write-${{ matrix.os }}
+          path: ${{ runner.temp }}/file-write
+          if-no-files-found: error

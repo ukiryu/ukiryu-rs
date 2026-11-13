@@ -13,11 +13,14 @@ use std::str::FromStr;
 
 use num_bigint::BigInt;
 use serde_json::{json, Value as Json};
+use ukiryu::extractors::man::Today;
+use ukiryu::models::{ArgumentDefinition, Model, OptionDefinition};
+use ukiryu::runtime::Clock;
 use ukiryu::types::constraints::Constraint;
 use ukiryu::types::ruby;
 use ukiryu::types::{
-    build_constraints, valid_type, validate, Error, ErrorClass, Host, Regexp, Time, Validator,
-    Value,
+    build_constraints, valid_type, validate, Error, ErrorClass, Host, Now, OptionSource, Regexp,
+    Time, Validator, Value,
 };
 
 fn corpus_dir() -> PathBuf {
@@ -134,8 +137,14 @@ fn encode(v: &Value) -> Json {
         Value::Time(t) => {
             let (y, mo, d) = civil_from_days(t.seconds.div_euclid(86_400));
             let sod = t.seconds.rem_euclid(86_400);
+            // Ruby's iso8601 pads the year to four digits after the sign.
+            let year = if y < 0 {
+                format!("-{:04}", -y)
+            } else {
+                format!("{y:04}")
+            };
             json!({ "$time": format!(
-                "{y:04}-{mo:02}-{d:02}T{:02}:{:02}:{:02}.{:09}Z",
+                "{year}-{mo:02}-{d:02}T{:02}:{:02}:{:02}.{:09}Z",
                 sod / 3600, sod % 3600 / 60, sod % 60, t.nanos
             ) })
         }
@@ -176,7 +185,18 @@ fn outcome(r: &Result<Value, Error>) -> Json {
 
 // ------------------------------------------------------------------ hosts
 
-/// The oracle environment: the real filesystem, TZ=UTC, no regexp engine.
+/// The day the K19 capture of the original corpus files ran under `TZ=UTC`
+/// (golden files written 2026-11-12 13:01 UTC). `Time.parse` reads it for
+/// rows such as `"10:20"`; the time of day was not recorded, so rows that
+/// need it would answer `Unsupported`.
+const CAPTURE_DAY: Today = Today {
+    year: 2026,
+    mon: 11,
+    mday: 12,
+};
+
+/// The oracle environment: the real filesystem, TZ=UTC (local zone "UTC"),
+/// the default regexp engine, and `Time.now` on the capture day.
 struct OracleHost;
 
 impl Host for OracleHost {
@@ -186,6 +206,35 @@ impl Host for OracleHost {
 
     fn local_offset(&self, _: i64, _: u32, _: u32, _: u32, _: u32, _: u32) -> Option<i32> {
         Some(0)
+    }
+
+    fn local_zone_abbreviation(&self, _: i64, _: u32, _: u32) -> Option<String> {
+        Some("UTC".into())
+    }
+
+    fn now(&self) -> Option<Now> {
+        Some(Now::from_clock(Clock::Fixed(CAPTURE_DAY), 0))
+    }
+}
+
+/// [`OracleHost`] with `Time.now` pinned to the instant a row records.
+struct PinnedNow(Now);
+
+impl Host for PinnedNow {
+    fn file_exists(&self, path: &str) -> bool {
+        OracleHost.file_exists(path)
+    }
+
+    fn local_offset(&self, y: i64, mo: u32, d: u32, h: u32, mi: u32, s: u32) -> Option<i32> {
+        OracleHost.local_offset(y, mo, d, h, mi, s)
+    }
+
+    fn local_zone_abbreviation(&self, y: i64, mo: u32, d: u32) -> Option<String> {
+        OracleHost.local_zone_abbreviation(y, mo, d)
+    }
+
+    fn now(&self) -> Option<Now> {
+        Some(self.0)
     }
 }
 
@@ -254,6 +303,54 @@ fn type_validate_matrix() {
         tally.record(id, &row["expect"], &outcome(&r), is_unsupported(&r));
     }
     tally.finish("type_validate");
+}
+
+/// `Type.validate(value, :datetime, {})` with `Time.now` pinned per row
+/// (`datetime_parse.jsonl`).
+#[test]
+fn datetime_parse_matrix() {
+    let mut tally = Tally::default();
+    for row in rows("datetime_parse.jsonl") {
+        let id = row["id"].as_str().unwrap();
+        let input = &row["input"];
+        let Value::Time(mut now) = decode(&input["now"]) else {
+            panic!("{id}: now is a Time");
+        };
+        now.utc_offset = input["now_utc_offset"].as_i64().unwrap() as i32;
+        now.utc = false;
+        let host = PinnedNow(Now::Instant(now));
+        let r = validate(
+            &decode(&input["value"]),
+            &Value::sym("datetime"),
+            &Value::Hash(vec![]),
+            &host,
+        );
+        tally.record(id, &row["expect"], &outcome(&r), is_unsupported(&r));
+    }
+    tally.finish("datetime_parse");
+}
+
+/// `Type.validate(value, :string, { pattern:, allow_empty: true })`
+/// (`regexp_match.jsonl`): `String#=~` on the portable engine.
+#[test]
+fn regexp_match_matrix() {
+    let mut tally = Tally::default();
+    for row in rows("regexp_match.jsonl") {
+        let id = row["id"].as_str().unwrap();
+        let input = &row["input"];
+        let options = Value::Hash(vec![
+            (Value::sym("pattern"), decode(&input["pattern"])),
+            (Value::sym("allow_empty"), Value::Bool(true)),
+        ]);
+        let r = validate(
+            &decode(&input["value"]),
+            &Value::sym("string"),
+            &options,
+            &OracleHost,
+        );
+        tally.record(id, &row["expect"], &outcome(&r), is_unsupported(&r));
+    }
+    tally.finish("regexp_match");
 }
 
 #[test]
@@ -334,28 +431,29 @@ fn type_file_real_filesystem() {
 }
 
 /// Production callers pass `ArgumentDefinition`/`OptionDefinition` models as
-/// the options; `Model#[]` returns the attribute or nil. None of the keys
-/// `Type` reads has a model default, so until the models module is wired in
-/// these rows run with a Hash holding exactly the assigned attributes.
+/// the options; `Model#[]` returns the attribute or nil. Each row builds the
+/// named model from its attributes (`Model.from_hash`) and validates through
+/// the model's [`OptionSource`] implementation.
 #[test]
 fn type_model_shaped_options() {
     let mut tally = Tally::default();
     for row in rows("type_model_options.jsonl") {
         let id = row["id"].as_str().unwrap();
         let input = &row["input"];
-        let attrs = match decode(&input["attrs"]) {
-            Value::Hash(pairs) => Value::Hash(
-                pairs
-                    .into_iter()
-                    .map(|(k, v)| (Value::Symbol(ruby::to_s(&k)), v))
-                    .collect(),
-            ),
-            other => panic!("attrs {other:?}"),
+        let attrs = decode(&input["attrs"]);
+        let model: Box<dyn OptionSource> = match input["model"].as_str().unwrap() {
+            "ArgumentDefinition" => {
+                Box::new(ArgumentDefinition::from_ruby(&attrs).expect("ArgumentDefinition"))
+            }
+            "OptionDefinition" => {
+                Box::new(OptionDefinition::from_ruby(&attrs).expect("OptionDefinition"))
+            }
+            other => panic!("model {other}"),
         };
         let r = validate(
             &decode(&input["value"]),
             &decode(&input["type"]),
-            &attrs,
+            model.as_ref(),
             &OracleHost,
         );
         tally.record(id, &row["expect"], &outcome(&r), is_unsupported(&r));
@@ -593,6 +691,8 @@ fn every_gap_is_a_real_row() {
         "constraints.jsonl",
         "validator.jsonl",
         "ruby_format.jsonl",
+        "datetime_parse.jsonl",
+        "regexp_match.jsonl",
     ] {
         for r in rows(f) {
             ids.insert(r["id"].as_str().unwrap().to_string());

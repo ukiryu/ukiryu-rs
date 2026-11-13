@@ -4,11 +4,12 @@
 use std::collections::{BTreeMap, VecDeque};
 
 use serde_json::{json, Value};
+use ukiryu::extractors::man::ManPageError;
 use ukiryu::version_detection::{
     detect_info, detect_profile_version, detect_with_methods, probe_index_detection, CommandOutput,
-    CommandRequest, CommandRunner, DetectedVersion, DetectionMethodView, IndexDetection,
-    IndexProbe, InfoRequest, ManPageDates, MethodSpec, MethodsRequest, PatternError, PatternSpec,
-    RunnerError, ToolContext, VersionDetectionView,
+    CommandRequest, CommandRunner, DetectedVersion, DetectionError, DetectionMethodView,
+    IndexDetection, IndexProbe, InfoRequest, ManPageDates, MethodSpec, MethodsRequest,
+    PatternError, PatternSpec, RunnerError, ToolContext, VersionDetectionView,
 };
 
 fn golden() -> Value {
@@ -51,9 +52,9 @@ struct Dates {
 }
 
 impl ManPageDates for Dates {
-    fn parse_date(&mut self, path: &str) -> Option<String> {
+    fn parse_date(&mut self, path: &str) -> Result<Option<String>, ManPageError> {
         self.calls.push(path.to_string());
-        self.dates.get(path).cloned()
+        Ok(self.dates.get(path).cloned())
     }
 }
 
@@ -125,7 +126,7 @@ fn expected_calls(case: &Value) -> Vec<CommandRequest> {
 }
 
 enum Actual {
-    Version(Result<Option<DetectedVersion>, PatternError>),
+    Version(Result<Option<DetectedVersion>, DetectionError>),
     Index(Result<IndexProbe, PatternError>),
 }
 
@@ -133,17 +134,20 @@ fn run_case(case: &Value, runner: &mut Scripted, dates: &mut Dates) -> Actual {
     let input = &case["input"];
     let platform = case["platform"].as_str().unwrap().to_string();
     match case["api"].as_str().unwrap() {
-        "detect_info" => Actual::Version(detect_info(
-            &InfoRequest {
-                executable: opt_str(&input["executable"]),
-                command: command_list(&input["command"]).unwrap(),
-                pattern: pattern_spec(&input["pattern"]).unwrap(),
-                shell: opt_str(&input["shell"]),
-                source: opt_str(&input["source"]),
-                timeout_secs: input["timeout"].as_u64().unwrap(),
-            },
-            runner,
-        )),
+        "detect_info" => Actual::Version(
+            detect_info(
+                &InfoRequest {
+                    executable: opt_str(&input["executable"]),
+                    command: command_list(&input["command"]).unwrap(),
+                    pattern: pattern_spec(&input["pattern"]).unwrap(),
+                    shell: opt_str(&input["shell"]),
+                    source: opt_str(&input["source"]),
+                    timeout_secs: input["timeout"].as_u64().unwrap(),
+                },
+                runner,
+            )
+            .map_err(DetectionError::from),
+        ),
         "detect_with_methods" => {
             let methods = input["methods"]
                 .as_array()

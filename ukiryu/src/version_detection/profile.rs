@@ -7,10 +7,9 @@
 //! are owned by the models module; integration replaces these views with a
 //! conversion from them.
 use super::detector::{
-    detect_info, detect_with_methods, DetectedVersion, DetectionMethod, InfoRequest, MethodSpec,
-    MethodsRequest, PatternSpec,
+    detect_info, detect_with_methods, DetectedVersion, DetectionError, DetectionMethod,
+    InfoRequest, MethodSpec, MethodsRequest, PatternSpec,
 };
-use super::pattern::PatternError;
 use super::runner::{CommandRunner, ManPageDates};
 
 /// Timeout the source hardcodes for profile version detection.
@@ -54,7 +53,7 @@ pub fn detect_profile_version(
     tool: &ToolContext,
     runner: &mut dyn CommandRunner,
     man_pages: &mut dyn ManPageDates,
-) -> Result<Option<DetectedVersion>, PatternError> {
+) -> Result<Option<DetectedVersion>, DetectionError> {
     let Some(vd) = detection else {
         return Ok(None);
     };
@@ -104,6 +103,7 @@ pub fn detect_profile_version(
         },
         runner,
     )
+    .map_err(DetectionError::from)
 }
 
 /// The `detection_methods` → detector conversion. Every type other than

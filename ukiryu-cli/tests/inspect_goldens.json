@@ -1,0 +1,1102 @@
+{
+  "source": {
+    "repository": "ukiryu/ukiryu",
+    "revision": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+    "files": [
+      "lib/ukiryu/cli.rb",
+      "lib/ukiryu/cli_commands/base_command.rb",
+      "lib/ukiryu/cli_commands/version_command.rb",
+      "lib/ukiryu/cli_commands/system_command.rb",
+      "lib/ukiryu/cli_commands/config_command.rb"
+    ],
+    "ruby": "ruby 4.0.1 (2026-01-13 revision e04267a14b) +PRISM [x86_64-linux]",
+    "capture": "each case runs exe/ukiryu (Ukiryu::Cli.start) in a fresh Ruby process; the capture script is kept with the K22-CLI-INSPECT task evidence",
+    "context": "env -i; HOME, PATH and UKIRYU_REGISTER are per-case temp dirs ({HOME}, {BIN}, {REGISTER}); PATH holds symlinks for the listed bins plus `which` on unix hosts; macos/windows rows set RbConfig host_os (darwin23/mingw32) before loading ukiryu"
+  },
+  "cases": [
+    {
+      "name": "version",
+      "args": [
+        "version"
+      ],
+      "env": {},
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "\u001b[36mUkiryu version 0.3.1\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "version-no-color",
+      "args": [
+        "version"
+      ],
+      "env": {
+        "NO_COLOR": "1"
+      },
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "Ukiryu version 0.3.1\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "version-use-color-false",
+      "args": [
+        "version"
+      ],
+      "env": {
+        "UKIRYU_USE_COLOR": "false"
+      },
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "Ukiryu version 0.3.1\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "version-use-color-true",
+      "args": [
+        "version"
+      ],
+      "env": {
+        "UKIRYU_USE_COLOR": "true"
+      },
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "\u001b[36mUkiryu version 0.3.1\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "system-linux-sh-bash",
+      "args": [
+        "system"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "\u001b[36mAvailable shells\u001b[0m\n\n  The following shells are installed and supported on this platform:\n\n\u001b[32m    • unix\u001b[0m\n\n\u001b[36mAdditional supported shells\u001b[0m\n\n  These shells are supported but not currently installed:\n\n\u001b[2m    • powershell - PowerShell command-line shell\u001b[0m\n\n\u001b[36mNot available on this platform\u001b[0m\n\n  These shells are not supported on this platform:\n\n\u001b[2m    • windows\u001b[0m\n\u001b[2m    • bash - GNU Bourne Again SHell\u001b[0m\n\u001b[2m    • zsh - Z shell\u001b[0m\n\u001b[2m    • fish - Friendly interactive shell\u001b[0m\n\u001b[2m    • sh - POSIX shell\u001b[0m\n\u001b[2m    • dash\u001b[0m\n\u001b[2m    • tcsh\u001b[0m\n\u001b[2m    • cmd - Windows Command Prompt\u001b[0m\n\n\u001b[2mPlatform: linux\u001b[0m\n\u001b[2mCurrent shell: bash\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "system-linux-shells-subcommand",
+      "args": [
+        "system",
+        "shells"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "\u001b[36mAvailable shells\u001b[0m\n\n  The following shells are installed and supported on this platform:\n\n\u001b[32m    • unix\u001b[0m\n\n\u001b[36mAdditional supported shells\u001b[0m\n\n  These shells are supported but not currently installed:\n\n\u001b[2m    • powershell - PowerShell command-line shell\u001b[0m\n\n\u001b[36mNot available on this platform\u001b[0m\n\n  These shells are not supported on this platform:\n\n\u001b[2m    • windows\u001b[0m\n\u001b[2m    • bash - GNU Bourne Again SHell\u001b[0m\n\u001b[2m    • zsh - Z shell\u001b[0m\n\u001b[2m    • fish - Friendly interactive shell\u001b[0m\n\u001b[2m    • sh - POSIX shell\u001b[0m\n\u001b[2m    • dash\u001b[0m\n\u001b[2m    • tcsh\u001b[0m\n\u001b[2m    • cmd - Windows Command Prompt\u001b[0m\n\n\u001b[2mPlatform: linux\u001b[0m\n\u001b[2mCurrent shell: bash\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "system-linux-pwsh",
+      "args": [
+        "system"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "bash",
+        "pwsh"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "\u001b[36mAvailable shells\u001b[0m\n\n  The following shells are installed and supported on this platform:\n\n\u001b[32m    • unix\u001b[0m\n\u001b[32m    • powershell - PowerShell command-line shell\u001b[0m\n\n\u001b[36mNot available on this platform\u001b[0m\n\n  These shells are not supported on this platform:\n\n\u001b[2m    • windows\u001b[0m\n\u001b[2m    • bash - GNU Bourne Again SHell\u001b[0m\n\u001b[2m    • zsh - Z shell\u001b[0m\n\u001b[2m    • fish - Friendly interactive shell\u001b[0m\n\u001b[2m    • sh - POSIX shell\u001b[0m\n\u001b[2m    • dash\u001b[0m\n\u001b[2m    • tcsh\u001b[0m\n\u001b[2m    • cmd - Windows Command Prompt\u001b[0m\n\n\u001b[2mPlatform: linux\u001b[0m\n\u001b[2mCurrent shell: bash\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "system-linux-no-shells",
+      "args": [
+        "system"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "\u001b[36mAvailable shells\u001b[0m\n\n  The following shells are installed and supported on this platform:\n\n\u001b[2m    No supported shells detected\u001b[0m\n\n\u001b[36mAdditional supported shells\u001b[0m\n\n  These shells are supported but not currently installed:\n\n\u001b[2m    • unix\u001b[0m\n\u001b[2m    • powershell - PowerShell command-line shell\u001b[0m\n\n\u001b[36mNot available on this platform\u001b[0m\n\n  These shells are not supported on this platform:\n\n\u001b[2m    • windows\u001b[0m\n\u001b[2m    • bash - GNU Bourne Again SHell\u001b[0m\n\u001b[2m    • zsh - Z shell\u001b[0m\n\u001b[2m    • fish - Friendly interactive shell\u001b[0m\n\u001b[2m    • sh - POSIX shell\u001b[0m\n\u001b[2m    • dash\u001b[0m\n\u001b[2m    • tcsh\u001b[0m\n\u001b[2m    • cmd - Windows Command Prompt\u001b[0m\n\n\u001b[2mPlatform: linux\u001b[0m\n\u001b[2mCurrent shell: bash\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "system-linux-zsh-only",
+      "args": [
+        "system"
+      ],
+      "env": {
+        "SHELL": "/usr/bin/zsh"
+      },
+      "bins": [
+        "zsh"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "\u001b[36mAvailable shells\u001b[0m\n\n  The following shells are installed and supported on this platform:\n\n\u001b[32m    • unix\u001b[0m\n\n\u001b[36mAdditional supported shells\u001b[0m\n\n  These shells are supported but not currently installed:\n\n\u001b[2m    • powershell - PowerShell command-line shell\u001b[0m\n\n\u001b[36mNot available on this platform\u001b[0m\n\n  These shells are not supported on this platform:\n\n\u001b[2m    • windows\u001b[0m\n\u001b[2m    • bash - GNU Bourne Again SHell\u001b[0m\n\u001b[2m    • zsh - Z shell\u001b[0m\n\u001b[2m    • fish - Friendly interactive shell\u001b[0m\n\u001b[2m    • sh - POSIX shell\u001b[0m\n\u001b[2m    • dash\u001b[0m\n\u001b[2m    • tcsh\u001b[0m\n\u001b[2m    • cmd - Windows Command Prompt\u001b[0m\n\n\u001b[2mPlatform: linux\u001b[0m\n\u001b[2mCurrent shell: zsh\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "system-linux-shell-override",
+      "args": [
+        "system"
+      ],
+      "env": {
+        "SHELL": "/bin/bash",
+        "UKIRYU_SHELL": "zsh"
+      },
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "\u001b[36mAvailable shells\u001b[0m\n\n  The following shells are installed and supported on this platform:\n\n\u001b[32m    • unix\u001b[0m\n\n\u001b[36mAdditional supported shells\u001b[0m\n\n  These shells are supported but not currently installed:\n\n\u001b[2m    • powershell - PowerShell command-line shell\u001b[0m\n\n\u001b[36mNot available on this platform\u001b[0m\n\n  These shells are not supported on this platform:\n\n\u001b[2m    • windows\u001b[0m\n\u001b[2m    • bash - GNU Bourne Again SHell\u001b[0m\n\u001b[2m    • zsh - Z shell\u001b[0m\n\u001b[2m    • fish - Friendly interactive shell\u001b[0m\n\u001b[2m    • sh - POSIX shell\u001b[0m\n\u001b[2m    • dash\u001b[0m\n\u001b[2m    • tcsh\u001b[0m\n\u001b[2m    • cmd - Windows Command Prompt\u001b[0m\n\n\u001b[2mPlatform: linux\u001b[0m\n\u001b[2mCurrent shell: zsh\u001b[0m\n\u001b[33mShell override: zsh (set via --shell, UKIRYU_SHELL, or config)\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "system-linux-no-color",
+      "args": [
+        "system"
+      ],
+      "env": {
+        "SHELL": "/bin/bash",
+        "NO_COLOR": ""
+      },
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "Available shells\n\n  The following shells are installed and supported on this platform:\n\n    • unix\n\nAdditional supported shells\n\n  These shells are supported but not currently installed:\n\n    • powershell - PowerShell command-line shell\n\nNot available on this platform\n\n  These shells are not supported on this platform:\n\n    • windows\n    • bash - GNU Bourne Again SHell\n    • zsh - Z shell\n    • fish - Friendly interactive shell\n    • sh - POSIX shell\n    • dash\n    • tcsh\n    • cmd - Windows Command Prompt\n\nPlatform: linux\nCurrent shell: bash\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "system-linux-test-shell",
+      "args": [
+        "system"
+      ],
+      "env": {
+        "SHELL": "/bin/bash",
+        "UKIRYU_TEST_SHELL": "dash"
+      },
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "\u001b[36mAvailable shells\u001b[0m\n\n  The following shells are installed and supported on this platform:\n\n\u001b[32m    • unix\u001b[0m\n\n\u001b[36mAdditional supported shells\u001b[0m\n\n  These shells are supported but not currently installed:\n\n\u001b[2m    • powershell - PowerShell command-line shell\u001b[0m\n\n\u001b[36mNot available on this platform\u001b[0m\n\n  These shells are not supported on this platform:\n\n\u001b[2m    • windows\u001b[0m\n\u001b[2m    • bash - GNU Bourne Again SHell\u001b[0m\n\u001b[2m    • zsh - Z shell\u001b[0m\n\u001b[2m    • fish - Friendly interactive shell\u001b[0m\n\u001b[2m    • sh - POSIX shell\u001b[0m\n\u001b[2m    • dash\u001b[0m\n\u001b[2m    • tcsh\u001b[0m\n\u001b[2m    • cmd - Windows Command Prompt\u001b[0m\n\n\u001b[2mPlatform: linux\u001b[0m\n\u001b[2mCurrent shell: dash\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "system-linux-register-option",
+      "args": [
+        "system",
+        "-r",
+        "/nonexistent"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "\u001b[36mAvailable shells\u001b[0m\n\n  The following shells are installed and supported on this platform:\n\n\u001b[32m    • unix\u001b[0m\n\n\u001b[36mAdditional supported shells\u001b[0m\n\n  These shells are supported but not currently installed:\n\n\u001b[2m    • powershell - PowerShell command-line shell\u001b[0m\n\n\u001b[36mNot available on this platform\u001b[0m\n\n  These shells are not supported on this platform:\n\n\u001b[2m    • windows\u001b[0m\n\u001b[2m    • bash - GNU Bourne Again SHell\u001b[0m\n\u001b[2m    • zsh - Z shell\u001b[0m\n\u001b[2m    • fish - Friendly interactive shell\u001b[0m\n\u001b[2m    • sh - POSIX shell\u001b[0m\n\u001b[2m    • dash\u001b[0m\n\u001b[2m    • tcsh\u001b[0m\n\u001b[2m    • cmd - Windows Command Prompt\u001b[0m\n\n\u001b[2mPlatform: linux\u001b[0m\n\u001b[2mCurrent shell: bash\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "system-unknown-subcommand",
+      "args": [
+        "system",
+        "bogus"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "",
+      "stderr": "Unknown subcommand: bogus. Valid subcommands: shells\n",
+      "exit": 1,
+      "home_after": {}
+    },
+    {
+      "name": "system-linux-no-shell-var",
+      "args": [
+        "system"
+      ],
+      "env": {},
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": "D2: source falls back to /etc/shells; the migrated contract raises for a missing SHELL",
+      "stdout": "\u001b[36mAvailable shells\u001b[0m\n\n  The following shells are installed and supported on this platform:\n\n\u001b[32m    • unix\u001b[0m\n\n\u001b[36mAdditional supported shells\u001b[0m\n\n  These shells are supported but not currently installed:\n\n\u001b[2m    • powershell - PowerShell command-line shell\u001b[0m\n\n\u001b[36mNot available on this platform\u001b[0m\n\n  These shells are not supported on this platform:\n\n\u001b[2m    • windows\u001b[0m\n\u001b[2m    • bash - GNU Bourne Again SHell\u001b[0m\n\u001b[2m    • zsh - Z shell\u001b[0m\n\u001b[2m    • fish - Friendly interactive shell\u001b[0m\n\u001b[2m    • sh - POSIX shell\u001b[0m\n\u001b[2m    • dash\u001b[0m\n\u001b[2m    • tcsh\u001b[0m\n\u001b[2m    • cmd - Windows Command Prompt\u001b[0m\n\n\u001b[2mPlatform: linux\u001b[0m\n\u001b[2mCurrent shell: sh\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "system-linux-unknown-shell-var",
+      "args": [
+        "system"
+      ],
+      "env": {
+        "SHELL": "/opt/bin/xonsh"
+      },
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": "D2: source guesses; the migrated contract raises for an unknown SHELL",
+      "stdout": "\u001b[36mAvailable shells\u001b[0m\n\n  The following shells are installed and supported on this platform:\n\n\u001b[32m    • unix\u001b[0m\n\n\u001b[36mAdditional supported shells\u001b[0m\n\n  These shells are supported but not currently installed:\n\n\u001b[2m    • powershell - PowerShell command-line shell\u001b[0m\n\n\u001b[36mNot available on this platform\u001b[0m\n\n  These shells are not supported on this platform:\n\n\u001b[2m    • windows\u001b[0m\n\u001b[2m    • bash - GNU Bourne Again SHell\u001b[0m\n\u001b[2m    • zsh - Z shell\u001b[0m\n\u001b[2m    • fish - Friendly interactive shell\u001b[0m\n\u001b[2m    • sh - POSIX shell\u001b[0m\n\u001b[2m    • dash\u001b[0m\n\u001b[2m    • tcsh\u001b[0m\n\u001b[2m    • cmd - Windows Command Prompt\u001b[0m\n\n\u001b[2mPlatform: linux\u001b[0m\n\u001b[2mCurrent shell: sh\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "system-macos-zsh",
+      "args": [
+        "system"
+      ],
+      "env": {
+        "SHELL": "/bin/zsh"
+      },
+      "bins": [
+        "zsh",
+        "bash",
+        "sh"
+      ],
+      "platform": "macos",
+      "home_before": {},
+      "note": null,
+      "stdout": "\u001b[36mAvailable shells\u001b[0m\n\n  The following shells are installed and supported on this platform:\n\n\u001b[32m    • unix\u001b[0m\n\n\u001b[36mAdditional supported shells\u001b[0m\n\n  These shells are supported but not currently installed:\n\n\u001b[2m    • powershell - PowerShell command-line shell\u001b[0m\n\n\u001b[36mNot available on this platform\u001b[0m\n\n  These shells are not supported on this platform:\n\n\u001b[2m    • windows\u001b[0m\n\u001b[2m    • bash - GNU Bourne Again SHell\u001b[0m\n\u001b[2m    • zsh - Z shell\u001b[0m\n\u001b[2m    • fish - Friendly interactive shell\u001b[0m\n\u001b[2m    • sh - POSIX shell\u001b[0m\n\u001b[2m    • dash\u001b[0m\n\u001b[2m    • tcsh\u001b[0m\n\u001b[2m    • cmd - Windows Command Prompt\u001b[0m\n\n\u001b[2mPlatform: macos\u001b[0m\n\u001b[2mCurrent shell: zsh\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "system-windows-powershell",
+      "args": [
+        "system"
+      ],
+      "env": {
+        "PSModulePath": "C:\\ps"
+      },
+      "bins": [],
+      "platform": "windows",
+      "home_before": {},
+      "note": null,
+      "stdout": "\u001b[36mAvailable shells\u001b[0m\n\n  The following shells are installed and supported on this platform:\n\n\u001b[32m    • windows\u001b[0m\n\u001b[32m    • powershell - PowerShell command-line shell\u001b[0m\n\n\u001b[36mAdditional supported shells\u001b[0m\n\n  These shells are supported but not currently installed:\n\n\u001b[2m    • unix\u001b[0m\n\n\u001b[36mNot available on this platform\u001b[0m\n\n  These shells are not supported on this platform:\n\n\u001b[2m    • bash - GNU Bourne Again SHell\u001b[0m\n\u001b[2m    • zsh - Z shell\u001b[0m\n\u001b[2m    • fish - Friendly interactive shell\u001b[0m\n\u001b[2m    • sh - POSIX shell\u001b[0m\n\u001b[2m    • dash\u001b[0m\n\u001b[2m    • tcsh\u001b[0m\n\u001b[2m    • cmd - Windows Command Prompt\u001b[0m\n\n\u001b[2mPlatform: windows\u001b[0m\n\u001b[2mCurrent shell: powershell\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "system-windows-msys",
+      "args": [
+        "system"
+      ],
+      "env": {
+        "MSYSTEM": "MINGW64"
+      },
+      "bins": [],
+      "platform": "windows",
+      "home_before": {},
+      "note": null,
+      "stdout": "\u001b[36mAvailable shells\u001b[0m\n\n  The following shells are installed and supported on this platform:\n\n\u001b[32m    • windows\u001b[0m\n\n\u001b[36mAdditional supported shells\u001b[0m\n\n  These shells are supported but not currently installed:\n\n\u001b[2m    • powershell - PowerShell command-line shell\u001b[0m\n\u001b[2m    • unix\u001b[0m\n\n\u001b[36mNot available on this platform\u001b[0m\n\n  These shells are not supported on this platform:\n\n\u001b[2m    • bash - GNU Bourne Again SHell\u001b[0m\n\u001b[2m    • zsh - Z shell\u001b[0m\n\u001b[2m    • fish - Friendly interactive shell\u001b[0m\n\u001b[2m    • sh - POSIX shell\u001b[0m\n\u001b[2m    • dash\u001b[0m\n\u001b[2m    • tcsh\u001b[0m\n\u001b[2m    • cmd - Windows Command Prompt\u001b[0m\n\n\u001b[2mPlatform: windows\u001b[0m\n\u001b[2mCurrent shell: bash\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "system-windows-no-shell",
+      "args": [
+        "system"
+      ],
+      "env": {},
+      "bins": [],
+      "platform": "windows",
+      "home_before": {},
+      "note": "D2: source defaults to cmd; the migrated contract raises when nothing names a shell",
+      "stdout": "\u001b[36mAvailable shells\u001b[0m\n\n  The following shells are installed and supported on this platform:\n\n\u001b[32m    • windows\u001b[0m\n\n\u001b[36mAdditional supported shells\u001b[0m\n\n  These shells are supported but not currently installed:\n\n\u001b[2m    • powershell - PowerShell command-line shell\u001b[0m\n\u001b[2m    • unix\u001b[0m\n\n\u001b[36mNot available on this platform\u001b[0m\n\n  These shells are not supported on this platform:\n\n\u001b[2m    • bash - GNU Bourne Again SHell\u001b[0m\n\u001b[2m    • zsh - Z shell\u001b[0m\n\u001b[2m    • fish - Friendly interactive shell\u001b[0m\n\u001b[2m    • sh - POSIX shell\u001b[0m\n\u001b[2m    • dash\u001b[0m\n\u001b[2m    • tcsh\u001b[0m\n\u001b[2m    • cmd - Windows Command Prompt\u001b[0m\n\n\u001b[2mPlatform: windows\u001b[0m\n\u001b[2mCurrent shell: cmd\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "config-get-format-default",
+      "args": [
+        "config",
+        "get",
+        "format"
+      ],
+      "env": {},
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "\u001b[37mformat: yaml\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "config-get-format-upper",
+      "args": [
+        "config",
+        "get",
+        "FORMAT"
+      ],
+      "env": {},
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "\u001b[37mFORMAT: yaml\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "config-get-format-env",
+      "args": [
+        "config",
+        "get",
+        "format"
+      ],
+      "env": {
+        "UKIRYU_FORMAT": "json"
+      },
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "\u001b[37mformat: json\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "config-get-timeout-env",
+      "args": [
+        "config",
+        "get",
+        "timeout"
+      ],
+      "env": {
+        "UKIRYU_TIMEOUT": "30"
+      },
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "\u001b[37mtimeout: 30\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "config-get-timeout-unset",
+      "args": [
+        "config",
+        "get",
+        "timeout"
+      ],
+      "env": {},
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "\u001b[37mtimeout: (not set)\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "config-get-debug-env",
+      "args": [
+        "config",
+        "get",
+        "debug"
+      ],
+      "env": {
+        "UKIRYU_DEBUG": "yes"
+      },
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "\u001b[37mdebug: true\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "config-get-dry-run",
+      "args": [
+        "config",
+        "get",
+        "dry_run"
+      ],
+      "env": {},
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "\u001b[37mdry_run: false\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "config-get-metrics",
+      "args": [
+        "config",
+        "get",
+        "metrics"
+      ],
+      "env": {},
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "\u001b[37mmetrics: false\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "config-get-shell-env",
+      "args": [
+        "config",
+        "get",
+        "shell"
+      ],
+      "env": {
+        "UKIRYU_SHELL": "bash"
+      },
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "\u001b[37mshell: bash\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "config-get-output-unset",
+      "args": [
+        "config",
+        "get",
+        "output"
+      ],
+      "env": {},
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "\u001b[37moutput: (not set)\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "config-get-use-color-no-color",
+      "args": [
+        "config",
+        "get",
+        "use_color"
+      ],
+      "env": {
+        "NO_COLOR": "1"
+      },
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "use_color: false\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "config-get-use-color-unset",
+      "args": [
+        "config",
+        "get",
+        "use_color"
+      ],
+      "env": {},
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "\u001b[37muse_color: (not set)\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "config-get-register-option",
+      "args": [
+        "config",
+        "get",
+        "register",
+        "-r",
+        "/some/register"
+      ],
+      "env": {},
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "\u001b[37mregister: /some/register\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "config-get-register-env",
+      "args": [
+        "config",
+        "get",
+        "register"
+      ],
+      "env": {},
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "\u001b[37mregister: {REGISTER}\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "config-get-unknown-key",
+      "args": [
+        "config",
+        "get",
+        "bogus"
+      ],
+      "env": {},
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "",
+      "stderr": "Unknown config key: bogus\nValid keys: register, timeout, debug, dry_run, metrics, shell, format, output, use_color\n",
+      "exit": 1,
+      "home_after": {}
+    },
+    {
+      "name": "config-get-missing-key",
+      "args": [
+        "config",
+        "get"
+      ],
+      "env": {},
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "",
+      "stderr": "Unknown config key: \nValid keys: register, timeout, debug, dry_run, metrics, shell, format, output, use_color\n",
+      "exit": 1,
+      "home_after": {}
+    },
+    {
+      "name": "config-get-ignores-persistent",
+      "args": [
+        "config",
+        "get",
+        "format"
+      ],
+      "env": {},
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {
+        ".ukiryu/config.yml": "---\nformat: json\n"
+      },
+      "note": null,
+      "stdout": "\u001b[37mformat: yaml\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {
+        ".ukiryu/config.yml": "---\nformat: json\n"
+      }
+    },
+    {
+      "name": "config-unknown-action",
+      "args": [
+        "config",
+        "bogus"
+      ],
+      "env": {},
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "",
+      "stderr": "Unknown action: bogus\nValid actions: list, get, set, unset\n",
+      "exit": 1,
+      "home_after": {}
+    },
+    {
+      "name": "config-set-format",
+      "args": [
+        "config",
+        "set",
+        "format",
+        "json"
+      ],
+      "env": {},
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "\u001b[32mSet format = json\u001b[0m\n\u001b[2mSaved to: {HOME}/.ukiryu/config.yml\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {
+        ".ukiryu/config.yml": "---\nformat: json\n"
+      }
+    },
+    {
+      "name": "config-set-existing",
+      "args": [
+        "config",
+        "set",
+        "timeout",
+        "10"
+      ],
+      "env": {},
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {
+        ".ukiryu/config.yml": "---\nformat: json\n"
+      },
+      "note": null,
+      "stdout": "\u001b[32mSet timeout = 10\u001b[0m\n\u001b[2mSaved to: {HOME}/.ukiryu/config.yml\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {
+        ".ukiryu/config.yml": "---\nformat: json\ntimeout: '10'\n"
+      }
+    },
+    {
+      "name": "config-set-replace",
+      "args": [
+        "config",
+        "set",
+        "format",
+        "table"
+      ],
+      "env": {},
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {
+        ".ukiryu/config.yml": "---\nformat: json\ntimeout: '10'\n"
+      },
+      "note": null,
+      "stdout": "\u001b[32mSet format = table\u001b[0m\n\u001b[2mSaved to: {HOME}/.ukiryu/config.yml\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {
+        ".ukiryu/config.yml": "---\nformat: table\ntimeout: '10'\n"
+      }
+    },
+    {
+      "name": "config-set-unknown-key",
+      "args": [
+        "config",
+        "set",
+        "Custom_Key",
+        "some",
+        "value"
+      ],
+      "env": {},
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "",
+      "stderr": "Invalid number of arguments for 'config'. Check the command syntax with: ukiryu help config\n",
+      "exit": 1,
+      "home_after": {}
+    },
+    {
+      "name": "config-set-boolean-text",
+      "args": [
+        "config",
+        "set",
+        "debug",
+        "true"
+      ],
+      "env": {},
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "\u001b[32mSet debug = true\u001b[0m\n\u001b[2mSaved to: {HOME}/.ukiryu/config.yml\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {
+        ".ukiryu/config.yml": "---\ndebug: 'true'\n"
+      }
+    },
+    {
+      "name": "config-set-missing-value",
+      "args": [
+        "config",
+        "set",
+        "format"
+      ],
+      "env": {},
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "",
+      "stderr": "Usage: ukiryu config set <key> <value>\n",
+      "exit": 1,
+      "home_after": {}
+    },
+    {
+      "name": "config-set-malformed-file",
+      "args": [
+        "config",
+        "set",
+        "format",
+        "json"
+      ],
+      "env": {},
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {
+        ".ukiryu/config.yml": "format: [unclosed\n"
+      },
+      "note": null,
+      "stdout": "\u001b[31mWarning: Failed to load config file: ({HOME}/.ukiryu/config.yml): did not find expected ',' or ']' while parsing a flow sequence at line 1 column 9\u001b[0m\n\u001b[32mSet format = json\u001b[0m\n\u001b[2mSaved to: {HOME}/.ukiryu/config.yml\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {
+        ".ukiryu/config.yml": "---\nformat: json\n"
+      }
+    },
+    {
+      "name": "config-set-no-color",
+      "args": [
+        "config",
+        "set",
+        "format",
+        "json"
+      ],
+      "env": {
+        "NO_COLOR": "1"
+      },
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "Set format = json\nSaved to: {HOME}/.ukiryu/config.yml\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {
+        ".ukiryu/config.yml": "---\nformat: json\n"
+      }
+    },
+    {
+      "name": "config-unset-present",
+      "args": [
+        "config",
+        "unset",
+        "format"
+      ],
+      "env": {},
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {
+        ".ukiryu/config.yml": "---\nformat: json\ntimeout: '10'\n"
+      },
+      "note": null,
+      "stdout": "\u001b[32mUnset format\u001b[0m\n\u001b[2mUpdated: {HOME}/.ukiryu/config.yml\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {
+        ".ukiryu/config.yml": "---\ntimeout: '10'\n"
+      }
+    },
+    {
+      "name": "config-unset-last",
+      "args": [
+        "config",
+        "unset",
+        "format"
+      ],
+      "env": {},
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {
+        ".ukiryu/config.yml": "---\nformat: json\n"
+      },
+      "note": null,
+      "stdout": "\u001b[32mUnset format\u001b[0m\n\u001b[2mUpdated: {HOME}/.ukiryu/config.yml\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {
+        ".ukiryu/config.yml": "--- {}\n"
+      }
+    },
+    {
+      "name": "config-unset-absent-key",
+      "args": [
+        "config",
+        "unset",
+        "timeout"
+      ],
+      "env": {},
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {
+        ".ukiryu/config.yml": "---\nformat: json\n"
+      },
+      "note": null,
+      "stdout": "",
+      "stderr": "Key not set in persistent config: timeout\n",
+      "exit": 1,
+      "home_after": {
+        ".ukiryu/config.yml": "---\nformat: json\n"
+      }
+    },
+    {
+      "name": "config-unset-no-file",
+      "args": [
+        "config",
+        "unset",
+        "format"
+      ],
+      "env": {},
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "",
+      "stderr": "Key not set in persistent config: format\n",
+      "exit": 1,
+      "home_after": {}
+    },
+    {
+      "name": "config-unset-missing-key",
+      "args": [
+        "config",
+        "unset"
+      ],
+      "env": {},
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "",
+      "stderr": "Usage: ukiryu config unset <key>\n",
+      "exit": 1,
+      "home_after": {}
+    },
+    {
+      "name": "config-get-invalid-timeout-env",
+      "args": [
+        "config",
+        "get",
+        "timeout"
+      ],
+      "env": {
+        "UKIRYU_TIMEOUT": "abc"
+      },
+      "bins": [
+        "sh",
+        "bash"
+      ],
+      "platform": "linux",
+      "home_before": {},
+      "note": null,
+      "stdout": "",
+      "stderr": "[ArgumentError] Invalid integer value: abc\n",
+      "exit": 1,
+      "home_after": {}
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{"last":false,"loaded":"1","numeric_position":1,"position":"1"}
+{"last":false,"loaded":"2","numeric_position":2,"position":"2"}
+{"last":false,"loaded":"3","numeric_position":3,"position":"3"}
+{"last":false,"loaded":"first","numeric_position":1,"position":"first"}
+{"last":true,"loaded":"last","numeric_position":999,"position":"last"}
+{"last":false,"loaded":"abc","numeric_position":99,"position":"abc"}
+{"last":false,"loaded":"","numeric_position":99,"position":""}
+{"last":false,"loaded":null,"numeric_position":99,"position":null}
+{"last":false,"loaded":"007","numeric_position":7,"position":"007"}
+{"last":false,"loaded":" 5","numeric_position":99,"position":" 5"}
+{"last":false,"loaded":"5 ","numeric_position":99,"position":"5 "}
+{"last":false,"loaded":"1\n2","numeric_position":1,"position":"1\n2"}
+{"last":false,"loaded":"abc\n3","numeric_position":0,"position":"abc\n3"}
+{"last":false,"loaded":"3\n","numeric_position":3,"position":"3\n"}
+{"last":false,"loaded":"-1","numeric_position":99,"position":"-1"}
+{"last":false,"loaded":"+3","numeric_position":99,"position":"+3"}
+{"last":false,"loaded":"1_000","numeric_position":99,"position":"1_000"}
+{"last":false,"loaded":"10","numeric_position":10,"position":"10"}
+{"last":false,"loaded":"99","numeric_position":99,"position":"99"}
+{"last":false,"loaded":"999","numeric_position":999,"position":"999"}
+{"last":false,"loaded":"0","numeric_position":0,"position":"0"}
+{"last":false,"loaded":"4611686018427387903","numeric_position":4611686018427387903,"position":"4611686018427387903"}
+{"last":false,"loaded":"4611686018427387904","numeric_position":4611686018427387904,"position":"4611686018427387904"}
+{"last":false,"loaded":"99999999999999999999999","numeric_position":99999999999999999999999,"position":"99999999999999999999999"}
+{"last":false,"loaded":"٣","numeric_position":99,"position":"٣"}
+{"last":false,"loaded":"FIRST","numeric_position":99,"position":"FIRST"}
+{"last":false,"loaded":"Last","numeric_position":99,"position":"Last"}
+{"last":false,"loaded":"1.5","numeric_position":99,"position":"1.5"}
+{"last":false,"loaded":"0x10","numeric_position":99,"position":"0x10"}

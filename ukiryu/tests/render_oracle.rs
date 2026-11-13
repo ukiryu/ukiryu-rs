@@ -11,12 +11,10 @@
 //! The responses are the oracle's own `to_yaml` documents read back through
 //! Yeptris, so every format renders the same data the Ruby formatter saw.
 //! JSON, table, raw and dry-run output are compared byte for byte. YAML is
-//! emitted by Yeptris with the pinned settings, not by Psych: the scalar
-//! styles differ (Yeptris writes plain or double-quoted scalars under
-//! YAML 1.2 resolution, never folds; Psych quotes by YAML 1.1 rules, uses
-//! literal blocks and folds at 80 columns), so the YAML document is
-//! compared as data, and the colouring/`say` layer around it is compared
-//! byte for byte by feeding it the oracle's own YAML text.
+//! emitted by Yeptris with the pinned ukiryu#27 settings and its bytes are
+//! pinned separately (`render_yeptris.rs`); these Psych observations stay
+//! frozen, the YAML document is compared with them as data, and the
+//! colouring/`say` layer is compared byte for byte over Psych's own text.
 use serde::{Serialize, Serializer};
 use serde_json::Value as Json;
 use std::collections::HashMap;
@@ -24,7 +22,8 @@ use std::path::PathBuf;
 use ukiryu::render::{
     emit_output, format_yaml_text, output_response, render_dry_run, to_json_pretty, to_yaml,
     yaml_emit_options, DryRunStyle, InspectValue, OutputFormat, OutputWrite, PaintSupport,
-    RenderSettings, Renderable, RequestSummary, ResponseView, SuccessView, OUTPUT_FORMATS,
+    RenderErrorKind, RenderSettings, Renderable, RequestSummary, ResponseView, SuccessView,
+    OUTPUT_FORMATS,
 };
 use yeptris::{LineWidth, Value};
 
@@ -234,26 +233,74 @@ fn yaml_never_folds_long_scalars() {
     assert!(line.contains("word1 ") && line.contains("word30"), "{line}");
 }
 
+/// Numeric-equality policy (ukiryu-rs#23 render contract): the json gem's
+/// fpconv uses Grisu2, which returns a non-shortest digit string for a few
+/// doubles; the port writes the shortest round-trip digits. Such a row
+/// passes only when both texts parse to the identical `f64` bits. The
+/// expected bytes stay the captured ones; this list names every gated
+/// value by its bits.
+const GRISU_DIGIT_POLICY: &[&str] = &["4450bb084255acee"];
+
 #[test]
 fn json_floats_match_the_json_gem_layout() {
     let g = golden();
-    let mut gaps = Vec::new();
+    let mut gated = Vec::new();
     for row in g["json_floats"].as_array().unwrap() {
-        let bits = u64::from_str_radix(s(&row["bits"]), 16).unwrap();
-        let x = f64::from_bits(bits);
+        let hex = s(&row["bits"]);
+        let x = f64::from_bits(u64::from_str_radix(hex, 16).unwrap());
         let got = to_json_pretty(&[x]).unwrap();
-        if got != s(&row["json"]) {
-            gaps.push((got, s(&row["json"]).to_owned()));
+        let want = s(&row["json"]);
+        if got == want {
+            continue;
         }
+        let num = |t: &str| -> f64 { t.trim_matches(|c| "[]\n ".contains(c)).parse().unwrap() };
+        assert!(
+            GRISU_DIGIT_POLICY.contains(&hex),
+            "{hex}: {got:?} vs captured {want:?}"
+        );
+        assert_eq!(num(&got).to_bits(), x.to_bits(), "{hex}: port digits");
+        assert_eq!(num(want).to_bits(), x.to_bits(), "{hex}: json gem digits");
+        gated.push(hex);
     }
-    // fpconv's Grisu2 digits are not the shortest for this value.
-    assert_eq!(
-        gaps,
-        vec![(
-            "[\n  1.2345e+21\n]".to_owned(),
-            "[\n  1.2344999999999999e+21\n]".to_owned()
-        )]
-    );
+    assert_eq!(gated, GRISU_DIGIT_POLICY);
+}
+
+/// NaN and infinities raise `JSON::GeneratorError` in the json gem, both
+/// for a bare array and through `SuccessResponse#to_json(pretty: true)`.
+#[test]
+fn json_non_finite_floats_raise_like_the_json_gem() {
+    let data: Json =
+        serde_json::from_str(include_str!("render_oracle/json_nonfinite.json")).unwrap();
+    let cases = data["cases"].as_object().unwrap();
+    assert_eq!(cases.len(), 3);
+    for (word, case) in cases {
+        let x = match word.as_str() {
+            "NaN" => f64::NAN,
+            "Infinity" => f64::INFINITY,
+            "-Infinity" => f64::NEG_INFINITY,
+            other => panic!("{other}"),
+        };
+        for call in ["pretty_generate", "response_to_json"] {
+            assert_eq!(s(&case[call]["class"]), "JSON::GeneratorError");
+        }
+        let want = s(&case["response_to_json"]["message"]);
+        let err = to_json_pretty(&[x]).unwrap_err();
+        assert_eq!(err.kind(), RenderErrorKind::Generator);
+        assert_eq!(err.message(), s(&case["pretty_generate"]["message"]));
+        // Inside a response document, as the formatter hits it.
+        let doc: Value = yeptris::from_str(&format!(
+            "status: success\nmetadata:\n  duration_seconds: {}\n",
+            match word.as_str() {
+                "NaN" => ".nan",
+                "Infinity" => ".inf",
+                _ => "-.inf",
+            }
+        ))
+        .unwrap();
+        let err = to_json_pretty(&doc).unwrap_err();
+        assert_eq!(err.kind(), RenderErrorKind::Generator);
+        assert_eq!(err.message(), want);
+    }
 }
 
 #[test]

@@ -1,20 +1,32 @@
 //! Ukiryu's shared core. Runtime adapters call this crate rather than
 //! reimplementing configuration or maintaining another YAML stack.
+pub mod cache;
 pub mod command_builder;
 pub mod config;
 pub mod definition;
+pub mod environment;
+pub mod errors;
 pub mod executable;
+pub mod execution;
+pub mod execution_context;
+pub mod executor;
 pub mod extractors;
+pub mod model_loading;
+pub mod models;
 pub mod options;
 pub mod register;
 pub mod render;
 pub mod routing;
+pub mod runtime;
 pub mod schema;
 pub mod shell;
 pub mod types;
 pub mod version_detection;
 pub mod version_ranges;
 pub mod wire;
+
+#[cfg(feature = "wasm")]
+pub mod wasm;
 pub use yeptris::{from_slice as from_yaml_slice, from_str as from_yaml, DeserError as YamlError};
 
 #[cfg(feature = "c")]

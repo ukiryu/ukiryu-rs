@@ -62,7 +62,7 @@ Adopted from the parsanol corpus:
 
 | Kind | Ops | What is pinned |
 |---|---|---|
-| `escape` | `shell.escape`, `shell.quote`, `shell.join`, `shell.env_var`, `shell.format_path` | Per-shell output for bash, zsh, fish, sh, dash, tcsh, powershell and cmd over a fixed string matrix. Exact bytes. |
+| `escape` | `shell.escape`, `shell.quote`, `shell.needs_quoting`, `shell.join`, `shell.env_var`, `shell.format_path` | Per-shell output for bash, zsh, fish, sh, dash, tcsh, powershell and cmd over a fixed string matrix plus the extra inputs below. Exact bytes; `shell.needs_quoting` is a boolean. |
 | `validate` | `type.validate` | Accept (converted value) or reject (error) for each parameter type and constraint. |
 | `build` | `build.args` | The argv a register profile builds for a command and parameter set. Every command of every version file in the register; parameters are derived from the command's own argument, option and flag definitions. |
 | `resolve` | `resolve.extract_version`, `resolve.version_spec`, `resolve.range`, `resolve.shell_detect` | Version text extraction from detection patterns, register version routing, Versionian range matching (semantic and calver boundaries), and shell detection from the environment. |
@@ -70,6 +70,24 @@ Adopted from the parsanol corpus:
 | `schema` | `schema.validate_profile`, `schema.definition_validate` | Accept/reject and the error list for fixtures against the fixture schema and against the matching bundled schema, plus missing-schema behaviour. |
 | `yaml` | `yaml.load`, `yaml.model_load`, `yaml.lutaml_roundtrip` | The parsed structure (or parse error) of all 81 YAML files tracked at the pinned commit (65 spec fixtures, 4 bundled schemas, 12 workflow/docs/RuboCop files), the loaded state of the register models, and the emitted YAML of a Lutaml model round trip. |
 | `cli-output` | `cli.run` | stdout, stderr and exit status of the Ruby CLI for a set of verbs. |
+
+`shell.needs_quoting` takes `{shell, string}` and pins the shell class's
+`needs_quoting?` result (`true` or `false`). It decides whether `join`
+quotes an argument, so it is a separate contract from `quote`.
+
+Escape rows with a labelled ID (`escape.bash.quote.space`) come from the
+labelled matrix in `capture.rb`. Rows whose label starts with `x-` or `xh-`
+come from `oracle-ruby/lib/shell_extras.rb`: the fixed input lists of the
+per-shell captures made for the Rust formatters (whitespace and control
+characters, every ASCII byte alone and between letters, non-ASCII text,
+PowerShell's leading `-` and `$`, cmd's `%` and `^`, tcsh's `!`), merged and
+de-duplicated. They run through `escape`, `quote` and `needs_quoting`, and
+their joins and environment names through `join` and `env_var`, for all
+eight shells. An `x-` label keeps ASCII letters and digits and writes every
+other character as `_<hex codepoint>_` (`100%` is `x-100_25_`); `x-empty` is
+the empty string. Inputs whose label would exceed 48 characters, and every
+extra join, use `xh-` and the first 16 hex digits of the SHA-256 of the
+input's JSON. Random (fuzz) inputs from those captures are not included.
 
 The Ruby builder oracle uses a Tool subclass with a declared absent
 executable. It runs the original constructor/profile selection and
@@ -239,3 +257,8 @@ acceptance criteria:
   macOS or Windows.
 - The executor (`env`, timeouts, stdin) is runtime-local and has no
   result-shape rows yet.
+- The schema-validation captures made for the Rust schema port (376 cases)
+  are not rows here yet. They need inputs the schema ops do not take today:
+  `strict`, a `UKIRYU_SCHEMA_PATH` value per row, and the
+  `DefinitionValidator` schema stage on its own; and their synthetic schema
+  files would have to become corpus inputs.

@@ -63,6 +63,33 @@ jobs:
           python scripts/check-c-api.py
           cargo run --locked -p ukiryu-cli -- --version
 
+      - name: Build release native runtime candidate
+        shell: bash
+        run: |
+          cargo build --release --locked -p ukiryu-ffi
+          python scripts/native-artifacts.py stage native-artifact
+          python scripts/native-artifacts.py verify native-artifact
+          python -c "import json,subprocess,sys; from pathlib import Path; p=Path('native-artifact'); m=json.loads((p/'BUILT_FROM').read_text()); subprocess.run([sys.executable, 'scripts/check-c-api.py', '--library', str(p/m['library'])], check=True)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ukiryu-native-${{ matrix.os }}-rust-${{ matrix.rust }}
+          path: native-artifact
+          include-hidden-files: true
+          if-no-files-found: error
+
+  native-artifacts:
+    name: Verify downloaded native runtimes
+    needs: core
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: ukiryu-native-*
+          path: downloaded-native
+      - run: python3 scripts/native-artifacts.py verify downloaded-native --expected-count 4
+
   reference:
     name: Regenerate pinned Ruby configuration reference
     runs-on: ubuntu-24.04
