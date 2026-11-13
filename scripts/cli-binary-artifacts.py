@@ -13,6 +13,7 @@ import subprocess
 import tarfile
 import tempfile
 import zipfile
+import artifact_licenses
 
 
 TARGETS = {
@@ -80,6 +81,7 @@ def stage(directory, target):
         shutil.copy2(binary, payload / name)
         for filename in ('LICENSE', 'README.md'):
             shutil.copy2(filename, payload / filename)
+        artifact_licenses.stage(payload)
         dependencies = []
         for package in metadata['packages']:
             if not package['source']:
@@ -172,11 +174,13 @@ def verify_payload(root, members, expected_commit):
     require(root == f'ukiryu-{marker["crate_version"]}-{target}', 'archive name/target mismatch')
     require(marker['binary'] == ('ukiryu.exe' if target.endswith('msvc') else 'ukiryu'), 'wrong binary name')
     required = {marker['binary'], 'LICENSE', 'README.md', 'licenses/yeptris-engine-LICENSE.md'}
+    required |= artifact_licenses.REQUIRED
     require(required <= marker['files'].keys(), 'missing required file')
     require(set(members) == set(marker['files']) | {'BUILT_FROM'}, 'archive file set differs')
     for name, expected in marker['files'].items():
         require(digest(members[name]) == expected, f'file digest differs: {name}')
     binary_target(members[marker['binary']], target)
+    artifact_licenses.verify_contents(members)
     return marker
 
 
@@ -190,8 +194,14 @@ def negative_controls(root, members, commit):
     altered = dict(marker)
     altered['target'] = next(t for t in TARGETS if TARGETS[t] != TARGETS[marker['target']])
     relabeled['BUILT_FROM'] = json.dumps(altered).encode()
+    rewritten = dict(members)
+    notice = 'licenses/onigmo/NOTICE'
+    rewritten[notice] += b'corruption'
+    altered = {**marker, 'files': dict(marker['files'])}
+    altered['files'][notice] = digest(rewritten[notice])
+    rewritten['BUILT_FROM'] = json.dumps(altered).encode()
     for label, candidate in [('damaged binary', damaged), ('missing license', missing),
-                             ('relabeled target', relabeled)]:
+                             ('relabeled target', relabeled), ('rewritten license manifest', rewritten)]:
         try:
             verify_payload(root, candidate, commit)
         except (ValueError, KeyError):
