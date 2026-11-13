@@ -13,6 +13,12 @@ use std::fmt;
 
 pub use crate::types::Value;
 
+/// Former name of the models' value type, now the unified
+/// [`crate::types::Value`]. Kept so consumers written against
+/// `models::value::RubyValue` keep compiling; its variants are those of
+/// `Value` (`Integer`, `String`, `Symbol`, ...).
+pub type RubyValue = Value;
+
 impl Value {
     /// `#to_sym` (String/Symbol only; anything else raises NoMethodError).
     pub fn to_sym(&self) -> Result<String, ModelError> {
