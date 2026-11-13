@@ -142,7 +142,7 @@ fn captured_cases_cover_week_unicode_and_zone_keys() {
         }
     }
     let want: BTreeMap<&str, i32> = [
-        ("non_ascii", 22),
+        ("non_ascii", 23),
         ("wday", 17),
         ("cwyear", 18),
         ("cweek", 24),
