@@ -1,0 +1,81 @@
+name: Core Ruby binding
+
+# The core's Ruby binding (ukiryu/src/ffi/ruby.rs, `ruby` feature) loaded into
+# real Rubies through the development extension in tests/ruby-ext. Ruby 3.2
+# and 4.0.1 are development test targets only; they are not a support floor
+# for any shipped gem.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: core-ruby-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  binding:
+    name: Core Ruby binding (Ruby ${{ matrix.ruby }}, Rust ${{ matrix.rust }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - ruby: '4.0.1'
+            rust: 1.95.0
+          - ruby: '3.2'
+            rust: 1.95.0
+          - ruby: '4.0.1'
+            rust: 1.86.0
+    env:
+      FIXTURE_TARGET: ${{ github.workspace }}/../target-ruby-fixture
+      CORE_TARGET: ${{ github.workspace }}/../target-core-c
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ matrix.rust }}
+          components: rustfmt, clippy
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+      - name: Format and lint the binding
+        run: |
+          cargo fmt --all -- --check
+          cargo fmt --manifest-path tests/ruby-ext/Cargo.toml -- --check
+          cargo clippy -p ukiryu --locked --features ruby -- -D warnings
+          cargo clippy --locked --manifest-path tests/ruby-ext/Cargo.toml -- -D warnings
+      - name: Build the development extension and the C library
+        run: |
+          cargo build --locked --manifest-path tests/ruby-ext/Cargo.toml --target-dir "$FIXTURE_TARGET"
+          cargo build --locked -p ukiryu --features c --target-dir "$CORE_TARGET"
+          mkdir -p "$RUNNER_TEMP/ext"
+          cp "$FIXTURE_TARGET/debug/libukiryu_core_ruby_fixture.so" "$RUNNER_TEMP/ext/ukiryu_core_ruby_fixture.so"
+      - name: Run the binding against captured Ruby source behaviour
+        run: |
+          UKIRYU_RUBY_EXT="$RUNNER_TEMP/ext/ukiryu_core_ruby_fixture.so" \
+          UKIRYU_C_LIB="$CORE_TARGET/debug/libukiryu.so" \
+          ruby tests/ruby-spec/native_test.rb
+
+  reference:
+    name: Regenerate pinned Ruby binding reference
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: ukiryu/ukiryu
+          ref: ab6df353c6dc2d7faf7817a86aafcafa82579896
+          path: ruby-reference
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '4.0.1'
+      - name: Prove reference regeneration
+        run: |
+          ruby tests/ruby-spec/capture_reference.rb ruby-reference ukiryu/tests/models_data/register_tags.json > native-reference.json
+          diff -u tests/ruby-spec/native-reference.json native-reference.json
