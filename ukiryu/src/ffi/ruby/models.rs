@@ -105,6 +105,17 @@ const MODELS_PREFIX: &str = "Ukiryu::Native::Models::";
 #[magnus::wrap(class = "Ukiryu::Native::Model", free_immediately, size)]
 struct NativeModel(AnyModel);
 
+// SAFETY: magnus requires `Send` for wrapped data. `PlatformProfile` (and the
+// models containing it) caches its routing tree in `Rc<RefCell<_>>`
+// (`models::routing::Routing`), so the derived bound fails. The Rc graph is
+// owned by this one object: no method hands a clone of the model, or of any
+// Rc inside it, to another Ruby object or to Rust state. A T_DATA object
+// without an allocator or shareable flag cannot be copied, moved or shared
+// to another Ractor, and Ruby threads of one Ractor run only while holding
+// its lock, so the reference counts are never touched concurrently; the GC
+// frees the object while holding that lock too.
+unsafe impl Send for NativeModel {}
+
 pub(super) fn define(ruby: &Ruby, native: RModule) -> Result<(), Error> {
     let base = native.define_class("Model", ruby.class_object())?;
     base.undef_default_alloc_func();
