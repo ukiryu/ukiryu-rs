@@ -1,17 +1,21 @@
-//! Port of the parts of Ruby's `date` extension (gem 3.6.0, `date_parse.c`
-//! and `date_core.c`) that `Ukiryu::ManPageParser` reaches: `Date._parse`
-//! in its default (non-`TIGHT_PARSER`) build, `Date.parse` (fragment
-//! completion and validation with the default `Date::ITALY` start),
-//! `Date.new(y, m, d)` and `Date#strftime('%Y-%m-%d')`.
+//! Port of the parts of Ruby's `date` extension (gem 3.5.1, the default gem
+//! of Ruby 4.0.1, `date_core.c`) that `Ukiryu::ManPageParser` reaches on top
+//! of `Date._parse`: `Date.parse` (the 128-byte limit, fragment completion and
+//! validation with the default `Date::ITALY` start), `Date.new(y, m, d)` and
+//! `Date#strftime('%Y-%m-%d')`.
+//!
+//! `Date._parse` itself is the shared port in [`crate::types::date_parse`]
+//! (also used by `Time.parse`); this module only maps its complete fragment
+//! set, commercial-week keys included, into [`Fragments`].
 //!
 //! The `offset` fragment (`date_zone_to_diff`) is not computed: `Date`
 //! results never read it. The `wnum0`/`wnum1`/`jd`/`seconds` completion
 //! branches are not ported because `Date._parse` never produces those keys.
 
-use super::onig::{Match, Regex};
+use crate::types::date_parse::{self as shared, Parsed};
+use crate::types::error::ErrorClass;
 use num_bigint::BigInt;
 use std::fmt;
-use std::sync::OnceLock;
 
 /// The calendar day `Date.today` returned for the parse. `Date.parse` uses
 /// it to fill fragments the text does not give (for example the year of
@@ -43,8 +47,6 @@ pub struct Fragments {
     pub sec_fraction: Option<(BigInt, BigInt)>,
     pub zone: Option<String>,
     jd: Option<BigInt>,
-    bc: bool,
-    comp: Option<bool>,
 }
 
 /// A failure raised by the ported Ruby code, with its Ruby class.
@@ -56,19 +58,24 @@ pub enum DateFailure {
     Invalid,
     /// `RangeError` from `NUM2INT`.
     Range(String),
+    /// The shared Onigmo path could not run a pattern. Never a Ruby class:
+    /// it is not rescued as `ArgumentError` and means "not decided".
+    Unsupported(String),
 }
 
 impl DateFailure {
     /// Whether Ruby's `rescue ArgumentError, Date::Error` catches it.
     pub fn is_argument_error(&self) -> bool {
-        !matches!(self, DateFailure::Range(_))
+        matches!(self, DateFailure::Argument(_) | DateFailure::Invalid)
     }
 }
 
 impl fmt::Display for DateFailure {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            DateFailure::Argument(m) | DateFailure::Range(m) => f.write_str(m),
+            DateFailure::Argument(m) | DateFailure::Range(m) | DateFailure::Unsupported(m) => {
+                f.write_str(m)
+            }
             DateFailure::Invalid => f.write_str("invalid date"),
         }
     }
@@ -99,159 +106,67 @@ impl CivilDate {
 // Date._parse
 // ---------------------------------------------------------------------------
 
-const MONTHS: &str = "jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec";
-
-struct Patterns {
-    day: Regex,
-    time: Regex,
-    time_inner: Regex,
-    eu: Regex,
-    us: Regex,
-    iso: Regex,
-    iso21: Regex,
-    iso22: Regex,
-    iso23: Regex,
-    iso24: Regex,
-    iso25_0: Regex,
-    iso25: Regex,
-    iso26_0: Regex,
-    iso26: Regex,
-    jis: Regex,
-    vms11: Regex,
-    vms12: Regex,
-    sla: Regex,
-    dot: Regex,
-    year: Regex,
-    mon: Regex,
-    mday: Regex,
-    ddd: Regex,
-    bc: Regex,
-    frag: Regex,
-}
-
-fn patterns() -> &'static Patterns {
-    static P: OnceLock<Patterns> = OnceLock::new();
-    P.get_or_init(|| {
-        let era = r"(c(?:e|\.e\.)|b(?:ce|\.c\.e\.)|a(?:d|\.d\.)|b(?:c|\.c\.))";
-        Patterns {
-            day: Regex::new(r"\b(sun|mon|tue|wed|thu|fri|sat)[^-/\d\s]*", true),
-            time: Regex::new(
-                concat!(
-                    r"((?<!\d)\d+\s*(?:(?::\s*\d+(?:\s*:\s*\d+(?:[,.]\d*)?)?",
-                    r"|h(?:\s*\d+m?(?:\s*\d+s?)?)?)(?:\s*[ap](?:m\b|\.m\.))?",
-                    r"|[ap](?:m\b|\.m\.)))",
-                    r"(?:\s*((?:gmt|utc?)?[-+]\d+(?:[,.:]\d+(?::\d+)?)?",
-                    r"|(?-i:[[:alpha:].\s]+)(?:standard|daylight)\stime\b",
-                    r"|(?-i:[[:alpha:]]+)(?:\sdst)?\b))?"
-                ),
-                true,
-            ),
-            time_inner: Regex::new(
-                r"\A(\d+)h?(?:\s*:?\s*(\d+)m?(?:\s*:?\s*(\d+)(?:[,.](\d+))?s?)?)?(?:\s*([ap])(?:m\b|\.m\.))?",
-                true,
-            ),
-            eu: Regex::new(
-                &format!(
-                    r"('?(?<!\d)\d+)[^-\d\s]*\s*({MONTHS})[^-\d\s']*(?:\s*(?:\b{era}(?!(?<!\.)[a-z]))?\s*('?-?\d+(?:(?:st|nd|rd|th)\b)?))?"
-                ),
-                true,
-            ),
-            us: Regex::new(
-                &format!(
-                    r"\b({MONTHS})[^-\d\s']*\s*('?\d+)[^-\d\s']*(?:\s*+,?\s*+{era}?\s*('?-?\d+))?"
-                ),
-                true,
-            ),
-            iso: Regex::new(r"('?[-+]?(?<!\d)\d+)-(\d+)-('?-?\d+)", false),
-            iso21: Regex::new(r"\b(\d{2}|\d{4})?-?w(\d{2})(?:-?(\d))?\b", true),
-            iso22: Regex::new(r"-w-(\d)\b", true),
-            iso23: Regex::new(r"--(\d{2})?-(\d{2})\b", false),
-            iso24: Regex::new(r"--(\d{2})(\d{2})?\b", false),
-            iso25_0: Regex::new(r"[,.](\d{2}|\d{4})-\d{3}\b", false),
-            iso25: Regex::new(r"\b(\d{2}|\d{4})-(\d{3})\b", false),
-            iso26_0: Regex::new(r"\d-\d{3}\b", false),
-            iso26: Regex::new(r"\b-(\d{3})\b", false),
-            jis: Regex::new(r"\b([mtshr])(\d+)\.(\d+)\.(\d+)", true),
-            vms11: Regex::new(
-                &format!(r"('?-?(?<!\d)\d+)-({MONTHS})[^-/.]*-('?-?\d+)"),
-                true,
-            ),
-            vms12: Regex::new(
-                &format!(r"\b({MONTHS})[^-/.]*-('?-?\d+)(?:-('?-?\d+))?"),
-                true,
-            ),
-            sla: Regex::new(r"('?-?(?<!\d)\d+)/\s*('?\d+)(?:\D\s*('?-?\d+))?", true),
-            dot: Regex::new(r"('?-?(?<!\d)\d+)\.\s*('?\d+)\.\s*('?-?\d+)", true),
-            year: Regex::new(r"'(\d+)\b", false),
-            mon: Regex::new(&format!(r"\b({MONTHS})\S*"), true),
-            mday: Regex::new(r"((?<!\d)\d+)(st|nd|rd|th)\b", true),
-            ddd: Regex::new(
-                r"([-+]?)((?<!\d)\d{2,14})(?:\s*t?\s*(\d{2,6})?(?:[,.](\d*))?)?(?:\s*(z\b|[-+]\d{1,4}\b|\[[-+]?\d[^\]]*\]))?",
-                true,
-            ),
-            bc: Regex::new(r"\b(bc\b|bce\b|b\.c\.|b\.c\.e\.)", true),
-            frag: Regex::new(r"\A\s*(\d{1,2})\s*\z", true),
+impl From<Parsed> for Fragments {
+    fn from(p: Parsed) -> Self {
+        Fragments {
+            year: p.year,
+            mon: p.mon,
+            mday: p.mday,
+            yday: p.yday,
+            wday: p.wday,
+            cwyear: p.cwyear,
+            cweek: p.cweek,
+            cwday: p.cwday,
+            hour: p.hour,
+            min: p.min,
+            sec: p.sec,
+            sec_fraction: p.sec_fraction.map(|f| rational(f.numerator, f.digits)),
+            zone: p.zone,
+            jd: None,
         }
-    })
-}
-
-struct Subject {
-    chars: Vec<char>,
-}
-
-impl Subject {
-    /// `subx`: replace the first match with one space, then run the callback.
-    fn subx(&mut self, re: &Regex) -> Option<(Match, Vec<char>)> {
-        let found = re.find(&self.chars)?;
-        let original = self.chars.clone();
-        let (b, e) = found.range(0).expect("group 0");
-        self.chars.splice(b..e, [' ']);
-        Some((found, original))
-    }
-
-    fn class(&self) -> u8 {
-        let mut flags = 0;
-        for c in &self.chars {
-            // `check_class` inspects bytes with C-locale `isalpha`/`isdigit`.
-            if c.is_ascii_alphabetic() {
-                flags |= ALPHA;
-            }
-            if c.is_ascii_digit() {
-                flags |= DIGIT;
-            }
-            match c {
-                '-' => flags |= DASH,
-                '.' => flags |= DOT,
-                '/' => flags |= SLASH,
-                _ => {}
-            }
-        }
-        flags
-    }
-
-    fn has(&self, want: u8) -> bool {
-        self.class() & want == want
     }
 }
 
-const ALPHA: u8 = 1;
-const DIGIT: u8 = 2;
-const DASH: u8 = 4;
-const DOT: u8 = 8;
-const SLASH: u8 = 16;
-
-fn num(s: &str) -> BigInt {
-    // `rb_str_to_inum(s, 10, 0)` on the digit-only (optionally signed)
-    // captures these callers pass. An empty string is 0.
-    let t = s.strip_prefix('+').unwrap_or(s);
-    if t.is_empty() || t == "-" {
-        return BigInt::from(0);
+/// `Rational(numerator, 10**digits)`, reduced.
+fn rational(mut n: BigInt, digits: usize) -> (BigInt, BigInt) {
+    let mut d = BigInt::from(10).pow(u32::try_from(digits).expect("at most 128 digits"));
+    let g = gcd(n.clone(), d.clone());
+    if g != BigInt::from(0) {
+        n /= &g;
+        d /= &g;
     }
-    t.parse::<BigInt>().unwrap_or_default()
+    (n, d)
 }
 
-fn group(m: &Match, chars: &[char], i: usize) -> Option<String> {
-    m.text(chars, i)
+fn gcd(mut a: BigInt, mut b: BigInt) -> BigInt {
+    let zero = BigInt::from(0);
+    while b != zero {
+        let r = &a % &b;
+        a = b;
+        b = r;
+    }
+    a
+}
+
+/// `Date._parse(str)` with `comp = true`, without the `offset` key: the
+/// 128-byte limit, then the shared [`crate::types::date_parse::parse`].
+pub fn date_parse_fragments(input: &str) -> Result<Fragments, DateFailure> {
+    check_limit(input)?;
+    match shared::parse(input) {
+        Ok(parsed) => Ok(parsed.into()),
+        Err(e) if e.class == ErrorClass::Range => Err(DateFailure::Range(e.message)),
+        Err(e) => Err(DateFailure::Unsupported(e.message)),
+    }
+}
+
+fn check_limit(input: &str) -> Result<(), DateFailure> {
+    let len = input.len();
+    if len > 128 {
+        return Err(DateFailure::Argument(format!(
+            "string length ({len}) exceeds the limit 128"
+        )));
+    }
+    Ok(())
 }
 
 fn num2int(v: &BigInt) -> Result<i32, DateFailure> {
@@ -274,641 +189,6 @@ fn num2int(v: &BigInt) -> Result<i32, DateFailure> {
     Err(DateFailure::Range(format!(
         "integer {v} too {dir} to convert to 'int'"
     )))
-}
-
-fn mon_num(s: &str) -> BigInt {
-    let b = s.as_bytes();
-    let idx = MONTHS
-        .split('|')
-        .position(|m| b.len() >= 3 && b[..3].eq_ignore_ascii_case(m.as_bytes()))
-        .unwrap_or(12);
-    BigInt::from(idx + 1)
-}
-
-fn day_num(s: &str) -> BigInt {
-    let b = s.as_bytes();
-    let idx = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"]
-        .iter()
-        .position(|d| b.len() >= 3 && b[..3].eq_ignore_ascii_case(d.as_bytes()))
-        .unwrap_or(7);
-    BigInt::from(idx)
-}
-
-/// `s3e`: assign year/month/day from loosely ordered strings.
-fn s3e(h: &mut Fragments, y: Option<String>, m: Option<String>, d: Option<String>, bc: bool) {
-    let mut y = y.map(String::into_bytes);
-    let mut m = m.map(String::into_bytes);
-    let mut d = d.map(String::into_bytes);
-    let mut comp: Option<bool> = None;
-    let issign = |c: u8| c == b'-' || c == b'+';
-
-    if y.is_some() && m.is_some() && d.is_none() {
-        let (oy, om, od) = (y.take(), m.take(), d.take());
-        y = od;
-        m = oy;
-        d = om;
-    }
-
-    if y.is_none() {
-        if d.as_ref().is_some_and(|d| d.len() > 2) {
-            y = d.take();
-        }
-        if d.as_ref().is_some_and(|d| d.first() == Some(&b'\'')) {
-            y = d.take();
-        }
-    }
-
-    if let Some(ys) = y.clone() {
-        let mut s = 0;
-        while s < ys.len() && !issign(ys[s]) && !ys[s].is_ascii_digit() {
-            s += 1;
-        }
-        if s < ys.len() {
-            let bp = s;
-            if issign(ys[s]) {
-                s += 1;
-            }
-            let mut ep = s;
-            while ep < ys.len() && ys[ep].is_ascii_digit() {
-                ep += 1;
-            }
-            if ep < ys.len() {
-                let old_d = d.take();
-                d = Some(ys[bp..ep].to_vec());
-                y = old_d;
-            }
-        }
-    }
-
-    if let Some(ms) = m.as_ref() {
-        if ms.first() == Some(&b'\'') || ms.len() > 2 {
-            // us -> be
-            let (oy, om, od) = (y.take(), m.take(), d.take());
-            y = om;
-            m = od;
-            d = oy;
-        }
-    }
-
-    if let Some(ds) = d.as_ref() {
-        if ds.first() == Some(&b'\'') || ds.len() > 2 {
-            let (oy, od) = (y.take(), d.take());
-            y = od;
-            d = oy;
-        }
-    }
-
-    if let Some(ys) = y.as_ref() {
-        let mut s = 0;
-        while s < ys.len() && !issign(ys[s]) && !ys[s].is_ascii_digit() {
-            s += 1;
-        }
-        if s < ys.len() {
-            let bp = s;
-            let mut sign = false;
-            if issign(ys[s]) {
-                s += 1;
-                sign = true;
-            }
-            if sign {
-                comp = Some(false);
-            }
-            let mut ep = s;
-            while ep < ys.len() && ys[ep].is_ascii_digit() {
-                ep += 1;
-            }
-            if ep - s > 2 {
-                comp = Some(false);
-            }
-            let text = String::from_utf8_lossy(&ys[bp..ep]).into_owned();
-            h.year = Some(cstr2num(&text));
-        }
-    }
-
-    if bc {
-        h.bc = true;
-    }
-
-    if let Some(ms) = m.as_ref() {
-        if let Some(v) = digits_after(ms) {
-            h.mon = Some(v);
-        }
-    }
-
-    if let Some(ds) = d.as_ref() {
-        if let Some(v) = digits_after(ds) {
-            h.mday = Some(v);
-        }
-    }
-
-    if let Some(c) = comp {
-        h.comp = Some(c);
-    }
-}
-
-fn cstr2num(s: &str) -> BigInt {
-    // `rb_cstr_to_inum(s, 10, 0)`: a lone sign is 0.
-    num(s)
-}
-
-fn digits_after(s: &[u8]) -> Option<BigInt> {
-    let mut i = 0;
-    while i < s.len() && !s[i].is_ascii_digit() {
-        i += 1;
-    }
-    if i >= s.len() {
-        return None;
-    }
-    let mut e = i;
-    while e < s.len() && s[e].is_ascii_digit() {
-        e += 1;
-    }
-    Some(num(std::str::from_utf8(&s[i..e]).expect("ascii digits")))
-}
-
-fn first_byte(s: &Option<String>) -> Option<u8> {
-    s.as_ref().and_then(|v| v.as_bytes().first().copied())
-}
-
-fn n2i(s: &[u8], f: usize, w: usize) -> BigInt {
-    let mut v: i64 = 0;
-    for b in &s[f..f + w] {
-        v = v * 10 + i64::from(b - b'0');
-    }
-    BigInt::from(v)
-}
-
-fn rational(digits: &str) -> (BigInt, BigInt) {
-    let mut n = num(digits);
-    let mut d = BigInt::from(10).pow(digits.chars().count() as u32);
-    let g = gcd(n.clone(), d.clone());
-    if g != BigInt::from(0) {
-        n /= &g;
-        d /= &g;
-    }
-    (n, d)
-}
-
-fn gcd(mut a: BigInt, mut b: BigInt) -> BigInt {
-    let zero = BigInt::from(0);
-    while b != zero {
-        let r = &a % &b;
-        a = b;
-        b = r;
-    }
-    a
-}
-
-/// `Date._parse(str)` with `comp = true`, without the `offset` key.
-pub fn date_parse_fragments(input: &str) -> Result<Fragments, DateFailure> {
-    check_limit(input)?;
-    let p = patterns();
-    let mut h = Fragments {
-        comp: Some(true),
-        ..Fragments::default()
-    };
-    let mut chars: Vec<char> = input.chars().collect();
-    // gsub!(/[^-+',./:@[:alnum:]\[\]]+/, ' '): every maximal run of other
-    // characters becomes one space.
-    {
-        let keep = |c: char| c.is_alphanumeric() || "-+',./:@[]".contains(c);
-        let mut out = Vec::with_capacity(chars.len());
-        let mut in_run = false;
-        for c in chars {
-            if keep(c) {
-                out.push(c);
-                in_run = false;
-            } else if !in_run {
-                out.push(' ');
-                in_run = true;
-            }
-        }
-        chars = out;
-    }
-    let mut s = Subject { chars };
-
-    if s.has(ALPHA) {
-        if let Some((m, c)) = s.subx(&p.day) {
-            h.wday = Some(day_num(&group(&m, &c, 1).expect("day")));
-        }
-    }
-    if s.has(DIGIT) {
-        if let Some((m, c)) = s.subx(&p.time) {
-            parse_time_cb(&mut h, &m, &c, p)?;
-        }
-    }
-
-    let ok = (s.has(ALPHA | DIGIT) && (parse_eu(&mut s, &mut h, p) || parse_us(&mut s, &mut h, p)))
-        || (s.has(DIGIT | DASH) && parse_iso(&mut s, &mut h, p))
-        || (s.has(DIGIT | DOT) && parse_jis(&mut s, &mut h, p))
-        || (s.has(ALPHA | DIGIT | DASH) && parse_vms(&mut s, &mut h, p))
-        || (s.has(DIGIT | SLASH) && parse_sla(&mut s, &mut h, p))
-        || (s.has(DIGIT | DOT) && parse_dot(&mut s, &mut h, p))
-        || (s.has(DIGIT) && parse_iso2(&mut s, &mut h, p))
-        || (s.has(DIGIT) && parse_year(&mut s, &mut h, p))
-        || (s.has(ALPHA) && parse_mon(&mut s, &mut h, p))
-        || (s.has(DIGIT) && parse_mday(&mut s, &mut h, p))
-        || (s.has(DIGIT) && parse_ddd(&mut s, &mut h, p));
-    let _ = ok;
-
-    if s.has(ALPHA) && s.subx(&p.bc).is_some() {
-        h.bc = true;
-    }
-    if s.has(DIGIT) {
-        if let Some((m, c)) = s.subx(&p.frag) {
-            let v = num(&group(&m, &c, 1).expect("frag"));
-            if h.hour.is_some() && h.mday.is_none() && v >= 1.into() && v <= 31.into() {
-                h.mday = Some(v.clone());
-            }
-            if h.mday.is_some() && h.hour.is_none() && v >= 0.into() && v <= 24.into() {
-                h.hour = Some(v);
-            }
-        }
-    }
-
-    if std::mem::take(&mut h.bc) {
-        if let Some(y) = h.cwyear.take() {
-            h.cwyear = Some(-y + 1);
-        }
-        if let Some(y) = h.year.take() {
-            h.year = Some(-y + 1);
-        }
-    }
-    if h.comp.take() == Some(true) {
-        for y in [&mut h.cwyear, &mut h.year].into_iter().flatten() {
-            if *y >= 0.into() && *y <= 99.into() {
-                *y += if *y >= 69.into() { 1900 } else { 2000 };
-            }
-        }
-    }
-    Ok(h)
-}
-
-fn check_limit(input: &str) -> Result<(), DateFailure> {
-    let len = input.len();
-    if len > 128 {
-        return Err(DateFailure::Argument(format!(
-            "string length ({len}) exceeds the limit 128"
-        )));
-    }
-    Ok(())
-}
-
-fn parse_time_cb(
-    h: &mut Fragments,
-    m: &Match,
-    c: &[char],
-    p: &Patterns,
-) -> Result<(), DateFailure> {
-    let s1: Vec<char> = group(m, c, 1).expect("time").chars().collect();
-    if let Some(zone) = group(m, c, 2) {
-        h.zone = Some(zone);
-    }
-    let Some(t) = p.time_inner.find(&s1) else {
-        return Ok(());
-    };
-    let mut hour = num(&group(&t, &s1, 1).expect("hour"));
-    let min = group(&t, &s1, 2).map(|v| num(&v));
-    let sec = group(&t, &s1, 3).map(|v| num(&v));
-    let frac = group(&t, &s1, 4).map(|v| rational(&v));
-    if let Some(ap) = group(&t, &s1, 5) {
-        let mut ih = num2int(&hour)? % 12;
-        if ap.starts_with(['P', 'p']) {
-            ih += 12;
-        }
-        hour = BigInt::from(ih);
-    }
-    h.hour = Some(hour);
-    if min.is_some() {
-        h.min = min;
-    }
-    if sec.is_some() {
-        h.sec = sec;
-    }
-    if frac.is_some() {
-        h.sec_fraction = frac;
-    }
-    Ok(())
-}
-
-fn era_bc(b: &Option<String>) -> bool {
-    matches!(first_byte(b), Some(b'B' | b'b'))
-}
-
-fn parse_eu(s: &mut Subject, h: &mut Fragments, p: &Patterns) -> bool {
-    let Some((m, c)) = s.subx(&p.eu) else {
-        return false;
-    };
-    let d = group(&m, &c, 1);
-    let mon = mon_num(&group(&m, &c, 2).expect("mon")).to_string();
-    let b = group(&m, &c, 3);
-    let y = group(&m, &c, 4);
-    s3e(h, y, Some(mon), d, era_bc(&b));
-    true
-}
-
-fn parse_us(s: &mut Subject, h: &mut Fragments, p: &Patterns) -> bool {
-    let Some((m, c)) = s.subx(&p.us) else {
-        return false;
-    };
-    let mon = mon_num(&group(&m, &c, 1).expect("mon")).to_string();
-    let d = group(&m, &c, 2);
-    let b = group(&m, &c, 3);
-    let y = group(&m, &c, 4);
-    s3e(h, y, Some(mon), d, era_bc(&b));
-    true
-}
-
-fn parse_iso(s: &mut Subject, h: &mut Fragments, p: &Patterns) -> bool {
-    let Some((m, c)) = s.subx(&p.iso) else {
-        return false;
-    };
-    s3e(
-        h,
-        group(&m, &c, 1),
-        group(&m, &c, 2),
-        group(&m, &c, 3),
-        false,
-    );
-    true
-}
-
-fn parse_iso2(s: &mut Subject, h: &mut Fragments, p: &Patterns) -> bool {
-    if let Some((m, c)) = s.subx(&p.iso21) {
-        if let Some(y) = group(&m, &c, 1) {
-            h.cwyear = Some(num(&y));
-        }
-        h.cweek = Some(num(&group(&m, &c, 2).expect("week")));
-        if let Some(d) = group(&m, &c, 3) {
-            h.cwday = Some(num(&d));
-        }
-        return true;
-    }
-    if let Some((m, c)) = s.subx(&p.iso22) {
-        h.cwday = Some(num(&group(&m, &c, 1).expect("cwday")));
-        return true;
-    }
-    if let Some((m, c)) = s.subx(&p.iso23) {
-        if let Some(mon) = group(&m, &c, 1) {
-            h.mon = Some(num(&mon));
-        }
-        h.mday = Some(num(&group(&m, &c, 2).expect("mday")));
-        return true;
-    }
-    if let Some((m, c)) = s.subx(&p.iso24) {
-        h.mon = Some(num(&group(&m, &c, 1).expect("mon")));
-        if let Some(d) = group(&m, &c, 2) {
-            h.mday = Some(num(&d));
-        }
-        return true;
-    }
-    if p.iso25_0.find(&s.chars).is_none() {
-        if let Some((m, c)) = s.subx(&p.iso25) {
-            h.year = Some(num(&group(&m, &c, 1).expect("year")));
-            h.yday = Some(num(&group(&m, &c, 2).expect("yday")));
-            return true;
-        }
-    }
-    if p.iso26_0.find(&s.chars).is_none() {
-        if let Some((m, c)) = s.subx(&p.iso26) {
-            h.yday = Some(num(&group(&m, &c, 1).expect("yday")));
-            return true;
-        }
-    }
-    false
-}
-
-fn parse_jis(s: &mut Subject, h: &mut Fragments, p: &Patterns) -> bool {
-    let Some((m, c)) = s.subx(&p.jis) else {
-        return false;
-    };
-    let era = match first_byte(&group(&m, &c, 1)) {
-        Some(b'M' | b'm') => 1867,
-        Some(b'T' | b't') => 1911,
-        Some(b'S' | b's') => 1925,
-        Some(b'H' | b'h') => 1988,
-        Some(b'R' | b'r') => 2018,
-        _ => 0,
-    };
-    h.year = Some(num(&group(&m, &c, 2).expect("y")) + era);
-    h.mon = Some(num(&group(&m, &c, 3).expect("mon")));
-    h.mday = Some(num(&group(&m, &c, 4).expect("mday")));
-    true
-}
-
-fn parse_vms(s: &mut Subject, h: &mut Fragments, p: &Patterns) -> bool {
-    if let Some((m, c)) = s.subx(&p.vms11) {
-        let d = group(&m, &c, 1);
-        let mon = mon_num(&group(&m, &c, 2).expect("mon")).to_string();
-        let y = group(&m, &c, 3);
-        s3e(h, y, Some(mon), d, false);
-        return true;
-    }
-    if let Some((m, c)) = s.subx(&p.vms12) {
-        let mon = mon_num(&group(&m, &c, 1).expect("mon")).to_string();
-        let d = group(&m, &c, 2);
-        let y = group(&m, &c, 3);
-        s3e(h, y, Some(mon), d, false);
-        return true;
-    }
-    false
-}
-
-fn parse_sla(s: &mut Subject, h: &mut Fragments, p: &Patterns) -> bool {
-    let Some((m, c)) = s.subx(&p.sla) else {
-        return false;
-    };
-    s3e(
-        h,
-        group(&m, &c, 1),
-        group(&m, &c, 2),
-        group(&m, &c, 3),
-        false,
-    );
-    true
-}
-
-fn parse_dot(s: &mut Subject, h: &mut Fragments, p: &Patterns) -> bool {
-    let Some((m, c)) = s.subx(&p.dot) else {
-        return false;
-    };
-    s3e(
-        h,
-        group(&m, &c, 1),
-        group(&m, &c, 2),
-        group(&m, &c, 3),
-        false,
-    );
-    true
-}
-
-fn parse_year(s: &mut Subject, h: &mut Fragments, p: &Patterns) -> bool {
-    let Some((m, c)) = s.subx(&p.year) else {
-        return false;
-    };
-    h.year = Some(num(&group(&m, &c, 1).expect("year")));
-    true
-}
-
-fn parse_mon(s: &mut Subject, h: &mut Fragments, p: &Patterns) -> bool {
-    let Some((m, c)) = s.subx(&p.mon) else {
-        return false;
-    };
-    h.mon = Some(mon_num(&group(&m, &c, 1).expect("mon")));
-    true
-}
-
-fn parse_mday(s: &mut Subject, h: &mut Fragments, p: &Patterns) -> bool {
-    let Some((m, c)) = s.subx(&p.mday) else {
-        return false;
-    };
-    h.mday = Some(num(&group(&m, &c, 1).expect("mday")));
-    true
-}
-
-fn parse_ddd(s: &mut Subject, h: &mut Fragments, p: &Patterns) -> bool {
-    let Some((m, c)) = s.subx(&p.ddd) else {
-        return false;
-    };
-    let s1 = group(&m, &c, 1);
-    let s2 = group(&m, &c, 2).expect("digits");
-    let s3 = group(&m, &c, 3);
-    let s4 = group(&m, &c, 4);
-    let s5 = group(&m, &c, 5);
-    let neg = first_byte(&s1) == Some(b'-');
-    let signed = |v: BigInt| if neg { -v } else { v };
-    let cs2 = s2.as_bytes();
-    let l2 = cs2.len();
-    let time_only = s3.is_none() && s4.is_some();
-    match l2 {
-        2 => {
-            if time_only {
-                h.sec = Some(n2i(cs2, l2 - 2, 2));
-            } else {
-                h.mday = Some(n2i(cs2, 0, 2));
-            }
-        }
-        4 => {
-            if time_only {
-                h.sec = Some(n2i(cs2, l2 - 2, 2));
-                h.min = Some(n2i(cs2, l2 - 4, 2));
-            } else {
-                h.mon = Some(n2i(cs2, 0, 2));
-                h.mday = Some(n2i(cs2, 2, 2));
-            }
-        }
-        6 => {
-            if time_only {
-                h.sec = Some(n2i(cs2, l2 - 2, 2));
-                h.min = Some(n2i(cs2, l2 - 4, 2));
-                h.hour = Some(n2i(cs2, l2 - 6, 2));
-            } else {
-                h.year = Some(signed(n2i(cs2, 0, 2)));
-                h.mon = Some(n2i(cs2, 2, 2));
-                h.mday = Some(n2i(cs2, 4, 2));
-            }
-        }
-        8 | 10 | 12 | 14 => {
-            if time_only {
-                h.sec = Some(n2i(cs2, l2 - 2, 2));
-                h.min = Some(n2i(cs2, l2 - 4, 2));
-                h.hour = Some(n2i(cs2, l2 - 6, 2));
-                h.mday = Some(n2i(cs2, l2 - 8, 2));
-                if l2 >= 10 {
-                    h.mon = Some(n2i(cs2, l2 - 10, 2));
-                }
-                if l2 == 12 {
-                    h.year = Some(signed(n2i(cs2, l2 - 12, 2)));
-                }
-                if l2 == 14 {
-                    h.year = Some(signed(n2i(cs2, l2 - 14, 4)));
-                    h.comp = Some(false);
-                }
-            } else {
-                h.year = Some(signed(n2i(cs2, 0, 4)));
-                h.mon = Some(n2i(cs2, 4, 2));
-                h.mday = Some(n2i(cs2, 6, 2));
-                if l2 >= 10 {
-                    h.hour = Some(n2i(cs2, 8, 2));
-                }
-                if l2 >= 12 {
-                    h.min = Some(n2i(cs2, 10, 2));
-                }
-                if l2 >= 14 {
-                    h.sec = Some(n2i(cs2, 12, 2));
-                }
-                h.comp = Some(false);
-            }
-        }
-        3 => {
-            if time_only {
-                h.sec = Some(n2i(cs2, l2 - 2, 2));
-                h.min = Some(n2i(cs2, l2 - 3, 1));
-            } else {
-                h.yday = Some(n2i(cs2, 0, 3));
-            }
-        }
-        5 => {
-            if time_only {
-                h.sec = Some(n2i(cs2, l2 - 2, 2));
-                h.min = Some(n2i(cs2, l2 - 4, 2));
-                h.hour = Some(n2i(cs2, l2 - 5, 1));
-            } else {
-                h.year = Some(signed(n2i(cs2, 0, 2)));
-                h.yday = Some(n2i(cs2, 2, 3));
-            }
-        }
-        7 => {
-            if time_only {
-                h.sec = Some(n2i(cs2, l2 - 2, 2));
-                h.min = Some(n2i(cs2, l2 - 4, 2));
-                h.hour = Some(n2i(cs2, l2 - 6, 2));
-                h.mday = Some(n2i(cs2, l2 - 7, 1));
-            } else {
-                h.year = Some(signed(n2i(cs2, 0, 4)));
-                h.yday = Some(n2i(cs2, 4, 3));
-            }
-        }
-        _ => {}
-    }
-    if let Some(s3) = s3 {
-        let cs3 = s3.as_bytes();
-        let l3 = cs3.len();
-        if matches!(l3, 2 | 4 | 6) {
-            if s4.is_some() {
-                h.sec = Some(n2i(cs3, l3 - 2, 2));
-                if l3 >= 4 {
-                    h.min = Some(n2i(cs3, l3 - 4, 2));
-                }
-                if l3 >= 6 {
-                    h.hour = Some(n2i(cs3, l3 - 6, 2));
-                }
-            } else {
-                h.hour = Some(n2i(cs3, 0, 2));
-                if l3 >= 4 {
-                    h.min = Some(n2i(cs3, 2, 2));
-                }
-                if l3 >= 6 {
-                    h.sec = Some(n2i(cs3, 4, 2));
-                }
-            }
-        }
-    }
-    if let Some(s4) = s4 {
-        h.sec_fraction = Some(rational(&s4));
-    }
-    if let Some(s5) = s5 {
-        let mut zone = s5.clone();
-        if let Some(inner) = s5.strip_prefix('[') {
-            let inner = inner.strip_suffix(']').unwrap_or(inner);
-            zone = match inner.find(':') {
-                Some(i) => inner[i + 1..].to_string(),
-                None => inner.to_string(),
-            };
-        }
-        h.zone = Some(zone);
-    }
-    true
 }
 
 // ---------------------------------------------------------------------------
