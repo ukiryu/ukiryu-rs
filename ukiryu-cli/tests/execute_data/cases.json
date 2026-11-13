@@ -1,0 +1,1897 @@
+{
+ "oracle": "ukiryu/ukiryu ab6df353c6dc2d7faf7817a86aafcafa82579896",
+ "ruby": "ruby 4.0.1 (2026-01-13 revision e04267a14b) +PRISM [x86_64-linux]",
+ "register": "fixture/register: tools/cat + interfaces/cat.yaml from ukiryu/register 63c0997",
+ "cases": [
+  {
+   "id": "exec_invalid_format",
+   "area": "exec-pre",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--format",
+    "xml",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "",
+   "stderr": "Invalid format: xml. Must be one of: yaml, json, table, raw\n",
+   "status": 1,
+   "files": {}
+  },
+  {
+   "id": "exec_invalid_format_env",
+   "area": "exec-pre",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": null,
+   "env": {
+    "UKIRYU_FORMAT": "html"
+   },
+   "pty": false,
+   "note": null,
+   "stdout": "",
+   "stderr": "Invalid format: html. Must be one of: yaml, json, table, raw\n",
+   "status": 1,
+   "files": {}
+  },
+  {
+   "id": "exec_raw_overrides_invalid_format",
+   "area": "exec-pre",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--dry-run",
+    "--raw",
+    "--format",
+    "xml",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "\u001b[33mDRY RUN - Ukiryu Structured Execution Request:\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mUkiryu::Tool: cat\u001b[0m\n\u001b[36mCommand: concatenate\u001b[0m\n\u001b[36mArguments:\u001b[0m\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_invalid_param",
+   "area": "exec-pre",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "number",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "",
+   "stderr": "Invalid parameter format: number. Use key=value\n",
+   "status": 1,
+   "files": {}
+  },
+  {
+   "id": "exec_invalid_param_second",
+   "area": "exec-pre",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "a=1",
+    "bad",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "",
+   "stderr": "Invalid parameter format: bad. Use key=value\n",
+   "status": 1,
+   "files": {}
+  },
+  {
+   "id": "exec_dry_run_basic",
+   "area": "exec-dry",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--dry-run",
+    "number=true",
+    "files=[a,b]",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "\u001b[33mDRY RUN - Ukiryu Structured Execution Request:\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mUkiryu::Tool: cat\u001b[0m\n\u001b[36mCommand: concatenate\u001b[0m\n\u001b[36mArguments:\u001b[0m\n\u001b[37m  number: true\u001b[0m\n\u001b[37m  files: [\"a\", \"b\"]\u001b[0m\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_dry_run_types",
+   "area": "exec-dry",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--dry-run",
+    "i=42",
+    "f=1.5",
+    "s=hello",
+    "sym=:foo",
+    "n=",
+    "b=yes",
+    "h={a: 1}",
+    "q=\"quoted\"",
+    "bad=[unclosed",
+    "colon=a: b",
+    "big=123456789012345678901234567890",
+    "hex=0x1f",
+    "date=2024-01-02",
+    "tilde=~",
+    "eq=a=b",
+    "dup=1",
+    "dup=2",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "\u001b[33mDRY RUN - Ukiryu Structured Execution Request:\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mUkiryu::Tool: cat\u001b[0m\n\u001b[36mCommand: concatenate\u001b[0m\n\u001b[36mArguments:\u001b[0m\n\u001b[37m  i: 42\u001b[0m\n\u001b[37m  f: 1.5\u001b[0m\n\u001b[37m  s: \"hello\"\u001b[0m\n\u001b[37m  sym: :foo\u001b[0m\n\u001b[37m  n: nil\u001b[0m\n\u001b[37m  b: true\u001b[0m\n\u001b[37m  h: {\"a\" => 1}\u001b[0m\n\u001b[37m  q: \"quoted\"\u001b[0m\n\u001b[37m  bad: \"[unclosed\"\u001b[0m\n\u001b[37m  colon: {\"a\" => \"b\"}\u001b[0m\n\u001b[37m  big: 123456789012345678901234567890\u001b[0m\n\u001b[37m  hex: 31\u001b[0m\n\u001b[37m  date: \"2024-01-02\"\u001b[0m\n\u001b[37m  tilde: nil\u001b[0m\n\u001b[37m  eq: \"a=b\"\u001b[0m\n\u001b[37m  dup: 2\u001b[0m\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_dry_run_command_shift",
+   "area": "exec-dry",
+   "args": [
+    "exec",
+    "cat",
+    "number=true",
+    "--dry-run",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": "first token with = is a parameter; command resolution then needs default_command",
+   "stdout": "",
+   "stderr": "[NoMethodError] undefined method 'default_command' for an instance of Ukiryu::Models::ToolDefinition\n",
+   "status": 1,
+   "files": {}
+  },
+  {
+   "id": "exec_dry_run_stdin_flag",
+   "area": "exec-dry",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--dry-run",
+    "--stdin",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": "piped\ndata\n",
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "\u001b[33mDRY RUN - Ukiryu Structured Execution Request:\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mUkiryu::Tool: cat\u001b[0m\n\u001b[36mCommand: concatenate\u001b[0m\n\u001b[36mArguments:\u001b[0m\n\u001b[37m  stdin: \"piped\\ndata\\n\"\u001b[0m\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_dry_run_stdin_dash",
+   "area": "exec-dry",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--dry-run",
+    "stdin=-",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": "dash data",
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "\u001b[33mDRY RUN - Ukiryu Structured Execution Request:\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mUkiryu::Tool: cat\u001b[0m\n\u001b[36mCommand: concatenate\u001b[0m\n\u001b[36mArguments:\u001b[0m\n\u001b[37m  stdin: \"dash data\"\u001b[0m\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_dry_run_stdin_long",
+   "area": "exec-dry",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--dry-run",
+    "--stdin",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "\u001b[33mDRY RUN - Ukiryu Structured Execution Request:\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mUkiryu::Tool: cat\u001b[0m\n\u001b[36mCommand: concatenate\u001b[0m\n\u001b[36mArguments:\u001b[0m\n\u001b[37m  stdin: \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx...\"\u001b[0m\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_dry_run_stdin_101",
+   "area": "exec-dry",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--dry-run",
+    "--stdin",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "\u001b[33mDRY RUN - Ukiryu Structured Execution Request:\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mUkiryu::Tool: cat\u001b[0m\n\u001b[36mCommand: concatenate\u001b[0m\n\u001b[36mArguments:\u001b[0m\n\u001b[37m  stdin: \"yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy...\"\u001b[0m\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_dry_run_stdin_100",
+   "area": "exec-dry",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--dry-run",
+    "--stdin",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "\u001b[33mDRY RUN - Ukiryu Structured Execution Request:\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mUkiryu::Tool: cat\u001b[0m\n\u001b[36mCommand: concatenate\u001b[0m\n\u001b[36mArguments:\u001b[0m\n\u001b[37m  stdin: \"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz\"\u001b[0m\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_dry_run_stdin_file",
+   "area": "exec-dry",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--dry-run",
+    "stdin=@input.txt",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "\u001b[33mDRY RUN - Ukiryu Structured Execution Request:\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mUkiryu::Tool: cat\u001b[0m\n\u001b[36mCommand: concatenate\u001b[0m\n\u001b[36mArguments:\u001b[0m\n\u001b[37m  stdin: \"from file\\nline 2\\n\"\u001b[0m\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_dry_run_stdin_literal",
+   "area": "exec-dry",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--dry-run",
+    "stdin=literal text",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "\u001b[33mDRY RUN - Ukiryu Structured Execution Request:\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mUkiryu::Tool: cat\u001b[0m\n\u001b[36mCommand: concatenate\u001b[0m\n\u001b[36mArguments:\u001b[0m\n\u001b[37m  stdin: \"literal text\"\u001b[0m\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_dry_run_stdin_integer",
+   "area": "exec-dry",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--dry-run",
+    "stdin=12",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "\u001b[33mDRY RUN - Ukiryu Structured Execution Request:\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mUkiryu::Tool: cat\u001b[0m\n\u001b[36mCommand: concatenate\u001b[0m\n\u001b[36mArguments:\u001b[0m\n\u001b[37m  stdin: \"[IO Stream]\"\u001b[0m\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_dry_run_stdin_flag_beats_file",
+   "area": "exec-dry",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--dry-run",
+    "--stdin",
+    "stdin=@input.txt",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": "from pipe",
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "\u001b[33mDRY RUN - Ukiryu Structured Execution Request:\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mUkiryu::Tool: cat\u001b[0m\n\u001b[36mCommand: concatenate\u001b[0m\n\u001b[36mArguments:\u001b[0m\n\u001b[37m  stdin: \"from pipe\"\u001b[0m\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_dry_run_no_color",
+   "area": "exec-dry",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--dry-run",
+    "number=true",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": null,
+   "env": {
+    "NO_COLOR": "1"
+   },
+   "pty": false,
+   "note": null,
+   "stdout": "DRY RUN - Ukiryu Structured Execution Request:\n\nUkiryu::Tool: cat\nCommand: concatenate\nArguments:\n  number: true\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_dry_run_env",
+   "area": "exec-dry",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "number=true",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": null,
+   "env": {
+    "UKIRYU_DRY_RUN": "true"
+   },
+   "pty": false,
+   "note": "Thor passes dry_run=false, which overrides the environment",
+   "stdout": "---\nstatus: success\nexit_code: 0\nrequest:\n  flags:\n  - number\ncommand:\n  executable: \"/usr/bin/cat\"\n  arguments:\n    flags:\n    - number\n  full_command: \"'/usr/bin/cat' '-n' '-n'\"\n  shell: bash\nmetadata:\n  started_at: '2026-11-13T13:46:16+00:00'\n  finished_at: '2026-11-13T13:46:16+00:00'\n  duration_seconds: 0.038136888\n  formatted_duration: 38.14ms\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_dry_run_no_definition",
+   "area": "exec-dry",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--dry-run",
+    "number=true"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "\u001b[33mDRY RUN - Ukiryu Structured Execution Request:\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mUkiryu::Tool: cat\u001b[0m\n\u001b[36mCommand: concatenate\u001b[0m\n\u001b[36mArguments:\u001b[0m\n\u001b[37m  number: true\u001b[0m\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_stdin_file_missing",
+   "area": "exec-pre",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "stdin=@missing.txt",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "",
+   "stderr": "File not found: missing.txt\n",
+   "status": 1,
+   "files": {}
+  },
+  {
+   "id": "exec_stdin_file_directory",
+   "area": "exec-pre",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "stdin=@adir",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "",
+   "stderr": "[Errno::EISDIR] Is a directory @ io_fread - adir\n",
+   "status": 1,
+   "files": {}
+  },
+  {
+   "id": "exec_no_command_definition",
+   "area": "exec-pre",
+   "args": [
+    "exec",
+    "cat",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "",
+   "stderr": "[NoMethodError] undefined method 'default_command' for an instance of Ukiryu::Models::ToolDefinition\n",
+   "status": 1,
+   "files": {}
+  },
+  {
+   "id": "exec_no_command_definition_missing",
+   "area": "exec-pre",
+   "args": [
+    "exec",
+    "cat",
+    "--definition",
+    "defs/missing.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "",
+   "stderr": "[Ukiryu::Errors::DefinitionNotFoundError] Definition file not found: {root}/defs/missing.yaml\n",
+   "status": 1,
+   "files": {}
+  },
+  {
+   "id": "exec_no_command_definition_noprofiles",
+   "area": "exec-pre",
+   "args": [
+    "exec",
+    "cat",
+    "--definition",
+    "defs/noprofiles.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "",
+   "stderr": "[Ukiryu::Errors::DefinitionValidationError] Profile validation failed:\n  - Missing 'profiles' field or profiles is empty\n",
+   "status": 1,
+   "files": {}
+  },
+  {
+   "id": "exec_help_definition",
+   "area": "exec-help",
+   "args": [
+    "exec",
+    "cat",
+    "help",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "\u001b[37m\u001b[0m\n\u001b[36mUkiryu::Tool: cat\u001b[0m\n\u001b[37mDisplay Name: cat (concatenate files)\u001b[0m\n\u001b[37mVersion: generic\u001b[0m\n\u001b[37mHomepage: https://www.gnu.org/software/coreutils/\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mAvailable commands:\u001b[0m\n\u001b[37m  concatenate          Concatenate and print files\u001b[0m\n\u001b[2m    Usage: cat [options] [file...]\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[2mUsage: ukiryu exec cat <command> [KEY=VALUE ...]\u001b[0m\n\u001b[2m   or: ukiryu exec cat help\u001b[0m\n\u001b[2m   or: ukiryu describe cat <command>\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[2mFor more information on a specific command:\u001b[0m\n\u001b[2m  ukiryu opts cat <command>\u001b[0m\n\u001b[2m  ukiryu describe cat <command>\u001b[0m\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_help_definition_no_color",
+   "area": "exec-help",
+   "args": [
+    "exec",
+    "cat",
+    "help",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": null,
+   "env": {
+    "NO_COLOR": "1"
+   },
+   "pty": false,
+   "note": null,
+   "stdout": "\nUkiryu::Tool: cat\nDisplay Name: cat (concatenate files)\nVersion: generic\nHomepage: https://www.gnu.org/software/coreutils/\n\nAvailable commands:\n  concatenate          Concatenate and print files\n    Usage: cat [options] [file...]\n\nUsage: ukiryu exec cat <command> [KEY=VALUE ...]\n   or: ukiryu exec cat help\n   or: ukiryu describe cat <command>\n\nFor more information on a specific command:\n  ukiryu opts cat <command>\n  ukiryu describe cat <command>\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_help_definition_missing",
+   "area": "exec-help",
+   "args": [
+    "exec",
+    "cat",
+    "help",
+    "--definition",
+    "defs/missing.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "",
+   "stderr": "[Ukiryu::Errors::DefinitionNotFoundError] Definition file not found: {root}/defs/missing.yaml\n",
+   "status": 1,
+   "files": {}
+  },
+  {
+   "id": "exec_help_register",
+   "area": "exec-gate",
+   "args": [
+    "exec",
+    "cat",
+    "help"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "\u001b[37m\u001b[0m\n\u001b[36mUkiryu::Tool: cat\u001b[0m\n\u001b[37mDisplay Name: cat (concatenate files)\u001b[0m\n\u001b[37mVersion: generic\u001b[0m\n\u001b[37mHomepage: N/A\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mAvailable commands:\u001b[0m\n\u001b[37m  concatenate          Concatenate and print files\u001b[0m\n\u001b[2m    Usage: cat [options] [file...]\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[2mUsage: ukiryu exec cat <command> [KEY=VALUE ...]\u001b[0m\n\u001b[2m   or: ukiryu exec cat help\u001b[0m\n\u001b[2m   or: ukiryu describe cat <command>\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[2mFor more information on a specific command:\u001b[0m\n\u001b[2m  ukiryu opts cat <command>\u001b[0m\n\u001b[2m  ukiryu describe cat <command>\u001b[0m\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_definition_missing_file",
+   "area": "exec-load",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--definition",
+    "defs/missing.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "---\nstatus: error\nexit_code: 1\nerror: 'Unexpected error: Ukiryu::Errors::DefinitionNotFoundError: Definition file\n  not found: {root}/defs/missing.yaml'\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_definition_noprofiles",
+   "area": "exec-load",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--definition",
+    "defs/noprofiles.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "---\nstatus: error\nexit_code: 1\nerror: |-\n  Unexpected error: Ukiryu::Errors::DefinitionValidationError: Profile validation failed:\n    - Missing 'profiles' field or profiles is empty\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_definition_name_mismatch",
+   "area": "exec-load",
+   "args": [
+    "exec",
+    "dog",
+    "concatenate",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "---\nstatus: error\nexit_code: 1\nerror: 'Ukiryu::Tool name mismatch: definition file contains ''cat'' but command specified\n  ''dog'''\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_definition_name_mismatch_json",
+   "area": "exec-load",
+   "args": [
+    "exec",
+    "dog",
+    "concatenate",
+    "--format",
+    "json",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "{\n  \"status\": \"error\",\n  \"exit_code\": 1,\n  \"error\": \"Ukiryu::Tool name mismatch: definition file contains 'cat' but command specified 'dog'\"\n}\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_definition_unavailable",
+   "area": "exec-load",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--definition",
+    "defs/cat-missing.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "---\nstatus: success\nexit_code: 0\ncommand:\n  executable: \"/usr/bin/cat\"\n  full_command: \"'/usr/bin/cat'\"\n  shell: bash\nmetadata:\n  started_at: '2026-11-13T13:46:39+00:00'\n  finished_at: '2026-11-13T13:46:39+00:00'\n  duration_seconds: 0.064494883\n  formatted_duration: 64.49ms\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_definition_not_in_register",
+   "area": "exec-gate",
+   "args": [
+    "exec",
+    "catalog",
+    "concatenate",
+    "--definition",
+    "defs/catalog.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": "OptionsBuilder.for -> Tool.get(:catalog) from the register",
+   "stdout": "---\nstatus: error\nexit_code: 1\nerror: 'Ukiryu::Tool not found: Tool not found: catalog'\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_definition_unknown_command",
+   "area": "exec-gate",
+   "args": [
+    "exec",
+    "cat",
+    "nosuch",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "---\nstatus: error\nexit_code: 1\nerror: 'Invalid arguments: Unknown command: nosuch for tool: cat'\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_yaml_stdin",
+   "area": "exec-run",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--stdin",
+    "number=true",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": "hello\nworld\n",
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: stdin\n    value: |\n      hello\n      world\n    type: option\n  flags:\n  - number\ncommand:\n  executable: \"/usr/bin/cat\"\n  arguments:\n    options:\n    - name: stdin\n      value: |\n        hello\n        world\n      type: option\n    flags:\n    - number\n  full_command: \"'/usr/bin/cat' '-n' '-n'\"\n  shell: bash\noutput:\n  stdout: \"     1\\thello\\n     2\\tworld\\n\"\nmetadata:\n  started_at: '2026-11-13T13:46:45+00:00'\n  finished_at: '2026-11-13T13:46:45+00:00'\n  duration_seconds: 0.023959036\n  formatted_duration: 23.96ms\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_json_stdin",
+   "area": "exec-run",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--stdin",
+    "--format",
+    "json",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": "hello\nworld\n",
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"stdin\",\n        \"value\": \"hello\\nworld\\n\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/cat\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"stdin\",\n          \"value\": \"hello\\nworld\\n\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"'/usr/bin/cat'\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"hello\\nworld\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2026-11-13T13:46:47+00:00\",\n    \"finished_at\": \"2026-11-13T13:46:47+00:00\",\n    \"duration_seconds\": 0.025397079,\n    \"formatted_duration\": \"25.4ms\"\n  }\n}\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_table_stdin",
+   "area": "exec-run",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--stdin",
+    "number=true",
+    "--format",
+    "table",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": "hello\nworld\n",
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "✓ Command completed successfully\nExit code: 0\nDuration: 24.92ms\n\nRequest: stdin=hello\nworld\n --number\n\nCommand: '/usr/bin/cat' '-n' '-n'\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_table_empty_stdout",
+   "area": "exec-run",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--stdin",
+    "--format",
+    "table",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": "",
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "✓ Command completed successfully\nExit code: 0\nDuration: 25.15ms\n\nRequest: stdin=\n\nCommand: '/usr/bin/cat'\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_raw_stdin",
+   "area": "exec-run",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--stdin",
+    "--raw",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": "raw\nbytes\n",
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "raw\nbytes\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_raw_no_newline",
+   "area": "exec-run",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--stdin",
+    "--raw",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": "no newline",
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "no newline",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_raw_format",
+   "area": "exec-run",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--stdin",
+    "--format",
+    "raw",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": "via format\n",
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "via format\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_stdin_dash",
+   "area": "exec-run",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "stdin=-",
+    "--format",
+    "json",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": "dash\n",
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"stdin\",\n        \"value\": \"dash\\n\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/cat\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"stdin\",\n          \"value\": \"dash\\n\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"'/usr/bin/cat'\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"dash\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2026-11-13T13:46:53+00:00\",\n    \"finished_at\": \"2026-11-13T13:46:53+00:00\",\n    \"duration_seconds\": 0.028199238,\n    \"formatted_duration\": \"28.2ms\"\n  }\n}\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_stdin_at_file",
+   "area": "exec-run",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "stdin=@input.txt",
+    "--format",
+    "json",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"stdin\",\n        \"value\": \"from file\\nline 2\\n\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/cat\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"stdin\",\n          \"value\": \"from file\\nline 2\\n\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"'/usr/bin/cat'\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"from file\\nline 2\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2026-11-13T13:46:56+00:00\",\n    \"finished_at\": \"2026-11-13T13:46:56+00:00\",\n    \"duration_seconds\": 0.025063432,\n    \"formatted_duration\": \"25.06ms\"\n  }\n}\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_stdin_literal",
+   "area": "exec-run",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "stdin=inline text",
+    "--format",
+    "json",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"stdin\",\n        \"value\": \"inline text\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/cat\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"stdin\",\n          \"value\": \"inline text\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"'/usr/bin/cat'\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"inline text\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2026-11-13T13:46:55+00:00\",\n    \"finished_at\": \"2026-11-13T13:46:55+00:00\",\n    \"duration_seconds\": 0.024177842,\n    \"formatted_duration\": \"24.18ms\"\n  }\n}\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_files_argument",
+   "area": "exec-run",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "files=[input.txt]",
+    "--format",
+    "json",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"positional\": [\n      {\n        \"name\": \"files\",\n        \"value\": \"input.txt\",\n        \"type\": \"positional\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/cat\",\n    \"arguments\": {\n      \"positional\": [\n        {\n          \"name\": \"files\",\n          \"value\": \"input.txt\",\n          \"type\": \"positional\"\n        }\n      ]\n    },\n    \"full_command\": \"'/usr/bin/cat' 'input.txt'\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"from file\\nline 2\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2026-11-13T13:46:58+00:00\",\n    \"finished_at\": \"2026-11-13T13:46:58+00:00\",\n    \"duration_seconds\": 0.040884785,\n    \"formatted_duration\": \"40.88ms\"\n  }\n}\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_failure_exit",
+   "area": "exec-run",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "files=[nope.txt]",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "---\nstatus: error\nexit_code: 1\nerror: |-\n  Command failed: /usr/bin/cat\n\n  Command: '/usr/bin/cat' 'nope.txt'\n  Exit status: 1\n\n  STDOUT:\n\n\n  STDERR:\n  /usr/bin/cat: nope.txt: No such file or directory\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_failure_exit_json",
+   "area": "exec-run",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "files=[nope.txt]",
+    "--format",
+    "json",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "{\n  \"status\": \"error\",\n  \"exit_code\": 1,\n  \"error\": \"Command failed: /usr/bin/cat\\n\\nCommand: '/usr/bin/cat' 'nope.txt'\\nExit status: 1\\n\\nSTDOUT:\\n\\n\\nSTDERR:\\n/usr/bin/cat: nope.txt: No such file or directory\"\n}\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_failure_exit_raw",
+   "area": "exec-run",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "files=[nope.txt]",
+    "--raw",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "",
+   "stderr": "Command failed: /usr/bin/cat\n\nCommand: '/usr/bin/cat' 'nope.txt'\nExit status: 1\n\nSTDOUT:\n\n\nSTDERR:\n/usr/bin/cat: nope.txt: No such file or directory\n",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_failure_exit_table",
+   "area": "exec-run",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "files=[nope.txt]",
+    "--format",
+    "table",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "✗ Command failed: Command failed: /usr/bin/cat\n\nCommand: '/usr/bin/cat' 'nope.txt'\nExit status: 1\n\nSTDOUT:\n\n\nSTDERR:\n/usr/bin/cat: nope.txt: No such file or directory\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_output_file",
+   "area": "exec-run",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--stdin",
+    "--format",
+    "json",
+    "--output",
+    "out.json",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": "to file\n",
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "\u001b[32mResponse written to: out.json\u001b[0m\n",
+   "stderr": "",
+   "status": 0,
+   "files": {
+    "out.json": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"stdin\",\n        \"value\": \"to file\\n\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/cat\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"stdin\",\n          \"value\": \"to file\\n\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"'/usr/bin/cat'\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"to file\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2026-11-13T13:47:07+00:00\",\n    \"finished_at\": \"2026-11-13T13:47:07+00:00\",\n    \"duration_seconds\": 0.034877176,\n    \"formatted_duration\": \"34.88ms\"\n  }\n}"
+   }
+  },
+  {
+   "id": "exec_output_file_raw",
+   "area": "exec-run",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--stdin",
+    "--raw",
+    "--output",
+    "out.txt",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": "raw file\n",
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "raw file\n",
+   "stderr": "",
+   "status": 0,
+   "files": {
+    "out.txt": "raw file\n"
+   }
+  },
+  {
+   "id": "exec_yaml_no_color",
+   "area": "exec-run",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--stdin",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": "nc\n",
+   "env": {
+    "NO_COLOR": "1"
+   },
+   "pty": false,
+   "note": null,
+   "stdout": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: stdin\n    value: 'nc\n\n      '\n    type: option\ncommand:\n  executable: \"/usr/bin/cat\"\n  arguments:\n    options:\n    - name: stdin\n      value: 'nc\n\n        '\n      type: option\n  full_command: \"'/usr/bin/cat'\"\n  shell: bash\noutput:\n  stdout: 'nc\n\n    '\nmetadata:\n  started_at: '2026-11-13T13:47:09+00:00'\n  finished_at: '2026-11-13T13:47:09+00:00'\n  duration_seconds: 0.054603112\n  formatted_duration: 54.6ms\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_shell_option",
+   "area": "exec-run",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--stdin",
+    "--shell",
+    "sh",
+    "--format",
+    "json",
+    "--definition",
+    "defs/cat.yaml"
+   ],
+   "stdin": "sh\n",
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"stdin\",\n        \"value\": \"sh\\n\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/cat\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"stdin\",\n          \"value\": \"sh\\n\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"'/usr/bin/cat'\",\n    \"shell\": \"sh\"\n  },\n  \"output\": {\n    \"stdout\": \"sh\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2026-11-13T13:47:12+00:00\",\n    \"finished_at\": \"2026-11-13T13:47:12+00:00\",\n    \"duration_seconds\": 0.033867423,\n    \"formatted_duration\": \"33.87ms\"\n  }\n}\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_register_json",
+   "area": "exec-register",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--stdin",
+    "--format",
+    "json"
+   ],
+   "stdin": "reg\n",
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"stdin\",\n        \"value\": \"reg\\n\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/cat\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"stdin\",\n          \"value\": \"reg\\n\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"'/usr/bin/cat'\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"reg\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2026-11-13T13:47:15+00:00\",\n    \"finished_at\": \"2026-11-13T13:47:15+00:00\",\n    \"duration_seconds\": 0.043844894,\n    \"formatted_duration\": \"43.84ms\"\n  }\n}\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_register_yaml_number",
+   "area": "exec-register",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "--stdin",
+    "number=true"
+   ],
+   "stdin": "a\nb\n",
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: stdin\n    value: |\n      a\n      b\n    type: option\n  flags:\n  - number\ncommand:\n  executable: \"/usr/bin/cat\"\n  arguments:\n    options:\n    - name: stdin\n      value: |\n        a\n        b\n      type: option\n    flags:\n    - number\n  full_command: \"'/usr/bin/cat' '-n' '-n'\"\n  shell: bash\noutput:\n  stdout: \"     1\\ta\\n     2\\tb\\n\"\nmetadata:\n  started_at: '2026-11-13T13:47:12+00:00'\n  finished_at: '2026-11-13T13:47:12+00:00'\n  duration_seconds: 0.032465216\n  formatted_duration: 32.47ms\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_register_unknown_tool",
+   "area": "exec-register",
+   "args": [
+    "exec",
+    "nosuchtool",
+    "run"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "---\nstatus: error\nexit_code: 1\nerror: 'Ukiryu::Tool not found: Tool not found: nosuchtool'\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_register_unknown_command",
+   "area": "exec-register",
+   "args": [
+    "exec",
+    "cat",
+    "nosuch"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "---\nstatus: error\nexit_code: 1\nerror: 'Invalid arguments: Unknown command: nosuch for tool: cat'\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_register_unknown_param",
+   "area": "exec-register",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "bogus=1"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "---\nstatus: error\nexit_code: 1\nerror: 'Unexpected error: NoMethodError: undefined method ''bogus='' for an instance\n  of #<Class:0x000073a60207a280>'\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_register_no_command",
+   "area": "exec-gate",
+   "args": [
+    "exec",
+    "cat",
+    "--stdin"
+   ],
+   "stdin": "dflt\n",
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "---\nstatus: error\nexit_code: 1\nerror: 'Invalid arguments: Unknown command: cat/1.0 for tool: cat'\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "exec_register_option_validation",
+   "area": "exec-register",
+   "args": [
+    "exec",
+    "cat",
+    "concatenate",
+    "number=notabool",
+    "--stdin"
+   ],
+   "stdin": "v\n",
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: stdin\n    value: 'v\n\n      '\n    type: option\n  flags:\n  - number\ncommand:\n  executable: \"/usr/bin/cat\"\n  arguments:\n    options:\n    - name: stdin\n      value: 'v\n\n        '\n      type: option\n    flags:\n    - number\n  full_command: \"'/usr/bin/cat' '-n' '-n'\"\n  shell: bash\noutput:\n  stdout: \"     1\\tv\\n\"\nmetadata:\n  started_at: '2026-11-13T13:47:30+00:00'\n  finished_at: '2026-11-13T13:47:30+00:00'\n  duration_seconds: 0.034094989\n  formatted_duration: 34.09ms\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "runfile_missing",
+   "area": "runfile-pre",
+   "args": [
+    "run-file",
+    "nope.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "",
+   "stderr": "Request file not found: nope.yaml\n",
+   "status": 1,
+   "files": {}
+  },
+  {
+   "id": "runfile_directory",
+   "area": "runfile-pre",
+   "args": [
+    "run-file",
+    "adir"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "",
+   "stderr": "Error loading request file: Is a directory @ io_fread - adir\n",
+   "status": 1,
+   "files": {}
+  },
+  {
+   "id": "runfile_invalid_format",
+   "area": "runfile-pre",
+   "args": [
+    "run-file",
+    "req_ok.yaml",
+    "--format",
+    "xml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "",
+   "stderr": "Invalid format: xml. Must be one of: yaml, json, table, raw\n",
+   "status": 1,
+   "files": {}
+  },
+  {
+   "id": "runfile_dry_run",
+   "area": "runfile-dry",
+   "args": [
+    "run-file",
+    "req_ok.yaml",
+    "--dry-run"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "\u001b[33mDRY RUN - Ukiryu Structured Execution Request:\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mTool: cat\u001b[0m\n\u001b[36mCommand: concatenate\u001b[0m\n\u001b[36mArguments:\u001b[0m\n\u001b[37m  number: true\u001b[0m\n\u001b[37m  stdin: \"hi\\n\"\u001b[0m\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "runfile_dry_run_no_color",
+   "area": "runfile-dry",
+   "args": [
+    "run-file",
+    "req_ok.yaml",
+    "--dry-run"
+   ],
+   "stdin": null,
+   "env": {
+    "NO_COLOR": "1"
+   },
+   "pty": false,
+   "note": null,
+   "stdout": "DRY RUN - Ukiryu Structured Execution Request:\n\nTool: cat\nCommand: concatenate\nArguments:\n  number: true\n  stdin: \"hi\\n\"\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "runfile_not_mapping",
+   "area": "runfile-pre",
+   "args": [
+    "run-file",
+    "runfile_not_mapping.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "",
+   "stderr": "[RuntimeError] Request must be a YAML object (hash)\n",
+   "status": 1,
+   "files": {}
+  },
+  {
+   "id": "runfile_no_tool",
+   "area": "runfile-pre",
+   "args": [
+    "run-file",
+    "runfile_no_tool.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "",
+   "stderr": "[RuntimeError] Request must include 'tool' field\n",
+   "status": 1,
+   "files": {}
+  },
+  {
+   "id": "runfile_no_command",
+   "area": "runfile-pre",
+   "args": [
+    "run-file",
+    "runfile_no_command.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "",
+   "stderr": "[RuntimeError] Request must include 'command' field\n",
+   "status": 1,
+   "files": {}
+  },
+  {
+   "id": "runfile_no_arguments",
+   "area": "runfile-pre",
+   "args": [
+    "run-file",
+    "runfile_no_arguments.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "",
+   "stderr": "[RuntimeError] Request must include 'arguments' field\n",
+   "status": 1,
+   "files": {}
+  },
+  {
+   "id": "runfile_arguments_list",
+   "area": "runfile-pre",
+   "args": [
+    "run-file",
+    "runfile_arguments_list.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "",
+   "stderr": "[RuntimeError] 'arguments' must be a YAML object (hash)\n",
+   "status": 1,
+   "files": {}
+  },
+  {
+   "id": "runfile_invalid_yaml",
+   "area": "runfile-pre",
+   "args": [
+    "run-file",
+    "runfile_invalid_yaml.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "",
+   "stderr": "Invalid YAML in request file: (<unknown>): did not find expected ',' or ']' while parsing a flow sequence at line 1 column 7\n",
+   "status": 1,
+   "files": {}
+  },
+  {
+   "id": "runfile_empty",
+   "area": "runfile-pre",
+   "args": [
+    "run-file",
+    "runfile_empty.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "",
+   "stderr": "[RuntimeError] Request must be a YAML object (hash)\n",
+   "status": 1,
+   "files": {}
+  },
+  {
+   "id": "runfile_dry_run_types",
+   "area": "runfile-dry",
+   "args": [
+    "run-file",
+    "runfile_dry_run_types.yaml",
+    "--dry-run"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "\u001b[33mDRY RUN - Ukiryu Structured Execution Request:\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mTool: 12\u001b[0m\n\u001b[36mCommand: sym\u001b[0m\n\u001b[36mArguments:\u001b[0m\n\u001b[37m  a: 1\u001b[0m\n\u001b[37m  b: \"two\"\u001b[0m\n\u001b[37m  c: [1, 2]\u001b[0m\n\u001b[37m  d: {\"x\" => \"y\"}\u001b[0m\n\u001b[37m  e: nil\u001b[0m\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "runfile_execute",
+   "area": "runfile-gate",
+   "args": [
+    "run-file",
+    "req_ok.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": "register tool; Tool#execute gets options positionally and timeout: instead of execution_timeout:",
+   "stdout": "---\nstatus: error\nexit_code: 1\nerror: 'Unexpected error: NoMethodError: undefined method ''stdin='' for an instance\n  of #<Class:0x000073d8009ca788>'\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "runfile_execute_json",
+   "area": "runfile-gate",
+   "args": [
+    "run-file",
+    "req_ok.yaml",
+    "--format",
+    "json"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "{\n  \"status\": \"error\",\n  \"exit_code\": 1,\n  \"error\": \"Unexpected error: NoMethodError: undefined method 'stdin=' for an instance of #<Class:0x00007f6426d680d0>\"\n}\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "runfile_unknown_tool",
+   "area": "runfile-gate",
+   "args": [
+    "run-file",
+    "req_unknown.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "---\nstatus: error\nexit_code: 1\nerror: 'Ukiryu::Tool not found: Tool not found: nosuchtool'\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "cache_info",
+   "area": "cache",
+   "args": [
+    "cache",
+    "info"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "Definition Cache:\n\nStatus: Empty\nEntries: 0\nTTL: 300 seconds\nRefresh Strategy: lazy\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "cache_stats",
+   "area": "cache",
+   "args": [
+    "cache",
+    "stats"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "Cache Statistics:\n\nTotal Entries: 0\nTTL: 300 seconds (5 minutes)\nRefresh Strategy: lazy\n\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "cache_clear",
+   "area": "cache",
+   "args": [
+    "cache",
+    "clear"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "✓ Cache cleared (0 entries)\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "cache_clear_dry_run",
+   "area": "cache",
+   "args": [
+    "cache",
+    "clear",
+    "--dry-run"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "Dry run: Would clear cache\nEntries to be cleared: 0\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "cache_info_verbose",
+   "area": "cache",
+   "args": [
+    "cache",
+    "info",
+    "--verbose"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "Definition Cache:\n\nStatus: Empty\nEntries: 0\nTTL: 300 seconds\nRefresh Strategy: lazy\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "cache_info_tty",
+   "area": "cache",
+   "args": [
+    "cache",
+    "info"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": true,
+   "note": null,
+   "stdout": "Definition Cache:\n\nStatus: Empty\nEntries: 0\nTTL: 300 seconds\nRefresh Strategy: lazy\n",
+   "stderr": null,
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "cache_stats_tty",
+   "area": "cache",
+   "args": [
+    "cache",
+    "stats"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": true,
+   "note": null,
+   "stdout": "Cache Statistics:\n\nTotal Entries: 0\nTTL: 300 seconds (5 minutes)\nRefresh Strategy: lazy\n\n",
+   "stderr": null,
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "cache_clear_tty",
+   "area": "cache",
+   "args": [
+    "cache",
+    "clear"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": true,
+   "note": null,
+   "stdout": "✓ Cache cleared (0 entries)\n",
+   "stderr": null,
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "cache_clear_dry_run_tty",
+   "area": "cache",
+   "args": [
+    "cache",
+    "clear",
+    "--dry-run"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": true,
+   "note": null,
+   "stdout": "Dry run: Would clear cache\nEntries to be cleared: 0\n",
+   "stderr": null,
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "cache_info_tty_no_color",
+   "area": "cache",
+   "args": [
+    "cache",
+    "info"
+   ],
+   "stdin": null,
+   "env": {
+    "NO_COLOR": "1"
+   },
+   "pty": true,
+   "note": null,
+   "stdout": "Definition Cache:\n\nStatus: Empty\nEntries: 0\nTTL: 300 seconds\nRefresh Strategy: lazy\n",
+   "stderr": null,
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "cache_clear_tty_term_dumb",
+   "area": "cache",
+   "args": [
+    "cache",
+    "clear"
+   ],
+   "stdin": null,
+   "env": {
+    "TERM": "dumb"
+   },
+   "pty": true,
+   "note": null,
+   "stdout": "✓ Cache cleared (0 entries)\n",
+   "stderr": null,
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "runfile_execute_no_stdin",
+   "area": "runfile-run",
+   "args": [
+    "run-file",
+    "req_nostdin.yaml"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "---\nstatus: error\nexit_code: 1\nerror: 'Invalid arguments: wrong number of arguments (given 2, expected 1; required\n  keyword: execution_timeout)'\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "runfile_execute_no_stdin_raw",
+   "area": "runfile-run",
+   "args": [
+    "run-file",
+    "req_nostdin.yaml",
+    "--format",
+    "raw"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "",
+   "stderr": "Invalid arguments: wrong number of arguments (given 2, expected 1; required keyword: execution_timeout)\n",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "cache_clear_tty_xterm",
+   "area": "cache",
+   "args": [
+    "cache",
+    "clear"
+   ],
+   "stdin": null,
+   "env": {
+    "TERM": "xterm"
+   },
+   "pty": true,
+   "note": null,
+   "stdout": "\u001b[32m✓ Cache cleared (0 entries)\u001b[0m\n",
+   "stderr": null,
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "cache_info_tty_xterm",
+   "area": "cache",
+   "args": [
+    "cache",
+    "info"
+   ],
+   "stdin": null,
+   "env": {
+    "TERM": "xterm"
+   },
+   "pty": true,
+   "note": null,
+   "stdout": "\u001b[36mDefinition Cache:\u001b[0m\n\u001b[0m\u001b[0m\n\u001b[31m[NameError] uninitialized constant Thor::Shell::Color::DIM\u001b[0m\n",
+   "stderr": null,
+   "status": 1,
+   "files": {}
+  },
+  {
+   "id": "cache_stats_tty_xterm",
+   "area": "cache",
+   "args": [
+    "cache",
+    "stats"
+   ],
+   "stdin": null,
+   "env": {
+    "TERM": "xterm"
+   },
+   "pty": true,
+   "note": null,
+   "stdout": "\u001b[36mCache Statistics:\u001b[0m\n\u001b[0m\u001b[0m\n\u001b[37mTotal Entries: 0\u001b[0m\n\u001b[37mTTL: 300 seconds (5 minutes)\u001b[0m\n\u001b[37mRefresh Strategy: lazy\u001b[0m\n\u001b[0m\u001b[0m\n",
+   "stderr": null,
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "cache_clear_dry_run_tty_xterm",
+   "area": "cache",
+   "args": [
+    "cache",
+    "clear",
+    "--dry-run"
+   ],
+   "stdin": null,
+   "env": {
+    "TERM": "xterm"
+   },
+   "pty": true,
+   "note": null,
+   "stdout": "\u001b[36mDry run: Would clear cache\u001b[0m\n\u001b[37mEntries to be cleared: 0\u001b[0m\n",
+   "stderr": null,
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "cache_info_tty_xterm_no_color",
+   "area": "cache",
+   "args": [
+    "cache",
+    "info"
+   ],
+   "stdin": null,
+   "env": {
+    "TERM": "xterm",
+    "NO_COLOR": "1"
+   },
+   "pty": true,
+   "note": null,
+   "stdout": "Definition Cache:\n\nStatus: Empty\nEntries: 0\nTTL: 300 seconds\nRefresh Strategy: lazy\n",
+   "stderr": null,
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "cache_info_tty_xterm_empty_no_color",
+   "area": "cache",
+   "args": [
+    "cache",
+    "info"
+   ],
+   "stdin": null,
+   "env": {
+    "TERM": "xterm",
+    "NO_COLOR": ""
+   },
+   "pty": true,
+   "note": null,
+   "stdout": "\u001b[36mDefinition Cache:\u001b[0m\n\u001b[0m\u001b[0m\n\u001b[31m[NameError] uninitialized constant Thor::Shell::Color::DIM\u001b[0m\n",
+   "stderr": null,
+   "status": 1,
+   "files": {}
+  }
+ ],
+ "source": {
+  "oracle": "ukiryu/ukiryu ab6df353c6dc2d7faf7817a86aafcafa82579896 exe/ukiryu",
+  "capture": "capture/cli.rb (K22-CLI-EXECUTE evidence), run in a fresh copy of fixture/"
+ }
+}
