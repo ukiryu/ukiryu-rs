@@ -3,9 +3,13 @@
 export function check(module, data) {
   const failures = [];
   let count = 0;
+  const canonical = value => Array.isArray(value) ? value.map(canonical)
+    : value !== null && typeof value === 'object'
+      ? Object.fromEntries(Object.keys(value).sort().map(key => [key, canonical(value[key])]))
+      : value;
   const compare = (id, actual, expected) => {
     count++;
-    if (JSON.stringify(actual) !== JSON.stringify(expected)) failures.push(`${id}: ${JSON.stringify(actual)} != ${JSON.stringify(expected)}`);
+    if (JSON.stringify(canonical(actual)) !== JSON.stringify(canonical(expected))) failures.push(`${id}: ${JSON.stringify(actual)} != ${JSON.stringify(expected)}`);
   };
   for (const row of data.cases) {
     const {pattern, options, string} = row.input;

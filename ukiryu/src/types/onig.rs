@@ -358,7 +358,6 @@ impl Preprocessor<'_> {
             }
             let c = s[q];
             q += 1;
-            let mut control = false;
             match c {
                 b'\\' => break 'again u64::from(b'\\'),
                 b'n' => break 'again 0x0A,
@@ -406,26 +405,24 @@ impl Preprocessor<'_> {
                         return Err("too short control escape".into());
                     }
                     q += 1;
-                    control = true;
                 }
-                b'c' => control = true,
+                b'c' => {}
                 _ => return Err("unexpected escape sequence".into()),
             }
-            if control {
-                if ctrl {
-                    return Err("duplicate control escape".into());
-                }
-                ctrl = true;
-                if q < end && s[q] & 0x80 == 0 {
-                    if s[q] == b'\\' {
-                        q += 1;
-                        continue 'again;
-                    }
-                    q += 1;
-                    break 'again u64::from(s[q - 1]);
-                }
-                return Err("too short control escape".into());
+            // Only \C- and \c get here.
+            if ctrl {
+                return Err("duplicate control escape".into());
             }
+            ctrl = true;
+            if q < end && s[q] & 0x80 == 0 {
+                if s[q] == b'\\' {
+                    q += 1;
+                    continue 'again;
+                }
+                q += 1;
+                break 'again u64::from(s[q - 1]);
+            }
+            return Err("too short control escape".into());
         };
         if code > 0xFF {
             return Err("invalid escape code".into());
