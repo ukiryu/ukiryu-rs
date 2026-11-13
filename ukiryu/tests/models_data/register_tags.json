@@ -1,10 +1,10 @@
 {
-  "producer": "capture_register_tags.rb (F2-VALUE-UNIFY evidence) running ukiryu ab6df353 under Ruby 4.0.1",
+  "producer": "capture_register_tags.rb (F2-VALUE-UNIFY evidence) re-run under Ruby 4.0.1 with Psych pinned to 5.3.1 (the oracle lock); all 21 rows equal the earlier capture",
   "source": {
     "oracle": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
     "api": "lib/ukiryu/register.rb YAML.safe_load(permitted_classes: [Symbol], aliases: true) + Utils.symbolize_keys",
     "ruby": "4.0.1",
-    "psych": "5.5.0"
+    "psych": "5.3.1"
   },
   "rows": [
     {

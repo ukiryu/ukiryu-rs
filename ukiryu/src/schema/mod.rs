@@ -34,6 +34,7 @@ mod uri;
 pub mod bundled;
 
 pub use data::Data;
+pub(crate) use psych::tokenize;
 pub use psych::{safe_load, Permitted};
 
 use std::fmt;
