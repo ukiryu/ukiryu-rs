@@ -57,9 +57,12 @@ end
 
 # What a child actually receives on stdin and writes on stdout, as bytes:
 # a Ruby child hex-dumps its binary stdin and writes CR LF itself.
-dump = ['-e', 'STDOUT.binmode; STDIN.binmode; print STDIN.read.unpack1(%q(H*)); print 13.chr, 10.chr']
+require 'tmpdir'
+probe_script = File.join(Dir.tmpdir, 'ukiryu_stdin_probe.rb')
+File.binwrite(probe_script, "STDOUT.binmode\nSTDIN.binmode\nprint STDIN.read.unpack1('H*')\nprint 13.chr, 10.chr\n")
 child_rows = []
-child_rows << capture('child_stdin_bytes', WINDOWS ? :cmd : :bash, RbConfig.ruby, dump, "a\nb\r\nc\x00")
+child_rows << capture('child_stdin_bytes', WINDOWS ? :cmd : :bash, RbConfig.ruby, [probe_script], "a\nb\r\nc\x00")
+child_rows << capture('child_stdin_bytes_powershell', :powershell, RbConfig.ruby, [probe_script], "a\nb\r\nc\x00")
 
 
 ps = WINDOWS ? 'powershell' : 'pwsh'
