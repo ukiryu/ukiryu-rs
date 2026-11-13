@@ -10,7 +10,7 @@
 use serde_json::Value as Json;
 use std::path::PathBuf;
 use ukiryu::definition::documentation::{
-    DocumentationError, DocumentationErrorKind, DocumentationGenerator, Format, IoErrno, FORMATS,
+    DocumentationError, DocumentationErrorKind, DocumentationGenerator, Format, FORMATS,
 };
 use yeptris::{Number, Value};
 
@@ -201,6 +201,8 @@ fn generate_to_file_reports_unsupported_format_before_writing() {
 #[cfg(unix)]
 #[test]
 fn generate_to_file_errno_messages_match_linux_capture() {
+    use ukiryu::definition::documentation::IoErrno;
+
     let doc = oracle();
     let expected = &doc["generate_to_file_io_errors_linux"];
     let dir = temp_path("io");
