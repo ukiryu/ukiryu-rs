@@ -1,6 +1,6 @@
-//! Authoring verbs: `validate`, `lint`, `docs` and `definitions`.
+//! Authoring verbs: `validate`, `lint`, `docs`, `definitions` and `extract`.
 //!
-//! Source: `lib/ukiryu/cli_commands/{validate,lint,docs,definitions}_command.rb`
+//! Source: `lib/ukiryu/cli_commands/{validate,lint,docs,definitions,extract}_command.rb`
 //! and `lib/ukiryu/definition/definition_validator.rb` at the pinned Ruby
 //! oracle (ukiryu/ukiryu ab6df35), with Thor 1.5.0 output rules.
 //!
@@ -20,9 +20,15 @@
 //! the deviation is listed in [`ORACLE_DEFECTS`]; every other path matches the
 //! captured oracle bytes.
 //!
+//! `extract` is a `BaseCommand` (it prints with `BaseCommand#say`, coloured
+//! unless `Config#colors_disabled?`) and runs the merged
+//! `extractors::help::extract` on a caller-supplied [`CommandHost`]
+//! (`extractors::base::ProcessHost` in the binary; its environment and shell
+//! are the owner-pending D1/D2 choices, so the caller makes them).
+//!
 //! Not here (gated on APIs that are not merged yet): `validate --executable`
-//! and `validate --all` smoke tests (Tool + executor), `extract` (native
-//! extractor), `describe` (Tool). Those paths return [`AuthorError::Gated`].
+//! and `validate --all` smoke tests (Tool + executor) and `describe` (Tool).
+//! The validate paths return [`AuthorError::Gated`].
 //! The remote schema download of `DefinitionValidator` is not performed: with
 //! no `--schema` and no usable `UKIRYU_SCHEMA_PATH`, only the structural
 //! checks run (the Ruby behaviour when the download is unavailable).
@@ -36,6 +42,7 @@ use ukiryu::definition::{
     DefinitionDocument, DefinitionError, DefinitionErrorKind, DefinitionMetadata, Discovery,
     DiscoveryEnv, DocumentParseError, Loader, Severity, ValidationMode, ValidationResult,
 };
+use ukiryu::extractors::help::{self as extractors, CommandHost, ExtractionMethod};
 use ukiryu::models::attr::Model;
 use ukiryu::models::error::ModelErrorKind;
 use ukiryu::models::tool_definition::ToolDefinition;
@@ -87,6 +94,9 @@ pub struct AuthorContext {
     /// `UKIRYU_REGISTER`, user clone). `None` when it is not resolved; the
     /// verbs that need it then return [`AuthorError::RegisterUnavailable`].
     pub default_register: Option<String>,
+    /// `Config#colors_disabled?` (`use_color: false` or `NO_COLOR`), read by
+    /// `BaseCommand#say` in `extract`.
+    pub config_colors_disabled: bool,
 }
 
 /// A path the handlers cannot complete with the merged core APIs.
@@ -1830,4 +1840,111 @@ impl DefinitionDocument for ToolDocument {
     fn resolve_inheritance(&mut self) {
         self.inner.resolve_inheritance();
     }
+}
+
+// ------------------------------------------------------------------ extract
+
+/// `ukiryu extract TOOL` options (raw strings as given).
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct ExtractInput {
+    pub tool: String,
+    /// `--output`.
+    pub output: Option<String>,
+    /// `--method` (`auto` when absent; any other value is passed through as
+    /// a Symbol, so unknown names reach the extractor's own error).
+    pub method: Option<String>,
+    pub verbose: bool,
+}
+
+/// `BaseCommand#say(message, color)`.
+fn base_say(out: &mut Out, message: &str, code: u8, disabled: bool) {
+    if disabled {
+        out.puts(message);
+    } else {
+        out.puts(&format!("\x1b[{code}m{message}\x1b[0m"));
+    }
+}
+
+/// `ukiryu extract TOOL` (`ExtractCommand#run`). Commands run through
+/// `host`; host failures that the source does not rescue are printed the
+/// FriendlyCLI way (`[Class] message`, exit 1).
+pub fn extract(
+    input: ExtractInput,
+    ctx: &AuthorContext,
+    host: &mut dyn CommandHost,
+) -> Result<CommandOutcome, AuthorError> {
+    let mut out = Out::new(ctx);
+    // FriendlyCLI's error colour follows Thor, not Config.
+    let result = run_extract(&input, ctx, host, &mut out);
+    out.finish(result)
+}
+
+fn run_extract(
+    input: &ExtractInput,
+    ctx: &AuthorContext,
+    host: &mut dyn CommandHost,
+    out: &mut Out,
+) -> Step<i32> {
+    let off = ctx.config_colors_disabled;
+    let method_option = input.method.as_deref().unwrap_or("auto");
+    let method = match method_option {
+        "auto" => ExtractionMethod::Auto,
+        "native" => ExtractionMethod::Native,
+        "help" => ExtractionMethod::Help,
+        other => ExtractionMethod::Other(other.to_owned()),
+    };
+    let result = extractors::extract(&input.tool, Some(method), host)
+        .map_err(|e| raise(e.class_name(), e.message()))?;
+    let used = result.method.map(|m| m.as_str()).unwrap_or("");
+    if result.success {
+        let yaml = result.yaml.unwrap_or_default();
+        match input.output.as_deref() {
+            Some(path) => {
+                out.writes.push(OutputWrite::File {
+                    path: path.to_owned(),
+                    contents: yaml,
+                });
+                base_say(out, &format!("Definition extracted to: {path}"), 32, off);
+                if input.verbose {
+                    base_say(out, &format!("Method: {used}"), 36, off);
+                }
+            }
+            None => {
+                out.puts(&yaml);
+                if input.verbose {
+                    base_say(out, &format!("\n# Extracted using: {used}"), 36, off);
+                }
+            }
+        }
+        return Ok(0);
+    }
+    // `@tool_name` is never assigned in the source, so it interpolates as ''.
+    base_say(out, "Failed to extract definition from ''", 31, off);
+    let error = result.error.unwrap_or_default();
+    base_say(out, &format!("Error: {error}"), 31, off);
+    base_say(out, "", 37, off);
+    base_say(
+        out,
+        "The tool may not be installed or may not support extraction.",
+        33,
+        off,
+    );
+    base_say(out, "", 37, off);
+    base_say(out, "Extraction methods tried:", 33, off);
+    if method_option != "auto" {
+        base_say(
+            out,
+            &format!("  - {method_option} (explicitly selected)"),
+            37,
+            off,
+        );
+    } else {
+        base_say(out, "  - native (try --ukiryu-definition flag)", 37, off);
+        base_say(out, "  - help (parse --help output)", 37, off);
+    }
+    base_say(out, "", 37, off);
+    base_say(out, "You can specify a method with --method:", 33, off);
+    base_say(out, "  ukiryu extract TOOL --method native", 37, off);
+    base_say(out, "  ukiryu extract TOOL --method help", 37, off);
+    Err(Stop::Exit(1))
 }

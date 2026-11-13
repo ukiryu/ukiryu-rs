@@ -2427,7 +2427,7 @@
    "stdin": null,
    "pty": false,
    "mode": "frozen",
-   "reason": "extract waits on the native extractor API",
+   "reason": "Ruby Shell.detect fails with no shell on PATH; the port's host is chosen by the caller (D2)",
    "expect": {
     "stdout": "",
     "stderr": "[RuntimeError] Shell 'bash' not found in system PATH\n",
@@ -2773,6 +2773,280 @@
     "stdout": "Tool: Fancy-Tool\nVersion: 1.0\nSource: user\nPath: {root}/xdg/ukiryu/definitions/fancy-1.0.yaml\nExists: Yes\nModified: 2026-01-02 03:04:05 +0000\n\nValidation: ✗ Invalid\nError: Profile validation failed:\n  - Invalid ukiryu_schema format: v1\n",
     "stderr": "",
     "exit": 0
+   }
+  },
+  {
+   "id": "extract_native",
+   "runner": "exe",
+   "args": [
+    "extract",
+    "ukx-native"
+   ],
+   "env": {
+    "PATH": "{root}/xbin:/usr/bin:/bin"
+   },
+   "stdin": null,
+   "pty": false,
+   "mode": "exact",
+   "expect": {
+    "stdout": "name: ukx-native\nversion: \"1.4.0\"\nprofiles:\n- name: default\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "extract_native_verbose",
+   "runner": "exe",
+   "args": [
+    "extract",
+    "ukx-native",
+    "-v"
+   ],
+   "env": {
+    "PATH": "{root}/xbin:/usr/bin:/bin"
+   },
+   "stdin": null,
+   "pty": false,
+   "mode": "exact",
+   "expect": {
+    "stdout": "name: ukx-native\nversion: \"1.4.0\"\nprofiles:\n- name: default\n\u001b[36m\n# Extracted using: native\u001b[0m\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "extract_native_output",
+   "runner": "exe",
+   "args": [
+    "extract",
+    "ukx-native",
+    "-o",
+    "out.yaml"
+   ],
+   "env": {
+    "PATH": "{root}/xbin:/usr/bin:/bin"
+   },
+   "stdin": null,
+   "pty": false,
+   "mode": "exact",
+   "expect": {
+    "stdout": "\u001b[32mDefinition extracted to: out.yaml\u001b[0m\n",
+    "stderr": "",
+    "exit": 0,
+    "files": [
+     "{root}/out.yaml"
+    ],
+    "file_contents": {
+     "out.yaml": "name: ukx-native\nversion: \"1.4.0\"\nprofiles:\n- name: default\n"
+    }
+   }
+  },
+  {
+   "id": "extract_native_output_verbose",
+   "runner": "exe",
+   "args": [
+    "extract",
+    "ukx-native",
+    "-o",
+    "out.yaml",
+    "-v"
+   ],
+   "env": {
+    "PATH": "{root}/xbin:/usr/bin:/bin"
+   },
+   "stdin": null,
+   "pty": false,
+   "mode": "exact",
+   "expect": {
+    "stdout": "\u001b[32mDefinition extracted to: out.yaml\u001b[0m\n\u001b[36mMethod: native\u001b[0m\n",
+    "stderr": "",
+    "exit": 0,
+    "files": [
+     "{root}/out.yaml"
+    ],
+    "file_contents": {
+     "out.yaml": "name: ukx-native\nversion: \"1.4.0\"\nprofiles:\n- name: default\n"
+    }
+   }
+  },
+  {
+   "id": "extract_help_auto",
+   "runner": "exe",
+   "args": [
+    "extract",
+    "ukx-help"
+   ],
+   "env": {
+    "PATH": "{root}/xbin:/usr/bin:/bin"
+   },
+   "stdin": null,
+   "pty": false,
+   "mode": "exact",
+   "expect": {
+    "stdout": "---\nukiryu_schema: '1.0'\n\"$self\": https://www.ukiryu.com/register/1.0/ukx-help/2.3.4\nname: ukx-help\nversion: 2.3.4\ndisplay_name: Ukx-help\nprofiles:\n- name: default\n  platforms:\n  - macos\n  - linux\n  - windows\n  shells:\n  - bash\n  - zsh\n  - fish\n  - powershell\n  - cmd\n  commands:\n  - name: default\n    description: Default ukx-help command\n    options:\n    - name: output\n      description: \"-o, [--output FILE]    Write output to FILE\"\n      cli: \"-o\"\n      type: file\n    - name: level\n      cli: \"--level\"\n      description: \"[--level=NUM]          Compression level\"\n      type: integer\n    - name: quiet\n      description: \"-q, [--quiet]          Suppress messages\"\n      cli: \"-q\"\n      type: boolean\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "extract_help_method",
+   "runner": "exe",
+   "args": [
+    "extract",
+    "ukx-help",
+    "-m",
+    "help",
+    "-v"
+   ],
+   "env": {
+    "PATH": "{root}/xbin:/usr/bin:/bin"
+   },
+   "stdin": null,
+   "pty": false,
+   "mode": "exact",
+   "expect": {
+    "stdout": "---\nukiryu_schema: '1.0'\n\"$self\": https://www.ukiryu.com/register/1.0/ukx-help/2.3.4\nname: ukx-help\nversion: 2.3.4\ndisplay_name: Ukx-help\nprofiles:\n- name: default\n  platforms:\n  - macos\n  - linux\n  - windows\n  shells:\n  - bash\n  - zsh\n  - fish\n  - powershell\n  - cmd\n  commands:\n  - name: default\n    description: Default ukx-help command\n    options:\n    - name: output\n      description: \"-o, [--output FILE]    Write output to FILE\"\n      cli: \"-o\"\n      type: file\n    - name: level\n      cli: \"--level\"\n      description: \"[--level=NUM]          Compression level\"\n      type: integer\n    - name: quiet\n      description: \"-q, [--quiet]          Suppress messages\"\n      cli: \"-q\"\n      type: boolean\n\u001b[36m\n# Extracted using: help\u001b[0m\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "extract_help_as_native",
+   "runner": "exe",
+   "args": [
+    "extract",
+    "ukx-help",
+    "-m",
+    "native"
+   ],
+   "env": {
+    "PATH": "{root}/xbin:/usr/bin:/bin"
+   },
+   "stdin": null,
+   "pty": false,
+   "mode": "exact",
+   "expect": {
+    "stdout": "\u001b[31mFailed to extract definition from ''\u001b[0m\n\u001b[31mError: Tool 'ukx-help' does not support native definition extraction\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mThe tool may not be installed or may not support extraction.\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mExtraction methods tried:\u001b[0m\n\u001b[37m  - native (explicitly selected)\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mYou can specify a method with --method:\u001b[0m\n\u001b[37m  ukiryu extract TOOL --method native\u001b[0m\n\u001b[37m  ukiryu extract TOOL --method help\u001b[0m\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "extract_native_broken",
+   "runner": "exe",
+   "args": [
+    "extract",
+    "ukx-native-broken"
+   ],
+   "env": {
+    "PATH": "{root}/xbin:/usr/bin:/bin"
+   },
+   "stdin": null,
+   "pty": false,
+   "mode": "exact",
+   "expect": {
+    "stdout": "---\nukiryu_schema: '1.0'\n\"$self\": https://www.ukiryu.com/register/1.0/ukx-native-broken/1.0\nname: ukx-native-broken\nversion: '1.0'\ndisplay_name: Ukx-native-broken\nprofiles:\n- name: default\n  platforms:\n  - macos\n  - linux\n  - windows\n  shells:\n  - bash\n  - zsh\n  - fish\n  - powershell\n  - cmd\n  commands:\n  - name: default\n    description: Default ukx-native-broken command\n    options: []\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "extract_native_blank",
+   "runner": "exe",
+   "args": [
+    "extract",
+    "ukx-native-blank"
+   ],
+   "env": {
+    "PATH": "{root}/xbin:/usr/bin:/bin"
+   },
+   "stdin": null,
+   "pty": false,
+   "mode": "exact",
+   "expect": {
+    "stdout": "---\nukiryu_schema: '1.0'\n\"$self\": https://www.ukiryu.com/register/1.0/ukx-native-blank/1.0\nname: ukx-native-blank\nversion: '1.0'\ndisplay_name: Ukx-native-blank\nprofiles:\n- name: default\n  platforms:\n  - macos\n  - linux\n  - windows\n  shells:\n  - bash\n  - zsh\n  - fish\n  - powershell\n  - cmd\n  commands:\n  - name: default\n    description: Default ukx-native-blank command\n    options: []\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "extract_help_fails",
+   "runner": "exe",
+   "args": [
+    "extract",
+    "ukx-help-fails"
+   ],
+   "env": {
+    "PATH": "{root}/xbin:/usr/bin:/bin"
+   },
+   "stdin": null,
+   "pty": false,
+   "mode": "exact",
+   "expect": {
+    "stdout": "\u001b[31mFailed to extract definition from ''\u001b[0m\n\u001b[31mError: Tool 'ukx-help-fails' does not have help output\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mThe tool may not be installed or may not support extraction.\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mExtraction methods tried:\u001b[0m\n\u001b[37m  - native (try --ukiryu-definition flag)\u001b[0m\n\u001b[37m  - help (parse --help output)\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mYou can specify a method with --method:\u001b[0m\n\u001b[37m  ukiryu extract TOOL --method native\u001b[0m\n\u001b[37m  ukiryu extract TOOL --method help\u001b[0m\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "extract_missing",
+   "runner": "exe",
+   "args": [
+    "extract",
+    "ukx-no-such-tool"
+   ],
+   "env": {
+    "PATH": "{root}/xbin:/usr/bin:/bin"
+   },
+   "stdin": null,
+   "pty": false,
+   "mode": "exact",
+   "expect": {
+    "stdout": "\u001b[31mFailed to extract definition from ''\u001b[0m\n\u001b[31mError: Tool 'ukx-no-such-tool' does not have help output\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mThe tool may not be installed or may not support extraction.\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mExtraction methods tried:\u001b[0m\n\u001b[37m  - native (try --ukiryu-definition flag)\u001b[0m\n\u001b[37m  - help (parse --help output)\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mYou can specify a method with --method:\u001b[0m\n\u001b[37m  ukiryu extract TOOL --method native\u001b[0m\n\u001b[37m  ukiryu extract TOOL --method help\u001b[0m\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "extract_unknown_method",
+   "runner": "exe",
+   "args": [
+    "extract",
+    "ukx-native",
+    "-m",
+    "bogus"
+   ],
+   "env": {
+    "PATH": "{root}/xbin:/usr/bin:/bin"
+   },
+   "stdin": null,
+   "pty": false,
+   "mode": "exact",
+   "expect": {
+    "stdout": "\u001b[31mFailed to extract definition from ''\u001b[0m\n\u001b[31mError: Unknown extraction method: bogus\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mThe tool may not be installed or may not support extraction.\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mExtraction methods tried:\u001b[0m\n\u001b[37m  - bogus (explicitly selected)\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mYou can specify a method with --method:\u001b[0m\n\u001b[37m  ukiryu extract TOOL --method native\u001b[0m\n\u001b[37m  ukiryu extract TOOL --method help\u001b[0m\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "extract_auto_method",
+   "runner": "exe",
+   "args": [
+    "extract",
+    "ukx-no-such-tool",
+    "-m",
+    "auto"
+   ],
+   "env": {
+    "PATH": "{root}/xbin:/usr/bin:/bin"
+   },
+   "stdin": null,
+   "pty": false,
+   "mode": "exact",
+   "expect": {
+    "stdout": "\u001b[31mFailed to extract definition from ''\u001b[0m\n\u001b[31mError: Tool 'ukx-no-such-tool' does not have help output\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mThe tool may not be installed or may not support extraction.\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mExtraction methods tried:\u001b[0m\n\u001b[37m  - native (try --ukiryu-definition flag)\u001b[0m\n\u001b[37m  - help (parse --help output)\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mYou can specify a method with --method:\u001b[0m\n\u001b[37m  ukiryu extract TOOL --method native\u001b[0m\n\u001b[37m  ukiryu extract TOOL --method help\u001b[0m\n",
+    "stderr": "",
+    "exit": 1
    }
   },
   {

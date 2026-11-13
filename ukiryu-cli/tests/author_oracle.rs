@@ -15,10 +15,14 @@ use serde_json::Value;
 use std::path::{Path, PathBuf};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use ukiryu::definition::DiscoveryEnv;
+use ukiryu::environment::Environment;
+use ukiryu::extractors::base::ProcessHost;
 use ukiryu::render::OutputWrite;
+use ukiryu::runtime::ShellName;
 use ukiryu_cli::commands::author::{
     self, AuthorContext, AuthorError, Confirm, DefinitionsInput, DocsInput, DocsOptions,
-    DocsTarget, LintInput, LintOptions, LintTarget, ValidateInput, ValidateOptions, ValidateTarget,
+    DocsTarget, ExtractInput, LintInput, LintOptions, LintTarget, ValidateInput, ValidateOptions,
+    ValidateTarget,
 };
 use ukiryu_cli::commands::CommandOutcome;
 
@@ -256,6 +260,25 @@ fn run_case(case: &Value, ctx: &AuthorContext, answer: &mut Answer) -> Run {
             };
             author::definitions(input, ctx, answer)
         }
+        "extract" => {
+            let a = split(rest, false);
+            let root = std::env::current_dir().unwrap();
+            let bin = root.join("xbin");
+            let environment = Environment::from_process()
+                .expect("UTF-8 process environment")
+                .prepend_path(&[bin.to_str().unwrap()]);
+            let mut host = ProcessHost::new(environment, ShellName::Bash);
+            author::extract(
+                ExtractInput {
+                    tool: a.positional[0].clone(),
+                    output: a.get(&["-o", "--output"]),
+                    method: a.get(&["-m", "--method"]),
+                    verbose: a.has(&["-v", "--verbose"]),
+                },
+                ctx,
+                &mut host,
+            )
+        }
         other => panic!("unexpected verb {other}"),
     };
     match result {
@@ -308,6 +331,7 @@ fn context(case: &Value, root: &str) -> AuthorContext {
         },
         schema_path_env: env("UKIRYU_SCHEMA_PATH"),
         default_register: Some(env("UKIRYU_REGISTER").unwrap_or(format!("{root}/register"))),
+        config_colors_disabled: false,
     }
 }
 
@@ -472,6 +496,8 @@ fn case_files_dir(case: &Value, root: &Path) -> PathBuf {
         root.join("outdocs")
     } else if args.contains(&"--output") {
         root.join("out.md")
+    } else if args.contains(&"-o") {
+        root.join("out.yaml")
     } else {
         root.join("xdg")
     }
