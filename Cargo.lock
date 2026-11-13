@@ -265,6 +265,7 @@ dependencies = [
  "clap",
  "serde_json",
  "ukiryu",
+ "yeptris",
 ]
 
 [[package]]
