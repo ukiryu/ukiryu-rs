@@ -70,7 +70,7 @@ fn assert_result(id: &str, execution: &Execution) {
     assert_eq!(row["outcome"], "result", "{id}");
     let result = &execution.result;
     if let Some(stdout) = row["stdout"].as_str() {
-        assert_eq!(result.stdout(), stdout, "{id} stdout");
+        assert_eq!(result.stdout(), stdout.as_bytes(), "{id} stdout");
     }
     assert_eq!(
         hex(&execution.stdout),
@@ -79,7 +79,7 @@ fn assert_result(id: &str, execution: &Execution) {
     );
     assert_eq!(
         result.stderr(),
-        row["stderr"].as_str().expect("stderr"),
+        row["stderr"].as_str().expect("stderr").as_bytes(),
         "{id}"
     );
     assert_eq!(
@@ -265,7 +265,7 @@ fn exit_status_rows() {
             Seconds::Int(30),
         )),
     );
-    assert_eq!(failed.result.stderr(), "error\n");
+    assert_eq!(failed.result.stderr(), b"error\n");
     assert_failed(
         "false_raises",
         execute(bash("false", &[], Seconds::Int(30))),
@@ -310,9 +310,8 @@ fn missing_executable_is_status_127() {
         execution.result.exit_status(),
         row["exit_status"].as_i64().unwrap()
     );
-    assert!(execution
-        .result
-        .stderr()
+    assert!(std::str::from_utf8(execution.result.stderr())
+        .expect("UTF-8 stderr")
         .contains("ukiryu_no_such_exe_xyz: command not found"));
     assert!(row["stderr"]
         .as_str()
@@ -385,6 +384,55 @@ fn timeout_kills_descendants() {
         !marker.exists(),
         "a descendant survived the timeout and wrote {marker:?}"
     );
+}
+
+/// Whether a process is gone: no such pid, or a zombie awaiting its reaper.
+fn terminated(pid: &str) -> bool {
+    let out = std::process::Command::new("ps")
+        .args(["-o", "stat=", "-p", pid])
+        .output()
+        .expect("run ps");
+    let stat = String::from_utf8_lossy(&out.stdout);
+    let stat = stat.trim();
+    stat.is_empty() || stat.starts_with('Z')
+}
+
+#[test]
+fn timeout_kills_child_and_grandchild_that_hold_the_pipes() {
+    let dir = temp_dir("tree-ids");
+    let ids = dir.join("ids");
+    // The shell records its own pid and a grandchild that inherits stdout
+    // and stderr, then waits for it.
+    let script = format!(
+        "echo $$ > '{0}'; sleep 30 & echo $! >> '{0}'; wait",
+        ids.display()
+    );
+    let start = Instant::now();
+    let err = execute(bash("sh", &["-c", &script], Seconds::Int(2))).unwrap_err();
+    let elapsed = start.elapsed();
+    assert!(matches!(err, ExecuteError::TimedOut(_)), "{err:?}");
+    assert!(
+        elapsed < Duration::from_secs(6),
+        "returned after {elapsed:?}"
+    );
+    let recorded = std::fs::read_to_string(&ids).expect("pid file");
+    let pids: Vec<&str> = recorded.split_whitespace().collect();
+    assert_eq!(pids.len(), 2, "{recorded:?}");
+    let mut gone = false;
+    for _ in 0..50 {
+        gone = pids.iter().all(|pid| terminated(pid));
+        if gone {
+            break;
+        }
+        std::thread::sleep(Duration::from_millis(100));
+    }
+    println!(
+        "EVIDENCE executor tree timeout: child={} grandchild={} returned_after_ms={} all_terminated={gone}",
+        pids[0],
+        pids[1],
+        elapsed.as_millis()
+    );
+    assert!(gone, "processes {pids:?} survived the timeout");
 }
 
 #[test]
@@ -460,21 +508,8 @@ fn environment_rows() {
     );
 }
 
-#[test]
-fn display_is_removed_from_the_child() {
-    let request = ExecuteRequest::new(
-        "sh",
-        strings(&["-c", "echo \"${DISPLAY-unset}\""]),
-        Environment::from_pairs([("DISPLAY", ":5")]),
-        ShellName::Bash,
-        Seconds::Int(30),
-    );
-    assert_result("display_user_set_parent_unset", &run(request));
-    for id in ["display_parent_set", "display_user_set"] {
-        assert_eq!(row(id)["stdout"], ":99\n", "frozen Ruby observation");
-        assert_eq!(row(id)["contract"], "migrated");
-    }
-}
+// The DISPLAY and time-zone rows change the process environment, so they
+// run in their own test binary (executor_host_env.rs).
 
 // --- Working directory ---
 
@@ -539,7 +574,7 @@ fn stdin_from_reader() {
     );
     let pipe_like = std::io::Cursor::new(b"pipe data".to_vec());
     let execution = run(bash("/bin/cat", &[], Seconds::Int(90)).stdin_reader(pipe_like));
-    assert_eq!(execution.result.stdout(), "pipe data");
+    assert_eq!(execution.result.stdout(), b"pipe data");
 }
 
 #[test]
@@ -565,7 +600,8 @@ fn utf8_and_invalid_output() {
     );
     let execution = run(bash("printf", &["a\\377b"], Seconds::Int(30)));
     assert_result("stdout_invalid_utf8", &execution);
-    assert_eq!(execution.result.stdout(), "a\u{fffd}b");
+    // Ruby keeps the invalid byte (row stdout_bytes 61ff62); no U+FFFD.
+    assert_eq!(execution.result.stdout(), b"a\xffb");
 }
 
 #[test]

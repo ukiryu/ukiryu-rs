@@ -1,12 +1,18 @@
-//! `Date._parse(string, true)`, as `Time.parse` uses it.
+//! `Date._parse(string, true)`, shared by `Time.parse` and `Date.parse`.
 //!
 //! Port of `date__parse` in `ext/date/date_parse.c` of the date gem 3.5.1
 //! (the default gem of Ruby 4.0.1), built without `TIGHT_PARSER`. Every
 //! sub-parser keeps its Onigmo pattern text verbatim and runs through
 //! [`super::onig`]; a match is replaced by one space before the next
-//! sub-parser runs, exactly like the C code. Only the keys `Time.parse` reads
-//! are kept (`year yday mon mday hour min sec sec_fraction zone`); the
-//! commercial-week keys and `offset` are parsed and dropped.
+//! sub-parser runs, exactly like the C code.
+//!
+//! [`Parsed`] holds every key the C code sets except `offset`: the civil and
+//! ordinal keys, `wday`, the commercial-week keys (`cwyear cweek cwday`), the
+//! time keys and `zone` as the matched text. `Time.parse` reads its subset
+//! (`year yday mon mday hour min sec sec_fraction zone`); `Date.parse`
+//! (`crate::extractors::man`) also needs `wday` and the commercial keys for
+//! its fragment completion. `offset` (`date_zone_to_diff`) is not computed:
+//! neither caller reads it.
 use std::sync::OnceLock;
 
 use num_bigint::BigInt;
@@ -22,13 +28,20 @@ pub struct Fraction {
     pub digits: usize,
 }
 
-/// The `Date._parse` hash keys `Time.parse` reads.
+/// The `Date._parse` hash, without `offset`. Integers are unbounded, as
+/// Ruby's are; `bc` and `comp` are already applied to `year` and `cwyear`.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct Parsed {
     pub year: Option<BigInt>,
     pub yday: Option<BigInt>,
     pub mon: Option<BigInt>,
     pub mday: Option<BigInt>,
+    /// `wday`: 0 (Sunday) to 6, or 7 when the matched day name does not
+    /// start with an ASCII day abbreviation (C `day_num` falls through).
+    pub wday: Option<BigInt>,
+    pub cwyear: Option<BigInt>,
+    pub cweek: Option<BigInt>,
+    pub cwday: Option<BigInt>,
     pub hour: Option<BigInt>,
     pub min: Option<BigInt>,
     pub sec: Option<BigInt>,
@@ -43,7 +56,7 @@ const ABBR_MONTHS: &str = "jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec";
 
 fn declined(what: &str, input: &str) -> Error {
     Error::unsupported(format!(
-        "Date._parse({}): {what} is outside the portable regexp engine",
+        "Date._parse({}): {what} failed in the Onigmo regexp engine",
         string_inspect(input)
     ))
 }
@@ -88,6 +101,11 @@ fn index3(table: &str, s: &str) -> usize {
 /// `mon_num`: 1-based index of the three-letter month prefix.
 fn mon_num(s: &str) -> i64 {
     index3(ABBR_MONTHS, s) as i64 + 1
+}
+
+/// `day_num`: 0-based index of the three-letter day prefix.
+fn day_num(s: &str) -> i64 {
+    index3(ABBR_DAYS, s) as i64
 }
 
 struct Pat {
@@ -455,8 +473,8 @@ fn group(m: &Captures, i: usize, text: &str) -> Option<String> {
     m.text(i, text).map(str::to_string)
 }
 
-fn parse_day_cb(_: &mut State<'_>, _: &Captures, _: &str) -> Result<bool> {
-    // `wday` is not read by Time.parse.
+fn parse_day_cb(st: &mut State<'_>, m: &Captures, text: &str) -> Result<bool> {
+    st.h.wday = Some(BigInt::from(day_num(m.text(1, text).expect("day"))));
     Ok(true)
 }
 
@@ -552,8 +570,19 @@ fn parse_iso_cb(st: &mut State<'_>, m: &Captures, text: &str) -> Result<bool> {
     Ok(true)
 }
 
-fn ignore_cb(_: &mut State<'_>, _: &Captures, _: &str) -> Result<bool> {
-    // Commercial-week keys (`cwyear`, `cweek`, `cwday`) are not read by Time.parse.
+fn parse_iso21_cb(st: &mut State<'_>, m: &Captures, text: &str) -> Result<bool> {
+    if let Some(y) = m.text(1, text) {
+        st.h.cwyear = Some(str2num(y));
+    }
+    st.h.cweek = Some(str2num(m.text(2, text).expect("cweek")));
+    if let Some(d) = m.text(3, text) {
+        st.h.cwday = Some(str2num(d));
+    }
+    Ok(true)
+}
+
+fn parse_iso22_cb(st: &mut State<'_>, m: &Captures, text: &str) -> Result<bool> {
+    st.h.cwday = Some(str2num(m.text(1, text).expect("cwday")));
     Ok(true)
 }
 
@@ -803,7 +832,7 @@ fn parse_frag_cb(st: &mut State<'_>, m: &Captures, text: &str) -> Result<bool> {
 
 impl State<'_> {
     fn iso2(&mut self) -> Result<bool> {
-        if self.subs(pat_iso21(), ignore_cb)? || self.subs(pat_iso22(), ignore_cb)? {
+        if self.subs(pat_iso21(), parse_iso21_cb)? || self.subs(pat_iso22(), parse_iso22_cb)? {
             return Ok(true);
         }
         if self.subs(pat_iso23(), parse_iso23_cb)? || self.subs(pat_iso24(), parse_iso24_cb)? {
@@ -904,15 +933,16 @@ pub fn parse(input: &str) -> Result<Parsed> {
     }
     let mut h = st.h;
     if std::mem::take(&mut h.bc) {
-        if let Some(y) = h.year.take() {
-            h.year = Some(-y + 1);
+        for y in [&mut h.cwyear, &mut h.year] {
+            if let Some(v) = y.take() {
+                *y = Some(-v + 1);
+            }
         }
     }
     if h.comp {
-        if let Some(y) = &h.year {
+        for y in [&mut h.cwyear, &mut h.year].into_iter().flatten() {
             if *y >= BigInt::from(0) && *y <= BigInt::from(99) {
-                let add = if *y >= BigInt::from(69) { 1900 } else { 2000 };
-                h.year = Some(y + add);
+                *y += if *y >= BigInt::from(69) { 1900 } else { 2000 };
             }
         }
     }

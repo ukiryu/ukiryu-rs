@@ -1,0 +1,14 @@
+{
+  "oracle_commit": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+  "ruby": "4.0.1",
+  "seed": 230019,
+  "strings_per_shell": 544,
+  "rows": 5984,
+  "sha256": "d80837881ec10ccf9d656b6a3616e531dc8b6e747dca8f4470bde69ffa27530d",
+  "gemfile_lock_sha256": "fc3b12f2ede259028b638d2f26c65ddf9506d142c20a8bf0c1b151741078b65e",
+  "source_sha256": {
+    "base": "23d36dce37c13d0eb461c064bbf391c9f0171865c0ee6b171ea7bbc3ef4455c2",
+    "powershell": "d7ec94501df0b17dc34fa1649c4feda65cbdf6dffd77118ba92991c409ddd1ea",
+    "tcsh": "f37414e269f57281fbaade22da1eb47218427776a2f6905968c58dcc7c5aa3a4"
+  }
+}

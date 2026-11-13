@@ -1,0 +1,103 @@
+name: Regexp Onigmo reference
+# Ruby 4.0.1's Onigmo (ukiryu/vendor/onigmo) against Ruby-captured cases:
+# native on Linux (Rust 1.86 floor and current), macOS and Windows, and the
+# same engine compiled into WebAssembly and run in Node and Chromium.
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: regexp-onigmo-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  native:
+    name: Onigmo native (${{ matrix.os }}, Rust ${{ matrix.rust }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            rust: 1.86.0
+          - os: ubuntu-24.04
+            rust: 1.95.0
+          - os: macos-15-intel
+            rust: 1.95.0
+          - os: windows-2022
+            rust: 1.95.0
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ matrix.rust }}
+      - name: Vendored sources match their recorded hashes
+        shell: bash
+        run: |
+          cd ukiryu/vendor/onigmo
+          sed -n 's/^\([0-9a-f]\{64\}\)  \(.*\)$/\1  \2/p' PROVENANCE > ../../../onigmo.sha256
+          test "$(wc -l < ../../../onigmo.sha256)" -eq 19
+          if command -v sha256sum >/dev/null; then sha256sum -c ../../../onigmo.sha256; else shasum -a 256 -c ../../../onigmo.sha256; fi
+      - name: Onigmo cases, Ruby type rows and Date parsing
+        shell: bash
+        run: |
+          cargo test -p ukiryu --locked --lib types::onig
+          cargo test -p ukiryu --locked --test regexp_onigmo --test types_oracle
+
+  wasm:
+    name: Onigmo WebAssembly (Node and Chromium)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.95.0
+          targets: wasm32-unknown-unknown
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 3.1.50
+      - name: Prepare pinned scalar C runtime
+        run: embuilder build libc
+      - uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/wasm-tools
+          key: wasm-pack-0.13.1-rust1.95.0-${{ runner.os }}
+      - name: Prepare pinned wasm-pack
+        run: |
+          if ! test -x "$RUNNER_TEMP/wasm-tools/bin/wasm-pack"; then
+            cargo install wasm-pack --version 0.13.1 --locked --root "$RUNNER_TEMP/wasm-tools"
+          fi
+          echo "$RUNNER_TEMP/wasm-tools/bin" >> "$GITHUB_PATH"
+      - name: Build the Onigmo probe for Node and browser
+        run: |
+          wasm-pack build tests/regexp-onigmo-wasm --target nodejs --out-dir ../../regexp-wasm-node --no-opt -- --locked
+          wasm-pack build tests/regexp-onigmo-wasm --target web --out-dir ../../regexp-wasm-web --no-opt -- --locked
+          for d in regexp-wasm-node regexp-wasm-web; do
+            cp ukiryu/vendor/onigmo/NOTICE "$d/ONIGMO-NOTICE"
+            cp ukiryu/vendor/onigmo/PROVENANCE "$d/ONIGMO-PROVENANCE"
+          done
+          python3 scripts/artifact_licenses.py stage regexp-wasm-node regexp-wasm-web
+      - name: Run in Node (imports audited)
+        run: node tests/regexp-onigmo-wasm/node.mjs
+      - name: Run in Chromium
+        run: |
+          npm ci --prefix tests/wasm-runtime --ignore-scripts --no-audit --no-fund
+          tests/wasm-runtime/node_modules/.bin/playwright install chromium
+          # ES modules resolve packages from the script's directory upwards.
+          ln -s ../wasm-runtime/node_modules tests/regexp-onigmo-wasm/node_modules
+          node tests/regexp-onigmo-wasm/browser.mjs
+      - name: Verify complete engine notices and negative controls
+        run: python3 scripts/artifact_licenses.py verify --npm regexp-wasm-node regexp-wasm-web
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: regexp-onigmo-wasm
+          path: |
+            regexp-wasm-node
+            regexp-wasm-web

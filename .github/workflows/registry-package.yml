@@ -1,0 +1,40 @@
+name: Registry dependency package
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  package:
+    name: Package core with registry Yeptris
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.86.0
+      - name: Verify registry dependency and preserved publication gate
+        run: |
+          python3 - <<'PY'
+          import pathlib, tomllib
+          root = tomllib.loads(pathlib.Path('Cargo.toml').read_text())
+          dep = root['workspace']['dependencies']['yeptris']
+          assert dep == {'version': '=0.6.66', 'features': ['vendored']}, dep
+          core = tomllib.loads(pathlib.Path('ukiryu/Cargo.toml').read_text())
+          assert core['package']['publish'] is False
+          lock = tomllib.loads(pathlib.Path('Cargo.lock').read_text())
+          dep = next(p for p in lock['package'] if p['name'] == 'yeptris')
+          assert dep['version'] == '0.6.66', dep
+          assert dep['source'] == 'registry+https://github.com/rust-lang/crates.io-index', dep
+          assert len(dep['checksum']) == 64, dep
+          print(dep)
+          PY
+      - name: Package and verify actual core source without publishing
+        run: cargo package -p ukiryu --locked
+      - uses: actions/upload-artifact@v4
+        with:
+          name: core-registry-package
+          path: target/package/ukiryu-*.crate
+          if-no-files-found: error

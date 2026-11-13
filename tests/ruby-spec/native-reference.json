@@ -1,0 +1,1517 @@
+{
+  "schema": "ukiryu-ruby-native-reference/1",
+  "source": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+  "ruby": "4.0.1",
+  "ruby_platform": "x86_64-linux",
+  "producer": "tests/ruby-spec/capture_reference.rb",
+  "apis": {
+    "conversions": "lib/ukiryu/config/type_converter.rb TypeConverter.convert",
+    "environments": "lib/ukiryu/config/env_provider.rb EnvProvider.load_all",
+    "defaults": "lib/ukiryu/config.rb Config.new.to_h",
+    "registers": "lib/ukiryu/register.rb YAML.safe_load(permitted_classes: [Symbol], aliases: true) + Utils.symbolize_keys"
+  },
+  "conversions": [
+    {
+      "id": "convert.timeout.0",
+      "attribute": "timeout",
+      "input": null,
+      "expect": {
+        "ok": null
+      }
+    },
+    {
+      "id": "convert.timeout.1",
+      "attribute": "timeout",
+      "input": "",
+      "expect": {
+        "ok": null
+      }
+    },
+    {
+      "id": "convert.timeout.2",
+      "attribute": "timeout",
+      "input": "0",
+      "expect": {
+        "ok": {
+          "$int": "0"
+        }
+      }
+    },
+    {
+      "id": "convert.timeout.3",
+      "attribute": "timeout",
+      "input": "010",
+      "expect": {
+        "ok": {
+          "$int": "8"
+        }
+      }
+    },
+    {
+      "id": "convert.timeout.4",
+      "attribute": "timeout",
+      "input": "08",
+      "expect": {
+        "error": {
+          "class": "ArgumentError",
+          "message": "Invalid integer value: 08"
+        }
+      }
+    },
+    {
+      "id": "convert.timeout.5",
+      "attribute": "timeout",
+      "input": "0x10",
+      "expect": {
+        "ok": {
+          "$int": "16"
+        }
+      }
+    },
+    {
+      "id": "convert.timeout.6",
+      "attribute": "timeout",
+      "input": "0x_ff",
+      "expect": {
+        "error": {
+          "class": "ArgumentError",
+          "message": "Invalid integer value: 0x_ff"
+        }
+      }
+    },
+    {
+      "id": "convert.timeout.7",
+      "attribute": "timeout",
+      "input": "0o17",
+      "expect": {
+        "ok": {
+          "$int": "15"
+        }
+      }
+    },
+    {
+      "id": "convert.timeout.8",
+      "attribute": "timeout",
+      "input": "0b10",
+      "expect": {
+        "ok": {
+          "$int": "2"
+        }
+      }
+    },
+    {
+      "id": "convert.timeout.9",
+      "attribute": "timeout",
+      "input": "0d10",
+      "expect": {
+        "ok": {
+          "$int": "10"
+        }
+      }
+    },
+    {
+      "id": "convert.timeout.10",
+      "attribute": "timeout",
+      "input": "1_000",
+      "expect": {
+        "ok": {
+          "$int": "1000"
+        }
+      }
+    },
+    {
+      "id": "convert.timeout.11",
+      "attribute": "timeout",
+      "input": "1__0",
+      "expect": {
+        "error": {
+          "class": "ArgumentError",
+          "message": "Invalid integer value: 1__0"
+        }
+      }
+    },
+    {
+      "id": "convert.timeout.12",
+      "attribute": "timeout",
+      "input": "+12",
+      "expect": {
+        "ok": {
+          "$int": "12"
+        }
+      }
+    },
+    {
+      "id": "convert.timeout.13",
+      "attribute": "timeout",
+      "input": "  -12 ",
+      "expect": {
+        "ok": {
+          "$int": "-12"
+        }
+      }
+    },
+    {
+      "id": "convert.timeout.14",
+      "attribute": "timeout",
+      "input": "0_10",
+      "expect": {
+        "ok": {
+          "$int": "8"
+        }
+      }
+    },
+    {
+      "id": "convert.timeout.15",
+      "attribute": "timeout",
+      "input": "0x1_0",
+      "expect": {
+        "ok": {
+          "$int": "16"
+        }
+      }
+    },
+    {
+      "id": "convert.timeout.16",
+      "attribute": "timeout",
+      "input": "-0x10",
+      "expect": {
+        "ok": {
+          "$int": "-16"
+        }
+      }
+    },
+    {
+      "id": "convert.timeout.17",
+      "attribute": "timeout",
+      "input": "0_9",
+      "expect": {
+        "error": {
+          "class": "ArgumentError",
+          "message": "Invalid integer value: 0_9"
+        }
+      }
+    },
+    {
+      "id": "convert.timeout.18",
+      "attribute": "timeout",
+      "input": " 1",
+      "expect": {
+        "error": {
+          "class": "ArgumentError",
+          "message": "Invalid integer value:  1"
+        }
+      }
+    },
+    {
+      "id": "convert.timeout.19",
+      "attribute": "timeout",
+      "input": "999999999999999999999999999999999999999",
+      "expect": {
+        "ok": {
+          "$int": "999999999999999999999999999999999999999"
+        }
+      }
+    },
+    {
+      "id": "convert.debug.0",
+      "attribute": "debug",
+      "input": null,
+      "expect": {
+        "ok": null
+      }
+    },
+    {
+      "id": "convert.debug.1",
+      "attribute": "debug",
+      "input": "",
+      "expect": {
+        "ok": null
+      }
+    },
+    {
+      "id": "convert.debug.2",
+      "attribute": "debug",
+      "input": "true",
+      "expect": {
+        "ok": true
+      }
+    },
+    {
+      "id": "convert.debug.3",
+      "attribute": "debug",
+      "input": "TRUE",
+      "expect": {
+        "ok": true
+      }
+    },
+    {
+      "id": "convert.debug.4",
+      "attribute": "debug",
+      "input": "1",
+      "expect": {
+        "ok": true
+      }
+    },
+    {
+      "id": "convert.debug.5",
+      "attribute": "debug",
+      "input": "yes",
+      "expect": {
+        "ok": true
+      }
+    },
+    {
+      "id": "convert.debug.6",
+      "attribute": "debug",
+      "input": "YES",
+      "expect": {
+        "ok": true
+      }
+    },
+    {
+      "id": "convert.debug.7",
+      "attribute": "debug",
+      "input": "false",
+      "expect": {
+        "ok": false
+      }
+    },
+    {
+      "id": "convert.debug.8",
+      "attribute": "debug",
+      "input": "0",
+      "expect": {
+        "ok": false
+      }
+    },
+    {
+      "id": "convert.debug.9",
+      "attribute": "debug",
+      "input": "No",
+      "expect": {
+        "ok": false
+      }
+    },
+    {
+      "id": "convert.debug.10",
+      "attribute": "debug",
+      "input": "off",
+      "expect": {
+        "error": {
+          "class": "ArgumentError",
+          "message": "Invalid boolean value: off. Valid values: true, 1, yes, false, 0, no"
+        }
+      }
+    },
+    {
+      "id": "convert.debug.11",
+      "attribute": "debug",
+      "input": " true ",
+      "expect": {
+        "error": {
+          "class": "ArgumentError",
+          "message": "Invalid boolean value:  true . Valid values: true, 1, yes, false, 0, no"
+        }
+      }
+    },
+    {
+      "id": "convert.shell.0",
+      "attribute": "shell",
+      "input": null,
+      "expect": {
+        "ok": null
+      }
+    },
+    {
+      "id": "convert.shell.1",
+      "attribute": "shell",
+      "input": "",
+      "expect": {
+        "ok": null
+      }
+    },
+    {
+      "id": "convert.shell.2",
+      "attribute": "shell",
+      "input": "bash",
+      "expect": {
+        "ok": {
+          "$sym": "bash"
+        }
+      }
+    },
+    {
+      "id": "convert.shell.3",
+      "attribute": "shell",
+      "input": "BASH",
+      "expect": {
+        "ok": {
+          "$sym": "BASH"
+        }
+      }
+    },
+    {
+      "id": "convert.shell.4",
+      "attribute": "shell",
+      "input": " strange shell ",
+      "expect": {
+        "ok": {
+          "$sym": " strange shell "
+        }
+      }
+    },
+    {
+      "id": "convert.format.0",
+      "attribute": "format",
+      "input": null,
+      "expect": {
+        "ok": null
+      }
+    },
+    {
+      "id": "convert.format.1",
+      "attribute": "format",
+      "input": "",
+      "expect": {
+        "ok": null
+      }
+    },
+    {
+      "id": "convert.format.2",
+      "attribute": "format",
+      "input": "json",
+      "expect": {
+        "ok": {
+          "$sym": "json"
+        }
+      }
+    },
+    {
+      "id": "convert.format.3",
+      "attribute": "format",
+      "input": "YAML",
+      "expect": {
+        "ok": {
+          "$sym": "YAML"
+        }
+      }
+    },
+    {
+      "id": "convert.output.0",
+      "attribute": "output",
+      "input": null,
+      "expect": {
+        "ok": null
+      }
+    },
+    {
+      "id": "convert.output.1",
+      "attribute": "output",
+      "input": "",
+      "expect": {
+        "ok": null
+      }
+    },
+    {
+      "id": "convert.output.2",
+      "attribute": "output",
+      "input": " ",
+      "expect": {
+        "ok": {
+          "$str": " ",
+          "encoding": "UTF-8"
+        }
+      }
+    },
+    {
+      "id": "convert.output.3",
+      "attribute": "output",
+      "input": "a b/Ω",
+      "expect": {
+        "ok": {
+          "$str": "a b/Ω",
+          "encoding": "UTF-8"
+        }
+      }
+    },
+    {
+      "id": "convert.register.0",
+      "attribute": "register",
+      "input": null,
+      "expect": {
+        "ok": null
+      }
+    },
+    {
+      "id": "convert.register.1",
+      "attribute": "register",
+      "input": "/tmp/register",
+      "expect": {
+        "ok": {
+          "$str": "/tmp/register",
+          "encoding": "UTF-8"
+        }
+      }
+    },
+    {
+      "id": "convert.use_color.0",
+      "attribute": "use_color",
+      "input": "yes",
+      "expect": {
+        "ok": true
+      }
+    },
+    {
+      "id": "convert.use_color.1",
+      "attribute": "use_color",
+      "input": "nope",
+      "expect": {
+        "error": {
+          "class": "ArgumentError",
+          "message": "Invalid boolean value: nope. Valid values: true, 1, yes, false, 0, no"
+        }
+      }
+    },
+    {
+      "id": "convert.future.0",
+      "attribute": "future",
+      "input": null,
+      "expect": {
+        "ok": null
+      }
+    },
+    {
+      "id": "convert.future.1",
+      "attribute": "future",
+      "input": "",
+      "expect": {
+        "ok": null
+      }
+    },
+    {
+      "id": "convert.future.2",
+      "attribute": "future",
+      "input": "123",
+      "expect": {
+        "ok": {
+          "$str": "123",
+          "encoding": "UTF-8"
+        }
+      }
+    }
+  ],
+  "environments": [
+    {
+      "id": "environment.0",
+      "input": {},
+      "expect": {
+        "ok": {
+          "$hash": []
+        }
+      }
+    },
+    {
+      "id": "environment.1",
+      "input": {
+        "UKIRYU_DEBUG": ""
+      },
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "debug"
+              },
+              null
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "environment.2",
+      "input": {
+        "UKIRYU_TIMEOUT": "010"
+      },
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "timeout"
+              },
+              {
+                "$int": "8"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "environment.3",
+      "input": {
+        "UKIRYU_TIMEOUT": "08"
+      },
+      "expect": {
+        "error": {
+          "class": "ArgumentError",
+          "message": "Invalid integer value: 08"
+        }
+      }
+    },
+    {
+      "id": "environment.4",
+      "input": {
+        "UKIRYU_DEBUG": "false"
+      },
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "debug"
+              },
+              false
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "environment.5",
+      "input": {
+        "UKIRYU_USE_COLOR": "true",
+        "NO_COLOR": ""
+      },
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "use_color"
+              },
+              false
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "environment.6",
+      "input": {
+        "UKIRYU_USE_COLOR": "invalid",
+        "NO_COLOR": ""
+      },
+      "expect": {
+        "error": {
+          "class": "ArgumentError",
+          "message": "Invalid boolean value: invalid. Valid values: true, 1, yes, false, 0, no"
+        }
+      }
+    },
+    {
+      "id": "environment.7",
+      "input": {
+        "UKIRYU_UNKNOWN": "true",
+        "UKIRYU_SHELL": "BASH"
+      },
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "shell"
+              },
+              {
+                "$sym": "BASH"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "environment.8",
+      "input": {
+        "UKIRYU_FORMAT": "json",
+        "UKIRYU_OUTPUT": "out.yaml",
+        "UKIRYU_REGISTER": "/r",
+        "UKIRYU_METRICS": "yes",
+        "UKIRYU_DRY_RUN": "1",
+        "UKIRYU_TIMEOUT": "99999999999999999999"
+      },
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "timeout"
+              },
+              {
+                "$int": "99999999999999999999"
+              }
+            ],
+            [
+              {
+                "$sym": "dry_run"
+              },
+              true
+            ],
+            [
+              {
+                "$sym": "metrics"
+              },
+              true
+            ],
+            [
+              {
+                "$sym": "format"
+              },
+              {
+                "$sym": "json"
+              }
+            ],
+            [
+              {
+                "$sym": "output"
+              },
+              {
+                "$str": "out.yaml",
+                "encoding": "UTF-8"
+              }
+            ],
+            [
+              {
+                "$sym": "register"
+              },
+              {
+                "$str": "/r",
+                "encoding": "UTF-8"
+              }
+            ]
+          ]
+        }
+      }
+    }
+  ],
+  "defaults": {
+    "$hash": [
+      [
+        {
+          "$sym": "timeout"
+        },
+        null
+      ],
+      [
+        {
+          "$sym": "debug"
+        },
+        false
+      ],
+      [
+        {
+          "$sym": "dry_run"
+        },
+        false
+      ],
+      [
+        {
+          "$sym": "metrics"
+        },
+        false
+      ],
+      [
+        {
+          "$sym": "shell"
+        },
+        null
+      ],
+      [
+        {
+          "$sym": "format"
+        },
+        {
+          "$sym": "yaml"
+        }
+      ],
+      [
+        {
+          "$sym": "output"
+        },
+        null
+      ],
+      [
+        {
+          "$sym": "register"
+        },
+        null
+      ],
+      [
+        {
+          "$sym": "use_color"
+        },
+        null
+      ]
+    ]
+  },
+  "registers": [
+    {
+      "id": "tag-local",
+      "yaml": "v: !custom x\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$str": "x",
+                "encoding": "UTF-8"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "tag-local-map",
+      "yaml": "v: !custom {a: 1}\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$hash": [
+                  [
+                    {
+                      "$sym": "a"
+                    },
+                    {
+                      "$int": "1"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "tag-local-seq",
+      "yaml": "v: !custom [1, b]\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$array": [
+                  {
+                    "$int": "1"
+                  },
+                  {
+                    "$str": "b",
+                    "encoding": "UTF-8"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "tag-str-quoted",
+      "yaml": "v: !!str \"abc\"\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$str": "abc",
+                "encoding": "UTF-8"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "tag-str-plain-int",
+      "yaml": "v: !!str 123\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$str": "123",
+                "encoding": "UTF-8"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "tag-float-int",
+      "yaml": "v: !!float 1\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$float": "1.0"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "tag-float-float",
+      "yaml": "v: !!float 2.5\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$float": "2.5"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "tag-int-quoted",
+      "yaml": "v: !!int \"7\"\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$int": "7"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "tag-int-signed",
+      "yaml": "v: !!int \"-12\"\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$int": "-12"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "tag-int-octal-string",
+      "yaml": "v: !!int \"010\"\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$int": "8"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "tag-int-plain",
+      "yaml": "v: !!int 42\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$int": "42"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "tag-bool-quoted",
+      "yaml": "v: !!bool \"true\"\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              true
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "tag-null-empty",
+      "yaml": "v: !!null \"\"\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              null
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "tag-seq",
+      "yaml": "v: !!seq [1]\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$array": [
+                  {
+                    "$int": "1"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "tag-map",
+      "yaml": "v: !!map {a: 1}\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$hash": [
+                  [
+                    {
+                      "$sym": "a"
+                    },
+                    {
+                      "$int": "1"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "tag-binary",
+      "yaml": "v: !!binary aGk=\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$str": "hi",
+                "encoding": "ASCII-8BIT"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "tag-timestamp",
+      "yaml": "v: !!timestamp 2024-01-17 10:20:30 Z\n",
+      "expect": {
+        "error": {
+          "class": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Time"
+        }
+      }
+    },
+    {
+      "id": "tag-set",
+      "yaml": "v: !!set {a: null}\n",
+      "expect": {
+        "error": {
+          "class": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Psych::Set"
+        }
+      }
+    },
+    {
+      "id": "tag-omap",
+      "yaml": "v: !!omap [a: 1]\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$hash": [
+                  [
+                    {
+                      "$sym": "a"
+                    },
+                    {
+                      "$int": "1"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "tag-ruby-symbol",
+      "yaml": "v: !ruby/symbol abc\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$sym": "abc"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "tag-nested-key",
+      "yaml": "v: {!custom k: 1}\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$hash": [
+                  [
+                    {
+                      "$sym": "k"
+                    },
+                    {
+                      "$int": "1"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "order",
+      "yaml": "b: 1\na: 2\nc: {z: 1, y: 2}\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "b"
+              },
+              {
+                "$int": "1"
+              }
+            ],
+            [
+              {
+                "$sym": "a"
+              },
+              {
+                "$int": "2"
+              }
+            ],
+            [
+              {
+                "$sym": "c"
+              },
+              {
+                "$hash": [
+                  [
+                    {
+                      "$sym": "z"
+                    },
+                    {
+                      "$int": "1"
+                    }
+                  ],
+                  [
+                    {
+                      "$sym": "y"
+                    },
+                    {
+                      "$int": "2"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "bigint",
+      "yaml": "v: 123456789012345678901234567890\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$int": "123456789012345678901234567890"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "negative-bigint",
+      "yaml": "v: -123456789012345678901234567890\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$int": "-123456789012345678901234567890"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "i64-edges",
+      "yaml": "v: [9223372036854775807, -9223372036854775808, 18446744073709551615]\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$array": [
+                  {
+                    "$int": "9223372036854775807"
+                  },
+                  {
+                    "$int": "-9223372036854775808"
+                  },
+                  {
+                    "$int": "18446744073709551615"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "floats",
+      "yaml": "v: [1.0, 2.5, -0.0, 1e300]\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$array": [
+                  {
+                    "$float": "1.0"
+                  },
+                  {
+                    "$float": "2.5"
+                  },
+                  {
+                    "$float": "-0.0"
+                  },
+                  {
+                    "$str": "1e300",
+                    "encoding": "UTF-8"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "nil-false",
+      "yaml": "v: [null, ~, false, true]\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$array": [
+                  null,
+                  null,
+                  false,
+                  true
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "non-string-keys",
+      "yaml": "1: a\ntrue: b\n2.5: c\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "1"
+              },
+              {
+                "$str": "a",
+                "encoding": "UTF-8"
+              }
+            ],
+            [
+              {
+                "$sym": "true"
+              },
+              {
+                "$str": "b",
+                "encoding": "UTF-8"
+              }
+            ],
+            [
+              {
+                "$sym": "2.5"
+              },
+              {
+                "$str": "c",
+                "encoding": "UTF-8"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "unicode",
+      "yaml": "v: \"Ω\\0z\"\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$str": "Ω\u0000z",
+                "encoding": "UTF-8"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "nested",
+      "yaml": "v:\n  - a: 1\n    b: [x, {c: d}]\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$array": [
+                  {
+                    "$hash": [
+                      [
+                        {
+                          "$sym": "a"
+                        },
+                        {
+                          "$int": "1"
+                        }
+                      ],
+                      [
+                        {
+                          "$sym": "b"
+                        },
+                        {
+                          "$array": [
+                            {
+                              "$str": "x",
+                              "encoding": "UTF-8"
+                            },
+                            {
+                              "$hash": [
+                                [
+                                  {
+                                    "$sym": "c"
+                                  },
+                                  {
+                                    "$str": "d",
+                                    "encoding": "UTF-8"
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    ]
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "anchor-alias",
+      "yaml": "a: &x [1, 2]\nb: *x\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "a"
+              },
+              {
+                "$array": [
+                  {
+                    "$int": "1"
+                  },
+                  {
+                    "$int": "2"
+                  }
+                ]
+              }
+            ],
+            [
+              {
+                "$sym": "b"
+              },
+              {
+                "$array": [
+                  {
+                    "$int": "1"
+                  },
+                  {
+                    "$int": "2"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "empty",
+      "yaml": "",
+      "expect": {
+        "ok": null
+      }
+    },
+    {
+      "id": "null-doc",
+      "yaml": "~\n",
+      "expect": {
+        "ok": null
+      }
+    },
+    {
+      "id": "syntax-error",
+      "yaml": "v: [1, 2\n",
+      "expect": {
+        "error": {
+          "class": "Psych::SyntaxError",
+          "message": "(<unknown>): did not find expected ',' or ']' while parsing a flow sequence at line 1 column 4"
+        }
+      }
+    }
+  ]
+}

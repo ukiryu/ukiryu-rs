@@ -17,6 +17,8 @@ crate-type = ["rlib", "cdylib"]
 default = []
 c = []
 wasm = ["dep:wasm-bindgen"]
+# Ruby binding (src/ffi/ruby.rs); entered from a thin magnus extension crate.
+ruby = ["dep:magnus"]
 
 [dependencies]
 serde.workspace = true
@@ -24,8 +26,12 @@ serde_json.workspace = true
 num-bigint.workspace = true
 yeptris.workspace = true
 regex = "1"
-# Ruby (Onigmo) Regexp semantics on a pure-Rust engine (look-around,
-# possessive and atomic groups; also builds for wasm32). See types/onig.rs.
-fancy-regex = { version = "0.20.2", default-features = false, features = ["std", "unicode", "perf"] }
 # Match the already qualified Yeptris Rust/browser toolchain.
 wasm-bindgen = { version = "=0.2.105", optional = true }
+# Ruby binding (issue #24): magnus with rb-sys raw-value access, MSRV 1.85.
+magnus = { version = "0.9", optional = true, features = ["rb-sys"] }
+
+[build-dependencies]
+# Compiles Ruby 4.0.1's Onigmo (vendor/onigmo) for Regexp; see build.rs.
+# Same crate and feature set the vendored YAML engine already builds with.
+cc = { version = "1", default-features = false }

@@ -72,12 +72,7 @@ fn node_to_data(node: Node<'_>, permitted: Permitted) -> Result<Data, SchemaErro
             match tag.as_deref() {
                 None => {}
                 Some("tag:yaml.org,2002:str" | "!") => return Ok(Data::String(text.to_owned())),
-                Some(other) => {
-                    return Err(SchemaError::unsupported(
-                        "YAML tag",
-                        format!("Psych resolution of the tag {other} is not reproduced"),
-                    ))
-                }
+                Some(other) => return tagged_scalar(other, text, permitted),
             }
             if node.style() == Style::Plain {
                 tokenize(text, permitted)
@@ -86,7 +81,7 @@ fn node_to_data(node: Node<'_>, permitted: Permitted) -> Result<Data, SchemaErro
             }
         }
         NodeKind::Sequence => {
-            reject_tag(tag.as_deref(), "tag:yaml.org,2002:seq")?;
+            sequence_tag(tag.as_deref(), permitted)?;
             let mut items = Vec::with_capacity(node.seq_count());
             for item in node.items() {
                 items.push(node_to_data(item, permitted)?);
@@ -94,7 +89,7 @@ fn node_to_data(node: Node<'_>, permitted: Permitted) -> Result<Data, SchemaErro
             Ok(Data::Array(items))
         }
         NodeKind::Mapping => {
-            reject_tag(tag.as_deref(), "tag:yaml.org,2002:map")?;
+            let revived = mapping_tag(tag.as_deref(), permitted)?;
             let mut pairs = Vec::with_capacity(node.map_count());
             for (k, v) in node.entries() {
                 if k.kind() == NodeKind::Scalar
@@ -111,20 +106,169 @@ fn node_to_data(node: Node<'_>, permitted: Permitted) -> Result<Data, SchemaErro
                 let value = node_to_data(v, permitted)?;
                 Data::hash_insert(&mut pairs, key, value);
             }
+            // `!ruby/exception` builds its members before resolving the class.
+            if let Some(class) = revived {
+                return Err(class);
+            }
             Ok(Data::Hash(pairs))
         }
     }
 }
 
-fn reject_tag(tag: Option<&str>, allowed: &str) -> Result<(), SchemaError> {
-    match tag {
-        None => Ok(()),
-        Some(t) if t == allowed || t == "!" => Ok(()),
-        Some(t) => Err(SchemaError::unsupported(
-            "YAML tag",
-            format!("Psych resolution of the tag {t} is not reproduced"),
-        )),
+/// `permitted_classes:` membership for the classes a tag can load.
+fn permits(permitted: Permitted, class: &str) -> bool {
+    match class {
+        "Symbol" => permitted.symbol,
+        "Date" => permitted.date,
+        "Time" => permitted.time,
+        _ => false,
     }
+}
+
+/// A class a tag loads: `DisallowedClass` unless permitted; a permitted
+/// class revives an object outside the data domain.
+fn object_class(permitted: Permitted, class: &str, tag: &str) -> SchemaError {
+    if permits(permitted, class) {
+        SchemaError::unsupported(
+            "YAML tag",
+            format!("a {class} object revived from the tag {tag} is not reproduced"),
+        )
+    } else {
+        disallowed(class)
+    }
+}
+
+fn unsupported_tag(tag: &str) -> SchemaError {
+    SchemaError::unsupported(
+        "YAML tag",
+        format!("Psych resolution of the tag {tag} is not reproduced"),
+    )
+}
+
+/// `ToRuby#deserialize` for a scalar with an explicit tag (Psych 5.3.1).
+/// Local, foreign and the remaining core tags (`!!int`, `!!bool`,
+/// `!!null`, `!!timestamp`) tokenize the source text; `!ruby/sym...` is
+/// `text.to_sym`; class-loading tags check `permitted_classes`.
+fn tagged_scalar(tag: &str, text: &str, permitted: Permitted) -> Result<Data, SchemaError> {
+    // `/^!(?:str|ruby\/string)(?::(.*))?$/`
+    if let Some(rest) = tag
+        .strip_prefix("!str")
+        .or_else(|| tag.strip_prefix("!ruby/string"))
+    {
+        if rest.is_empty() || rest == ":" {
+            return Ok(Data::String(text.to_owned()));
+        }
+        if let Some(name) = rest.strip_prefix(':') {
+            return Err(object_class(permitted, name, tag));
+        }
+    }
+    let class = match tag {
+        "!ruby/object:BigDecimal" => Some("BigDecimal"),
+        "!ruby/object:DateTime" => Some("DateTime"),
+        "!ruby/object:Complex" => Some("Complex"),
+        "!ruby/object:Rational" => Some("Rational"),
+        "!ruby/regexp" => Some("Regexp"),
+        "!ruby/range" => Some("Range"),
+        _ => None,
+    };
+    if let Some(class) = class {
+        return Err(object_class(permitted, class, tag));
+    }
+    match tag {
+        // A binary String needs a bytes value; `Float()` is not ported here.
+        "!binary"
+        | "tag:yaml.org,2002:binary"
+        | "!ruby/encoding"
+        | "!float"
+        | "tag:yaml.org,2002:float" => Err(unsupported_tag(tag)),
+        "!ruby/class" | "!ruby/module" if text.is_empty() => Ok(Data::Null),
+        "!ruby/class" | "!ruby/module" => Err(object_class(permitted, text, tag)),
+        t if t.starts_with("!ruby/sym") => {
+            if permitted.symbol {
+                Ok(Data::Symbol(text.to_owned()))
+            } else {
+                Err(disallowed("Symbol"))
+            }
+        }
+        _ => tokenize(text, permitted),
+    }
+}
+
+/// `#visit_Psych_Nodes_Sequence` tags: a plain Array unless the tag
+/// revives a class or builds a `Psych::Omap`.
+fn sequence_tag(tag: Option<&str>, permitted: Permitted) -> Result<(), SchemaError> {
+    let Some(tag) = tag else { return Ok(()) };
+    if tag == "!omap" || tag == "tag:yaml.org,2002:omap" {
+        return Err(unsupported_tag(tag));
+    }
+    if let Some(name) = tag
+        .strip_prefix("!seq:")
+        .or_else(|| tag.strip_prefix("!ruby/array:"))
+    {
+        if name.is_empty() {
+            return Err(unsupported_tag(tag));
+        }
+        return Err(object_class(permitted, name, tag));
+    }
+    Ok(())
+}
+
+/// `#visit_Psych_Nodes_Mapping` tags. `Ok(None)` builds a plain Hash;
+/// `Ok(Some(error))` builds the members first and then raises
+/// (`!ruby/exception`).
+fn mapping_tag(
+    tag: Option<&str>,
+    permitted: Permitted,
+) -> Result<Option<SchemaError>, SchemaError> {
+    let Some(tag) = tag else { return Ok(None) };
+    if tag == "!set" || tag == "tag:yaml.org,2002:set" {
+        return Err(object_class(permitted, "Psych::Set", tag));
+    }
+    if tag == "!omap" || tag == "tag:yaml.org,2002:omap" {
+        return Err(object_class(permitted, "Psych::Omap", tag));
+    }
+    if let Some(rest) = tag.strip_prefix("!ruby/object") {
+        let name = rest.strip_prefix(':').unwrap_or(rest);
+        return match name {
+            "Hash" => Ok(None),
+            "" => Err(object_class(permitted, "Object", tag)),
+            name => Err(object_class(permitted, name, tag)),
+        };
+    }
+    if let Some(rest) = tag.strip_prefix("!ruby/struct") {
+        let name = rest.strip_prefix(':').unwrap_or(rest);
+        let class = if name.is_empty() { "Struct" } else { name };
+        return Err(object_class(permitted, class, tag));
+    }
+    if let Some(rest) = tag.strip_prefix("!ruby/exception") {
+        let name = rest.strip_prefix(':').unwrap_or(rest);
+        let class = if name.is_empty() { "Exception" } else { name };
+        return Ok(Some(object_class(permitted, class, tag)));
+    }
+    if let Some(name) = tag
+        .strip_prefix("!map:")
+        .or_else(|| tag.strip_prefix("!ruby/hash:"))
+        .or_else(|| tag.strip_prefix("!ruby/marshalable:"))
+    {
+        if name.is_empty() {
+            return Err(unsupported_tag(tag));
+        }
+        return Err(object_class(permitted, name, tag));
+    }
+    if tag == "!ruby/range" {
+        return Err(object_class(permitted, "Range", tag));
+    }
+    if tag.starts_with("!ruby/data")
+        || tag.starts_with("!ruby/array:")
+        || tag.starts_with("!ruby/hash-with-ivars")
+        || tag == "tag:yaml.org,2002:str"
+        || tag.starts_with("!str")
+        || tag.starts_with("!ruby/string")
+    {
+        return Err(unsupported_tag(tag));
+    }
+    // Core `!!map`, local, foreign and other unmatched tags: a plain Hash.
+    Ok(None)
 }
 
 fn disallowed(class: &str) -> SchemaError {
@@ -156,7 +300,7 @@ fn word_like(s: &str) -> bool {
 }
 
 /// Psych `ScalarScanner#tokenize` for a plain scalar.
-fn tokenize(s: &str, permitted: Permitted) -> Result<Data, SchemaError> {
+pub(crate) fn tokenize(s: &str, permitted: Permitted) -> Result<Data, SchemaError> {
     if s.is_empty() {
         return Ok(Data::Null);
     }

@@ -1,0 +1,107 @@
+name: Request reference
+
+# Regenerates the structured execution request references from the pinned
+# Ruby source (RunFileCommand#load_execution_request, #validate_request!,
+# BaseCommand#stringify_keys and CommandBuilder#build_args) with Ruby 4.0.1
+# and the corpus oracle Gemfile.lock, and compares them with the committed
+# fixtures. Linux must reproduce them exactly. Other hosts may differ only in
+# the cases listed in ALLOWED (the Errno call site Ruby names for a
+# directory); every difference is printed and the captures are uploaded.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'fixtures/request/**'
+      - 'corpus/oracle-ruby/Gemfile'
+      - 'corpus/oracle-ruby/Gemfile.lock'
+      - '.github/workflows/request-reference.yml'
+  pull_request:
+    paths:
+      - 'fixtures/request/**'
+      - 'ukiryu/src/request.rs'
+      - 'ukiryu/tests/request_*.rs'
+      - 'corpus/oracle-ruby/Gemfile'
+      - 'corpus/oracle-ruby/Gemfile.lock'
+      - '.github/workflows/request-reference.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    name: request reference (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            allowed: ''
+          - os: macos-15-intel
+            allowed: ''
+          - os: windows-2022
+            allowed: 'directory'
+    defaults:
+      run:
+        working-directory: corpus/oracle-ruby
+        shell: bash
+    env:
+      BUNDLE_FROZEN: 'true'
+      PINNED: ab6df353c6dc2d7faf7817a86aafcafa82579896
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: ukiryu/ukiryu
+          ref: ab6df353c6dc2d7faf7817a86aafcafa82579896
+          path: ruby-source
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '4.0.1'
+          bundler-cache: true
+          working-directory: corpus/oracle-ruby
+      - name: Capture
+        run: |
+          fixtures="$GITHUB_WORKSPACE/fixtures/request"
+          out="$RUNNER_TEMP/request-reference"
+          mkdir -p "$out"
+          export BUNDLE_GEMFILE="$PWD/Gemfile"
+          bundle exec ruby "$fixtures/capture-request-reference.rb" "$GITHUB_WORKSPACE/ruby-source" > "$out/reference.json"
+          bundle exec ruby "$fixtures/capture-request-builder.rb" "$GITHUB_WORKSPACE/ruby-source" > "$out/builder.json"
+      - name: Compare with committed fixtures
+        env:
+          ALLOWED: ${{ matrix.allowed }}
+        run: |
+          bundle exec ruby -rjson -e '
+            allowed = ENV.fetch("ALLOWED").split(",")
+            failed = false
+            %w[reference builder].each do |name|
+              want = JSON.parse(File.read(File.join(ENV.fetch("GITHUB_WORKSPACE"), "fixtures/request", "#{name}.json")))
+              got = JSON.parse(File.read(File.join(ENV.fetch("RUNNER_TEMP"), "request-reference", "#{name}.json")))
+              puts "#{name}: ruby=#{got["provenance"]["ruby"]} psych=#{got["provenance"]["psych"]} lock=#{got["provenance"]["gemfile_lock_sha256"]}"
+              failed ||= got["provenance"]["revision"] != ENV.fetch("PINNED")
+              failed ||= got["provenance"]["gemfile_lock_sha256"] != want["provenance"]["gemfile_lock_sha256"]
+              want_cases = want["cases"].to_h { |c| [c["id"], c] }
+              got_cases = got["cases"].to_h { |c| [c["id"], c] }
+              (want_cases.keys | got_cases.keys).each do |id|
+                next if want_cases[id] == got_cases[id]
+                puts "#{allowed.include?(id) ? "allowed" : "DIFF"} #{name}/#{id}"
+                puts "  committed: #{JSON.generate(want_cases[id])}"
+                puts "  captured:  #{JSON.generate(got_cases[id])}"
+                failed = true unless allowed.include?(id)
+              end
+            end
+            exit(failed ? 1 : 0)
+          '
+      - name: Upload captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: request-reference-${{ matrix.os }}
+          path: ${{ runner.temp }}/request-reference
+          if-no-files-found: error

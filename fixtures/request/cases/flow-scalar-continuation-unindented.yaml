@@ -1,0 +1,5 @@
+tool: a
+command: b
+arguments:
+  dq: "line
+break"

@@ -1,0 +1,30 @@
+Onigmo as built into Ruby 4.0.1 (Onigmo 6.1.3 with Ruby's changes; Unicode 17.0.0 tables).
+The files listed below are byte-for-byte copies from the official release
+tarball; none is edited. NOTICE and PROVENANCE are written for ukiryu.
+
+url      https://cache.ruby-lang.org/pub/ruby/4.0/ruby-4.0.1.tar.gz
+sha256   3924be2d05db30f4e35f859bf028be85f4b7dd01714142fd823e4af5de2faf9d
+revision e04267a14b1a5dea2d2c368e48d41bd3db441f4f
+license  Onigmo: BSD-2-Clause (LEGAL, section [regcomp.c] ... [enc/utf_8.c]);
+         other Ruby files: Ruby license or BSD-2-Clause (COPYING, BSDL).
+
+sha256 of each copied file (path relative to the tarball's ruby-4.0.1/ directory):
+c4554a81ea21a03f82cc9951ebebe1c026301c6a8ab4ffc32fc6c6ac4fe5ad48  regcomp.c
+9ef4c78e5522b5d6eb602570bde0e2fe58e6b195f7b9a121ab10f2da763b3f7e  regenc.c
+d199ee305bf21a47ea0c96181abbb54aac98500da53057f7ccea91ddd896f025  regenc.h
+c2d008a9cbb0eb1c5f8a27820f22c145d7b9f84d8bd880cdf9bc68cf56e01ca8  regerror.c
+f5e0c42382520ddc03ff87694b0a754ff72d0f28b9ad6e6804fe78925f43bc1e  regexec.c
+7a650d15ea0c99bf5d6ccd489717931e7c994dd6fc1e0a850bd6f70c3c07a5da  regint.h
+922de5e2a6249ef5742cabaf859a8570a8a90fe3691543376cd55cf5cef86735  regparse.c
+6ae97b5cfe3f7038d6f38c95cf4a44acb3d9896375a38f25887695b378198ce2  regparse.h
+33ecdefc455364b40de16b84d62f87bb19506108975175fa386fe825582ed83c  regsyntax.c
+e00264947e29b44fd77f303a718bc1b52bc0c4ba519a556dadcd11a00e7039ef  include/ruby/onigmo.h
+6993065aac01ebb06b45e191fd76fea4e47d9773c29f2f6ae73923c25ab93681  enc/ascii.c
+70bdf491b55449b510de1d8bf2e7b9f182c04ac60539c431c4223e29a4157e61  enc/us_ascii.c
+fee81280950388d535ee1edd49c309108b43d409dd9037fa34fee4ddf23d56b3  enc/utf_8.c
+d26a5293af9ea346d8c5e64e5758317dbe420d5f742817d6897bdf4209003442  enc/unicode.c
+91ade8850a688f7a0c72e5f5eed5dba197fa300f32b40bee3e05238ae68fb516  enc/unicode/17.0.0/casefold.h
+7091cfa1b0a3b515e20da117463e8b5f01380ddb89eace4e85796aae8fabfd8e  enc/unicode/17.0.0/name2ctype.h
+a74812486cffbdc55141a5d9f165d782cbb202660d827622ec966237d4717b99  LEGAL
+4ebe48076b3ee165fbb9350aa8a9552f8043c8ed8a7edca2089133d33c1ea45f  COPYING
+36a9a6e7347214bbba599a412617204e65bff065dcbe5c46f5cb454c80de9eb0  BSDL

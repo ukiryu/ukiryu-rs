@@ -9,7 +9,12 @@
 //! a timeout (D1, issues #20 and #29). The environment's variables are
 //! applied over the inherited process environment, as Ruby's `Open3` does
 //! with an environment hash: an empty [`Environment`] is valid and does not
-//! isolate the child.
+//! isolate the child. As in the source, a `DISPLAY` in the request is
+//! dropped while an inherited `DISPLAY` still reaches the child.
+//!
+//! Start and finish times are local times as the source's `Time.now`
+//! gives them: the host's UTC offset at that instant, or the offset of an
+//! explicit [`Clock::System`] passed with [`ExecuteRequest::clock`].
 //!
 //! The command runs through the shell as the source does: Unix shells run
 //! `<shell> -c <join>` with the shell found on `PATH`, cmd runs
@@ -24,24 +29,24 @@
 //! Each is recorded with the Ruby observation in
 //! `tests/executor_data/observations.json`:
 //!
-//! - The timeout kills the run. The source raises only after the child has
-//!   finished on its own (a 0.01 s timeout on `sleep 10` returns after about
-//!   10 s). Here the child, and on Unix its whole process group, is killed
-//!   and reaped at the deadline.
+//! - The timeout kills the run (issue #20). The source raises only after the
+//!   child has finished on its own (a 0.01 s timeout on `sleep 10` returns
+//!   after about 10 s). Here every process started for the run is killed at
+//!   the deadline (a process group on Unix, a job object on Windows) and the
+//!   child is reaped.
 //! - `TimeoutError#timeout` carries the timeout; the source leaves it nil.
 //! - A failed run keeps its result ([`ExecuteError::Failed`]); the source's
 //!   `ExecutionError` has no `#result`.
 //! - stdin is written while output is read, so large inputs do not block.
 //! - The timeout must be a positive, finite number. The source treats `0` as
 //!   "no limit" and raises `ArgumentError` for a negative value.
-//! - `DISPLAY` is removed from the child. The source deletes it from the
-//!   hash it passes to `Open3`, which still lets an inherited `DISPLAY`
-//!   through.
-//! - Output is kept as bytes ([`Execution::stdout`]); the result's strings
-//!   are their UTF-8 decoding, with invalid sequences replaced.
-//! - Start and finish times are UTC instants with a `+0000` offset; the
-//!   source uses the local zone.
+//! - Output is kept as bytes ([`Execution::stdout`]). The result's streams
+//!   are the bytes Ruby reads from the pipe (on Windows, CR LF becomes LF),
+//!   never decoded or replaced; invalid UTF-8 stays. As in the source, a
+//!   failed run whose output is not valid UTF-8 raises the `strip` error
+//!   ([`ExecuteError::InvalidByteSequence`]) instead of `ExecutionError`.
 
+mod clock;
 mod invocation;
 mod process;
 pub mod status;
@@ -54,11 +59,14 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use crate::environment::Environment;
 use crate::errors::{command_timed_out_message, execution_failed_message, Error, ErrorKind};
-use crate::execution::{CommandInfo, ExecutionMetadata, ExecutionResult, Output, Seconds};
+use crate::execution::results::bytes;
+use crate::execution::{
+    CommandInfo, ExecutionMetadata, ExecutionResult, InvalidByteSequence, Output, Seconds,
+};
 use crate::execution_context::RunSettings;
-use crate::runtime::ShellName;
-use crate::types::value::Time;
+use crate::runtime::{Clock, ShellName};
 
+pub use clock::native_utc_offset;
 pub use invocation::find_executable_in;
 pub use status::{extract_status, ProcessStatus};
 
@@ -93,6 +101,7 @@ pub struct ExecuteRequest {
     command_name: Option<String>,
     allow_failure: bool,
     search_path: Option<OsString>,
+    clock: Option<Clock>,
 }
 
 impl ExecuteRequest {
@@ -116,6 +125,7 @@ impl ExecuteRequest {
             command_name: None,
             allow_failure: false,
             search_path: None,
+            clock: None,
         }
     }
 
@@ -180,6 +190,14 @@ impl ExecuteRequest {
         self
     }
 
+    /// The clock for the result's start and finish times. Without one, or
+    /// with [`Clock::Fixed`], times carry the host's UTC offset at that
+    /// instant; [`Clock::System`] gives its explicit offset.
+    pub fn clock(mut self, clock: Clock) -> Self {
+        self.clock = Some(clock);
+        self
+    }
+
     /// `shell.join(executable, *args)`: the command line shown in results
     /// and errors.
     pub fn command_line(&self) -> String {
@@ -219,6 +237,14 @@ pub enum ExecuteError {
         error: Error,
         execution: Box<Execution>,
     },
+    /// A non-zero status whose stdout or stderr is not valid UTF-8: building
+    /// the `ExecutionError` message strips the streams, and `strip` raises
+    /// (`ArgumentError` or `Encoding::CompatibilityError`). The source keeps
+    /// no result; the run is kept here so its bytes are not lost.
+    InvalidByteSequence {
+        error: InvalidByteSequence,
+        execution: Box<Execution>,
+    },
 }
 
 impl ExecuteError {
@@ -250,6 +276,7 @@ impl fmt::Display for ExecuteError {
             ExecuteError::TimedOut(error) | ExecuteError::Failed { error, .. } => {
                 f.write_str(error.message())
             }
+            ExecuteError::InvalidByteSequence { error, .. } => f.write_str(error.message()),
         }
     }
 }
@@ -260,6 +287,7 @@ impl std::error::Error for ExecuteError {
             ExecuteError::Spawn { source, .. } => Some(source),
             ExecuteError::Stdin(err) | ExecuteError::Io(err) => Some(err),
             ExecuteError::TimedOut(error) | ExecuteError::Failed { error, .. } => Some(error),
+            ExecuteError::InvalidByteSequence { error, .. } => Some(error),
             _ => None,
         }
     }
@@ -288,6 +316,7 @@ pub fn execute(request: ExecuteRequest) -> Result<Execution, ExecuteError> {
         tool_name,
         command_name,
         allow_failure,
+        clock,
         ..
     } = request;
 
@@ -320,9 +349,9 @@ pub fn execute(request: ExecuteRequest) -> Result<Execution, ExecuteError> {
         stdin,
     };
 
-    let started_at = now();
+    let started_at = clock::now(clock);
     let outcome = process::run(spec, limit);
-    let finished_at = now();
+    let finished_at = clock::now(clock);
     drop(stdin_file);
 
     let finished = outcome.map_err(|err| match err {
@@ -336,17 +365,22 @@ pub fn execute(request: ExecuteRequest) -> Result<Execution, ExecuteError> {
     })?;
 
     let status = extract_status(finished.status);
-    let stdout_text = String::from_utf8_lossy(&finished.stdout).into_owned();
-    let stderr_text = String::from_utf8_lossy(&finished.stderr).into_owned();
-    let failure = (status != 0 && !allow_failure).then(|| {
-        execution_failed_message(
-            &executable,
-            &command,
-            Some(stdout_text.as_str()),
-            Some(stderr_text.as_str()),
-            status,
-        )
-    });
+    let stdout_text = pipe_text(&finished.stdout, host.windows);
+    let stderr_text = pipe_text(&finished.stderr, host.windows);
+    // `format_error` strips stdout, then stderr; either raises for invalid
+    // UTF-8 before the message exists.
+    let failure =
+        (status != 0 && !allow_failure).then(|| -> Result<String, InvalidByteSequence> {
+            let stdout = bytes::strip(&stdout_text)?;
+            let stderr = bytes::strip(&stderr_text)?;
+            Ok(execution_failed_message(
+                &executable,
+                &command,
+                Some(stdout),
+                Some(stderr),
+                status,
+            ))
+        });
 
     let command_info = CommandInfo {
         executable,
@@ -367,12 +401,35 @@ pub fn execute(request: ExecuteRequest) -> Result<Execution, ExecuteError> {
     };
 
     match failure {
-        Some(message) => Err(ExecuteError::Failed {
+        Some(Ok(message)) => Err(ExecuteError::Failed {
             error: Error::new(ErrorKind::Execution, Some(message.as_str())),
+            execution: Box::new(execution),
+        }),
+        Some(Err(error)) => Err(ExecuteError::InvalidByteSequence {
+            error,
             execution: Box::new(execution),
         }),
         None => Ok(execution),
     }
+}
+
+/// The String Ruby reads from an `Open3` pipe: the bytes, tagged UTF-8 and
+/// not validated. On Windows the pipe is in text mode, so every CR LF pair
+/// reads as LF (a lone CR stays). The bytes as written stay available in
+/// [`Execution::stdout`] and [`Execution::stderr`].
+fn pipe_text(bytes: &[u8], windows: bool) -> Vec<u8> {
+    if !windows {
+        return bytes.to_vec();
+    }
+    let mut text = Vec::with_capacity(bytes.len());
+    let mut iter = bytes.iter().peekable();
+    while let Some(&byte) = iter.next() {
+        if byte == b'\r' && iter.peek() == Some(&&b'\n') {
+            continue;
+        }
+        text.push(byte);
+    }
+    text
 }
 
 /// The run limit for a timeout value.
@@ -385,18 +442,6 @@ fn timeout_duration(timeout: Seconds) -> Result<Duration, ExecuteError> {
     seconds
         .filter(|d| !d.is_zero())
         .ok_or(ExecuteError::InvalidTimeout(timeout))
-}
-
-fn now() -> Time {
-    let since = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap_or(Duration::ZERO);
-    Time {
-        seconds: i64::try_from(since.as_secs()).unwrap_or(i64::MAX),
-        nanos: since.subsec_nanos(),
-        utc_offset: 0,
-        utc: false,
-    }
 }
 
 /// The temporary file PowerShell reads stdin from; removed when dropped.
@@ -430,6 +475,20 @@ impl StdinFile {
             COUNTER.fetch_add(1, Ordering::Relaxed)
         );
         let path = std::env::temp_dir().join(name);
+        // The source writes this file through Ruby's `Tempfile`, which on
+        // Windows is in text mode: every LF is written as CR LF.
+        let data = if cfg!(windows) {
+            let mut text = Vec::with_capacity(data.len());
+            for byte in data {
+                if byte == b'\n' {
+                    text.push(b'\r');
+                }
+                text.push(byte);
+            }
+            text
+        } else {
+            data
+        };
         std::fs::write(&path, data).map_err(ExecuteError::Stdin)?;
         let display = path.to_string_lossy().into_owned();
         Ok(StdinFile { path, display })
