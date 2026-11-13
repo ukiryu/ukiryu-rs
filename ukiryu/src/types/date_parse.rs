@@ -11,7 +11,7 @@ use std::sync::OnceLock;
 
 use num_bigint::BigInt;
 
-use super::error::{Error, Result};
+use super::error::{Error, ErrorClass, Result};
 use super::onig::{Captures, OnigRegex};
 use super::ruby::string_inspect;
 
@@ -469,13 +469,19 @@ fn parse_time2_cb(st: &mut State<'_>, m: &Captures, text: &str) -> Result<bool> 
         digits: f.len(),
     });
     if let Some(p) = m.text(5, text) {
-        // NUM2INT(h): RangeError beyond int; the port declines that case.
-        let ih: i32 = (&h).try_into().map_err(|_| {
-            Error::unsupported(format!(
-                "Date._parse({}): hour does not fit a C int",
-                string_inspect(st.input)
-            ))
-        })?;
+        // NUM2INT(h): RangeError beyond a C int.
+        let ih: i32 = match i32::try_from(&h) {
+            Ok(i) => i,
+            Err(_) => {
+                let fixnum = BigInt::from(1i64 << 62);
+                let message = if h >= fixnum || h < -fixnum {
+                    "bignum too big to convert into 'long'".to_string()
+                } else {
+                    format!("integer {h} too big to convert to 'int'")
+                };
+                return Err(Error::new(ErrorClass::Range, message));
+            }
+        };
         let mut ih = ih % 12;
         if p.starts_with(['P', 'p']) {
             ih += 12;

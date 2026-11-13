@@ -362,8 +362,14 @@ fn time_parts(t: &Time) -> String {
     let local = t.seconds + t.utc_offset as i64;
     let (y, mo, d) = civil_from_days(local.div_euclid(86_400));
     let sod = local.rem_euclid(86_400);
+    // Ruby pads the year to four digits after the sign (`-0099`).
+    let y = if y < 0 {
+        format!("-{:04}", -y)
+    } else {
+        format!("{y:04}")
+    };
     format!(
-        "{y:04}-{mo:02}-{d:02} {:02}:{:02}:{:02}",
+        "{y}-{mo:02}-{d:02} {:02}:{:02}:{:02}",
         sod / 3600,
         sod % 3600 / 60,
         sod % 60

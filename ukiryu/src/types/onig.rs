@@ -201,10 +201,6 @@ impl Translator {
         self.chars.get(self.pos).copied()
     }
 
-    fn peek_at(&self, n: usize) -> Option<char> {
-        self.chars.get(self.pos + n).copied()
-    }
-
     fn bump(&mut self) -> Option<char> {
         let c = self.peek()?;
         self.pos += 1;
@@ -331,7 +327,9 @@ impl Translator {
             'B' => self
                 .out
                 .push_str(&format!("(?:(?<={WORD})(?={WORD})|(?<!{WORD})(?!{WORD}))")),
-            'A' | 'z' | 'Z' => {
+            // Onigmo's `\Z` allows one final newline; the engine's allows several.
+            'Z' => self.out.push_str(r"(?=\n?\z)"),
+            'A' | 'z' => {
                 self.out.push('\\');
                 self.out.push(c);
             }

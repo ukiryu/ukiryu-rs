@@ -15,7 +15,7 @@
 //! missing the result is `Unsupported`, never a guess. Two more cases are
 //! `Unsupported`: a fraction finer than a nanosecond (Ruby keeps an exact
 //! `Rational`; [`Time`] holds nanoseconds) and calendar fields beyond what
-//! `Time` can hold here (years beyond ±10^9, fields beyond `i64`).
+//! `Time` can hold here (years beyond ±10^11, fields beyond `i64`).
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use num_bigint::BigInt;
@@ -541,8 +541,8 @@ fn make_time(
     let hour = hour.unwrap_or(0);
     let min = min.unwrap_or(0);
     let sec = sec.unwrap_or(0);
-    if year.unsigned_abs() > 1_000_000_000 {
-        return Err(need("a year within ±10^9", input));
+    if year.unsigned_abs() > 100_000_000_000 {
+        return Err(need("a year within ±10^11", input));
     }
 
     if Some(year) != off_year {
