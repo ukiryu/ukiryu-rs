@@ -1,66 +1,170 @@
-//! Ruby (Onigmo) regular expressions on a portable engine.
+//! Ruby `Regexp` matching with Ruby's own engine.
 //!
-//! Ruby compiles `Regexp` literals with Onigmo. This module translates a Ruby
-//! pattern into the syntax of [`fancy_regex`] (pure Rust, so it also runs on
-//! WebAssembly) and matches with Onigmo's semantics for every construct it
-//! accepts. Whatever it cannot reproduce exactly is refused, and the caller
-//! reports that as `Unsupported` instead of guessing.
+//! Patterns compile and match with the Onigmo sources of Ruby 4.0.1, built
+//! unchanged from `vendor/onigmo` in Ruby's configuration (see `build.rs`,
+//! `vendor/onigmo/PROVENANCE` and `NOTICE`). Case folding, properties,
+//! back-references, named groups, look-around and every other construct are
+//! therefore Onigmo's, with the Unicode 17.0.0 tables Ruby 4.0.1 ships.
 //!
-//! Translated so the result is Onigmo's, measured against Ruby 4.0.1
-//! (Unicode 17.0.0) over every code point:
+//! This module keeps the two steps of `re.c` that run before Onigmo:
 //!
-//! * `\d \s \w \h` (and negations) are ASCII only: `[0-9]`,
-//!   `[\t\n\v\f\r ]`, `[0-9A-Za-z_]`, `[0-9A-Fa-f]`, and do not case-fold
-//!   under `/i`;
-//! * `\b` / `\B` use Onigmo's Unicode word set:
-//!   `Alphabetic | M | Nd | Pc | Join_Control` plus `U+00B2 U+00B3 U+00B9
-//!   U+00BC..U+00BE`;
-//! * `[[:alpha:]]` is `\p{Alphabetic}`, `[[:alnum:]]` is
-//!   `[\p{Alphabetic}\p{Nd}]`;
-//! * `^` / `$` are always line anchors (`^` not after a final newline), `/m`
-//!   is dot-all, `/x` whitespace and comments are dropped outside classes.
+//! * `rb_reg_preprocess` (`unescape_nonascii`), ported below: `\u` escapes and
+//!   escaped multibyte bytes become literal UTF-8, `(?#...)` and `/x`
+//!   comments are dropped, and a non-ASCII or `\p` pattern gets a fixed
+//!   encoding;
+//! * the encoding choice of `rb_reg_initialize` / `rb_reg_prepare_enc`: a
+//!   regexp without a fixed encoding is US-ASCII and matches ASCII-only text
+//!   as compiled; any other text recompiles it as UTF-8 from the source,
+//!   preprocessed again with no options, exactly like `rb_reg_prepare_re`.
 //!
-//! Refused: back-references, `\k \g \p \G \K \R \X` and other Onigmo-only
-//! escapes, POSIX brackets other than `alpha`/`alnum`, absent operators,
-//! conditionals, bytes `\x80..\xFF`, non-ASCII pattern text under `/i`, and
-//! input that holds a character whose full case folding has several
-//! characters while `/i` is active (Onigmo matches `ss` against `ß`; the
-//! Rust engine uses simple folding) or a code point the Rust tables
-//! (Unicode 16.0.0) leave unassigned.
-use std::sync::OnceLock;
+//! The source is taken as a UTF-8 Ruby string. Inputs Ruby would reject when
+//! creating the `Regexp` give `None`.
+use std::ffi::{c_int, c_longlong, c_uint, c_void};
+use std::sync::{Mutex, OnceLock};
 
-use fancy_regex::{Regex as Engine, RegexBuilder};
-
-/// `Regexp::IGNORECASE`, `EXTENDED`, `MULTILINE`.
+/// `Regexp::IGNORECASE`, `EXTENDED`, `MULTILINE` (= Onigmo's option bits).
 const IGNORECASE: u32 = 1;
 const EXTENDED: u32 = 2;
 const MULTILINE: u32 = 4;
-/// `FIXEDENCODING` and `NOENCODING` do not change matching of UTF-8 text.
-const ENCODING_BITS: u32 = 16 | 32;
+/// `ARG_REG_OPTION_MASK`: the bits Ruby hands to Onigmo.
+const REG_OPTION_MASK: u32 = IGNORECASE | EXTENDED | MULTILINE;
+/// `ARG_ENCODING_FIXED` and `ARG_ENCODING_NONE` (`Regexp::FIXEDENCODING`,
+/// `Regexp::NOENCODING`).
+const ENCODING_FIXED: u32 = 16;
+const ENCODING_NONE: u32 = 32;
 
-/// Onigmo's word characters for `\b` (Ruby 4.0.1, see the module docs).
-const WORD: &str =
-    r"[\p{Alphabetic}\p{M}\p{Nd}\p{Pc}\p{Join_Control}\x{B2}\x{B3}\x{B9}\x{BC}-\x{BE}]";
+/// `ONIG_MISMATCH` and `ONIG_MAX_ERROR_MESSAGE_LEN` (onigmo.h).
+const ONIG_MISMATCH: c_longlong = -1;
+const ONIG_MAX_ERROR_MESSAGE_LEN: usize = 90;
 
-/// Code points whose full case folding has more than one character
-/// (`String#downcase(:fold)`, Ruby 4.0.1, Unicode 17.0.0).
-const MULTI_CHAR_FOLDS: [u32; 104] = [
-    0x00DF, 0x0130, 0x0149, 0x01F0, 0x0390, 0x03B0, 0x0587, 0x1E96, 0x1E97, 0x1E98, 0x1E99, 0x1E9A,
-    0x1E9E, 0x1F50, 0x1F52, 0x1F54, 0x1F56, 0x1F80, 0x1F81, 0x1F82, 0x1F83, 0x1F84, 0x1F85, 0x1F86,
-    0x1F87, 0x1F88, 0x1F89, 0x1F8A, 0x1F8B, 0x1F8C, 0x1F8D, 0x1F8E, 0x1F8F, 0x1F90, 0x1F91, 0x1F92,
-    0x1F93, 0x1F94, 0x1F95, 0x1F96, 0x1F97, 0x1F98, 0x1F99, 0x1F9A, 0x1F9B, 0x1F9C, 0x1F9D, 0x1F9E,
-    0x1F9F, 0x1FA0, 0x1FA1, 0x1FA2, 0x1FA3, 0x1FA4, 0x1FA5, 0x1FA6, 0x1FA7, 0x1FA8, 0x1FA9, 0x1FAA,
-    0x1FAB, 0x1FAC, 0x1FAD, 0x1FAE, 0x1FAF, 0x1FB2, 0x1FB3, 0x1FB4, 0x1FB6, 0x1FB7, 0x1FBC, 0x1FC2,
-    0x1FC3, 0x1FC4, 0x1FC6, 0x1FC7, 0x1FCC, 0x1FD2, 0x1FD3, 0x1FD6, 0x1FD7, 0x1FE2, 0x1FE3, 0x1FE4,
-    0x1FE6, 0x1FE7, 0x1FF2, 0x1FF3, 0x1FF4, 0x1FF6, 0x1FF7, 0x1FFC, 0xFB00, 0xFB01, 0xFB02, 0xFB03,
-    0xFB04, 0xFB05, 0xFB06, 0xFB13, 0xFB14, 0xFB15, 0xFB16, 0xFB17,
-];
+extern "C" {
+    fn ukiryu_onigmo_new(
+        out: *mut *mut c_void,
+        pattern: *const u8,
+        len: usize,
+        options: c_uint,
+        utf8: c_int,
+        message: *mut u8,
+    ) -> c_int;
+    fn ukiryu_onigmo_regions(reg: *mut c_void) -> c_int;
+    fn ukiryu_onigmo_search(
+        reg: *mut c_void,
+        string: *const u8,
+        len: usize,
+        spans: *mut c_longlong,
+        capacity: c_int,
+    ) -> c_longlong;
+    fn ukiryu_onigmo_free(reg: *mut c_void);
+}
+
+/// Onigmo keeps a little global state while it compiles (its one-time
+/// initialisation and the glue's `rb_raise` flag): compile one at a time.
+static COMPILE: Mutex<()> = Mutex::new(());
+
+/// One compiled Onigmo `regex_t`.
+#[derive(Debug)]
+struct Compiled {
+    reg: *mut c_void,
+    regions: usize,
+    /// A search does not change the `regex_t`, but nothing in Onigmo
+    /// promises that; searches on one regexp take turns.
+    lock: Mutex<()>,
+}
+
+// SAFETY: the pointer is owned (freed once, in Drop) and every use is
+// serialised by `lock` or happens under `COMPILE` before it is shared.
+unsafe impl Send for Compiled {}
+unsafe impl Sync for Compiled {}
+
+impl Drop for Compiled {
+    fn drop(&mut self) {
+        // SAFETY: `reg` came from ukiryu_onigmo_new and is freed only here.
+        unsafe { ukiryu_onigmo_free(self.reg) }
+    }
+}
+
+impl Compiled {
+    /// `onig_new` with Ruby's syntax and default case-fold flag.
+    fn new(pattern: &[u8], options: u32, utf8: bool) -> Result<Compiled, String> {
+        let _guard = COMPILE.lock().unwrap_or_else(|e| e.into_inner());
+        let mut reg: *mut c_void = std::ptr::null_mut();
+        let mut message = [0u8; ONIG_MAX_ERROR_MESSAGE_LEN];
+        // SAFETY: pointer/length pairs describe live buffers; `message` has
+        // the size onig_error_code_to_str writes at most.
+        let r = unsafe {
+            ukiryu_onigmo_new(
+                &mut reg,
+                pattern.as_ptr(),
+                pattern.len(),
+                options & REG_OPTION_MASK,
+                c_int::from(utf8),
+                message.as_mut_ptr(),
+            )
+        };
+        if r != 0 || reg.is_null() {
+            let end = message
+                .iter()
+                .position(|&b| b == 0)
+                .unwrap_or(message.len());
+            let text = String::from_utf8_lossy(&message[..end]).into_owned();
+            return Err(if text.is_empty() {
+                format!("Onigmo error {r}")
+            } else {
+                text
+            });
+        }
+        // SAFETY: `reg` is a valid compiled regexp.
+        let regions = unsafe { ukiryu_onigmo_regions(reg) };
+        Ok(Compiled {
+            reg,
+            regions: usize::try_from(regions).unwrap_or(1).max(1),
+            lock: Mutex::new(()),
+        })
+    }
+
+    /// `onig_search` over the whole of `haystack`; `None` on an engine error.
+    fn search(&self, haystack: &str) -> Option<Option<Captures>> {
+        let _guard = self.lock.lock().unwrap_or_else(|e| e.into_inner());
+        let mut spans: Vec<c_longlong> = vec![-1; self.regions * 2];
+        let capacity = c_int::try_from(self.regions).ok()?;
+        // SAFETY: `spans` holds 2 * regions slots, as `capacity` says.
+        let r = unsafe {
+            ukiryu_onigmo_search(
+                self.reg,
+                haystack.as_ptr(),
+                haystack.len(),
+                spans.as_mut_ptr(),
+                capacity,
+            )
+        };
+        if r == ONIG_MISMATCH {
+            return Some(None);
+        }
+        if r < 0 {
+            return None;
+        }
+        let groups = spans
+            .chunks(2)
+            .map(|p| match (usize::try_from(p[0]), usize::try_from(p[1])) {
+                (Ok(s), Ok(e)) => Some((s, e)),
+                _ => None,
+            })
+            .collect();
+        Some(Some(Captures { groups }))
+    }
+}
 
 /// A compiled Ruby regular expression.
 #[derive(Debug)]
 pub struct OnigRegex {
-    engine: Engine,
-    ignore_case: bool,
+    source: String,
+    options: u32,
+    /// The `Regexp` has a fixed (UTF-8) encoding; otherwise it is US-ASCII.
+    fixed: bool,
+    /// What `Regexp.new(source, options)` compiled.
+    created: Compiled,
+    /// `rb_reg_prepare_re` for non-ASCII text when `created` is US-ASCII.
+    utf8: OnceLock<Option<Compiled>>,
 }
 
 /// A successful match: the byte span of each group (`None` when the group
@@ -80,81 +184,56 @@ impl Captures {
     }
 }
 
-fn unassigned() -> &'static Engine {
-    static RE: OnceLock<Engine> = OnceLock::new();
-    RE.get_or_init(|| Engine::new(r"\p{Cn}").expect("static pattern"))
-}
-
 impl OnigRegex {
-    /// Compile Ruby `source` with `Regexp#options` bits; `None` when the
-    /// pattern uses a construct this module does not reproduce.
+    /// Compile Ruby `source` with `Regexp#options` bits; `None` when Ruby
+    /// would not create this `Regexp`.
     pub fn new(source: &str, options: u32) -> Option<OnigRegex> {
-        if options & !(IGNORECASE | EXTENDED | MULTILINE | ENCODING_BITS) != 0 {
-            return None;
+        Self::compile(source, options).ok()
+    }
+
+    /// `Regexp.new(source, options)` for a UTF-8 source string; the error is
+    /// the preprocessing or Onigmo message.
+    pub fn compile(source: &str, options: u32) -> Result<OnigRegex, String> {
+        if options & !(REG_OPTION_MASK | ENCODING_FIXED | ENCODING_NONE) != 0 {
+            return Err(format!("unknown Regexp option bits {options:#x}"));
         }
-        let mut tr = Translator {
-            chars: source.chars().collect(),
-            pos: 0,
-            out: String::new(),
-            extended: options & EXTENDED != 0,
-            ignore_case: options & IGNORECASE != 0,
-            scopes: Vec::new(),
-        };
-        tr.sequence()?;
-        if tr.ignore_case && !source.is_ascii() {
-            return None;
+        let pre = preprocess(source.as_bytes(), options & REG_OPTION_MASK)?;
+        if pre.fixed && options & ENCODING_NONE != 0 {
+            // rb_reg_initialize: a /n regexp may not need a non-binary encoding.
+            return Err("incompatible character encoding".into());
         }
-        let mut pattern = String::from("(?m)");
-        if options & IGNORECASE != 0 {
-            pattern.push_str("(?i)");
-        }
-        if options & MULTILINE != 0 {
-            pattern.push_str("(?s)");
-        }
-        pattern.push_str(&tr.out);
-        let engine = RegexBuilder::new(&pattern)
-            .oniguruma_mode(true)
-            .build()
-            .ok()?;
-        Some(OnigRegex {
-            engine,
-            ignore_case: tr.ignore_case,
+        let fixed = pre.fixed || options & ENCODING_FIXED != 0;
+        let created = Compiled::new(&pre.bytes, options, fixed)?;
+        Ok(OnigRegex {
+            source: source.to_owned(),
+            options,
+            fixed,
+            created,
+            utf8: OnceLock::new(),
         })
     }
 
-    fn accepts(&self, haystack: &str) -> bool {
-        if self.ignore_case
-            && haystack
-                .chars()
-                .any(|c| MULTI_CHAR_FOLDS.binary_search(&(c as u32)).is_ok())
-        {
-            return false;
+    /// The compiled regexp Ruby uses for `haystack`.
+    fn prepared(&self, haystack: &str) -> Option<&Compiled> {
+        if self.fixed || haystack.is_ascii() {
+            return Some(&self.created);
         }
-        haystack.is_ascii() || !matches!(unassigned().is_match(haystack), Ok(true))
+        self.utf8
+            .get_or_init(|| {
+                let pre = preprocess(self.source.as_bytes(), 0).ok()?;
+                Compiled::new(&pre.bytes, self.options, true).ok()
+            })
+            .as_ref()
     }
 
-    /// `haystack =~ self` as a boolean; `None` when the answer may differ
-    /// from Onigmo's or the engine gave up.
+    /// `haystack =~ self` as a boolean; `None` when Onigmo reports an error.
     pub fn is_match(&self, haystack: &str) -> Option<bool> {
-        if !self.accepts(haystack) {
-            return None;
-        }
-        self.engine.is_match(haystack).ok()
+        Some(self.captures(haystack)?.is_some())
     }
 
     /// `self.match(haystack)`; `Some(None)` is no match.
     pub fn captures(&self, haystack: &str) -> Option<Option<Captures>> {
-        if !self.accepts(haystack) {
-            return None;
-        }
-        let caps = self.engine.captures(haystack).ok()?;
-        Some(caps.map(|c| {
-            Captures {
-                groups: (0..c.len())
-                    .map(|i| c.get(i).map(|m| (m.start(), m.end())))
-                    .collect(),
-            }
-        }))
+        self.prepared(haystack)?.search(haystack)
     }
 }
 
@@ -163,322 +242,478 @@ pub fn regexp_match(re: &super::value::Regexp, string: &str) -> Option<bool> {
     OnigRegex::new(&re.source, re.options)?.is_match(string)
 }
 
-struct Translator {
-    chars: Vec<char>,
-    pos: usize,
-    out: String,
-    extended: bool,
-    /// Whether `/i` is active anywhere in the pattern.
-    ignore_case: bool,
-    /// The `/x` state to restore when each open group closes.
-    scopes: Vec<bool>,
+/// The output of `rb_reg_preprocess`.
+struct Preprocessed {
+    bytes: Vec<u8>,
+    /// `fixed_enc` was set: the pattern needs its (UTF-8) encoding.
+    fixed: bool,
 }
 
-fn class_escape(c: char) -> Option<&'static str> {
-    Some(match c {
-        'd' => "0-9",
-        'w' => "0-9A-Za-z_",
-        's' => r"\t\n\x0B\x0C\r ",
-        'h' => "0-9A-Fa-f",
-        _ => return None,
+/// `rb_reg_preprocess(p, end, utf8, &fixed_enc, err, options)` (re.c).
+fn preprocess(source: &[u8], options: u32) -> Result<Preprocessed, String> {
+    let mut pre = Preprocessor {
+        s: source,
+        buf: Vec::with_capacity(source.len()),
+        fixed: false,
+        has_property: false,
+    };
+    let mut p = 0;
+    pre.scan(&mut p, options, false)?;
+    let fixed = pre.fixed || pre.has_property;
+    Ok(Preprocessed {
+        bytes: pre.buf,
+        fixed,
     })
 }
 
-/// Characters that need a backslash to be literal in the target syntax.
-fn is_meta(c: char) -> bool {
-    r"\.+*?()|[]{}^$#&-~".contains(c)
+/// `rb_enc_precise_mbclen` for UTF-8.
+enum MbLen {
+    Found,
+    NeedMore,
+    Invalid,
 }
 
-fn push_literal(out: &mut String, c: char) {
-    if is_meta(c) {
-        out.push('\\');
+fn precise_mbclen(bytes: &[u8]) -> MbLen {
+    let Some(&lead) = bytes.first() else {
+        return MbLen::NeedMore;
+    };
+    let width = match lead {
+        0x00..=0x7F => 1,
+        0xC2..=0xDF => 2,
+        0xE0..=0xEF => 3,
+        0xF0..=0xF4 => 4,
+        _ => return MbLen::Invalid,
+    };
+    let have = &bytes[..bytes.len().min(width)];
+    match std::str::from_utf8(have) {
+        Ok(_) if have.len() == width => MbLen::Found,
+        Ok(_) => MbLen::NeedMore,
+        Err(e) if e.error_len().is_none() => MbLen::NeedMore,
+        Err(_) => MbLen::Invalid,
     }
-    out.push(c);
 }
 
-impl Translator {
-    fn peek(&self) -> Option<char> {
-        self.chars.get(self.pos).copied()
+/// `ruby_scan_digits(start, len, base)` for bases 8 and 16: the value and
+/// the number of digits read.
+fn scan_digits(s: &[u8], len: usize, base: u32) -> (u64, usize) {
+    let mut value: u64 = 0;
+    let mut n = 0;
+    while n < len && n < s.len() {
+        match char::from(s[n]).to_digit(base) {
+            Some(d) => {
+                value = value
+                    .wrapping_mul(u64::from(base))
+                    .wrapping_add(u64::from(d));
+                n += 1;
+            }
+            None => break,
+        }
+    }
+    (value, n)
+}
+
+/// `rb_isspace`.
+fn is_space(c: u8) -> bool {
+    matches!(c, b' ' | b'\t' | b'\n' | 0x0B | 0x0C | b'\r')
+}
+
+struct Preprocessor<'a> {
+    s: &'a [u8],
+    buf: Vec<u8>,
+    /// `*encp != 0`.
+    fixed: bool,
+    has_property: bool,
+}
+
+impl Preprocessor<'_> {
+    /// Width of the character at `p` (the source is valid UTF-8).
+    fn width(&self, p: usize) -> usize {
+        match self.s[p] {
+            0x00..=0x7F => 1,
+            0xC0..=0xDF => 2,
+            0xE0..=0xEF => 3,
+            _ => 4,
+        }
     }
 
-    fn bump(&mut self) -> Option<char> {
-        let c = self.peek()?;
-        self.pos += 1;
-        Some(c)
+    fn escape_hex(&mut self, byte: u8) {
+        self.buf
+            .extend_from_slice(format!("\\x{byte:02X}").as_bytes());
     }
 
-    fn sequence(&mut self) -> Option<()> {
-        while let Some(c) = self.bump() {
-            if self.extended && matches!(c, ' ' | '\t' | '\n' | '\r' | '\x0B' | '\x0C') {
-                continue;
+    /// `read_escaped_byte`: `p` is at a backslash.
+    fn read_escaped_byte(&self, p: &mut usize) -> Result<u8, String> {
+        let s = self.s;
+        let end = s.len();
+        let mut q = *p;
+        if q == end || s[q] != b'\\' {
+            return Err("too short escaped multibyte character".into());
+        }
+        q += 1;
+        let mut meta = false;
+        let mut ctrl = false;
+        let code: u64 = 'again: loop {
+            if q == end {
+                return Err("too short escape sequence".into());
             }
-            if self.extended && c == '#' {
-                while let Some(c) = self.bump() {
-                    if c == '\n' {
-                        break;
-                    }
-                }
-                continue;
-            }
+            let c = s[q];
+            q += 1;
             match c {
-                '\\' => self.escape()?,
-                '[' => self.class()?,
-                '(' => self.group()?,
-                ')' => {
-                    self.extended = self.scopes.pop()?;
-                    self.out.push(')');
+                b'\\' => break 'again u64::from(b'\\'),
+                b'n' => break 'again 0x0A,
+                b't' => break 'again 0x09,
+                b'r' => break 'again 0x0D,
+                b'f' => break 'again 0x0C,
+                b'v' => break 'again 0x0B,
+                b'a' => break 'again 0x07,
+                b'e' => break 'again 0x1B,
+                b'0'..=b'7' => {
+                    q -= 1;
+                    let (v, len) = scan_digits(&s[q..], (end - q).min(3), 8);
+                    q += len;
+                    break 'again v;
                 }
-                _ => self.out.push(c),
-            }
-        }
-        if self.scopes.is_empty() {
-            Some(())
-        } else {
-            None
-        }
-    }
-
-    /// Hex digits after `\x` or `\u`; a code point that is not a byte above
-    /// ASCII (`\x80..\xFF` are raw bytes in Ruby).
-    fn hex(&mut self, min: usize, max: usize) -> Option<u32> {
-        let mut v = 0u32;
-        let mut n = 0;
-        while n < max {
-            match self.peek().and_then(|c| c.to_digit(16)) {
-                Some(d) => {
-                    v = v * 16 + d;
-                    n += 1;
-                    self.pos += 1;
-                }
-                None => break,
-            }
-        }
-        (n >= min).then_some(v)
-    }
-
-    /// One escaped character as target syntax, for use inside or outside a
-    /// class. `None` refuses the pattern.
-    fn escaped_char(&mut self, c: char, out: &mut String) -> Option<()> {
-        let code = match c {
-            'n' => 0x0A,
-            't' => 0x09,
-            'r' => 0x0D,
-            'f' => 0x0C,
-            'v' => 0x0B,
-            'e' => 0x1B,
-            'a' => 0x07,
-            'x' => {
-                let v = self.hex(1, 2)?;
-                if v >= 0x80 {
-                    return None;
-                }
-                v
-            }
-            'u' => {
-                if self.peek() == Some('{') {
-                    self.pos += 1;
-                    let v = self.hex(1, 6)?;
-                    if self.bump()? != '}' {
-                        return None;
+                b'x' => {
+                    let (v, len) = scan_digits(&s[q..], (end - q).min(2), 16);
+                    if len < 1 {
+                        return Err("invalid hex escape".into());
                     }
-                    v
-                } else {
-                    self.hex(4, 4)?
+                    q += len;
+                    break 'again v;
                 }
-            }
-            '0' => {
-                let mut v = 0u32;
-                for _ in 0..2 {
-                    match self.peek().and_then(|c| c.to_digit(8)) {
-                        Some(d) => {
-                            v = v * 8 + d;
-                            self.pos += 1;
+                b'M' => {
+                    if meta {
+                        return Err("duplicate meta escape".into());
+                    }
+                    meta = true;
+                    if q + 1 < end {
+                        let dash = s[q];
+                        q += 1;
+                        if dash == b'-' && s[q] & 0x80 == 0 {
+                            if s[q] == b'\\' {
+                                q += 1;
+                                continue 'again;
+                            }
+                            q += 1;
+                            break 'again u64::from(s[q - 1]);
                         }
-                        None => break,
                     }
+                    return Err("too short meta escape".into());
                 }
-                v
+                b'C' => {
+                    if q == end || s[q] != b'-' {
+                        return Err("too short control escape".into());
+                    }
+                    q += 1;
+                }
+                b'c' => {}
+                _ => return Err("unexpected escape sequence".into()),
             }
-            c if c.is_ascii_alphanumeric() => return None,
-            c => {
-                push_literal(out, c);
-                return Some(());
+            // Only \C- and \c get here.
+            if ctrl {
+                return Err("duplicate control escape".into());
             }
+            ctrl = true;
+            if q < end && s[q] & 0x80 == 0 {
+                if s[q] == b'\\' {
+                    q += 1;
+                    continue 'again;
+                }
+                q += 1;
+                break 'again u64::from(s[q - 1]);
+            }
+            return Err("too short control escape".into());
         };
-        char::from_u32(code)?;
-        out.push_str(&format!("\\x{{{code:X}}}"));
-        Some(())
+        if code > 0xFF {
+            return Err("invalid escape code".into());
+        }
+        let mut code = code as u8;
+        if ctrl {
+            code &= 0x1F;
+        }
+        if meta {
+            code |= 0x80;
+        }
+        *p = q;
+        Ok(code)
     }
 
-    fn escape(&mut self) -> Option<()> {
-        let c = self.bump()?;
-        match c {
-            'd' | 'w' | 's' | 'h' => {
-                let set = class_escape(c)?;
-                self.out.push_str(&format!("(?-i:[{set}])"));
-            }
-            'D' | 'W' | 'S' | 'H' => {
-                let set = class_escape(c.to_ascii_lowercase())?;
-                self.out.push_str(&format!("(?-i:[^{set}])"));
-            }
-            'b' => self
-                .out
-                .push_str(&format!("(?:(?<={WORD})(?!{WORD})|(?<!{WORD})(?={WORD}))")),
-            'B' => self
-                .out
-                .push_str(&format!("(?:(?<={WORD})(?={WORD})|(?<!{WORD})(?!{WORD}))")),
-            // Onigmo's `\Z` allows one final newline; the engine's allows several.
-            'Z' => self.out.push_str(r"(?=\n?\z)"),
-            'A' | 'z' => {
-                self.out.push('\\');
-                self.out.push(c);
-            }
-            _ => {
-                let mut lit = String::new();
-                self.escaped_char(c, &mut lit)?;
-                self.out.push_str(&lit);
-            }
+    /// `unescape_escaped_nonascii`: `p` is at a backslash.
+    fn escaped_nonascii(&mut self, p: &mut usize) -> Result<(), String> {
+        let mut q = *p;
+        let mut area = vec![self.read_escaped_byte(&mut q)?];
+        // rb_enc_mbmaxlen(UTF-8) is 4.
+        while area.len() < 4 && matches!(precise_mbclen(&area), MbLen::NeedMore) {
+            area.push(self.read_escaped_byte(&mut q)?);
         }
-        Some(())
+        if matches!(precise_mbclen(&area), MbLen::Invalid) {
+            return Err("invalid multibyte escape".into());
+        }
+        if area.len() > 1 || area[0] & 0x80 != 0 {
+            self.buf.extend_from_slice(&area);
+            self.fixed = true;
+        } else {
+            self.escape_hex(area[0]);
+        }
+        *p = q;
+        Ok(())
     }
 
-    fn class(&mut self) -> Option<()> {
-        let mut out = String::from("[");
-        if self.peek() == Some('^') {
-            self.pos += 1;
-            out.push('^');
+    /// `append_utf8`.
+    fn append_utf8(&mut self, code: u64) -> Result<(), String> {
+        if (0xD800..=0xDFFF).contains(&code) || code > 0x10FFFF {
+            return Err("invalid Unicode range".into());
         }
-        let mut first = true;
+        if code < 0x80 {
+            self.escape_hex(code as u8);
+        } else {
+            let c = char::from_u32(code as u32).ok_or("invalid Unicode range")?;
+            let mut b = [0u8; 4];
+            self.buf.extend_from_slice(c.encode_utf8(&mut b).as_bytes());
+            self.fixed = true;
+        }
+        Ok(())
+    }
+
+    /// `unescape_unicode_list`: after `\u{`.
+    fn unicode_list(&mut self, p: &mut usize) -> Result<(), String> {
+        let s = self.s;
+        let end = s.len();
+        let mut q = *p;
+        let mut any = false;
+        while q < end && is_space(s[q]) {
+            q += 1;
+        }
         loop {
-            let c = self.bump()?;
-            match c {
-                ']' if !first => break,
-                '[' if self.peek() == Some(':') => {
-                    let rest: String = self.chars[self.pos..].iter().collect();
-                    let (set, len) = if rest.starts_with(":alpha:]") {
-                        (r"\p{Alphabetic}", 8)
-                    } else if rest.starts_with(":alnum:]") {
-                        (r"\p{Alphabetic}\p{Nd}", 8)
-                    } else {
-                        return None;
-                    };
-                    self.pos += len;
-                    out.push_str(set);
-                }
-                '[' => {
-                    // A nested class: translate it in place.
-                    let saved = std::mem::take(&mut self.out);
-                    self.class()?;
-                    let nested = std::mem::replace(&mut self.out, saved);
-                    out.push_str(&nested);
-                }
-                '&' if self.peek() == Some('&') => {
-                    self.pos += 1;
-                    out.push_str("&&");
-                }
-                '-' if self.peek() == Some('-') => return None,
-                '\\' => {
-                    let e = self.bump()?;
-                    match e {
-                        'd' | 'w' | 's' | 'h' => out.push_str(class_escape(e)?),
-                        'D' | 'W' | 'S' | 'H' => {
-                            out.push_str(&format!("[^{}]", class_escape(e.to_ascii_lowercase())?))
-                        }
-                        'b' => out.push_str(r"\x{8}"),
-                        _ => self.escaped_char(e, &mut out)?,
-                    }
-                }
-                '-' => out.push('-'),
-                c => push_literal(&mut out, c),
+            let (code, len) = scan_digits(&s[q..], end - q, 16);
+            if len == 0 {
+                break;
             }
-            first = false;
+            if len > 6 {
+                return Err("invalid Unicode range".into());
+            }
+            q += len;
+            self.append_utf8(code)?;
+            any = true;
+            while q < end && is_space(s[q]) {
+                q += 1;
+            }
         }
-        if self.ignore_case && (out.contains("0-9A-Za-z_") || out.contains("0-9A-Fa-f")) {
-            // Onigmo does not case-fold `\w`/`\h` inside a class under /i.
-            return None;
+        if !any {
+            return Err("invalid Unicode list".into());
         }
-        out.push(']');
-        self.out.push_str(&out);
-        Some(())
+        *p = q;
+        Ok(())
     }
 
-    fn group(&mut self) -> Option<()> {
-        self.scopes.push(self.extended);
-        if self.peek() != Some('?') {
-            self.out.push('(');
-            return Some(());
+    /// `unescape_unicode_bmp`: after `\u`.
+    fn unicode_bmp(&mut self, p: &mut usize) -> Result<(), String> {
+        let s = self.s;
+        if s.len() < *p + 4 {
+            return Err("invalid Unicode escape".into());
         }
-        self.pos += 1;
-        match self.bump()? {
-            ':' => self.out.push_str("(?:"),
-            '=' => self.out.push_str("(?="),
-            '!' => self.out.push_str("(?!"),
-            '>' => self.out.push_str("(?>"),
-            '#' => {
-                self.scopes.pop();
-                while self.bump()? != ')' {}
+        let (code, len) = scan_digits(&s[*p..], 4, 16);
+        if len != 4 {
+            return Err("invalid Unicode escape".into());
+        }
+        self.append_utf8(code)?;
+        *p += 4;
+        Ok(())
+    }
+
+    /// `unescape_nonascii0`.
+    fn scan(&mut self, pp: &mut usize, options: u32, recurse: bool) -> Result<(), String> {
+        let s = self.s;
+        let end = s.len();
+        let mut p = *pp;
+        let mut in_char_class = 0u32;
+        let mut parens = 1u32;
+        let mut extended_mode = options & EXTENDED != 0;
+
+        while p < end {
+            let chlen = self.width(p);
+            if chlen > 1 || s[p] & 0x80 != 0 {
+                self.buf.extend_from_slice(&s[p..p + chlen]);
+                p += chlen;
+                self.fixed = true;
+                continue;
             }
-            '<' => match self.bump()? {
-                '=' => self.out.push_str("(?<="),
-                '!' => self.out.push_str("(?<!"),
-                c if c.is_ascii_alphabetic() || c == '_' => {
-                    let mut name = String::from(c);
-                    loop {
-                        let c = self.bump()?;
-                        if c == '>' {
-                            break;
-                        }
-                        if !(c.is_ascii_alphanumeric() || c == '_') {
-                            return None;
-                        }
-                        name.push(c);
+            let c = s[p];
+            p += 1;
+            match c {
+                b'\\' => {
+                    if p == end {
+                        return Err("too short escape sequence".into());
                     }
-                    self.out.push_str(&format!("(?P<{name}>"));
-                }
-                _ => return None,
-            },
-            'i' | 'm' | 'x' | '-' => {
-                self.pos -= 1;
-                let mut on = true;
-                let mut flags = String::new();
-                let mut extended = self.extended;
-                loop {
-                    let c = self.bump()?;
+                    let chlen = self.width(p);
+                    if chlen > 1 {
+                        // The backslash and the multibyte character, as is.
+                        self.buf.extend_from_slice(&s[p - 1..p + chlen]);
+                        p += chlen;
+                        self.fixed = true;
+                        continue;
+                    }
+                    let c = s[p];
+                    p += 1;
                     match c {
-                        '-' if on => {
-                            on = false;
-                            flags.push('-');
-                        }
-                        'i' => {
-                            if on {
-                                self.ignore_case = true;
-                            }
-                            flags.push('i');
-                        }
-                        'm' => flags.push('s'),
-                        'x' => extended = on,
-                        ':' | ')' => {
-                            let flags = flags.trim_end_matches('-');
-                            if c == ':' {
-                                self.out.push_str(&format!("(?{flags}:"));
-                                self.extended = extended;
+                        b'1'..=b'7' => {
+                            let len = end - (p - 1);
+                            let (v, _) = scan_digits(&s[p - 1..], len.min(3), 8);
+                            if v <= 0o177 {
+                                // A back-reference or 7-bit octal: kept as is.
+                                self.buf.extend_from_slice(&[b'\\', c]);
                             } else {
-                                // `(?imx)` applies to the rest of the enclosing group.
-                                self.scopes.pop();
-                                if !flags.is_empty() {
-                                    self.out.push_str(&format!("(?{flags})"));
-                                }
-                                self.extended = extended;
+                                p -= 2;
+                                self.escaped_nonascii(&mut p)?;
                             }
-                            break;
                         }
-                        _ => return None,
+                        b'0' | b'x' | b'c' | b'C' | b'M' => {
+                            p -= 2;
+                            self.escaped_nonascii(&mut p)?;
+                        }
+                        b'u' => {
+                            if p == end {
+                                return Err("too short escape sequence".into());
+                            }
+                            if s[p] == b'{' {
+                                p += 1;
+                                self.unicode_list(&mut p)?;
+                                if p == end || s[p] != b'}' {
+                                    return Err("invalid Unicode list".into());
+                                }
+                                p += 1;
+                            } else {
+                                self.unicode_bmp(&mut p)?;
+                            }
+                        }
+                        b'p' | b'P' => {
+                            if !self.fixed {
+                                self.has_property = true;
+                            }
+                            self.buf.extend_from_slice(&[b'\\', c]);
+                        }
+                        _ => self.buf.extend_from_slice(&[b'\\', c]),
                     }
                 }
+                b'#' if extended_mode && in_char_class == 0 => {
+                    // A comment in an extended regexp is dropped.
+                    while p < end {
+                        let c = s[p];
+                        p += 1;
+                        if c == b'\n' {
+                            break;
+                        }
+                        if c & 0x80 != 0 {
+                            self.fixed = true;
+                        }
+                    }
+                }
+                b'[' => {
+                    in_char_class += 1;
+                    self.buf.push(c);
+                }
+                b']' => {
+                    in_char_class = in_char_class.saturating_sub(1);
+                    self.buf.push(c);
+                }
+                b')' => {
+                    self.buf.push(c);
+                    if in_char_class == 0 && recurse {
+                        parens -= 1;
+                        if parens == 0 {
+                            *pp = p;
+                            return Ok(());
+                        }
+                    }
+                }
+                b'(' if in_char_class == 0 && p + 1 < end && s[p] == b'?' => {
+                    if s[p + 1] == b'#' {
+                        // (?#...) is dropped wherever it appears.
+                        let orig = p;
+                        let mut cont = true;
+                        while cont && p < end {
+                            let c = s[p];
+                            p += 1;
+                            match c {
+                                b')' => cont = false,
+                                b'\\' => {
+                                    if p >= end {
+                                        return Err("invalid multibyte character".into());
+                                    }
+                                    p += self.width(p);
+                                }
+                                c if c & 0x80 == 0 => {}
+                                _ => {
+                                    self.fixed = true;
+                                    p -= 1;
+                                    p += self.width(p);
+                                }
+                            }
+                        }
+                        if cont {
+                            // Unterminated: left for Onigmo to reject.
+                            p = orig;
+                            self.buf.push(b'(');
+                        }
+                        continue;
+                    }
+                    if recurse {
+                        parens += 1;
+                    }
+                    let mut invert = false;
+                    let mut local_extend = 0i8;
+                    let mut recursed = false;
+                    let mut i = p + 1;
+                    while i < end {
+                        match s[i] {
+                            b'x' => local_extend = if invert { -1 } else { 1 },
+                            b'-' => invert = true,
+                            b':' | b')' => {
+                                if local_extend == 0
+                                    || (local_extend == -1 && !extended_mode)
+                                    || (local_extend == 1 && extended_mode)
+                                {
+                                    break;
+                                }
+                                if s[i] == b':' {
+                                    // The extended flag changes until the ')'.
+                                    let local = if local_extend == 1 {
+                                        options | EXTENDED
+                                    } else {
+                                        options & !EXTENDED
+                                    };
+                                    self.buf.push(b'(');
+                                    self.scan(&mut p, local, true)?;
+                                    recursed = true;
+                                } else {
+                                    // The flag changes for the rest of the pattern.
+                                    extended_mode = local_extend == 1;
+                                }
+                                break;
+                            }
+                            b'i' | b'm' | b'a' | b'd' | b'u' => {}
+                            _ => break,
+                        }
+                        i += 1;
+                    }
+                    if recursed {
+                        continue;
+                    }
+                    self.buf.push(b'(');
+                }
+                b'(' => {
+                    if in_char_class == 0 && recurse {
+                        parens += 1;
+                    }
+                    self.buf.push(c);
+                }
+                _ => self.buf.push(c),
             }
-            _ => return None,
         }
-        Some(())
+        if recurse {
+            *pp = p;
+        }
+        Ok(())
     }
 }
 
@@ -491,16 +726,41 @@ mod tests {
     }
 
     #[test]
-    fn ascii_classes_and_anchors() {
+    fn onigmo_semantics() {
         assert_eq!(m(r"\A[a-z]+\d+\z", 0, "abc123"), Some(true));
         assert_eq!(m(r"\A\d\z", 0, "\u{661}"), Some(false));
         assert_eq!(m(r"\n^", 0, "a\n"), Some(false));
         assert_eq!(m(r"a b", EXTENDED, "ab"), Some(true));
-        assert_eq!(m(r"[ ]", EXTENDED, " "), Some(true));
         assert_eq!(m(r"\w", IGNORECASE, "\u{212A}"), Some(false));
         assert_eq!(m(r"[a-z]", IGNORECASE, "\u{212A}"), Some(true));
-        assert_eq!(m(r"a\b", 0, "a\u{e9}"), Some(false));
-        assert_eq!(m(r"ss", IGNORECASE, "\u{df}"), None);
-        assert_eq!(m(r"(\w)\1", 0, "aa"), None);
+        assert_eq!(m(r"ss", IGNORECASE, "\u{df}"), Some(true));
+        assert_eq!(m(r"(\w)\1", 0, "aa"), Some(true));
+        assert_eq!(m(r"(?<y>\d)-\k<y>", 0, "1-2"), Some(false));
+        assert_eq!(m(r"\p{Greek}", 0, "\u{3b1}"), Some(true));
+        assert_eq!(m(r"\u{e9}", 0, "caf\u{e9}"), Some(true));
+        assert_eq!(m(r"(", 0, ""), None);
+    }
+
+    #[test]
+    fn preprocess_matches_re_c() {
+        let p = |s: &str, o| preprocess(s.as_bytes(), o).map(|p| (p.bytes, p.fixed));
+        assert_eq!(p(r"a\u0041", 0), Ok((br"a\x41".to_vec(), false)));
+        assert_eq!(p(r"\u{e9 41}", 0), Ok(("\u{e9}\\x41".into(), true)));
+        assert_eq!(p(r"\xC3\xA9", 0), Ok(("\u{e9}".into(), true)));
+        assert_eq!(p(r"\x41(?#c)\1", 0), Ok((br"\x41\1".to_vec(), false)));
+        assert_eq!(p("a # \u{e9}\nb", EXTENDED), Ok((b"a b".to_vec(), true)));
+        assert_eq!(p(r"\p{Alpha}", 0), Ok((br"\p{Alpha}".to_vec(), true)));
+        assert!(p(r"\uD800", 0).is_err());
+        assert!(p(r"\xFF", 0).is_err());
+    }
+
+    #[test]
+    fn captures_are_byte_spans() {
+        let re = OnigRegex::new(r"(\d+)(st|nd|rd|th)?", IGNORECASE).unwrap();
+        let text = "1\u{fb06} Jan";
+        let c = re.captures(text).unwrap().unwrap();
+        assert_eq!(c.span(0), Some((0, 4)));
+        assert_eq!(c.text(1, text), Some("1"));
+        assert_eq!(c.text(2, text), Some("\u{fb06}"));
     }
 }
