@@ -16,6 +16,7 @@
 use serde_json::Value as Json;
 use std::collections::BTreeMap;
 use std::path::PathBuf;
+use std::sync::atomic::{AtomicUsize, Ordering};
 
 use ukiryu::executable::{DiscoveryContext, Platform};
 use ukiryu::models::{Model, Text, ToolDefinition, VersionDetection};
@@ -46,13 +47,13 @@ impl Drop for Bins {
 }
 
 fn make_bins(names: &[Json]) -> Bins {
+    // Tests run in parallel and each removes its directory when done, so
+    // every call needs its own (clock ticks are coarse on Windows).
+    static NEXT: AtomicUsize = AtomicUsize::new(0);
     let root = std::env::temp_dir().join(format!(
         "ukiryu-tool-runtime-{}-{}",
         std::process::id(),
-        std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap()
-            .as_nanos()
+        NEXT.fetch_add(1, Ordering::SeqCst)
     ));
     let bin = root.join("bin");
     let empty = root.join("empty");
