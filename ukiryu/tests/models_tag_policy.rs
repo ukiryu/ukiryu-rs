@@ -211,9 +211,12 @@ fn tags_are_never_lowered_to_one_entry_maps() {
 #[test]
 fn policy_constants_and_symbol_permission() {
     assert_eq!(LoadPolicy::REGISTER.permitted_classes, ["Symbol"]);
-    assert!(LoadPolicy::REGISTER.aliases);
-    assert!(!LoadPolicy::MODEL_FILE.aliases);
-    assert!(!LoadPolicy::SYMBOL.aliases);
+    let aliases = [
+        LoadPolicy::REGISTER.aliases,
+        LoadPolicy::MODEL_FILE.aliases,
+        LoadPolicy::SYMBOL.aliases,
+    ];
+    assert_eq!(aliases, [true, false, false]);
     let none = LoadPolicy {
         permitted_classes: &[],
         aliases: false,
