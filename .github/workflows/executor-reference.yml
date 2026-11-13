@@ -83,10 +83,24 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: 1.95.0
+      - name: Probe PowerShell native output (before Ruby)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          powershell -NoLogo -NoProfile -Command "(Get-Command cmd).Source; & 'cmd' /c echo hello; 'LASTEXITCODE=' + \$LASTEXITCODE" || true
+          powershell -NoLogo -Command "& 'cmd' /c echo hello2; exit \$LASTEXITCODE" | od -c | head -3 || true
+          env | sort | cut -c1-160 > "$RUNNER_TEMP/env-before.txt"
       # A Ruby child hex-dumps its stdin for child_stdin_bytes_match_ruby.
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: '4.0.1'
+      - name: Probe PowerShell native output (after Ruby)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          powershell -NoLogo -NoProfile -Command "(Get-Command cmd).Source; & 'cmd' /c echo hello; 'LASTEXITCODE=' + \$LASTEXITCODE" || true
+          powershell -NoLogo -Command "& 'cmd' /c echo hello2; exit \$LASTEXITCODE" | od -c | head -3 || true
+          env | sort | cut -c1-160 > "$RUNNER_TEMP/env-after.txt"
       - name: Run the executor tests verbosely
         shell: bash
         run: |
@@ -98,5 +112,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: executor-evidence-${{ matrix.os }}
-          path: ${{ runner.temp }}/executor-evidence.log
+          path: |
+            ${{ runner.temp }}/executor-evidence.log
+            ${{ runner.temp }}/env-*.txt
           if-no-files-found: error
