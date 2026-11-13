@@ -261,7 +261,7 @@ impl Out {
                 };
                 let body = text.strip_suffix('\n').unwrap_or(&text);
                 let mut line = painted;
-                if !(body.ends_with(' ') || body.ends_with('\t')) && !text.ends_with('\n') {
+                if !(body.ends_with(' ') || body.ends_with('\t') || text.ends_with('\n')) {
                     line.push('\n');
                 }
                 self.stderr(line);

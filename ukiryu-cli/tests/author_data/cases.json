@@ -14,6 +14,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Validating: defs/convert.yaml\n✓ Valid\n",
@@ -33,6 +34,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "{\"valid\":true,\"errors\":[],\"warnings\":[],\"schema_path\":null,\"error_count\":0,\"warning_count\":0}\n",
@@ -50,6 +52,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Validating: defs/warnings.yaml\n✓ Valid with warnings\n\n  Warning: Tool name should contain only lowercase letters, numbers, hyphens, and underscores\n  Warning: Invalid schema version format: v1 (expected format: '1.0')\n",
@@ -69,6 +72,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "{\"valid\":true,\"errors\":[],\"warnings\":[\"Tool name should contain only lowercase letters, numbers, hyphens, and underscores\",\"Invalid schema version format: v1 (expected format: '1.0')\"],\"schema_path\":null,\"error_count\":0,\"warning_count\":2}\n",
@@ -86,6 +90,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Validating: defs/bad_name.yaml\n✗ Invalid\n\n  Error: Tool name must not contain whitespace\n\n  Warning: Tool name should contain only lowercase letters, numbers, hyphens, and underscores\n",
@@ -105,6 +110,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "{\"valid\":false,\"errors\":[\"Tool name must not contain whitespace\"],\"warnings\":[\"Tool name should contain only lowercase letters, numbers, hyphens, and underscores\"],\"schema_path\":null,\"error_count\":1,\"warning_count\":1}\n",
@@ -122,6 +128,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "prefix",
    "expect": {
     "stdout": "Validating: defs/invalid_yaml.yaml\n✗ Invalid\n\n  Error: Invalid YAML: (<unknown>): did not find expected ',' or ']' while parsing a flow sequence at line 1 column 7\n",
@@ -142,6 +149,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "prefix",
    "expect": {
     "stdout": "{\"valid\":false,\"errors\":[\"Invalid YAML: (<unknown>): did not find expected ',' or ']' while parsing a flow sequence at line 1 column 7\"],\"warnings\":[],\"schema_path\":null,\"error_count\":1,\"warning_count\":0}\n",
@@ -160,6 +168,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Validating: defs/list.yaml\n✗ Invalid\n\n  Error: Definition must be a hash/object\n",
@@ -179,6 +188,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "{\"valid\":false,\"errors\":[\"Definition must be a hash/object\"],\"warnings\":[],\"schema_path\":null,\"error_count\":1,\"warning_count\":0}\n",
@@ -196,6 +206,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Validating: defs/digit.yaml\n✓ Valid with warnings\n\n  Warning: Tool name starting with number may cause issues\n",
@@ -215,6 +226,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "{\"valid\":true,\"errors\":[],\"warnings\":[\"Tool name starting with number may cause issues\"],\"schema_path\":null,\"error_count\":0,\"warning_count\":1}\n",
@@ -232,6 +244,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Validating: defs/minimal.yaml\n✓ Valid\n",
@@ -251,6 +264,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "{\"valid\":true,\"errors\":[],\"warnings\":[],\"schema_path\":null,\"error_count\":0,\"warning_count\":0}\n",
@@ -268,6 +282,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Validating: defs/jq.yaml\n✓ Valid\n",
@@ -287,6 +302,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "{\"valid\":true,\"errors\":[],\"warnings\":[],\"schema_path\":null,\"error_count\":0,\"warning_count\":0}\n",
@@ -305,6 +321,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Validating: defs/warnings.yaml\n✓ Valid with warnings\n\n  Warning: Tool name should contain only lowercase letters, numbers, hyphens, and underscores\n  Warning: Invalid schema version format: v1 (expected format: '1.0')\n",
@@ -325,6 +342,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "{\"valid\":true,\"errors\":[],\"warnings\":[\"Tool name should contain only lowercase letters, numbers, hyphens, and underscores\",\"Invalid schema version format: v1 (expected format: '1.0')\"],\"schema_path\":null,\"error_count\":0,\"warning_count\":2}\n",
@@ -343,6 +361,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Validating: defs/convert.yaml\n✓ Valid\n",
@@ -360,6 +379,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Validating: defs/missing.yaml\n✗ Invalid\n\n  Error: File not found: defs/missing.yaml\n",
@@ -379,6 +399,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "{\"valid\":false,\"errors\":[\"File not found: defs/missing.yaml\"],\"warnings\":[],\"schema_path\":null,\"error_count\":1,\"warning_count\":0}\n",
@@ -396,6 +417,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -415,6 +437,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Validating: defs/minimal.yaml\n✗ Invalid\n\n  Error: The property '#/' did not contain a required property of 'version' in schema f2fff845-9115-546d-bf9a-8b91156eeb00 (at #/)\n  Error: The property '#/' did not contain a required property of 'profiles' in schema f2fff845-9115-546d-bf9a-8b91156eeb00 (at #/)\n",
@@ -436,6 +459,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "{\"valid\":false,\"errors\":[\"The property '#/' did not contain a required property of 'version' in schema f2fff845-9115-546d-bf9a-8b91156eeb00 (at #/)\",\"The property '#/' did not contain a required property of 'profiles' in schema f2fff845-9115-546d-bf9a-8b91156eeb00 (at #/)\"],\"warnings\":[],\"schema_path\":null,\"error_count\":2,\"warning_count\":0}\n",
@@ -455,6 +479,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Validating: defs/jq.yaml\n✗ Invalid\n\n  Error: The property '#/' did not contain a required property of 'profiles' in schema f2fff845-9115-546d-bf9a-8b91156eeb00 (at #/)\n",
@@ -474,6 +499,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Validating: defs/convert.yaml\n✓ Valid\n",
@@ -493,6 +519,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Validating: defs/warnings.yaml\n✗ Invalid\n\n  Error: The property '#/' did not contain a required property of 'description' in schema 98f79506-dd64-50ee-8e7f-7e4ac8b75a23 (at #/)\n\n  Warning: Tool name should contain only lowercase letters, numbers, hyphens, and underscores\n  Warning: Invalid schema version format: v1 (expected format: '1.0')\n",
@@ -512,6 +539,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Validating: defs/minimal.yaml\n✓ Valid\n",
@@ -531,6 +559,7 @@
     "UKIRYU_SCHEMA_PATH": "{root}/schema/tool.schema.json"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Validating: defs/minimal.yaml\n✗ Invalid\n\n  Error: The property '#/' did not contain a required property of 'version' in schema f2fff845-9115-546d-bf9a-8b91156eeb00 (at #/)\n  Error: The property '#/' did not contain a required property of 'profiles' in schema f2fff845-9115-546d-bf9a-8b91156eeb00 (at #/)\n",
@@ -548,6 +577,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Validating: <string>\n✓ Valid\n",
@@ -567,6 +597,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "{\"valid\":true,\"errors\":[],\"warnings\":[],\"schema_path\":null,\"error_count\":0,\"warning_count\":0}\n",
@@ -584,6 +615,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Validating: <string>\n✗ Invalid\n\n  Error: Tool name must not contain whitespace\n\n  Warning: Tool name should contain only lowercase letters, numbers, hyphens, and underscores\n",
@@ -603,6 +635,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "{\"valid\":false,\"errors\":[\"Tool name must not contain whitespace\"],\"warnings\":[\"Tool name should contain only lowercase letters, numbers, hyphens, and underscores\"],\"schema_path\":null,\"error_count\":1,\"warning_count\":1}\n",
@@ -621,6 +654,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Validating: <string>\n✓ Valid with warnings\n\n  Warning: Tool name should contain only lowercase letters, numbers, hyphens, and underscores\n",
@@ -638,6 +672,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Validating: <string>\n✗ Invalid\n\n  Error: Definition must be a hash/object\n",
@@ -655,6 +690,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "prefix",
    "expect": {
     "stdout": "Validating: <string>\n✗ Invalid\n\n  Error: Invalid YAML: (<unknown>): did not find expected ',' or ']' while parsing a flow sequence at line 1 column 4\n",
@@ -675,6 +711,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "prefix",
    "expect": {
     "stdout": "{\"valid\":false,\"errors\":[\"Invalid YAML: (<unknown>): did not find expected ',' or ']' while parsing a flow sequence at line 1 column 4\"],\"warnings\":[],\"schema_path\":null,\"error_count\":1,\"warning_count\":0}\n",
@@ -695,6 +732,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Validating: <string>\n✗ Invalid\n\n  Error: The property '#/' did not contain a required property of 'version' in schema f2fff845-9115-546d-bf9a-8b91156eeb00 (at #/)\n  Error: The property '#/' did not contain a required property of 'profiles' in schema f2fff845-9115-546d-bf9a-8b91156eeb00 (at #/)\n  Error: The property '#/name' of type integer did not match the following type: string in schema f2fff845-9115-546d-bf9a-8b91156eeb00 (at #/name)\n\n  Warning: Tool name starting with number may cause issues\n",
@@ -711,6 +749,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Validating 2 tool definitions...\n\n  convert/convert.yaml                ✓ VALID\n  warnings/warnings.yaml              ✗ INVALID\n    - Tool name must not contain whitespace\n    ⚠ Tool name should contain only lowercase letters, numbers, hyphens, and underscores\n\nValidation Summary:\n  Total:   2\n  Valid:   1\n  Invalid: 1\n",
@@ -729,6 +768,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Validating 2 tool definitions...\n\n  convert/convert.yaml                ✓ VALID\n  warnings/warnings.yaml              ✗ INVALID\n    - Tool name must not contain whitespace\n    ⚠ Tool name should contain only lowercase letters, numbers, hyphens, and underscores\n\nValidation Summary:\n  Total:   2\n  Valid:   1\n  Invalid: 1\n",
@@ -747,6 +787,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Validating 2 tool definitions...\n\n  convert/convert.yaml                ✓ VALID\n  warnings/warnings.yaml              ✗ INVALID\n    - Tool name must not contain whitespace\n    ⚠ Tool name should contain only lowercase letters, numbers, hyphens, and underscores\n\nValidation Summary:\n  Total:   2\n  Valid:   1\n  Invalid: 1\n",
@@ -765,6 +806,7 @@
     "UKIRYU_REGISTER": "{root}/defs"
    },
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "Register.default discovery (auto-clone) belongs to the register owner",
    "expect": {
@@ -785,6 +827,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -803,6 +846,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "gated",
    "expect": {
     "stdout": "Validating: defs/convert.yaml\n✓ Valid\n\nTesting executable...\n✗ Tool not found: Tool not found: convert\n",
@@ -821,6 +865,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": true,
    "mode": "tty",
    "expect": {
     "stdout": "",
@@ -839,6 +884,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": true,
    "mode": "tty",
    "expect": {
     "stdout": "",
@@ -856,6 +902,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -875,6 +922,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -892,6 +940,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -911,6 +960,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -928,6 +978,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -947,6 +998,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -964,6 +1016,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -983,6 +1036,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1000,6 +1054,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1019,6 +1074,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1036,6 +1092,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1055,6 +1112,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1072,6 +1130,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1091,6 +1150,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1108,6 +1168,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1127,6 +1188,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1144,6 +1206,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1161,6 +1224,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1180,6 +1244,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1199,6 +1264,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1215,6 +1281,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1231,6 +1298,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": true,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1248,6 +1316,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": true,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1266,6 +1335,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1282,6 +1352,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1300,6 +1371,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1318,6 +1390,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1336,6 +1409,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1354,6 +1428,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "lint/docs are not registered in cli.rb; root owns verb wiring",
    "expect": {
@@ -1373,6 +1448,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1394,6 +1470,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1415,6 +1492,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1436,6 +1514,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1457,6 +1536,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1478,6 +1558,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1498,6 +1579,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1517,6 +1599,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1536,6 +1619,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1553,6 +1637,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1573,6 +1658,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1596,6 +1682,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1617,6 +1704,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1633,6 +1721,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1651,6 +1740,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1667,6 +1757,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": true,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -1685,6 +1776,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "lint/docs are not registered in cli.rb; root owns verb wiring",
    "expect": {
@@ -1701,6 +1793,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "lines",
    "expect": {
     "stdout": "gzip: 1.0 [user]\nconvert: 2.1, 1.9 [user]\nFancy-Tool: 1.0 [user]\n\nLegend: * = highest priority (will be used by default)\n",
@@ -1717,6 +1810,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "lines",
    "expect": {
     "stdout": "gzip: 1.0 [user]\nconvert: 2.1, 1.9 [user]\nFancy-Tool: 1.0 [user]\n\nLegend: * = highest priority (will be used by default)\n",
@@ -1734,6 +1828,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "lines",
    "expect": {
     "stdout": "gzip:\n  * 1.0 (user)\n    Path: {root}/xdg/ukiryu/definitions/gzip/1.0.yaml\n\nconvert:\n  * 2.1 (user)\n    Path: {root}/xdg/ukiryu/definitions/convert/2.1.yaml\n    1.9 (user)\n    Path: {root}/xdg/ukiryu/definitions/convert/1.9.yaml\n\nFancy-Tool:\n  * 1.0 (user)\n    Path: {root}/xdg/ukiryu/definitions/fancy-1.0.yaml\n\n\nLegend: * = highest priority (will be used by default)\n",
@@ -1752,6 +1847,7 @@
     "XDG_DATA_HOME": "{root}/empty"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "No definitions found.\n\nSearch paths:\n  - {root}/empty/ukiryu/definitions\n  - {root}/sysdata/ukiryu/definitions\n",
@@ -1768,6 +1864,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Definition search paths (in priority order):\n\n(1) [Highest Priority] ✓ {root}/xdg/ukiryu/definitions\n(2) ✗ {root}/sysdata/ukiryu/definitions\n\nUser directory: {root}/xdg/ukiryu/definitions\nXDG_DATA_HOME: {root}/xdg\nXDG_DATA_DIRS: {root}/sysdata\n",
@@ -1786,6 +1883,7 @@
     "PATH": "{root}/tooldir/bin"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Definition search paths (in priority order):\n\n(1) [Highest Priority] ✓ {root}/xdg/ukiryu/definitions\n(2) ✓ {root}/tooldir/share/ukiryu\n(3) ✗ {root}/sysdata/ukiryu/definitions\n\nUser directory: {root}/xdg/ukiryu/definitions\nXDG_DATA_HOME: {root}/xdg\nXDG_DATA_DIRS: {root}/sysdata\n",
@@ -1805,6 +1903,7 @@
     "PATH": "{root}/tooldir/bin"
    },
    "stdin": null,
+   "pty": false,
    "mode": "lines",
    "expect": {
     "stdout": "gzip:\n  * 1.0 (user)\n    Path: {root}/xdg/ukiryu/definitions/gzip/1.0.yaml\n\nconvert:\n  * 2.1 (user)\n    Path: {root}/xdg/ukiryu/definitions/convert/2.1.yaml\n    1.9 (user)\n    Path: {root}/xdg/ukiryu/definitions/convert/1.9.yaml\n\nFancy-Tool:\n  * 1.0 (user)\n    Path: {root}/xdg/ukiryu/definitions/fancy-1.0.yaml\n\n7zip:\n  * 9.20 (bundled)\n    Path: {root}/tooldir/share/ukiryu/zip/9.20.yaml\n\n\nLegend: * = highest priority (will be used by default)\n",
@@ -1822,6 +1921,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Tool: convert\nVersion: 2.1\nSource: user\nPath: {root}/xdg/ukiryu/definitions/convert/2.1.yaml\nExists: Yes\nModified: 2026-01-02 03:04:05 +0000\n\nAvailable versions:\n  * 2.1 (user) [default]\n    1.9 (user)\n\nValidation: ✓ Valid\nDisplay Name: Convert\nHomepage: https://example.org/convert\n",
@@ -1841,6 +1941,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Tool: convert\nVersion: 1.9\nSource: user\nPath: {root}/xdg/ukiryu/definitions/convert/1.9.yaml\nExists: Yes\nModified: 2026-01-02 03:04:05 +0000\n\nAvailable versions:\n    2.1 (user) [default]\n  * 1.9 (user)\n\nValidation: ✓ Valid\nDisplay Name: Convert\nHomepage: https://example.org/convert\n",
@@ -1860,6 +1961,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -1877,6 +1979,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -1894,6 +1997,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Tool: gzip\nVersion: 1.0\nSource: user\nPath: {root}/xdg/ukiryu/definitions/gzip/1.0.yaml\nExists: Yes\nModified: 2026-01-02 03:04:05 +0000\n\nValidation: ✗ Invalid\nError: Profile validation failed:\n  - Missing 'profiles' field or profiles is empty\n",
@@ -1911,6 +2015,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Tool: Fancy-Tool\nVersion: 1.0\nSource: user\nPath: {root}/xdg/ukiryu/definitions/fancy-1.0.yaml\nExists: Yes\nModified: 2026-01-02 03:04:05 +0000\n\nValidation: ✗ Invalid\nError: Profile validation failed:\n  - Invalid ukiryu_schema format: v1\n",
@@ -1928,6 +2033,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "exe/ukiryu never loads fileutils; see the __fileutils row",
    "expect": {
@@ -1952,6 +2058,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "exe/ukiryu never loads fileutils; see the __fileutils row",
    "expect": {
@@ -1980,6 +2087,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "exe/ukiryu never loads fileutils; see the __fileutils row",
    "expect": {
@@ -2004,6 +2112,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -2021,6 +2130,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -2038,6 +2148,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "prefix",
    "expect": {
     "stdout": "",
@@ -2056,6 +2167,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "prefix",
    "expect": {
     "stdout": "",
@@ -2074,6 +2186,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -2091,6 +2204,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "exe/ukiryu never loads fileutils; see the __fileutils row",
    "expect": {
@@ -2116,6 +2230,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "exe/ukiryu never loads fileutils; see the __fileutils row",
    "expect": {
@@ -2143,6 +2258,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "exe/ukiryu never loads fileutils; see the __fileutils row",
    "expect": {
@@ -2170,6 +2286,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "exe/ukiryu never loads fileutils; see the __fileutils row",
    "expect": {
@@ -2197,6 +2314,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -2214,6 +2332,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -2231,6 +2350,7 @@
    ],
    "env": {},
    "stdin": "y\n",
+   "pty": false,
    "mode": "frozen",
    "reason": "exe/ukiryu never loads fileutils; see the __fileutils row",
    "expect": {
@@ -2255,6 +2375,7 @@
    ],
    "env": {},
    "stdin": "n\n",
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "This will remove the following definitions:\n  - gzip/1.0\nAre you sure? [y/N] Cancelled.\n",
@@ -2280,6 +2401,7 @@
    ],
    "env": {},
    "stdin": "Y\n",
+   "pty": false,
    "mode": "frozen",
    "reason": "exe/ukiryu never loads fileutils; see the __fileutils row",
    "expect": {
@@ -2303,6 +2425,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "extract waits on the native extractor API",
    "expect": {
@@ -2320,6 +2443,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -2339,6 +2463,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -2356,6 +2481,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -2375,6 +2501,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -2393,6 +2520,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -2411,6 +2539,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -2428,6 +2557,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": true,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -2447,6 +2577,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -2468,6 +2599,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -2489,6 +2621,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -2509,6 +2642,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -2529,6 +2663,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -2552,6 +2687,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -2573,6 +2709,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -2592,6 +2729,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -2610,6 +2748,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "frozen",
    "reason": "standalone Thor class run; see the __target row",
    "expect": {
@@ -2628,6 +2767,7 @@
    ],
    "env": {},
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Tool: Fancy-Tool\nVersion: 1.0\nSource: user\nPath: {root}/xdg/ukiryu/definitions/fancy-1.0.yaml\nExists: Yes\nModified: 2026-01-02 03:04:05 +0000\n\nValidation: ✗ Invalid\nError: Profile validation failed:\n  - Invalid ukiryu_schema format: v1\n",
@@ -2647,6 +2787,7 @@
     "RUBYOPT": "-rfileutils"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Definition added successfully:\n  Tool: 7zip\n  Version: 9.20\n  Location: {root}/xdg/ukiryu/definitions/7zip/9.20.yaml\n",
@@ -2673,6 +2814,7 @@
     "RUBYOPT": "-rfileutils"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -2702,6 +2844,7 @@
     "RUBYOPT": "-rfileutils"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Definition added successfully:\n  Tool: mytool\n  Version: 3\n  Location: {root}/xdg/ukiryu/definitions/mytool/3.yaml\n",
@@ -2728,6 +2871,7 @@
     "RUBYOPT": "-rfileutils"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -2747,6 +2891,7 @@
     "RUBYOPT": "-rfileutils"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -2766,6 +2911,7 @@
     "RUBYOPT": "-rfileutils"
    },
    "stdin": null,
+   "pty": false,
    "mode": "prefix",
    "expect": {
     "stdout": "",
@@ -2786,6 +2932,7 @@
     "RUBYOPT": "-rfileutils"
    },
    "stdin": null,
+   "pty": false,
    "mode": "prefix",
    "expect": {
     "stdout": "",
@@ -2806,6 +2953,7 @@
     "RUBYOPT": "-rfileutils"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -2825,6 +2973,7 @@
     "RUBYOPT": "-rfileutils"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Definition added successfully:\n  Tool: my tool\n  Version: 1.0\n  Location: {root}/xdg/ukiryu/definitions/my tool/1.0.yaml\n",
@@ -2852,6 +3001,7 @@
     "RUBYOPT": "-rfileutils"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Removed: convert/1.9\nRemoved: convert/2.1\nRemoved empty directory: {root}/xdg/ukiryu/definitions/convert\nDone.\n",
@@ -2878,6 +3028,7 @@
     "RUBYOPT": "-rfileutils"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Removed: convert/1.9\nDone.\n",
@@ -2905,6 +3056,7 @@
     "RUBYOPT": "-rfileutils"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Removed: gzip/1.0\nRemoved empty directory: {root}/xdg/ukiryu/definitions/gzip\nDone.\n",
@@ -2932,6 +3084,7 @@
     "RUBYOPT": "-rfileutils"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -2951,6 +3104,7 @@
     "RUBYOPT": "-rfileutils"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -2970,6 +3124,7 @@
     "RUBYOPT": "-rfileutils"
    },
    "stdin": "y\n",
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "This will remove the following definitions:\n  - gzip/1.0\nAre you sure? [y/N] Removed: gzip/1.0\nRemoved empty directory: {root}/xdg/ukiryu/definitions/gzip\nDone.\n",
@@ -2994,6 +3149,7 @@
     "RUBYOPT": "-rfileutils"
    },
    "stdin": "n\n",
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "This will remove the following definitions:\n  - gzip/1.0\nAre you sure? [y/N] Cancelled.\n",
@@ -3021,6 +3177,7 @@
     "RUBYOPT": "-rfileutils"
    },
    "stdin": "Y\n",
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "This will remove the following definitions:\n  - convert/2.1\nAre you sure? [y/N] Removed: convert/2.1\nDone.\n",
@@ -3044,6 +3201,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -3064,6 +3222,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -3082,6 +3241,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -3102,6 +3262,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -3120,6 +3281,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Linting: defs/bad_name.yaml\n\nFound 4 issue(s):\n\nWarnings:\n  [WARNING] Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores (at name)\n  Suggestion: Use lowercase with hyphens for multi-word names (e.g., \"my-tool\")\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n\nInfo:\n  [INFO] Tool is missing a description (at definition)\n  Suggestion: Add a \"description\" field to help users understand what this tool does\n  [INFO] Tool is missing a homepage URL (at definition)\n  Suggestion: Add a \"homepage\" field linking to the tool's website\n",
@@ -3140,6 +3302,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "{\"issues\":[{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores\",\"location\":\"name\",\"suggestion\":\"Use lowercase with hyphens for multi-word names (e.g., \\\"my-tool\\\")\",\"rule_id\":\"naming_tool_name_format\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a description\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"description\\\" field to help users understand what this tool does\",\"rule_id\":\"complete_missing_description\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a homepage URL\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"homepage\\\" field linking to the tool's website\",\"rule_id\":\"complete_missing_homepage\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool is missing version detection\",\"location\":\"definition\",\"suggestion\":\"Add \\\"version_detection\\\" to auto-detect installed versions\",\"rule_id\":\"complete_missing_version_detection\"}],\"total_count\":4,\"error_count\":0,\"warning_count\":2,\"info_count\":2,\"style_count\":0}\n",
@@ -3158,6 +3321,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "prefix",
    "expect": {
     "stdout": "Linting: defs/invalid_yaml.yaml\n\nFound 1 issue(s):\n\nErrors:\n  [ERROR] Invalid YAML: (<unknown>): did not find expected ',' or ']' while parsing a flow sequence at line 1 column 7\n",
@@ -3179,6 +3343,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "prefix",
    "expect": {
     "stdout": "{\"issues\":[{\"severity\":\"error\",\"severity_string\":\"ERROR\",\"message\":\"Invalid YAML: (<unknown>): did not find expected ',' or ']' while parsing a flow sequence at line 1 column 7\",\"location\":null,\"suggestion\":null,\"rule_id\":null}],\"total_count\":1,\"error_count\":1,\"warning_count\":0,\"info_count\":0,\"style_count\":0}\n",
@@ -3198,6 +3363,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Linting: defs/list.yaml\n\nFound 1 issue(s):\n\nErrors:\n  [ERROR] Definition must be a hash/object\n",
@@ -3218,6 +3384,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "{\"issues\":[{\"severity\":\"error\",\"severity_string\":\"ERROR\",\"message\":\"Definition must be a hash/object\",\"location\":null,\"suggestion\":null,\"rule_id\":null}],\"total_count\":1,\"error_count\":1,\"warning_count\":0,\"info_count\":0,\"style_count\":0}\n",
@@ -3236,6 +3403,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Linting: defs/digit.yaml\n\nFound 5 issue(s):\n\nWarnings:\n  [WARNING] Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores (at name)\n  Suggestion: Use lowercase with hyphens for multi-word names (e.g., \"my-tool\")\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n\nInfo:\n  [INFO] Tool is missing a description (at definition)\n  Suggestion: Add a \"description\" field to help users understand what this tool does\n  [INFO] Tool is missing a homepage URL (at definition)\n  Suggestion: Add a \"homepage\" field linking to the tool's website\n\nStyle:\n  [STYLE] Single profile named \"default\" is redundant (at profiles[0])\n  Suggestion: For single-profile definitions, omit the profiles array and define commands directly\n",
@@ -3256,6 +3424,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "{\"issues\":[{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores\",\"location\":\"name\",\"suggestion\":\"Use lowercase with hyphens for multi-word names (e.g., \\\"my-tool\\\")\",\"rule_id\":\"naming_tool_name_format\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a description\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"description\\\" field to help users understand what this tool does\",\"rule_id\":\"complete_missing_description\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a homepage URL\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"homepage\\\" field linking to the tool's website\",\"rule_id\":\"complete_missing_homepage\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool is missing version detection\",\"location\":\"definition\",\"suggestion\":\"Add \\\"version_detection\\\" to auto-detect installed versions\",\"rule_id\":\"complete_missing_version_detection\"},{\"severity\":\"style\",\"severity_string\":\"STYLE\",\"message\":\"Single profile named \\\"default\\\" is redundant\",\"location\":\"profiles[0]\",\"suggestion\":\"For single-profile definitions, omit the profiles array and define commands directly\",\"rule_id\":\"style_redundant_default_profile\"}],\"total_count\":5,\"error_count\":0,\"warning_count\":2,\"info_count\":2,\"style_count\":1}\n",
@@ -3274,6 +3443,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Linting: defs/minimal.yaml\n\nFound 3 issue(s):\n\nWarnings:\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n\nInfo:\n  [INFO] Tool is missing a description (at definition)\n  Suggestion: Add a \"description\" field to help users understand what this tool does\n  [INFO] Tool is missing a homepage URL (at definition)\n  Suggestion: Add a \"homepage\" field linking to the tool's website\n",
@@ -3294,6 +3464,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "{\"issues\":[{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a description\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"description\\\" field to help users understand what this tool does\",\"rule_id\":\"complete_missing_description\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a homepage URL\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"homepage\\\" field linking to the tool's website\",\"rule_id\":\"complete_missing_homepage\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool is missing version detection\",\"location\":\"definition\",\"suggestion\":\"Add \\\"version_detection\\\" to auto-detect installed versions\",\"rule_id\":\"complete_missing_version_detection\"}],\"total_count\":3,\"error_count\":0,\"warning_count\":1,\"info_count\":2,\"style_count\":0}\n",
@@ -3312,6 +3483,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Linting: defs/jq.yaml\n\nFound 1 issue(s):\n\nInfo:\n  [INFO] Tool is missing a description (at definition)\n  Suggestion: Add a \"description\" field to help users understand what this tool does\n",
@@ -3332,6 +3504,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "{\"issues\":[{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a description\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"description\\\" field to help users understand what this tool does\",\"rule_id\":\"complete_missing_description\"}],\"total_count\":1,\"error_count\":0,\"warning_count\":0,\"info_count\":1,\"style_count\":0}\n",
@@ -3350,6 +3523,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Linting: defs/missing.yaml\n\nFound 1 issue(s):\n\nErrors:\n  [ERROR] File not found: defs/missing.yaml\n",
@@ -3368,6 +3542,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -3388,6 +3563,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -3408,6 +3584,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -3425,6 +3602,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Linting Rules:\n\nNaming Convention Rules:\n  naming_tool_name_format - Tool name format\n  naming_command_name_format - Command name format\n\nCompleteness Rules:\n  complete_missing_description - Missing description\n  complete_missing_homepage - Missing homepage\n  complete_missing_version_detection - Missing version detection\n\nSecurity Rules:\n  security_suspicious_subcommand - Dangerous shell commands\n  security_unvalidated_input - Arguments without type validation\n\nBest Practice Rules:\n  style_redundant_default_profile - Redundant default profile\n  complete_missing_platforms - Missing platforms specification\n",
@@ -3442,6 +3620,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": true,
    "mode": "tty",
    "expect": {
     "stdout": "",
@@ -3461,6 +3640,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": true,
    "mode": "tty",
    "expect": {
     "stdout": "",
@@ -3481,6 +3661,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -3498,6 +3679,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -3517,6 +3699,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "\nLint Summary:\n  Files: 0\n  Issues: 0\n  Errors: 0\n  Warnings: 0\n",
@@ -3536,6 +3719,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Register not found: nowhere\n",
@@ -3555,6 +3739,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Tools directory not found: defs/tools\n",
@@ -3575,6 +3760,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -3597,6 +3783,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -3619,6 +3806,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -3641,6 +3829,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -3663,6 +3852,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -3685,6 +3875,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -3706,6 +3897,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -3726,6 +3918,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -3746,6 +3939,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Tool not found: nothere\n",
@@ -3764,6 +3958,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -3785,6 +3980,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -3810,6 +4006,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -3833,6 +4030,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Tools directory not found: defs/tools\n",
@@ -3850,6 +4048,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Documentation server is not yet implemented.\n\nFor now, you can use a simple HTTP server:\n  python3 -m http.server 8000\n  ruby -run -e httpd . -p 8000\n",
@@ -3869,6 +4068,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Documentation server is not yet implemented.\n\nFor now, you can use a simple HTTP server:\n  python3 -m http.server 9000\n  ruby -run -e httpd . -p 9000\n",
@@ -3886,6 +4086,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": true,
    "mode": "tty",
    "expect": {
     "stdout": "",
@@ -3905,6 +4106,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Linting: defs/magick.yaml\n\n✓ No issues found\n",
@@ -3925,6 +4127,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "{\"issues\":[],\"total_count\":0,\"error_count\":0,\"warning_count\":0,\"info_count\":0,\"style_count\":0}\n",
@@ -3943,6 +4146,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Linting: defs/fancy.yaml\n\nFound 8 issue(s):\n\nErrors:\n  [ERROR] Subcommand contains potentially dangerous shell commands (at profiles[0].commands.Run-It.subcommand)\n  Suggestion: Avoid using destructive commands in subcommands\n\nWarnings:\n  [WARNING] Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores (at name)\n  Suggestion: Use lowercase with hyphens for multi-word names (e.g., \"my-tool\")\n  [WARNING] Command names should be lowercase with underscores (at profiles[0].commands.Run-It)\n  Suggestion: Use snake_case for command names (e.g., \"build_command\")\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n  [WARNING] Arguments should specify type validation (at profiles[0].commands.Run-It.arguments[0])\n  Suggestion: Add \"type\" field to all arguments for validation\n\nInfo:\n  [INFO] Tool is missing a description (at definition)\n  Suggestion: Add a \"description\" field to help users understand what this tool does\n  [INFO] Tool is missing a homepage URL (at definition)\n  Suggestion: Add a \"homepage\" field linking to the tool's website\n\nStyle:\n  [STYLE] Single profile named \"default\" is redundant (at profiles[0])\n  Suggestion: For single-profile definitions, omit the profiles array and define commands directly\n",
@@ -3963,6 +4167,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "{\"issues\":[{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores\",\"location\":\"name\",\"suggestion\":\"Use lowercase with hyphens for multi-word names (e.g., \\\"my-tool\\\")\",\"rule_id\":\"naming_tool_name_format\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Command names should be lowercase with underscores\",\"location\":\"profiles[0].commands.Run-It\",\"suggestion\":\"Use snake_case for command names (e.g., \\\"build_command\\\")\",\"rule_id\":\"naming_command_name_format\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a description\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"description\\\" field to help users understand what this tool does\",\"rule_id\":\"complete_missing_description\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a homepage URL\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"homepage\\\" field linking to the tool's website\",\"rule_id\":\"complete_missing_homepage\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool is missing version detection\",\"location\":\"definition\",\"suggestion\":\"Add \\\"version_detection\\\" to auto-detect installed versions\",\"rule_id\":\"complete_missing_version_detection\"},{\"severity\":\"error\",\"severity_string\":\"ERROR\",\"message\":\"Subcommand contains potentially dangerous shell commands\",\"location\":\"profiles[0].commands.Run-It.subcommand\",\"suggestion\":\"Avoid using destructive commands in subcommands\",\"rule_id\":\"security_suspicious_subcommand\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Arguments should specify type validation\",\"location\":\"profiles[0].commands.Run-It.arguments[0]\",\"suggestion\":\"Add \\\"type\\\" field to all arguments for validation\",\"rule_id\":\"security_unvalidated_input\"},{\"severity\":\"style\",\"severity_string\":\"STYLE\",\"message\":\"Single profile named \\\"default\\\" is redundant\",\"location\":\"profiles[0]\",\"suggestion\":\"For single-profile definitions, omit the profiles array and define commands directly\",\"rule_id\":\"style_redundant_default_profile\"}],\"total_count\":8,\"error_count\":1,\"warning_count\":4,\"info_count\":2,\"style_count\":1}\n",
@@ -3982,6 +4187,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "\nLint Summary:\n  Files: 3\n  Issues: 8\n  Errors: 1\n  Warnings: 4\n\nFiles with Issues:\n  ✗ register2/tools/fancy/1.0/fancy.yaml (8 issues)\n",
@@ -4001,6 +4207,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "\nLint Summary:\n  Files: 1\n  Issues: 0\n  Errors: 0\n  Warnings: 0\n",
@@ -4019,6 +4226,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": true,
    "mode": "tty",
    "expect": {
     "stdout": "",
@@ -4040,6 +4248,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "# magick\n\nVersion: 7.1\n\nImage toolkit\n\n## Overview\n\n| Property | Value |\n|----------|-------|\n| Name | `magick` |\n| Version | `7.1` |\n| Homepage | https://example.org/magick |\n\n### Supported Platforms\n\n- **Linux**: bash, zsh\n- **Macos**: bash, zsh\n\n## Commands\n\n### `resize`\n\nResize an image\n\n#### Arguments\n\n- **`input`** (file, optional) - Input image\n\n## Options Reference\n\n### `resize`\n\n#### Options\n\n- `--width` (optional) - Target width\n\n  Type: `integer`\n#### Flags\n\n- `-v` - Verbose output\n",
@@ -4062,6 +4271,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "= magick\n\n:toc:\n\nVersion: 7.1\n\nImage toolkit\n\n== Overview\n\n[cols=\"1,2\"]\n|===\n| Property | Value\n| Name | `magick`\n| Version | `7.1`\n| Homepage | https://example.org/magick\n|===\n\n=== Supported Platforms\n\n* *Linux*: bash, zsh\n* *Macos*: bash, zsh\n\n== Commands\n\n=== `resize`\n\nResize an image\n\n==== Arguments\n\n* **`input`** (file, optional)\n: Input image\n",
@@ -4084,12 +4294,15 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "✓ Documentation written to: out.md\n",
     "stderr": "",
     "exit": 0,
-    "files": [],
+    "files": [
+     "{root}/out.md"
+    ],
     "file_contents": {
      "out.md": "# magick\n\nVersion: 7.1\n\nImage toolkit\n\n## Overview\n\n| Property | Value |\n|----------|-------|\n| Name | `magick` |\n| Version | `7.1` |\n| Homepage | https://example.org/magick |\n\n### Supported Platforms\n\n- **Linux**: bash, zsh\n- **Macos**: bash, zsh\n\n## Commands\n\n### `resize`\n\nResize an image\n\n#### Arguments\n\n- **`input`** (file, optional) - Input image\n\n## Options Reference\n\n### `resize`\n\n#### Options\n\n- `--width` (optional) - Target width\n\n  Type: `integer`\n#### Flags\n\n- `-v` - Verbose output\n"
     }
@@ -4108,6 +4321,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -4129,6 +4343,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "✓ Generated: outdocs/magick-7.1.md\n\nGenerated 1 documentation file(s) in: outdocs\n",
@@ -4158,6 +4373,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "✓ Generated: outdocs/magick-7.1.adoc\n\nGenerated 1 documentation file(s) in: outdocs\n",
@@ -4185,6 +4401,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
@@ -4206,6 +4423,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "Documentation server is not yet implemented.\n\nFor now, you can use a simple HTTP server:\n  python3 -m http.server 80.5\n  ruby -run -e httpd . -p 80.5\n",
@@ -4225,6 +4443,7 @@
     "RUBYOPT": "-r{capture}/target.rb"
    },
    "stdin": null,
+   "pty": false,
    "mode": "exact",
    "expect": {
     "stdout": "",
