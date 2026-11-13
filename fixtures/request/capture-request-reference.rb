@@ -97,7 +97,7 @@ puts JSON.pretty_generate(
                   'Ukiryu::CliCommands::BaseCommand#stringify_keys'],
     'ruby' => RUBY_VERSION,
     'psych' => Psych::VERSION,
-    'gemfile_lock_sha256' => (ENV['BUNDLE_GEMFILE'] && Digest::SHA256.file("#{ENV['BUNDLE_GEMFILE']}.lock").hexdigest),
+    'gemfile_lock_sha256' => (ENV['BUNDLE_GEMFILE'] && Digest::SHA256.hexdigest(File.binread("#{ENV['BUNDLE_GEMFILE']}.lock").gsub("\r\n", "\n"))),
     'platform' => RUBY_PLATFORM
   },
   'cases' => cases
