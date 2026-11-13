@@ -9,7 +9,12 @@
 //! a timeout (D1, issues #20 and #29). The environment's variables are
 //! applied over the inherited process environment, as Ruby's `Open3` does
 //! with an environment hash: an empty [`Environment`] is valid and does not
-//! isolate the child.
+//! isolate the child. As in the source, a `DISPLAY` in the request is
+//! dropped while an inherited `DISPLAY` still reaches the child.
+//!
+//! Start and finish times are local times as the source's `Time.now`
+//! gives them: the host's UTC offset at that instant, or the offset of an
+//! explicit [`Clock::System`] passed with [`ExecuteRequest::clock`].
 //!
 //! The command runs through the shell as the source does: Unix shells run
 //! `<shell> -c <join>` with the shell found on `PATH`, cmd runs
@@ -24,24 +29,21 @@
 //! Each is recorded with the Ruby observation in
 //! `tests/executor_data/observations.json`:
 //!
-//! - The timeout kills the run. The source raises only after the child has
-//!   finished on its own (a 0.01 s timeout on `sleep 10` returns after about
-//!   10 s). Here the child, and on Unix its whole process group, is killed
-//!   and reaped at the deadline.
+//! - The timeout kills the run (issue #20). The source raises only after the
+//!   child has finished on its own (a 0.01 s timeout on `sleep 10` returns
+//!   after about 10 s). Here every process started for the run is killed at
+//!   the deadline (a process group on Unix, a job object on Windows) and the
+//!   child is reaped.
 //! - `TimeoutError#timeout` carries the timeout; the source leaves it nil.
 //! - A failed run keeps its result ([`ExecuteError::Failed`]); the source's
 //!   `ExecutionError` has no `#result`.
 //! - stdin is written while output is read, so large inputs do not block.
 //! - The timeout must be a positive, finite number. The source treats `0` as
 //!   "no limit" and raises `ArgumentError` for a negative value.
-//! - `DISPLAY` is removed from the child. The source deletes it from the
-//!   hash it passes to `Open3`, which still lets an inherited `DISPLAY`
-//!   through.
 //! - Output is kept as bytes ([`Execution::stdout`]); the result's strings
 //!   are their UTF-8 decoding, with invalid sequences replaced.
-//! - Start and finish times are UTC instants with a `+0000` offset; the
-//!   source uses the local zone.
 
+mod clock;
 mod invocation;
 mod process;
 pub mod status;
@@ -56,9 +58,9 @@ use crate::environment::Environment;
 use crate::errors::{command_timed_out_message, execution_failed_message, Error, ErrorKind};
 use crate::execution::{CommandInfo, ExecutionMetadata, ExecutionResult, Output, Seconds};
 use crate::execution_context::RunSettings;
-use crate::runtime::ShellName;
-use crate::types::value::Time;
+use crate::runtime::{Clock, ShellName};
 
+pub use clock::native_utc_offset;
 pub use invocation::find_executable_in;
 pub use status::{extract_status, ProcessStatus};
 
@@ -93,6 +95,7 @@ pub struct ExecuteRequest {
     command_name: Option<String>,
     allow_failure: bool,
     search_path: Option<OsString>,
+    clock: Option<Clock>,
 }
 
 impl ExecuteRequest {
@@ -116,6 +119,7 @@ impl ExecuteRequest {
             command_name: None,
             allow_failure: false,
             search_path: None,
+            clock: None,
         }
     }
 
@@ -177,6 +181,14 @@ impl ExecuteRequest {
     /// process `PATH`, which is what the source searches.
     pub fn shell_search_path(mut self, path: impl Into<OsString>) -> Self {
         self.search_path = Some(path.into());
+        self
+    }
+
+    /// The clock for the result's start and finish times. Without one, or
+    /// with [`Clock::Fixed`], times carry the host's UTC offset at that
+    /// instant; [`Clock::System`] gives its explicit offset.
+    pub fn clock(mut self, clock: Clock) -> Self {
+        self.clock = Some(clock);
         self
     }
 
@@ -288,6 +300,7 @@ pub fn execute(request: ExecuteRequest) -> Result<Execution, ExecuteError> {
         tool_name,
         command_name,
         allow_failure,
+        clock,
         ..
     } = request;
 
@@ -320,9 +333,9 @@ pub fn execute(request: ExecuteRequest) -> Result<Execution, ExecuteError> {
         stdin,
     };
 
-    let started_at = now();
+    let started_at = clock::now(clock);
     let outcome = process::run(spec, limit);
-    let finished_at = now();
+    let finished_at = clock::now(clock);
     drop(stdin_file);
 
     let finished = outcome.map_err(|err| match err {
@@ -385,18 +398,6 @@ fn timeout_duration(timeout: Seconds) -> Result<Duration, ExecuteError> {
     seconds
         .filter(|d| !d.is_zero())
         .ok_or(ExecuteError::InvalidTimeout(timeout))
-}
-
-fn now() -> Time {
-    let since = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap_or(Duration::ZERO);
-    Time {
-        seconds: i64::try_from(since.as_secs()).unwrap_or(i64::MAX),
-        nanos: since.subsec_nanos(),
-        utc_offset: 0,
-        utc: false,
-    }
 }
 
 /// The temporary file PowerShell reads stdin from; removed when dropped.

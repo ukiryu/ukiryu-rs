@@ -11,7 +11,7 @@
     "ruby": "ruby 4.0.1 (2026-01-13 revision e04267a14b) +PRISM [x86_64-linux]",
     "host": "x86_64-linux",
     "bash": "GNU bash, version 5.1.16(1)-release (x86_64-pc-linux-gnu)",
-    "capture_script": "capture_executor.rb (planning evidence, K20-EXECUTOR)"
+    "capture_script": "ukiryu/tests/executor_data/capture/capture_executor.rb"
   },
   "rows": [
     {
@@ -471,9 +471,7 @@
       "timeout": 30,
       "started_at_class": "Time",
       "elapsed_lt_2s": true,
-      "contract": "migrated",
-      "trace": "D1 (DECISIONS.md); ukiryu/ukiryu#20, #29",
-      "target": "DISPLAY removed from the child: prints unset (source passes the inherited value); not executed by tests (needs a parent DISPLAY)"
+      "contract": "parity"
     },
     {
       "id": "display_user_set",
@@ -498,9 +496,82 @@
       "timeout": 30,
       "started_at_class": "Time",
       "elapsed_lt_2s": true,
-      "contract": "migrated",
-      "trace": "D1 (DECISIONS.md); ukiryu/ukiryu#20, #29",
-      "target": "DISPLAY removed from the child: prints unset; not executed by tests (needs a parent DISPLAY)"
+      "contract": "parity"
+    },
+    {
+      "id": "display_empty_explicit_parent_set",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": ":99\n",
+      "stdout_bytes": {
+        "hex": "3a39390a",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 0,
+      "success": true,
+      "executable": "sh",
+      "arguments": [
+        "-c",
+        "echo \"${DISPLAY-unset}\""
+      ],
+      "full_command": "'sh' '-c' 'echo \"${DISPLAY-unset}\"'",
+      "shell": ":bash",
+      "timeout": 30,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "parity"
+    },
+    {
+      "id": "display_env_object_parent_set",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": ":99\n",
+      "stdout_bytes": {
+        "hex": "3a39390a",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 0,
+      "success": true,
+      "executable": "sh",
+      "arguments": [
+        "-c",
+        "echo \"${DISPLAY-unset}\""
+      ],
+      "full_command": "'sh' '-c' 'echo \"${DISPLAY-unset}\"'",
+      "shell": ":bash",
+      "timeout": 30,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "parity"
+    },
+    {
+      "id": "display_absent_parent_unset",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": "unset\n",
+      "stdout_bytes": {
+        "hex": "756e7365740a",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 0,
+      "success": true,
+      "executable": "sh",
+      "arguments": [
+        "-c",
+        "echo \"${DISPLAY-unset}\""
+      ],
+      "full_command": "'sh' '-c' 'echo \"${DISPLAY-unset}\"'",
+      "shell": ":bash",
+      "timeout": 30,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "parity"
     },
     {
       "id": "display_user_set_parent_unset",
@@ -905,6 +976,41 @@
     {
       "id": "unknown",
       "status": 1
+    }
+  ],
+  "time_zone": [
+    {
+      "id": "tz_karachi",
+      "tz": "Asia/Karachi",
+      "utc_offset": 18000,
+      "utc": false,
+      "to_s_zone": "+0500",
+      "to_h_started_at_zone": "+0500",
+      "finished_utc_offset": 18000,
+      "nsec_in_range": true,
+      "to_s_shape": "DDDD-DD-DD DD:DD:DD +DDDD"
+    },
+    {
+      "id": "tz_utc",
+      "tz": "UTC",
+      "utc_offset": 0,
+      "utc": false,
+      "to_s_zone": "+0000",
+      "to_h_started_at_zone": "+0000",
+      "finished_utc_offset": 0,
+      "nsec_in_range": true,
+      "to_s_shape": "DDDD-DD-DD DD:DD:DD +DDDD"
+    },
+    {
+      "id": "tz_st_johns",
+      "tz": "America/St_Johns",
+      "utc_offset": -12600,
+      "utc": false,
+      "to_s_zone": "-0330",
+      "to_h_started_at_zone": "-0330",
+      "finished_utc_offset": -12600,
+      "nsec_in_range": true,
+      "to_s_shape": "DDDD-DD-DD DD:DD:DD -DDDD"
     }
   ]
 }

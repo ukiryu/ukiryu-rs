@@ -1,0 +1,98 @@
+name: Executor reference
+
+# Exact bytes of the pinned Ruby executor (ukiryu/ukiryu@ab6df353, locked
+# through corpus/oracle-ruby) for the PowerShell and cmd shells, compared
+# with the committed golden files the Rust tests read, plus a verbose run of
+# the executor tests that records process ids, offsets and output bytes.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ukiryu/src/executor.rs'
+      - 'ukiryu/src/executor/**'
+      - 'ukiryu/tests/executor*'
+      - 'ukiryu/tests/executor_data/**'
+      - '.github/workflows/executor-reference.yml'
+  pull_request:
+    paths:
+      - 'ukiryu/src/executor.rs'
+      - 'ukiryu/src/executor/**'
+      - 'ukiryu/tests/executor*'
+      - 'ukiryu/tests/executor_data/**'
+      - '.github/workflows/executor-reference.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  ruby-capture:
+    name: Ruby executor capture (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2022
+            golden: native_shells_windows.json
+          - os: ubuntu-24.04
+            golden: native_shells_linux.json
+    env:
+      BUNDLE_FROZEN: 'true'
+      BUNDLE_GEMFILE: ${{ github.workspace }}/corpus/oracle-ruby/Gemfile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '4.0.1'
+          bundler-cache: true
+          working-directory: corpus/oracle-ruby
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Capture the pinned Ruby executor
+        shell: bash
+        run: |
+          bundle exec ruby ukiryu/tests/executor_data/capture/capture_native_shells.rb "$RUNNER_TEMP/${{ matrix.golden }}"
+      - name: Upload capture
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: executor-ruby-${{ matrix.os }}
+          path: ${{ runner.temp }}/${{ matrix.golden }}
+          if-no-files-found: error
+      - name: Compare with the committed golden file
+        shell: bash
+        run: python ukiryu/tests/executor_data/capture/compare_native.py "$RUNNER_TEMP/${{ matrix.golden }}" "ukiryu/tests/executor_data/${{ matrix.golden }}"
+
+  rust-evidence:
+    name: Executor process evidence (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15-intel, windows-2022]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.95.0
+      - name: Run the executor tests verbosely
+        shell: bash
+        run: |
+          set -o pipefail
+          cargo test -p ukiryu --locked --test executor_oracle --test executor_process --test executor_host_env \
+            -- --nocapture --test-threads=1 2>&1 | tee "$RUNNER_TEMP/executor-evidence.log"
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: executor-evidence-${{ matrix.os }}
+          path: ${{ runner.temp }}/executor-evidence.log
+          if-no-files-found: error
