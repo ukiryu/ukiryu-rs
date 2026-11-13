@@ -607,7 +607,11 @@ fn execute(op: &str, input: &Oj, ctx: &Ctx, run: &Runner) -> Outcome {
     let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| run(op, input, ctx)));
     match result {
         Ok(Ok(v)) => Ok(ctx.scrub(v)),
-        Ok(Err(e)) => Err(RowError::new(e.class, ctx.scrub_str(&e.message))),
+        Ok(Err(e)) => {
+            let mut scrubbed = RowError::new(e.class, ctx.scrub_str(&e.message));
+            scrubbed.detail = e.detail;
+            Err(scrubbed)
+        }
         Err(p) => {
             let msg = p
                 .downcast_ref::<String>()

@@ -1,16 +1,16 @@
 {
-  "note": "yaml.lutaml_roundtrip rows compared by exact pinned Yeptris bytes plus type-sensitive canonical equality (core safe_load) with the frozen Psych text (root ruling R2). golden_sha256 is empty until the bytes are pinned from the core's own output.",
+  "note": "yaml.lutaml_roundtrip rows compared by exact pinned Yeptris bytes plus type-sensitive canonical equality (core safe_load) with the frozen Psych text (root ruling R2). The goldens are the core's own emitted bytes, pinned from the CI run at 8f11a3c (identical on Linux, macOS and Windows); golden_sha256 pins them.",
   "rows": [
     {
       "id": "yaml.roundtrip.profiles-ghostscript-10-0",
       "golden": "emitter/yaml.roundtrip.profiles-ghostscript-10-0.yaml",
-      "golden_sha256": "",
+      "golden_sha256": "00fcb5736191a139ebf16cc6ec05fcc7802f5be010155ebc4ab1ef627db94134",
       "trace": "R2 root ruling 2026-11-13; DECISIONS.md YAML CLI rendering contract (frozen exact-byte Yeptris goldens plus canonical type-sensitive equality); ukiryu#23, ukiryu#24"
     },
     {
       "id": "yaml.roundtrip.profiles-inkscape-1-0",
       "golden": "emitter/yaml.roundtrip.profiles-inkscape-1-0.yaml",
-      "golden_sha256": "",
+      "golden_sha256": "2a086ccb7e46ffd4312bb3810cf8f4bb8e432846b648830a7311355c7c016830",
       "trace": "R2 root ruling 2026-11-13; DECISIONS.md YAML CLI rendering contract (frozen exact-byte Yeptris goldens plus canonical type-sensitive equality); ukiryu#23, ukiryu#24"
     }
   ]
