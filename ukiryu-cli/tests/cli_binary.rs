@@ -40,6 +40,7 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use ukiryu_cli::dispatch::GATED_EXIT;
 
 const BIN: &str = env!("CARGO_BIN_EXE_ukiryu");
+#[cfg(target_os = "linux")]
 const RUBY_VERSION_LINE: &str = "Ukiryu version 0.3.1";
 
 struct Output {
@@ -91,6 +92,7 @@ fn scratch(name: &str) -> PathBuf {
 
 // ------------------------------------------------------------------ inspect
 
+#[cfg(target_os = "linux")]
 fn files_under(root: &Path) -> Vec<String> {
     let mut found = Vec::new();
     let mut stack = vec![root.to_path_buf()];
@@ -117,10 +119,12 @@ fn files_under(root: &Path) -> Vec<String> {
     found
 }
 
+#[cfg(target_os = "linux")]
 fn yaml_data(text: &str) -> Vec<yeptris::Value> {
     yeptris::parse_stream(text.as_bytes()).expect("YAML parses")
 }
 
+#[cfg(target_os = "linux")]
 fn install_executable(dir: &Path, name: &str) {
     use std::os::unix::fs::PermissionsExt;
     let path = dir.join(name);
