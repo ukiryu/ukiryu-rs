@@ -181,6 +181,21 @@
       "stdout_encoding": "UTF-8",
       "exit_status": 42,
       "full_command": "cmd /c exit 42"
+    },
+    {
+      "id": "cmd_executable_with_spaces",
+      "shell": "cmd",
+      "executable": "C:\\Program Files\\Git\\cmd\\git.exe",
+      "arguments": [
+        "--version"
+      ],
+      "stdin_hex": null,
+      "outcome": "result",
+      "stdout_hex": "",
+      "stderr_hex": "275c22433a5c50726f6772616d2046696c65735c4769745c636d645c6769742e6578655c2227206973206e6f74207265636f676e697a656420617320616e20696e7465726e616c206f722065787465726e616c20636f6d6d616e642c0a6f70657261626c652070726f6772616d206f722062617463682066696c652e0a",
+      "stdout_encoding": "UTF-8",
+      "exit_status": 1,
+      "full_command": "\"C:\\Program Files\\Git\\cmd\\git.exe\" --version"
     }
   ],
   "child_rows": [
