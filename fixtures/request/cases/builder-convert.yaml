@@ -1,0 +1,7 @@
+tool: imagemagick
+command: convert
+arguments:
+  inputs: [a.png, b.png]
+  output: out.jpg
+  quality: 85
+  strip: true
