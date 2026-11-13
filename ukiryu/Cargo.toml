@@ -17,6 +17,8 @@ crate-type = ["rlib", "cdylib"]
 default = []
 c = []
 wasm = ["dep:wasm-bindgen"]
+# Ruby binding (src/ffi/ruby.rs); entered from a thin magnus extension crate.
+ruby = ["dep:magnus"]
 
 [dependencies]
 serde.workspace = true
@@ -29,3 +31,5 @@ regex = "1"
 fancy-regex = { version = "0.20.2", default-features = false, features = ["std", "unicode", "perf"] }
 # Match the already qualified Yeptris Rust/browser toolchain.
 wasm-bindgen = { version = "=0.2.105", optional = true }
+# Ruby binding (issue #24): magnus with rb-sys raw-value access, MSRV 1.85.
+magnus = { version = "0.9", optional = true, features = ["rb-sys"] }

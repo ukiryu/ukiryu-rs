@@ -1,0 +1,23 @@
+# Development fixture, not a shipped package: a thin magnus extension that
+# loads this checkout's core Ruby binding (ukiryu/src/ffi/ruby.rs) into a real
+# Ruby for tests/ruby-spec. It depends on the core by path on purpose, to test
+# the core itself. The shipped Ruby gem's extension consumes the core from
+# crates.io (issue #24); nothing here decides its name, version or Ruby floor.
+[package]
+name = "ukiryu_core_ruby_fixture"
+version = "0.0.0"
+edition = "2021"
+rust-version = "1.86"
+license = "BSD-2-Clause"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+path = "src/lib.rs"
+
+[dependencies]
+magnus = "0.9"
+ukiryu = { path = "../../ukiryu", features = ["ruby"] }
+
+# Standalone workspace: the fixture is not a member of the core workspace.
+[workspace]
