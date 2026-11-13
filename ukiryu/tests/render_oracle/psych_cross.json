@@ -7,10 +7,7 @@
     "script": "handoffs/batch-03/K22-RENDER/capture/psych_cross.rb"
   },
   "verdicts": {
-    "yeptris_roundtrip_differs": [
-      "tagged-local",
-      "tagged-str"
-    ],
+    "yeptris_roundtrip_differs": [],
     "psych_load_of_yeptris_differs": [
       "str-no",
       "str-yes",
@@ -3482,8 +3479,8 @@
     "float-nan": "---\nvalue: .nan\n",
     "float-inf": "---\nvalue: .inf\n",
     "float-neg-inf": "---\nvalue: -.inf\n",
-    "tagged-local": "---\nvalue:\n  \"!custom\": x\n",
-    "tagged-str": "---\nvalue:\n  tag:yaml.org,2002:str: \"123\"\n",
+    "tagged-local": "---\nvalue: !custom x\n",
+    "tagged-str": "---\nvalue: !!str \"123\"\n",
     "seq-mixed": "---\nvalue:\n- no\n- 1\n- null\n- 2024-01-17\n"
   },
   "probe_psych_emit": {
@@ -3947,14 +3944,7 @@
       "$map": [
         [
           "value",
-          {
-            "$map": [
-              [
-                "!custom",
-                "x"
-              ]
-            ]
-          }
+          "x"
         ]
       ]
     },
@@ -3962,14 +3952,7 @@
       "$map": [
         [
           "value",
-          {
-            "$map": [
-              [
-                "tag:yaml.org,2002:str",
-                "123"
-              ]
-            ]
-          }
+          "123"
         ]
       ]
     },

@@ -138,11 +138,16 @@ enum Native {
     Error(ErrorResponse),
 }
 
-fn native(class: &str, yaml: &str) -> Native {
-    match class {
-        "SuccessResponse" => Native::Success(SuccessResponse::from_yaml(yaml).unwrap()),
-        "ErrorResponse" => Native::Error(ErrorResponse::from_yaml(yaml).unwrap()),
-        other => panic!("{other}"),
+/// The native model of an oracle response. `error-nil` is
+/// `ErrorResponse.new` (K22 capture.rb): every attribute keeps its
+/// unserialized default, which a loaded document cannot express (loading
+/// fills defaults as assigned values), so it is built the same way here.
+fn native(id: &str, class: &str, yaml: &str) -> Native {
+    match (class, id) {
+        ("ErrorResponse", "error-nil") => Native::Error(ErrorResponse::default()),
+        ("SuccessResponse", _) => Native::Success(SuccessResponse::from_yaml(yaml).unwrap()),
+        ("ErrorResponse", _) => Native::Error(ErrorResponse::from_yaml(yaml).unwrap()),
+        (other, _) => panic!("{other}"),
     }
 }
 
@@ -191,7 +196,7 @@ fn oracle_responses_render_through_the_native_models() {
     let mut rows = 0;
     for r in g["responses"].as_array().unwrap() {
         let id = s(&r["id"]);
-        let model = native(s(&r["class"]), s(&r["yaml"]));
+        let model = native(id, s(&r["class"]), s(&r["yaml"]));
         assert_eq!(model.json(), s(&r["json"]), "{id}: json gem bytes");
         let yaml = model.yaml();
         assert_eq!(yaml, model.yaml(), "{id}: stable");
