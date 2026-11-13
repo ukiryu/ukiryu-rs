@@ -1,0 +1,324 @@
+{
+  "note": "Explicitly traced expectations that replace frozen Ruby observations for this engine. The corpus rows stay unchanged; frozen_expect_sha256 pins the Ruby expectation each entry replaces (sha256 of its key-sorted JSON).",
+  "rows": [
+    {
+      "id": "resolve.shell_detect.shell-env.bin-dash",
+      "basis": "D2",
+      "trace": "D2 (planning DECISIONS.md, root 2026-11-12): exact registered identifier/basename, unknown or missing configured shell raises, no suffix guessing; ukiryu#19, ukiryu#29",
+      "frozen_expect_sha256": "f23ea182e2790d9b693a8447ea11434fbf7b28270bc796e0fbfe700ec436e1d1",
+      "expect": {
+        "ok": {
+          "detect": {
+            "$sym": "dash"
+          },
+          "shell_class": "Ukiryu::Shell::Dash"
+        }
+      }
+    },
+    {
+      "id": "resolve.shell_detect.shell-env.bin-tcsh",
+      "basis": "D2",
+      "trace": "D2 (planning DECISIONS.md, root 2026-11-12): exact registered identifier/basename, unknown or missing configured shell raises, no suffix guessing; ukiryu#19, ukiryu#29",
+      "frozen_expect_sha256": "f23ea182e2790d9b693a8447ea11434fbf7b28270bc796e0fbfe700ec436e1d1",
+      "expect": {
+        "ok": {
+          "detect": {
+            "$sym": "tcsh"
+          },
+          "shell_class": "Ukiryu::Shell::Tcsh"
+        }
+      }
+    },
+    {
+      "id": "resolve.shell_detect.shell-env.bin-csh",
+      "basis": "D2",
+      "trace": "D2 (planning DECISIONS.md, root 2026-11-12): exact registered identifier/basename, unknown or missing configured shell raises, no suffix guessing; ukiryu#19, ukiryu#29",
+      "frozen_expect_sha256": "f23ea182e2790d9b693a8447ea11434fbf7b28270bc796e0fbfe700ec436e1d1",
+      "expect": {
+        "error": {
+          "class": "Ukiryu::Errors::UnknownShellError",
+          "message": "Unknown shell in SHELL: /bin/csh"
+        }
+      },
+      "detail": {
+        "code": "UnknownShell",
+        "variant": "Unknown",
+        "stage": "ShellVariable"
+      }
+    },
+    {
+      "id": "resolve.shell_detect.shell-env.bin-ksh",
+      "basis": "D2",
+      "trace": "D2 (planning DECISIONS.md, root 2026-11-12): exact registered identifier/basename, unknown or missing configured shell raises, no suffix guessing; ukiryu#19, ukiryu#29",
+      "frozen_expect_sha256": "f23ea182e2790d9b693a8447ea11434fbf7b28270bc796e0fbfe700ec436e1d1",
+      "expect": {
+        "error": {
+          "class": "Ukiryu::Errors::UnknownShellError",
+          "message": "Unknown shell in SHELL: /bin/ksh"
+        }
+      },
+      "detail": {
+        "code": "UnknownShell",
+        "variant": "Unknown",
+        "stage": "ShellVariable"
+      }
+    },
+    {
+      "id": "resolve.shell_detect.shell-env.usr-bin-mksh",
+      "basis": "D2",
+      "trace": "D2 (planning DECISIONS.md, root 2026-11-12): exact registered identifier/basename, unknown or missing configured shell raises, no suffix guessing; ukiryu#19, ukiryu#29",
+      "frozen_expect_sha256": "f23ea182e2790d9b693a8447ea11434fbf7b28270bc796e0fbfe700ec436e1d1",
+      "expect": {
+        "error": {
+          "class": "Ukiryu::Errors::UnknownShellError",
+          "message": "Unknown shell in SHELL: /usr/bin/mksh"
+        }
+      },
+      "detail": {
+        "code": "UnknownShell",
+        "variant": "Unknown",
+        "stage": "ShellVariable"
+      }
+    },
+    {
+      "id": "resolve.shell_detect.shell-env.opt-fakezsh",
+      "basis": "D2",
+      "trace": "D2 (planning DECISIONS.md, root 2026-11-12): exact registered identifier/basename, unknown or missing configured shell raises, no suffix guessing; ukiryu#19, ukiryu#29",
+      "frozen_expect_sha256": "eb9db37fc8c44918a9e0ab6e20ab1c46ab5c70e6ed83412ce57c64e3a23d3f53",
+      "expect": {
+        "error": {
+          "class": "Ukiryu::Errors::UnknownShellError",
+          "message": "Unknown shell in SHELL: /opt/fakezsh"
+        }
+      },
+      "detail": {
+        "code": "UnknownShell",
+        "variant": "Unknown",
+        "stage": "ShellVariable"
+      }
+    },
+    {
+      "id": "resolve.shell_detect.shell-env.opt-notbash",
+      "basis": "D2",
+      "trace": "D2 (planning DECISIONS.md, root 2026-11-12): exact registered identifier/basename, unknown or missing configured shell raises, no suffix guessing; ukiryu#19, ukiryu#29",
+      "frozen_expect_sha256": "18d7d8ef6c2340a649ed9e450a71d3fd422d653f6b23bf2bac5aecbfe511f639",
+      "expect": {
+        "error": {
+          "class": "Ukiryu::Errors::UnknownShellError",
+          "message": "Unknown shell in SHELL: /opt/notbash"
+        }
+      },
+      "detail": {
+        "code": "UnknownShell",
+        "variant": "Unknown",
+        "stage": "ShellVariable"
+      }
+    },
+    {
+      "id": "resolve.shell_detect.shell-env.empty",
+      "basis": "D2",
+      "trace": "D2 (planning DECISIONS.md, root 2026-11-12): exact registered identifier/basename, unknown or missing configured shell raises, no suffix guessing; ukiryu#19, ukiryu#29",
+      "frozen_expect_sha256": "a27f6f815d683ff9a19c5e251d322afe941f53c5e3e724fc44b82610d800d8e4",
+      "expect": {
+        "error": {
+          "class": "Ukiryu::Errors::UnknownShellError",
+          "message": "Unknown shell in SHELL: "
+        }
+      },
+      "detail": {
+        "code": "UnknownShell",
+        "variant": "Unknown",
+        "stage": "ShellVariable"
+      }
+    },
+    {
+      "id": "resolve.shell_detect.shell-env.nonexistent-weird",
+      "basis": "D2",
+      "trace": "D2 (planning DECISIONS.md, root 2026-11-12): exact registered identifier/basename, unknown or missing configured shell raises, no suffix guessing; ukiryu#19, ukiryu#29",
+      "frozen_expect_sha256": "b8138866fb5a3e94cb7990301b66595205b716d399b47d2c89c277b6e52a2f46",
+      "expect": {
+        "error": {
+          "class": "Ukiryu::Errors::UnknownShellError",
+          "message": "Unknown shell in SHELL: /nonexistent/weird"
+        }
+      },
+      "detail": {
+        "code": "UnknownShell",
+        "variant": "Unknown",
+        "stage": "ShellVariable"
+      }
+    },
+    {
+      "id": "resolve.shell_detect.test-shell.nonsense",
+      "basis": "D2",
+      "trace": "D2 (planning DECISIONS.md, root 2026-11-12): exact registered identifier/basename, unknown or missing configured shell raises, no suffix guessing; ukiryu#19, ukiryu#29",
+      "frozen_expect_sha256": "18d7d8ef6c2340a649ed9e450a71d3fd422d653f6b23bf2bac5aecbfe511f639",
+      "expect": {
+        "error": {
+          "class": "Ukiryu::Errors::UnknownShellError",
+          "message": "Unknown shell: nonsense"
+        }
+      },
+      "detail": {
+        "code": "UnknownShell",
+        "variant": "Unknown",
+        "stage": "TestOverride"
+      }
+    },
+    {
+      "id": "yaml.load.schemas-v1-tool-schema",
+      "basis": "yaml-reader",
+      "trace": "R2 root ruling 2026-11-13 (Psych wording rows): the core reads YAML only through Yeptris (DECISIONS.md Runtime YAML reader; QUEUE root rendering contract), keeping the exact failure category and stage and freezing the exact Yeptris diagnostic; ukiryu#23, ukiryu#24",
+      "frozen_expect_sha256": "e4ad86945aa56cdb3ddc2a3d7f391b71c2cdfd476564b701038aae2df20c1ba5",
+      "expect": {
+        "error": {
+          "class": "Psych::SyntaxError",
+          "message": "unexpected parser state (line 287, column 32)"
+        }
+      },
+      "detail": {
+        "category": "YamlSyntax",
+        "stage": "document"
+      }
+    },
+    {
+      "id": "schema.bundled.profiles-ghostscript-10-0",
+      "basis": "yaml-reader",
+      "trace": "R2 root ruling 2026-11-13 (Psych wording rows): the core reads YAML only through Yeptris (DECISIONS.md Runtime YAML reader; QUEUE root rendering contract), keeping the exact failure category and stage and freezing the exact Yeptris diagnostic; ukiryu#23, ukiryu#24",
+      "frozen_expect_sha256": "e4ad86945aa56cdb3ddc2a3d7f391b71c2cdfd476564b701038aae2df20c1ba5",
+      "expect": {
+        "error": {
+          "class": "Psych::SyntaxError",
+          "message": "unexpected parser state (line 287, column 32)"
+        }
+      },
+      "detail": {
+        "category": "YamlSyntax",
+        "stage": "schema"
+      }
+    },
+    {
+      "id": "schema.bundled.profiles-inkscape-1-0",
+      "basis": "yaml-reader",
+      "trace": "R2 root ruling 2026-11-13 (Psych wording rows): the core reads YAML only through Yeptris (DECISIONS.md Runtime YAML reader; QUEUE root rendering contract), keeping the exact failure category and stage and freezing the exact Yeptris diagnostic; ukiryu#23, ukiryu#24",
+      "frozen_expect_sha256": "e4ad86945aa56cdb3ddc2a3d7f391b71c2cdfd476564b701038aae2df20c1ba5",
+      "expect": {
+        "error": {
+          "class": "Psych::SyntaxError",
+          "message": "unexpected parser state (line 287, column 32)"
+        }
+      },
+      "detail": {
+        "category": "YamlSyntax",
+        "stage": "schema"
+      }
+    },
+    {
+      "id": "schema.synthetic.invalid-yaml",
+      "basis": "yaml-reader",
+      "trace": "R2 root ruling 2026-11-13 (Psych wording rows): the core reads YAML only through Yeptris (DECISIONS.md Runtime YAML reader; QUEUE root rendering contract), keeping the exact failure category and stage and freezing the exact Yeptris diagnostic; ukiryu#23, ukiryu#24",
+      "frozen_expect_sha256": "84694215581a371beefe4daf6fa86be255992520d5d6aa226457b63acb46495c",
+      "expect": {
+        "error": {
+          "class": "Psych::SyntaxError",
+          "message": "unexpected parser state (line 1, column 14)"
+        }
+      },
+      "detail": {
+        "category": "YamlSyntax",
+        "stage": "profile"
+      }
+    },
+    {
+      "id": "lint.synthetic.invalid-yaml",
+      "basis": "yaml-reader",
+      "trace": "R2 root ruling 2026-11-13 (Psych wording rows): the core reads YAML only through Yeptris (DECISIONS.md Runtime YAML reader; QUEUE root rendering contract), keeping the exact failure category and stage and freezing the exact Yeptris diagnostic; ukiryu#23, ukiryu#24. Ok value: only the engine text after \"Invalid YAML: \" changes; the issue's severity, location, suggestion, rule_id and counts stay frozen.",
+      "frozen_expect_sha256": "ed86ddc9a90d605e2022637ddecb8b908c61acbdc6769b1ba55eddfa18faa224",
+      "expect": {
+        "ok": {
+          "$map": [
+            [
+              {
+                "$sym": "issues"
+              },
+              [
+                {
+                  "$map": [
+                    [
+                      {
+                        "$sym": "severity"
+                      },
+                      {
+                        "$sym": "error"
+                      }
+                    ],
+                    [
+                      {
+                        "$sym": "severity_string"
+                      },
+                      "ERROR"
+                    ],
+                    [
+                      {
+                        "$sym": "message"
+                      },
+                      "Invalid YAML: unexpected parser state (line 1, column 14)"
+                    ],
+                    [
+                      {
+                        "$sym": "location"
+                      },
+                      null
+                    ],
+                    [
+                      {
+                        "$sym": "suggestion"
+                      },
+                      null
+                    ],
+                    [
+                      {
+                        "$sym": "rule_id"
+                      },
+                      null
+                    ]
+                  ]
+                }
+              ]
+            ],
+            [
+              {
+                "$sym": "total_count"
+              },
+              1
+            ],
+            [
+              {
+                "$sym": "error_count"
+              },
+              1
+            ],
+            [
+              {
+                "$sym": "warning_count"
+              },
+              0
+            ],
+            [
+              {
+                "$sym": "info_count"
+              },
+              0
+            ],
+            [
+              {
+                "$sym": "style_count"
+              },
+              0
+            ]
+          ]
+        }
+      }
+    }
+  ]
+}

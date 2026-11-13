@@ -1,0 +1,112 @@
+ukiryu_schema: "1.0"
+$self: https://www.ukiryu.com/register/1.0/ghostscript/10.0
+name: ghostscript
+display_name: Ghostscript PS/PDF Interpreter
+homepage: https://www.ghostscript.com/
+version: "10.0"
+aliases:
+- gs
+- gswin64c
+- gswin32c
+profiles:
+- name: unix
+  display_name: Ghostscript on Unix
+  platforms:
+  - macos
+  - linux
+  shells:
+  - bash
+  - zsh
+  option_style: single_dash_equals
+  commands:
+  - name: convert
+    description: Convert PostScript or PDF to other formats
+    usage: gs [options] input-file
+    options:
+    - name: device
+      cli: -sDEVICE
+      type: string
+      assignment_delimiter: equals
+      description: Output device (e.g., png16m, jpeg, pdfwrite)
+    - name: output
+      cli: -sOutputFile
+      type: file
+      assignment_delimiter: equals
+      description: Output file path
+    - name: resolution
+      cli: -r
+      type: string
+      assignment_delimiter: auto
+      description: Resolution (e.g., 150, 300, or 600x600)
+    flags:
+    - name: quiet
+      cli: -q
+      default: false
+      description: Quiet mode
+    - name: batch
+      cli: -dBATCH
+      default: true
+      description: Batch mode
+    arguments:
+    - name: inputs
+      type: file
+      required: false
+      position: last
+      variadic: true
+      min: 1
+      separator: " "
+      description: Input file(s) to process
+    standalone_executable: false
+- name: windows
+  display_name: Ghostscript on Windows
+  platforms:
+  - windows
+  shells:
+  - powershell
+  - cmd
+  option_style: single_dash_equals
+  commands:
+  - name: convert
+    description: Convert PostScript or PDF to other formats
+    usage: gswin64c [options] input-file
+    options:
+    - name: device
+      cli: -sDEVICE
+      type: string
+      assignment_delimiter: equals
+      description: Output device (e.g., png16m, jpeg, pdfwrite)
+    - name: output
+      cli: -sOutputFile
+      type: file
+      assignment_delimiter: equals
+      description: Output file path
+    - name: resolution
+      cli: -r
+      type: string
+      assignment_delimiter: auto
+      description: Resolution (e.g., 150, 300, or 600x600)
+    flags:
+    - name: quiet
+      cli: -q
+      default: false
+      description: Quiet mode
+    - name: batch
+      cli: -dBATCH
+      default: true
+      description: Batch mode
+    arguments:
+    - name: inputs
+      type: file
+      required: false
+      position: last
+      variadic: true
+      min: 1
+      separator: " "
+      description: Input file(s) to process
+    standalone_executable: false
+version_detection:
+  command:
+  - --version
+  pattern: (\d+\.\d+)
+  modern_threshold: "9.0"
+  source: command

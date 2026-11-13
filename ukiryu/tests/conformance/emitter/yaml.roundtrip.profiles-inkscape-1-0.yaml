@@ -1,0 +1,68 @@
+ukiryu_schema: "1.0"
+$self: https://www.ukiryu.com/register/1.0/inkscape/1.0
+name: inkscape
+display_name: Inkscape Vector Graphics Editor
+homepage: https://inkscape.org/
+version: "1.0"
+aliases:
+- ink
+profiles:
+- name: modern_unix
+  display_name: Modern Inkscape on Unix
+  platforms:
+  - macos
+  - linux
+  shells:
+  - bash
+  - zsh
+  option_style: double_dash_equals
+  commands:
+  - name: export
+    description: Export document to different format
+    usage: inkscape [OPTIONS] input.svg
+    options:
+    - name: output
+      cli: --export-filename
+      type: file
+      assignment_delimiter: equals
+      description: Output filename
+    - name: format
+      cli: --export-type
+      type: symbol
+      assignment_delimiter: equals
+      values:
+      - svg
+      - png
+      - pdf
+      description: Output format
+    flags:
+    - name: plain
+      cli: --export-plain-svg
+      default: false
+      description: Remove Inkscape-specific attributes
+    arguments:
+    - name: inputs
+      type: file
+      required: false
+      position: last
+      variadic: true
+      min: 1
+      separator: " "
+      description: Input file(s)
+    use_env_vars:
+    - headless
+    standalone_executable: false
+  env_var_sets:
+    headless:
+    - name: DISPLAY
+      value: ""
+      platforms:
+      - macos
+      - linux
+      description: Disable display for headless operation
+version_detection:
+  command:
+  - --version
+  pattern: Inkscape (\d+\.\d+)
+  modern_threshold: "1.0"
+  source: command
