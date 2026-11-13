@@ -102,54 +102,54 @@
     {
       "id": "cmd_stdin_ascii",
       "shell": "cmd",
-      "executable": "more",
+      "executable": "more.com",
       "arguments": [],
       "stdin_hex": "746573742064617461",
       "outcome": "result",
-      "stdout_hex": "746573742064617461",
+      "stdout_hex": "7465737420646174610a",
       "stderr_hex": "",
       "stdout_encoding": "UTF-8",
       "exit_status": 0,
-      "full_command": "more"
+      "full_command": "more.com"
     },
     {
       "id": "cmd_stdin_multiline",
       "shell": "cmd",
-      "executable": "more",
+      "executable": "more.com",
       "arguments": [],
       "stdin_hex": "6c696e65310a6c696e65320a",
       "outcome": "result",
-      "stdout_hex": "6c696e65310a6c696e65320a",
+      "stdout_hex": "6c696e65310a6c696e65320a0a",
       "stderr_hex": "",
       "stdout_encoding": "UTF-8",
       "exit_status": 0,
-      "full_command": "more"
+      "full_command": "more.com"
     },
     {
       "id": "cmd_stdin_unicode",
       "shell": "cmd",
-      "executable": "more",
+      "executable": "more.com",
       "arguments": [],
       "stdin_hex": "68c3a96c6c6f20e4b896e7958c",
       "outcome": "result",
-      "stdout_hex": "68c3a96c6c6f20e4b896e7958c",
+      "stdout_hex": "68c3a96c6c6f20e4b896e7958c0a",
       "stderr_hex": "",
       "stdout_encoding": "UTF-8",
       "exit_status": 0,
-      "full_command": "more"
+      "full_command": "more.com"
     },
     {
       "id": "cmd_stdin_empty",
       "shell": "cmd",
-      "executable": "more",
+      "executable": "more.com",
       "arguments": [],
       "stdin_hex": "",
       "outcome": "result",
-      "stdout_hex": "",
+      "stdout_hex": "0a",
       "stderr_hex": "",
       "stdout_encoding": "UTF-8",
       "exit_status": 0,
-      "full_command": "more"
+      "full_command": "more.com"
     },
     {
       "id": "cmd_echo",
