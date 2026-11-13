@@ -1,0 +1,12 @@
+#!/bin/sh
+# Fixture: help text on stderr, exit 0.
+case "$1" in
+  --help)
+    echo "usage: ukx-help-stderr [-n] [--dry-run] PATH" >&2
+    echo "  -n, --dry-run          Show what would happen" >&2
+    exit 0 ;;
+  --version)
+    echo "ukx-help-stderr 0.9"
+    exit 0 ;;
+esac
+exit 2

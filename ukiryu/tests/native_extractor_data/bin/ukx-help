@@ -1,0 +1,18 @@
+#!/bin/sh
+# Fixture: a tool with only --help output.
+case "$1" in
+  --help)
+    echo "Usage: ukx-help [OPTIONS] INPUT"
+    echo ""
+    echo "Options:"
+    echo "  -o, [--output FILE]    Write output to FILE"
+    echo "  -q, --quiet            Suppress messages"
+    echo "  [--level=NUM]          Compression level"
+    echo "  -q, [--quiet]          Suppress messages"
+    echo "  -h, --help             Show this help"
+    exit 0 ;;
+  --version)
+    echo "ukx-help 2.3.4 (fixture)"
+    exit 0 ;;
+esac
+exit 2
