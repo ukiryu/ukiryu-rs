@@ -1,5 +1,5 @@
 //! Model errors, classified by the Ruby exception the oracle raises.
-use super::value::RubyValue;
+use super::value::Value;
 use std::fmt;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -78,11 +78,8 @@ impl ModelError {
         self.kind.ruby_class()
     }
 
-    pub(crate) fn no_method(method: &str, receiver: &RubyValue) -> Self {
-        let target = match receiver {
-            RubyValue::Nil => "nil".to_owned(),
-            other => format!("an instance of {}", other.class_name()),
-        };
+    pub(crate) fn no_method(method: &str, receiver: &Value) -> Self {
+        let target = crate::types::ruby::receiver_description(receiver);
         ModelError::new(
             ModelErrorKind::NoMethod,
             format!("undefined method '{method}' for {target}"),

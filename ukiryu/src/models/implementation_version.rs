@@ -8,43 +8,43 @@
 use super::attr::Model;
 use super::error::ModelError;
 use super::interface::{load_yaml_file, register_hash};
-use super::value::RubyValue;
+use super::value::Value;
 use super::version_detection::VersionDetection;
 use std::path::Path;
 
 /// One implementation version file (`<impl>/<version>.yaml`).
 #[derive(Clone, Debug, PartialEq)]
 pub struct ImplementationVersion {
-    pub implements: RubyValue,
-    pub version: RubyValue,
-    pub display_name: RubyValue,
+    pub implements: Value,
+    pub version: Value,
+    pub display_name: Value,
     /// `Array(aliases).map(&:to_s)`.
     pub aliases: Vec<String>,
-    pub execution_profiles: RubyValue,
+    pub execution_profiles: Value,
     pub version_detection: Option<VersionDetection>,
 }
 
-fn sym_get(data: &RubyValue, key: &str) -> Result<RubyValue, ModelError> {
+fn sym_get(data: &Value, key: &str) -> Result<Value, ModelError> {
     match data {
-        RubyValue::Hash(_) => Ok(data.get_sym(key).cloned().unwrap_or(RubyValue::Nil)),
+        Value::Hash(_) => Ok(data.get_sym(key).cloned().unwrap_or(Value::Nil)),
         other => Err(ModelError::no_method("[]", other)),
     }
 }
 
-fn either(data: &RubyValue, key: &str) -> Option<RubyValue> {
+fn either(data: &Value, key: &str) -> Option<Value> {
     data.get_sym_or_str(key).cloned()
 }
 
-fn profiles(list: &RubyValue) -> Result<&[RubyValue], ModelError> {
+fn profiles(list: &Value) -> Result<&[Value], ModelError> {
     match list {
-        RubyValue::Array(items) => Ok(items),
+        Value::Array(items) => Ok(items),
         other => Err(ModelError::no_method("find", other)),
     }
 }
 
-fn index(prof: &RubyValue, key: &str) -> Result<RubyValue, ModelError> {
+fn index(prof: &Value, key: &str) -> Result<Value, ModelError> {
     match prof {
-        RubyValue::Hash(_) => Ok(prof.get_sym(key).cloned().unwrap_or(RubyValue::Nil)),
+        Value::Hash(_) => Ok(prof.get_sym(key).cloned().unwrap_or(Value::Nil)),
         other => Err(ModelError::no_method("[]", other)),
     }
 }
@@ -52,28 +52,24 @@ fn index(prof: &RubyValue, key: &str) -> Result<RubyValue, ModelError> {
 impl ImplementationVersion {
     /// `ImplementationVersion.new(implements:, version:, execution_profiles:, display_name: nil, aliases: [], version_detection: nil)`.
     pub fn new(
-        implements: RubyValue,
-        version: RubyValue,
-        execution_profiles: RubyValue,
-        display_name: RubyValue,
-        aliases: &RubyValue,
+        implements: Value,
+        version: Value,
+        execution_profiles: Value,
+        display_name: Value,
+        aliases: &Value,
         version_detection: Option<VersionDetection>,
     ) -> ImplementationVersion {
         let display_name = if display_name.truthy() {
             display_name
         } else {
-            RubyValue::Str(format!(
+            Value::String(format!(
                 "{} {}",
                 implements.to_ruby_s(),
                 version.to_ruby_s()
             ))
         };
         ImplementationVersion {
-            aliases: aliases
-                .to_array()
-                .iter()
-                .map(RubyValue::to_ruby_s)
-                .collect(),
+            aliases: aliases.to_array().iter().map(Value::to_ruby_s).collect(),
             implements,
             version,
             display_name,
@@ -88,15 +84,15 @@ impl ImplementationVersion {
     }
 
     /// `ImplementationVersion.from_hash(data)`.
-    pub fn from_hash(data: &RubyValue) -> Result<ImplementationVersion, ModelError> {
+    pub fn from_hash(data: &Value) -> Result<ImplementationVersion, ModelError> {
         let version_detection = match either(data, "version_detection") {
             Some(vd) => Some(VersionDetection::from_ruby(&vd)?),
             None => None,
         };
-        let profiles = either(data, "execution_profiles").unwrap_or(RubyValue::Array(Vec::new()));
+        let profiles = either(data, "execution_profiles").unwrap_or(Value::Array(Vec::new()));
         let aliases = match sym_get(data, "aliases")? {
             v if v.truthy() => v,
-            _ => RubyValue::Array(Vec::new()),
+            _ => Value::Array(Vec::new()),
         };
         Ok(ImplementationVersion::new(
             sym_get(data, "implements")?,
@@ -121,7 +117,7 @@ impl ImplementationVersion {
         &self,
         platform: &str,
         shell: &str,
-    ) -> Result<Option<RubyValue>, ModelError> {
+    ) -> Result<Option<Value>, ModelError> {
         let list = profiles(&self.execution_profiles)?;
         let mut found = None;
         for prof in list {
@@ -133,8 +129,7 @@ impl ImplementationVersion {
                 v if v.truthy() => v,
                 _ => index(prof, "shell")?,
             };
-            let has =
-                |v: &RubyValue, want: &str| v.to_array().iter().any(|x| x.to_ruby_s() == want);
+            let has = |v: &Value, want: &str| v.to_array().iter().any(|x| x.to_ruby_s() == want);
             if has(&platforms, platform) && has(&shells, shell) {
                 found = Some(prof.clone());
                 break;
@@ -145,13 +140,13 @@ impl ImplementationVersion {
         };
         if let Some(inherits) = either(&profile, "inherits") {
             let parent = list.iter().find(|p| {
-                either(p, "name").unwrap_or(RubyValue::Nil).to_ruby_s() == inherits.to_ruby_s()
+                either(p, "name").unwrap_or(Value::Nil).to_ruby_s() == inherits.to_ruby_s()
             });
             let own = index(&profile, "commands")?;
             if let Some(parent) = parent {
                 if own.is_nil() || own.is_empty_container() {
-                    let parent_commands = either(parent, "commands").unwrap_or(RubyValue::Nil);
-                    profile.insert(RubyValue::sym("commands"), parent_commands);
+                    let parent_commands = either(parent, "commands").unwrap_or(Value::Nil);
+                    profile.insert(Value::sym("commands"), parent_commands);
                 }
             }
         }
@@ -159,10 +154,10 @@ impl ImplementationVersion {
     }
 
     /// `#profile(profile_name)`
-    pub fn profile(&self, profile_name: &RubyValue) -> Result<Option<&RubyValue>, ModelError> {
+    pub fn profile(&self, profile_name: &Value) -> Result<Option<&Value>, ModelError> {
         Ok(profiles(&self.execution_profiles)?
             .iter()
-            .find(|p| p.get_sym("name").unwrap_or(&RubyValue::Nil) == profile_name))
+            .find(|p| p.get_sym("name").unwrap_or(&Value::Nil) == profile_name))
     }
 
     /// `#to_s`
@@ -188,32 +183,32 @@ impl ImplementationVersion {
 /// as Symbols; actions keyed by Symbol).
 #[derive(Clone, Debug, PartialEq)]
 pub struct ExecutionProfile {
-    pub name: RubyValue,
+    pub name: Value,
     pub platforms: Vec<String>,
     pub shells: Vec<String>,
     pub option_style: String,
-    pub executable_name: RubyValue,
-    pub actions: RubyValue,
+    pub executable_name: Value,
+    pub actions: Value,
 }
 
 impl ExecutionProfile {
     /// `ExecutionProfile.new(name:, platforms:, shells:, option_style:, executable_name:, actions: {})`.
     pub fn new(
-        name: RubyValue,
-        platforms: &RubyValue,
-        shells: &RubyValue,
-        option_style: &RubyValue,
-        executable_name: RubyValue,
-        actions: &RubyValue,
+        name: Value,
+        platforms: &Value,
+        shells: &Value,
+        option_style: &Value,
+        executable_name: Value,
+        actions: &Value,
     ) -> Result<ExecutionProfile, ModelError> {
-        let syms = |v: &RubyValue| -> Result<Vec<String>, ModelError> {
-            v.to_array().iter().map(RubyValue::to_sym).collect()
+        let syms = |v: &Value| -> Result<Vec<String>, ModelError> {
+            v.to_array().iter().map(Value::to_sym).collect()
         };
         let actions = match actions {
-            RubyValue::Hash(pairs) => RubyValue::Hash(
+            Value::Hash(pairs) => Value::Hash(
                 pairs
                     .iter()
-                    .map(|(k, v)| Ok((RubyValue::Sym(k.to_sym()?), v.clone())))
+                    .map(|(k, v)| Ok((Value::Symbol(k.to_sym()?), v.clone())))
                     .collect::<Result<_, ModelError>>()?,
             ),
             other => return Err(ModelError::no_method("transform_keys", other)),
@@ -230,21 +225,21 @@ impl ExecutionProfile {
 
     /// `#compatible?(platform, shell)`: Symbol membership, so a String
     /// argument never matches.
-    pub fn is_compatible(&self, platform: &RubyValue, shell: &RubyValue) -> bool {
-        let member = |list: &[String], v: &RubyValue| match v {
-            RubyValue::Sym(s) => list.iter().any(|x| x == s),
+    pub fn is_compatible(&self, platform: &Value, shell: &Value) -> bool {
+        let member = |list: &[String], v: &Value| match v {
+            Value::Symbol(s) => list.iter().any(|x| x == s),
             _ => false,
         };
         member(&self.platforms, platform) && member(&self.shells, shell)
     }
 
     /// `#command(action_name)`
-    pub fn command(&self, action_name: &RubyValue) -> Option<&RubyValue> {
-        self.actions.get(action_name)
+    pub fn command(&self, action_name: &Value) -> Option<&Value> {
+        self.actions.hash_get(action_name)
     }
 
     /// `#commands`
-    pub fn commands(&self) -> &RubyValue {
+    pub fn commands(&self) -> &Value {
         &self.actions
     }
 

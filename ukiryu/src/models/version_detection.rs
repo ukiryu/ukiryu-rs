@@ -2,7 +2,7 @@
 //! (`Ukiryu::Models::VersionDetectionMethod`, `Ukiryu::Models::VersionDetection`).
 use super::argument_definition::{opt_value, text_list_value};
 use super::attr::{de_fns as d, omit_list, omit_opt, ser_model_list, Attr, Model};
-use super::value::{RubyValue, Text};
+use super::value::{Text, Value};
 use serde::{Deserialize, Serialize};
 
 /// One detection method (`command` or `man_page`).
@@ -16,7 +16,7 @@ pub struct VersionDetectionMethod {
     pub pattern: Option<Text>,
     /// Platform-specific man page paths (`:hash`, no default).
     #[serde(default, deserialize_with = "d::opt", skip_serializing_if = "omit_opt")]
-    pub paths: Option<RubyValue>,
+    pub paths: Option<Value>,
 }
 
 impl Model for VersionDetectionMethod {}
@@ -63,7 +63,7 @@ impl Default for VersionDetection {
 
 impl VersionDetection {
     /// `#[](key)`: attribute readers by name.
-    pub fn index(&self, key: &str) -> Option<RubyValue> {
+    pub fn index(&self, key: &str) -> Option<Value> {
         Some(match key {
             "command" => text_list_value(&self.command),
             "pattern" => opt_value(self.pattern.as_ref()),

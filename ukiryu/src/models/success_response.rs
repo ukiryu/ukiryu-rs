@@ -7,7 +7,7 @@ use super::error::ModelError;
 use super::execution_metadata::ExecutionMetadata;
 use super::execution_report::ExecutionReport;
 use super::output_info::OutputInfo;
-use super::value::{RubyValue, Text};
+use super::value::{Text, Value};
 use serde::{Deserialize, Serialize};
 
 fn default_status() -> Attr<Text> {
@@ -90,7 +90,7 @@ impl SuccessResponse {
     /// `SuccessResponse.from_result(result, params, command_definition, execution_report:)`.
     pub fn from_result(
         result: &ExecutionResultParts,
-        params: &[(String, RubyValue)],
+        params: &[(String, Value)],
         command_definition: Option<&CommandDefinition>,
         execution_report: Option<ExecutionReport>,
     ) -> Result<SuccessResponse, ModelError> {

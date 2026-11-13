@@ -34,19 +34,19 @@ fn texts(v: &[Text]) -> Json {
     Json::Array(v.iter().map(|t| enc(&t.to_ruby_value())).collect())
 }
 
-fn json_to_ruby(v: &Json) -> RubyValue {
+fn json_to_ruby(v: &Json) -> Value {
     match v {
-        Json::Null => RubyValue::Nil,
-        Json::Bool(b) => RubyValue::Bool(*b),
+        Json::Null => Value::Nil,
+        Json::Bool(b) => Value::Bool(*b),
         Json::Number(n) => match n.as_i64() {
-            Some(i) => RubyValue::Int(i128::from(i)),
-            None => RubyValue::Float(n.as_f64().unwrap()),
+            Some(i) => Value::int(i),
+            None => Value::Float(n.as_f64().unwrap()),
         },
-        Json::String(s) => RubyValue::str(s.clone()),
-        Json::Array(items) => RubyValue::Array(items.iter().map(json_to_ruby).collect()),
-        Json::Object(m) => RubyValue::Hash(
+        Json::String(s) => Value::str(s.clone()),
+        Json::Array(items) => Value::Array(items.iter().map(json_to_ruby).collect()),
+        Json::Object(m) => Value::Hash(
             m.iter()
-                .map(|(k, v)| (RubyValue::str(k.clone()), json_to_ruby(v)))
+                .map(|(k, v)| (Value::str(k.clone()), json_to_ruby(v)))
                 .collect(),
         ),
     }
@@ -91,7 +91,7 @@ fn routing_group(group: &str) -> Json {
             })
         }
         "routing.empty" => {
-            let r = Routing::new(&RubyValue::Hash(vec![]));
+            let r = Routing::new(&Value::Hash(vec![]));
             json!({"to_s": r.to_ruby_s(), "empty": r.is_empty(), "keys": r.keys(), "size": r.size()})
         }
         "routing.child" => {
@@ -114,11 +114,11 @@ fn routing_group(group: &str) -> Json {
     }
 }
 
-fn opt_enc(v: Option<RubyValue>) -> Json {
+fn opt_enc(v: Option<Value>) -> Json {
     v.as_ref().map_or(Json::Null, enc)
 }
 
-fn opt_ref(v: Option<&RubyValue>) -> Json {
+fn opt_ref(v: Option<&Value>) -> Json {
     v.map_or(Json::Null, enc)
 }
 
@@ -138,46 +138,40 @@ fn parsed(p: ParsedPosition) -> Json {
     }
 }
 
-fn params(case: i64) -> Vec<(String, RubyValue)> {
-    let p = |k: &str, v: RubyValue| (k.to_owned(), v);
-    let int = |i: i128| RubyValue::Int(i);
+fn params(case: i64) -> Vec<(String, Value)> {
+    let p = |k: &str, v: Value| (k.to_owned(), v);
+    let int = |i: i128| Value::Integer(i.into());
     match case {
         0 => vec![
-            p("verbose", RubyValue::Bool(true)),
+            p("verbose", Value::Bool(true)),
             p("quality", int(90)),
-            p("input", RubyValue::str("a.png")),
+            p("input", Value::str("a.png")),
         ],
         1 => vec![
-            p("verbose", RubyValue::Bool(false)),
-            p("quality", RubyValue::Array(vec![int(1), int(2)])),
+            p("verbose", Value::Bool(false)),
+            p("quality", Value::Array(vec![int(1), int(2)])),
             p(
                 "input",
-                RubyValue::Array(vec![RubyValue::str("a"), RubyValue::sym("b")]),
+                Value::Array(vec![Value::str("a"), Value::sym("b")]),
             ),
         ],
         2 => vec![
-            p("verbose", RubyValue::str("yes")),
-            p("extra", RubyValue::Bool(true)),
-            p("other", RubyValue::Bool(false)),
-            p(
-                "list",
-                RubyValue::Array(vec![int(1), RubyValue::Float(2.5)]),
-            ),
-            p("sym", RubyValue::sym("s")),
-            p("n", RubyValue::Nil),
-            p("f", RubyValue::Float(1.5)),
+            p("verbose", Value::str("yes")),
+            p("extra", Value::Bool(true)),
+            p("other", Value::Bool(false)),
+            p("list", Value::Array(vec![int(1), Value::Float(2.5)])),
+            p("sym", Value::sym("s")),
+            p("n", Value::Nil),
+            p("f", Value::Float(1.5)),
             p("i", int(3)),
         ],
         3 => vec![
-            p("verbose", RubyValue::str("yes")),
-            p("extra", RubyValue::Bool(true)),
-            p(
-                "list",
-                RubyValue::Array(vec![int(1), RubyValue::Float(2.5)]),
-            ),
-            p("sym", RubyValue::sym("s")),
-            p("n", RubyValue::Nil),
-            p("h", RubyValue::Hash(vec![(RubyValue::str("a"), int(1))])),
+            p("verbose", Value::str("yes")),
+            p("extra", Value::Bool(true)),
+            p("list", Value::Array(vec![int(1), Value::Float(2.5)])),
+            p("sym", Value::sym("s")),
+            p("n", Value::Nil),
+            p("h", Value::Hash(vec![(Value::str("a"), int(1))])),
         ],
         4 => vec![],
         _ => unreachable!(),
@@ -241,18 +235,18 @@ fn evaluate(group: &str, i: &Json) -> Json {
         }
         "exit_codes.new" => {
             let e = ExitCodes::default();
-            let zero = RubyValue::Int(0);
+            let zero = Value::int(0);
             json!([
                 opt_ref(e.meaning(&zero)),
                 enc(&e.all_codes()),
                 e.is_success(&zero).unwrap(),
-                e.is_success(&RubyValue::Int(1)).unwrap()
+                e.is_success(&Value::int(1)).unwrap()
             ])
         }
         "exit_codes.null" => {
             let e: ExitCodes = ExitCodes::from_yaml("standard: ~\ncustom: ~\n").unwrap();
             json!([
-                opt_ref(e.meaning(&RubyValue::Int(0))),
+                opt_ref(e.meaning(&Value::int(0))),
                 enc(&e.all_codes()),
                 enc(&e.standard_codes())
             ])
@@ -440,7 +434,7 @@ fn evaluate(group: &str, i: &Json) -> Json {
                 "implements_gzip": m.is_implements("gzip", None).unwrap(),
                 "default_command": symj(m.default_command().unwrap()),
                 "may_provide_list": m.may_provide_list().unwrap().iter().map(|s| json!({"$sym": s})).collect::<Vec<_>>(),
-                "tool_name": enc_text(m.tool_name().as_ref()), "aliases": enc(&RubyValue::Array(m.aliases())),
+                "tool_name": enc_text(m.tool_name().as_ref()), "aliases": enc(&Value::Array(m.aliases())),
                 "backing_tool": symj(m.backing_tool().unwrap()), "to_s": m.to_ruby_s(), "inspect": m.inspect(),
                 "hash": enc(&m.to_hash().unwrap()), "yaml": m.to_yaml().unwrap(), "json": m.to_json().unwrap(),
                 "register_path": enc_text(m.register_path.as_ref()), "implements": enc_text(m.implements.as_ref()),
@@ -504,7 +498,7 @@ fn evaluate(group: &str, i: &Json) -> Json {
             m.finish(0.0, 0, false, Some("boom"));
             let h = m.to_hash().unwrap();
             let keys: Vec<String> = match &h {
-                RubyValue::Hash(p) => p.iter().map(|(k, _)| k.to_ruby_s()).collect(),
+                Value::Hash(p) => p.iter().map(|(k, _)| k.to_ruby_s()).collect(),
                 _ => vec![],
             };
             json!({"keys": keys, "duration": attr_float(&m.duration), "formatted": attr_text(&m.formatted_duration),
@@ -591,18 +585,18 @@ fn evaluate(group: &str, i: &Json) -> Json {
         ]))
         .collect::<Vec<_>>()),
         "version_info" => {
-            let m = i["method"].as_str().map_or(RubyValue::Nil, RubyValue::sym);
-            let avail = vec![RubyValue::sym("command"), RubyValue::sym("man_page")];
-            let v = VersionInfo::new(RubyValue::str("1.2"), m.clone(), avail.clone());
+            let m = i["method"].as_str().map_or(Value::Nil, Value::sym);
+            let avail = vec![Value::sym("command"), Value::sym("man_page")];
+            let v = VersionInfo::new(Value::str("1.2"), m.clone(), avail.clone());
             json!({"to_s": enc(&v.to_ruby_s()), "to_h": enc(&v.to_h()), "from_command": v.is_from_command(),
                    "from_man_page": v.is_from_man_page(), "from_profile": v.is_from_profile(), "inspect": v.inspect(),
-                   "eq_same": v == VersionInfo::new(RubyValue::str("1.2"), m.clone(), avail),
-                   "eq_diff": v == VersionInfo::new(RubyValue::str("1.3"), m, vec![]), "eq_other": false})
+                   "eq_same": v == VersionInfo::new(Value::str("1.2"), m.clone(), avail),
+                   "eq_diff": v == VersionInfo::new(Value::str("1.3"), m, vec![]), "eq_other": false})
         }
         "executable_info" => {
             let e = ExecutableInfo::new(
                 json_to_ruby(&i["path"]),
-                RubyValue::sym(s(&i["source"])),
+                Value::sym(s(&i["source"])),
                 json_to_ruby(&i["shell"]),
                 json_to_ruby(&i["alias_definition"]),
             );
@@ -620,10 +614,10 @@ fn evaluate(group: &str, i: &Json) -> Json {
             .unwrap();
             let syms = |v: &[String]| v.iter().map(|s| json!({"$sym": s})).collect::<Vec<_>>();
             json!({"platforms": syms(&e.platforms), "shells": syms(&e.shells), "option_style": {"$sym": e.option_style},
-                   "compatible": e.is_compatible(&RubyValue::sym("linux"), &RubyValue::sym("bash")),
-                   "compatible_str": e.is_compatible(&RubyValue::str("linux"), &RubyValue::str("bash")),
-                   "compatible_no": e.is_compatible(&RubyValue::sym("windows"), &RubyValue::sym("bash")),
-                   "command": opt_ref(e.command(&RubyValue::sym("a"))), "command_str": opt_ref(e.command(&RubyValue::str("a"))),
+                   "compatible": e.is_compatible(&Value::sym("linux"), &Value::sym("bash")),
+                   "compatible_str": e.is_compatible(&Value::str("linux"), &Value::str("bash")),
+                   "compatible_no": e.is_compatible(&Value::sym("windows"), &Value::sym("bash")),
+                   "command": opt_ref(e.command(&Value::sym("a"))), "command_str": opt_ref(e.command(&Value::str("a"))),
                    "commands": enc(e.commands()), "to_s": e.to_ruby_s(), "inspect": e.inspect(), "frozen": true})
         }
         other => panic!("unmapped helper group {other}"),

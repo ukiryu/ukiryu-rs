@@ -6,7 +6,7 @@
 use serde_json::{json, Map, Value as Json};
 use std::path::PathBuf;
 use ukiryu::models::ruby::float_to_s;
-use ukiryu::models::{Attr, Model, RubyValue, Text};
+use ukiryu::models::{Attr, Model, Text, Value};
 
 pub fn data_dir() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/models_data")
@@ -18,20 +18,20 @@ pub fn golden(name: &str) -> Json {
 }
 
 /// The oracle's value encoding (`$sym`, `$float`, `$map`).
-pub fn enc(v: &RubyValue) -> Json {
+pub fn enc(v: &Value) -> Json {
     match v {
-        RubyValue::Nil => Json::Null,
-        RubyValue::Bool(b) => json!(b),
-        RubyValue::Int(i) => match i64::try_from(*i) {
+        Value::Nil => Json::Null,
+        Value::Bool(b) => json!(b),
+        Value::Integer(i) => match i64::try_from(i) {
             Ok(n) => json!(n),
             Err(_) => json!(i.to_string()),
         },
-        RubyValue::Float(f) => json!({ "$float": float_to_s(*f) }),
-        RubyValue::Str(s) => json!(s),
-        RubyValue::Sym(s) => json!({ "$sym": s }),
-        RubyValue::Array(items) => Json::Array(items.iter().map(enc).collect()),
-        RubyValue::Hash(pairs) => {
-            if pairs.iter().all(|(k, _)| matches!(k, RubyValue::Str(_))) {
+        Value::Float(f) => json!({ "$float": float_to_s(*f) }),
+        Value::String(s) => json!(s),
+        Value::Symbol(s) => json!({ "$sym": s }),
+        Value::Array(items) => Json::Array(items.iter().map(enc).collect()),
+        Value::Hash(pairs) => {
+            if pairs.iter().all(|(k, _)| matches!(k, Value::String(_))) {
                 let mut m = Map::new();
                 for (k, v) in pairs {
                     m.insert(k.to_ruby_s(), enc(v));
@@ -41,6 +41,7 @@ pub fn enc(v: &RubyValue) -> Json {
                 json!({ "$map": pairs.iter().map(|(k, v)| json!([enc(k), enc(v)])).collect::<Vec<_>>() })
             }
         }
+        other => panic!("models never hold {other:?}"),
     }
 }
 
@@ -128,10 +129,10 @@ pub fn attr_float(v: &Attr<f64>) -> Json {
     v.get()
         .map_or(Json::Null, |f| json!({ "$float": float_to_s(*f) }))
 }
-pub fn attr_hash(v: &Attr<RubyValue>) -> Json {
+pub fn attr_hash(v: &Attr<Value>) -> Json {
     v.get().map_or(Json::Null, enc)
 }
-pub fn opt_hash(v: &Option<RubyValue>) -> Json {
+pub fn opt_hash(v: &Option<Value>) -> Json {
     v.as_ref().map_or(Json::Null, enc)
 }
 pub fn opt_int(v: &Option<i64>) -> Json {
