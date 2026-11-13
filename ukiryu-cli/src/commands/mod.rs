@@ -8,4 +8,5 @@ pub struct CommandOutcome {
     pub exit_code: i32,
 }
 
+pub mod author;
 pub mod inspect;
