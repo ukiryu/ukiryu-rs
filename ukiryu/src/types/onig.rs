@@ -613,9 +613,7 @@ impl Preprocessor<'_> {
                     self.buf.push(c);
                 }
                 b']' => {
-                    if in_char_class > 0 {
-                        in_char_class -= 1;
-                    }
+                    in_char_class = in_char_class.saturating_sub(1);
                     self.buf.push(c);
                 }
                 b')' => {

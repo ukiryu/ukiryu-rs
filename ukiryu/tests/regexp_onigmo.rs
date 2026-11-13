@@ -57,7 +57,7 @@ fn regexp_onigmo_matrix() {
                 Some(m) => serde_json::json!({"match": m.as_ref().map(spans)}),
             },
         };
-        if &actual != expect {
+        if actual != *expect {
             problems.push(format!("{id}: expected {expect}, got {actual}"));
         }
     }
