@@ -21,14 +21,13 @@
 //! raises `NoMethodError` and no caller uses it.
 
 mod date;
-mod onig;
 
 pub use date::{date_parse, date_parse_fragments, CivilDate, DateFailure, Fragments, Today};
 
 use crate::runtime::Clock;
+use crate::types::onig::OnigRegex;
 use crate::version_detection::ManPageDates;
 use num_bigint::BigInt;
-use onig::Regex;
 use std::fmt;
 use std::io;
 use std::sync::OnceLock;
@@ -66,6 +65,9 @@ pub enum ManPageError {
     InvalidDate,
     /// `RangeError` from an out-of-range integer.
     Range(String),
+    /// The shared Onigmo path could not run a pattern. Never a Ruby class:
+    /// the port did not decide the input.
+    Unsupported(String),
 }
 
 impl ManPageError {
@@ -77,6 +79,7 @@ impl ManPageError {
             ManPageError::Io(_) => "SystemCallError",
             ManPageError::InvalidDate => "Date::Error",
             ManPageError::Range(_) => "RangeError",
+            ManPageError::Unsupported(_) => "Unsupported",
         }
     }
 }
@@ -87,7 +90,7 @@ impl fmt::Display for ManPageError {
             ManPageError::InvalidByteSequence => f.write_str("invalid byte sequence in UTF-8"),
             ManPageError::Io(e) => write!(f, "{e}"),
             ManPageError::InvalidDate => f.write_str("invalid date"),
-            ManPageError::Range(m) => f.write_str(m),
+            ManPageError::Range(m) | ManPageError::Unsupported(m) => f.write_str(m),
         }
     }
 }
@@ -99,6 +102,7 @@ impl From<DateFailure> for ManPageError {
         match f {
             DateFailure::Range(m) => ManPageError::Range(m),
             DateFailure::Invalid | DateFailure::Argument(_) => ManPageError::InvalidDate,
+            DateFailure::Unsupported(m) => ManPageError::Unsupported(m),
         }
     }
 }
@@ -263,40 +267,46 @@ fn month_name_to_number(name: &str) -> Option<i32> {
     Some(n)
 }
 
-fn fallback_patterns() -> &'static [Regex; 3] {
-    static P: OnceLock<[Regex; 3]> = OnceLock::new();
-    P.get_or_init(|| {
-        [
-            Regex::new(r"(\w+)\s+(\d+),?\s+(\d{4})", false),
-            Regex::new(r"(\d+)\s+(\w+)\s+(\d{4})", false),
-            Regex::new(r"(\d{4})-(\d{2})-(\d{2})", false),
-        ]
-    })
+/// The three source regexp literals, compiled by the shared Onigmo path
+/// ([`crate::types::onig`]) with no options.
+const FALLBACK_PATTERNS: [&str; 3] = [
+    r"(\w+)\s+(\d+),?\s+(\d{4})",
+    r"(\d+)\s+(\w+)\s+(\d{4})",
+    r"(\d{4})-(\d{2})-(\d{2})",
+];
+
+fn fallback_patterns() -> &'static [Option<OnigRegex>; 3] {
+    static P: OnceLock<[Option<OnigRegex>; 3]> = OnceLock::new();
+    P.get_or_init(|| FALLBACK_PATTERNS.map(|src| OnigRegex::new(src, 0)))
 }
 
 /// `extract_date_with_regex`. Its `Date.new` errors are not rescued.
 fn extract_date_with_regex(date_str: &str) -> Result<Option<CivilDate>, ManPageError> {
-    let chars: Vec<char> = date_str.chars().collect();
+    let engine = |what: &str| {
+        ManPageError::Unsupported(format!(
+            "extract_date_with_regex: {what} failed in the Onigmo regexp engine"
+        ))
+    };
     for re in fallback_patterns() {
-        let Some(m) = re.find(&chars) else {
+        let re = re.as_ref().ok_or_else(|| engine("a pattern"))?;
+        let Some(m) = re.captures(date_str).ok_or_else(|| engine("this text"))? else {
             continue;
         };
-        let c: Vec<String> = (1..=3)
-            .map(|g| m.text(&chars, g).expect("all groups participate"))
+        let c: Vec<&str> = (1..=3)
+            .map(|g| m.text(g, date_str).expect("all groups participate"))
             .collect();
-        let len = |s: &String| s.chars().count();
-        if len(&c[0]) == 4 {
-            let date = date::date_new(&ruby_to_i(&c[0]), &ruby_to_i(&c[1]), &ruby_to_i(&c[2]))?;
+        let len = |s: &str| s.chars().count();
+        if len(c[0]) == 4 {
+            let date = date::date_new(&ruby_to_i(c[0]), &ruby_to_i(c[1]), &ruby_to_i(c[2]))?;
             return Ok(Some(date));
-        } else if len(&c[2]) == 4 {
+        } else if len(c[2]) == 4 {
             let (day, month_name) = if c[0].bytes().all(|b| b.is_ascii_digit()) {
-                (&c[0], &c[1])
+                (c[0], c[1])
             } else {
-                (&c[1], &c[0])
+                (c[1], c[0])
             };
             if let Some(month) = month_name_to_number(month_name) {
-                let date =
-                    date::date_new(&ruby_to_i(&c[2]), &BigInt::from(month), &ruby_to_i(day))?;
+                let date = date::date_new(&ruby_to_i(c[2]), &BigInt::from(month), &ruby_to_i(day))?;
                 return Ok(Some(date));
             }
         }

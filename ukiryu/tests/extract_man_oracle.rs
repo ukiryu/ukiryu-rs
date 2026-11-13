@@ -1,6 +1,8 @@
 //! Parity tests for `ukiryu::extractors::man` against golden data captured
 //! from the Ruby oracle (`Ukiryu::ManPageParser` at ukiryu ab6df353, Ruby
-//! 4.0.1, date gem 3.6.0). See `provenance` in the data file.
+//! 4.0.1, date gem 3.5.1, the corpus oracle Gemfile.lock fc3b12f2). See
+//! `provenance` in the data file. `Date._parse` runs through the shared
+//! `ukiryu::types::date_parse` port.
 
 use serde_json::Value;
 use std::collections::BTreeMap;
@@ -38,6 +40,7 @@ fn failure_json(f: &DateFailure) -> Value {
         DateFailure::Argument(_) => "ArgumentError",
         DateFailure::Invalid => "Date::Error",
         DateFailure::Range(_) => "RangeError",
+        DateFailure::Unsupported(_) => "Unsupported",
     };
     serde_json::json!({"error": {"class": class, "message": f.to_string()}})
 }
