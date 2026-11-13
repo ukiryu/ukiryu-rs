@@ -145,7 +145,8 @@ fn model_name(ruby: &Ruby, class: RClass) -> Result<String, Error> {
                 return Ok(short.to_owned());
             }
         }
-        current = class.superclass().ok();
+        // `Class#superclass` is nil above BasicObject.
+        current = class.funcall("superclass", ())?;
     }
     Err(Error::new(
         ruby.exception_not_imp_error(),
