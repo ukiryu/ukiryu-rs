@@ -91,7 +91,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
-          cargo test -p ukiryu --locked --test executor_oracle --test executor_process --test executor_host_env \
+          cargo test -p ukiryu --locked --test executor_oracle --test executor_process --test executor_host_env --test executor_windows_diag \
             -- --nocapture --test-threads=1 2>&1 | tee "$RUNNER_TEMP/executor-evidence.log"
       - name: Upload evidence
         if: always()
