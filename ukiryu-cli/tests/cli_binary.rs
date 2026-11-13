@@ -798,8 +798,6 @@ fn verbs_without_a_merged_handler_fail_gated() {
         &["which", "ls"],
         &["resolve", "ls"],
         &["register"],
-        &["config"],
-        &["config", "list"],
     ] {
         let got = simple(args);
         assert_eq!(got.code, GATED_EXIT, "{args:?}: {}", got.stderr);
