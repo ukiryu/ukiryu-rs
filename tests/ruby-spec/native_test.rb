@@ -407,6 +407,80 @@ main = [
 ]
 check('ractor', 'same-results', in_ractor == main, "ractor #{in_ractor.inspect[0, 300]} vs main #{main.inspect[0, 300]}")
 
+# --- 9. Tool.get, Tool#execute, ExecutionResult and TimeoutError#timeout ---
+# Real calls through the binding against the jq definition in the fixture
+# register (fixtures/register/spec) and the jq on PATH. On CI a missing jq
+# fails the checks; elsewhere the run is skipped and said so.
+REGISTER = File.join(ROOT, 'fixtures', 'register', 'spec')
+timeout_error = Ukiryu::Errors::TimeoutError
+check('tool', 'timeout-error.default', timeout_error.new('m').timeout.nil? && timeout_error.new('m').message == 'm')
+check('tool', 'timeout-error.integer', timeout_error.new('m', timeout: 3).timeout.eql?(3))
+check('tool', 'timeout-error.float', timeout_error.new('m', timeout: 0.5).timeout.eql?(0.5))
+check('tool', 'timeout-error.is-error', timeout_error.ancestors.include?(Ukiryu::Errors::Error))
+
+missing = raised { NATIVE::Tool.get(:no_such_tool, register_path: REGISTER, shell: :bash) }
+check('tool', 'get.not-found-class', missing.instance_of?(Ukiryu::Errors::ToolNotFoundError), missing.inspect)
+check('tool', 'get.not-found-message', missing&.message == 'Tool not found: no_such_tool', missing.inspect)
+bad_shell = raised { NATIVE::Tool.get(:jq, register_path: REGISTER, shell: :nosuch) }
+check('tool', 'get.unknown-shell', bad_shell.is_a?(Ukiryu::Errors::UnknownShellError), bad_shell.inspect)
+bad_platform = raised { NATIVE::Tool.get(:jq, register_path: REGISTER, shell: :bash, platform: :plan9) }
+check('tool', 'get.unknown-platform', bad_platform.instance_of?(ArgumentError), bad_platform.inspect)
+bad_name = raised { NATIVE::Tool.get(1, register_path: REGISTER, shell: :bash) }
+check('tool', 'get.name-type', bad_name.instance_of?(TypeError), bad_name.inspect)
+
+if !system('jq --version', out: File::NULL, err: File::NULL) && !ENV['CI']
+  puts 'SKIPPED tool execution checks: jq is not on PATH (not a pass)'
+  $counts['tool-skipped'] += 1
+else
+  jq = NATIVE::Tool.get(:jq, register_path: REGISTER, shell: :bash)
+  check('tool', 'get.class', jq.instance_of?(NATIVE::Tool), jq.inspect)
+  check('tool', 'get.name', jq.name == 'jq', jq.name.inspect)
+  check('tool', 'get.available', jq.available? == true)
+  check('tool', 'get.accepts-hash', NATIVE::Tool.get('jq', { register_path: REGISTER, shell: 'bash' }).name == 'jq')
+
+  run = jq.execute(:process, stdin: '{"foo": "bar", "baz": "qux"}', filter: '.foo', execution_timeout: 90)
+  check('tool', 'execute.result-class', run.instance_of?(NATIVE::ExecutionResult), run.class.inspect)
+  check('tool', 'execute.stdout', run.stdout == "\"bar\"\n", run.stdout.inspect)
+  check('tool', 'execute.stdout-encoding', run.stdout.encoding == Encoding::UTF_8, run.stdout.encoding.inspect)
+  check('tool', 'execute.stderr', run.stderr == '', run.stderr.inspect)
+  check('tool', 'execute.output-stripped', run.output == '"bar"', run.output.inspect)
+  check('tool', 'execute.error-output', run.error_output == '', run.error_output.inspect)
+  check('tool', 'execute.status', run.status.eql?(0) && run.exit_code.eql?(0) && run.exit_status.eql?(0))
+  check('tool', 'execute.success', run.success? == true && run.failure? == false)
+  check('tool', 'execute.executable-name', run.executable_name == 'jq', run.executable_name.inspect)
+  check('tool', 'execute.executable', File.basename(run.executable) == 'jq', run.executable.inspect)
+  check('tool', 'execute.command', run.command.include?('jq') && run.command.include?('.foo'), run.command.inspect)
+  check('tool', 'execute.times', run.started_at.is_a?(Time) && run.finished_at.is_a?(Time) &&
+                                 run.finished_at >= run.started_at, [run.started_at, run.finished_at].inspect)
+  check('tool', 'execute.duration', run.duration.is_a?(Float) && run.duration >= 0 &&
+                                    run.execution_time.is_a?(Float), [run.duration, run.execution_time].inspect)
+  json = JSON.parse(run.to_json)
+  check('tool', 'execute.to_json', json['success'] == true && json['status'] == 0 &&
+                                   json['output']['stdout'] == "\"bar\"\n", json.inspect)
+  check('tool', 'execute.string-root-path', jq.execute('process', stdin: '1', filter: '.', execution_timeout: 90.5)
+                                              .output == '1')
+
+  failed = raised { jq.execute(:process, stdin: '{}', filter: '.[', execution_timeout: 90) }
+  check('tool', 'execute.nonzero-class', failed.instance_of?(Ukiryu::Errors::ExecutionError), failed.inspect)
+  check('tool', 'execute.nonzero-ancestry', failed.is_a?(Ukiryu::Errors::Error) && failed.suggestions.any?, failed.inspect)
+
+  timed_out = raised { jq.execute(:process, stdin: 'null', filter: 'last(repeat(1))', execution_timeout: 1) }
+  check('tool', 'execute.timeout-class', timed_out.instance_of?(timeout_error), timed_out.inspect)
+  check('tool', 'execute.timeout-value', timed_out.respond_to?(:timeout) && timed_out.timeout.eql?(1),
+        timed_out.inspect)
+  timed_out_float = raised { jq.execute(:process, stdin: 'null', filter: 'last(repeat(1))', execution_timeout: 0.5) }
+  check('tool', 'execute.timeout-float', timed_out_float.instance_of?(timeout_error) &&
+                                         timed_out_float.timeout.eql?(0.5), timed_out_float.inspect)
+
+  no_timeout = raised { jq.execute(:process, stdin: '1', filter: '.') }
+  check('tool', 'execute.timeout-required', no_timeout.instance_of?(ArgumentError) &&
+                                            no_timeout.message.include?('execution_timeout'), no_timeout.inspect)
+  bad_timeout = raised { jq.execute(:process, stdin: '1', filter: '.', execution_timeout: 0) }
+  check('tool', 'execute.timeout-nonpositive', bad_timeout.instance_of?(ArgumentError), bad_timeout.inspect)
+  unknown = raised { jq.execute(:nosuch, execution_timeout: 5) }
+  check('tool', 'execute.unknown-command', unknown.instance_of?(ArgumentError), unknown.inspect)
+end
+
 # --- summary -----------------------------------------------------------------
 summary = { 'ruby' => RUBY_VERSION, 'platform' => RUBY_PLATFORM, 'checks' => $counts,
             'known_core_divergences' => $known_divergences,
