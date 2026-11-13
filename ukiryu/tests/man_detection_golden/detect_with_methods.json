@@ -1,0 +1,441 @@
+{
+  "provenance": {
+    "oracle": "ukiryu ab6df353c6dc2d7faf7817a86aafcafa82579896",
+    "source": "lib/ukiryu/version_detector.rb (VersionDetector.detect_with_methods) with the real lib/ukiryu/man_page_parser.rb (ManPageParser.parse_date)",
+    "ruby": "ruby 4.0.1 (2026-01-13 revision e04267a14b) +PRISM [x86_64-linux]",
+    "date_gem": "3.5.1",
+    "capture_script": "ukiryu/tests/man_detection_golden/capture_man_detection.rb",
+    "stubbed": "Executor.execute, Shell.detect, Platform.detect (:linux)"
+  },
+  "today": {
+    "year": 2026,
+    "mon": 11,
+    "mday": 12
+  },
+  "pages": {
+    "<man>/full_date": "2e44642053657074656d6265722032312c20323032300a2e447420584152475320310a",
+    "<man>/partial_date": "2e44642053657074656d6265722032310a2e447420584152475320310a",
+    "<man>/invalid_date": "2e44642053657074656d6265722033312c20323032300a",
+    "<man>/range_error": "2e4464205365702039393939393939393939392c20323032300a",
+    "<man>/invalid_utf8": "ff0a2e4464204d617920312c20323030310a",
+    "<man>/no_dd": "2e544820584152475320312022323032302d30392d3231220a"
+  },
+  "directories": [
+    "<man>/a_directory"
+  ],
+  "cases": [
+    {
+      "id": "ok/full-date",
+      "methods": [
+        {
+          "type": "man_page",
+          "paths": {
+            "linux": "<man>/full_date"
+          }
+        }
+      ],
+      "responses": [],
+      "expected": {
+        "result": {
+          "value": "2020-09-21",
+          "method_used": "man_page",
+          "available_methods": [
+            "man_page"
+          ]
+        },
+        "raised": null,
+        "calls": [],
+        "unused_responses": 0
+      }
+    },
+    {
+      "id": "ok/partial-date-uses-today",
+      "methods": [
+        {
+          "type": "man_page",
+          "paths": {
+            "linux": "<man>/partial_date"
+          }
+        }
+      ],
+      "responses": [],
+      "expected": {
+        "result": {
+          "value": "2026-09-21",
+          "method_used": "man_page",
+          "available_methods": [
+            "man_page"
+          ]
+        },
+        "raised": null,
+        "calls": [],
+        "unused_responses": 0
+      }
+    },
+    {
+      "id": "nil/no-dd",
+      "methods": [
+        {
+          "type": "man_page",
+          "paths": {
+            "linux": "<man>/no_dd"
+          }
+        }
+      ],
+      "responses": [],
+      "expected": {
+        "result": null,
+        "raised": null,
+        "calls": [],
+        "unused_responses": 0
+      }
+    },
+    {
+      "id": "nil/missing-file",
+      "methods": [
+        {
+          "type": "man_page",
+          "paths": {
+            "linux": "<man>/missing"
+          }
+        }
+      ],
+      "responses": [],
+      "expected": {
+        "result": null,
+        "raised": null,
+        "calls": [],
+        "unused_responses": 0
+      }
+    },
+    {
+      "id": "nil/other-platform-only",
+      "methods": [
+        {
+          "type": "man_page",
+          "paths": {
+            "macos": "<man>/invalid_date"
+          }
+        }
+      ],
+      "responses": [],
+      "expected": {
+        "result": null,
+        "raised": null,
+        "calls": [],
+        "unused_responses": 0
+      }
+    },
+    {
+      "id": "err/date-error",
+      "methods": [
+        {
+          "type": "man_page",
+          "paths": {
+            "linux": "<man>/invalid_date"
+          }
+        }
+      ],
+      "responses": [],
+      "expected": {
+        "result": null,
+        "raised": {
+          "class": "Date::Error",
+          "message": "invalid date"
+        },
+        "calls": [],
+        "unused_responses": 0
+      }
+    },
+    {
+      "id": "err/range-error",
+      "methods": [
+        {
+          "type": "man_page",
+          "paths": {
+            "linux": "<man>/range_error"
+          }
+        }
+      ],
+      "responses": [],
+      "expected": {
+        "result": null,
+        "raised": {
+          "class": "RangeError",
+          "message": "integer 99999999999 too big to convert to 'int'"
+        },
+        "calls": [],
+        "unused_responses": 0
+      }
+    },
+    {
+      "id": "err/invalid-utf8",
+      "methods": [
+        {
+          "type": "man_page",
+          "paths": {
+            "linux": "<man>/invalid_utf8"
+          }
+        }
+      ],
+      "responses": [],
+      "expected": {
+        "result": null,
+        "raised": {
+          "class": "ArgumentError",
+          "message": "invalid byte sequence in UTF-8"
+        },
+        "calls": [],
+        "unused_responses": 0
+      }
+    },
+    {
+      "id": "err/directory",
+      "methods": [
+        {
+          "type": "man_page",
+          "paths": {
+            "linux": "<man>/a_directory"
+          }
+        }
+      ],
+      "responses": [],
+      "expected": {
+        "result": null,
+        "raised": {
+          "class": "Errno::EISDIR",
+          "message": "Is a directory @ io_fread - <man>/a_directory"
+        },
+        "calls": [],
+        "unused_responses": 0
+      }
+    },
+    {
+      "id": "err/stops-before-later-command",
+      "methods": [
+        {
+          "type": "man_page",
+          "paths": {
+            "linux": "<man>/invalid_date"
+          }
+        },
+        {
+          "type": "command",
+          "command": [
+            "--version"
+          ]
+        }
+      ],
+      "responses": [
+        {
+          "stdout_hex": "746f6f6c20312e34",
+          "status": 0
+        }
+      ],
+      "expected": {
+        "result": null,
+        "raised": {
+          "class": "Date::Error",
+          "message": "invalid date"
+        },
+        "calls": [],
+        "unused_responses": 1
+      }
+    },
+    {
+      "id": "err/after-command-miss",
+      "methods": [
+        {
+          "type": "command",
+          "command": [
+            "--version"
+          ]
+        },
+        {
+          "type": "man_page",
+          "paths": {
+            "linux": "<man>/invalid_date"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "stdout_hex": "6e6f7065",
+          "status": 0
+        }
+      ],
+      "expected": {
+        "result": null,
+        "raised": {
+          "class": "Date::Error",
+          "message": "invalid date"
+        },
+        "calls": [
+          {
+            "executable": "/usr/bin/tool",
+            "args": [
+              "--version"
+            ],
+            "shell": "bash",
+            "timeout": 30,
+            "allow_failure": true
+          }
+        ],
+        "unused_responses": 0
+      }
+    },
+    {
+      "id": "err/first-man-error-stops-second-man",
+      "methods": [
+        {
+          "type": "man_page",
+          "paths": {
+            "linux": "<man>/range_error"
+          }
+        },
+        {
+          "type": "man_page",
+          "paths": {
+            "linux": "<man>/full_date"
+          }
+        }
+      ],
+      "responses": [],
+      "expected": {
+        "result": null,
+        "raised": {
+          "class": "RangeError",
+          "message": "integer 99999999999 too big to convert to 'int'"
+        },
+        "calls": [],
+        "unused_responses": 0
+      }
+    },
+    {
+      "id": "ok/command-hit-skips-bad-man",
+      "methods": [
+        {
+          "type": "command",
+          "command": [
+            "--version"
+          ]
+        },
+        {
+          "type": "man_page",
+          "paths": {
+            "linux": "<man>/invalid_date"
+          }
+        }
+      ],
+      "responses": [
+        {
+          "stdout_hex": "746f6f6c20312e34",
+          "status": 0
+        }
+      ],
+      "expected": {
+        "result": {
+          "value": "1.4",
+          "method_used": "command",
+          "available_methods": [
+            "command"
+          ]
+        },
+        "raised": null,
+        "calls": [
+          {
+            "executable": "/usr/bin/tool",
+            "args": [
+              "--version"
+            ],
+            "shell": "bash",
+            "timeout": 30,
+            "allow_failure": true
+          }
+        ],
+        "unused_responses": 0
+      }
+    },
+    {
+      "id": "ok/missing-then-no-dd-then-command",
+      "methods": [
+        {
+          "type": "man_page",
+          "paths": {
+            "linux": "<man>/missing"
+          }
+        },
+        {
+          "type": "man_page",
+          "paths": {
+            "linux": "<man>/no_dd"
+          }
+        },
+        {
+          "type": "command",
+          "command": [
+            "--version"
+          ]
+        }
+      ],
+      "responses": [
+        {
+          "stdout_hex": "746f6f6c20322e35",
+          "status": 0
+        }
+      ],
+      "expected": {
+        "result": {
+          "value": "2.5",
+          "method_used": "command",
+          "available_methods": [
+            "command"
+          ]
+        },
+        "raised": null,
+        "calls": [
+          {
+            "executable": "/usr/bin/tool",
+            "args": [
+              "--version"
+            ],
+            "shell": "bash",
+            "timeout": 30,
+            "allow_failure": true
+          }
+        ],
+        "unused_responses": 0
+      }
+    },
+    {
+      "id": "ok/no-dd-then-full-date",
+      "methods": [
+        {
+          "type": "man_page",
+          "paths": {
+            "linux": "<man>/no_dd"
+          }
+        },
+        {
+          "type": "man_page",
+          "paths": {
+            "linux": "<man>/full_date"
+          }
+        }
+      ],
+      "responses": [],
+      "expected": {
+        "result": {
+          "value": "2020-09-21",
+          "method_used": "man_page",
+          "available_methods": [
+            "man_page"
+          ]
+        },
+        "raised": null,
+        "calls": [],
+        "unused_responses": 0
+      }
+    }
+  ]
+}

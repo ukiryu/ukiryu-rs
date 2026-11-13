@@ -44,10 +44,13 @@ impl OutputFormat {
             "json" => Ok(OutputFormat::Json),
             "table" => Ok(OutputFormat::Table),
             "raw" => Ok(OutputFormat::Raw),
-            other => Err(RenderError::new(format!(
-                "Invalid format: {other}. Must be one of: {}",
-                OUTPUT_FORMATS.join(", ")
-            ))),
+            other => Err(RenderError::with_kind(
+                RenderErrorKind::InvalidFormat,
+                format!(
+                    "Invalid format: {other}. Must be one of: {}",
+                    OUTPUT_FORMATS.join(", ")
+                ),
+            )),
         }
     }
 
@@ -61,17 +64,40 @@ impl OutputFormat {
     }
 }
 
-/// A rendering failure (an invalid format name or a serialization error).
+/// What failed while rendering.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum RenderErrorKind {
+    /// An output format outside [`OUTPUT_FORMATS`] (the source's
+    /// `Thor::Error`).
+    InvalidFormat,
+    /// A value JSON cannot carry, as the json gem's
+    /// `JSON::GeneratorError` (`NaN not allowed in JSON`).
+    Generator,
+    /// The response could not be serialized.
+    Serialize,
+}
+
+/// A rendering failure.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct RenderError {
+    kind: RenderErrorKind,
     message: String,
 }
 
 impl RenderError {
     pub(crate) fn new(message: impl Into<String>) -> Self {
+        RenderError::with_kind(RenderErrorKind::Serialize, message)
+    }
+
+    pub(crate) fn with_kind(kind: RenderErrorKind, message: impl Into<String>) -> Self {
         RenderError {
+            kind,
             message: message.into(),
         }
+    }
+
+    pub fn kind(&self) -> RenderErrorKind {
+        self.kind
     }
 
     pub fn message(&self) -> &str {
