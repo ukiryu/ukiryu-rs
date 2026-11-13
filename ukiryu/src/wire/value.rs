@@ -325,12 +325,12 @@ fn parse_utc(text: &str) -> Option<Time> {
     if civil_from_days(days) != (y, mo, d) {
         return None;
     }
-    Some(Time {
-        seconds: days * 86_400 + h * 3600 + mi * 60 + s,
+    Some(Time::new(
+        days * 86_400 + h * 3600 + mi * 60 + s,
         nanos,
-        utc_offset: 0,
-        utc: true,
-    })
+        0,
+        true,
+    ))
 }
 
 fn decode_time(inner: &Json) -> Result<Time, String> {
@@ -364,12 +364,7 @@ fn decode_time(inner: &Json) -> Result<Time, String> {
             if utc && utc_offset != 0 {
                 return Err("a UTC $time has utc_offset 0".to_owned());
             }
-            Ok(Time {
-                seconds,
-                nanos,
-                utc_offset,
-                utc,
-            })
+            Ok(Time::new(seconds, nanos, utc_offset, utc))
         }
         _ => Err("$time takes a string or an object".to_owned()),
     }
