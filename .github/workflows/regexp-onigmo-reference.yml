@@ -93,7 +93,7 @@ jobs:
           ln -s ../wasm-runtime/node_modules tests/regexp-onigmo-wasm/node_modules
           node tests/regexp-onigmo-wasm/browser.mjs
       - name: Verify complete engine notices and negative controls
-        run: python3 scripts/artifact_licenses.py verify regexp-wasm-node regexp-wasm-web
+        run: python3 scripts/artifact_licenses.py verify --npm regexp-wasm-node regexp-wasm-web
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -4,6 +4,7 @@ import argparse
 from functools import lru_cache
 from pathlib import Path
 import subprocess
+import json
 
 
 SOURCE = 'ukiryu/vendor/onigmo'
@@ -23,6 +24,14 @@ def stage(folder):
     destination.mkdir(parents=True, exist_ok=False)
     for name in NAMES:
         (destination / name).write_bytes(source_bytes(name))
+    package = folder / 'package.json'
+    if package.exists():
+        metadata = json.loads(package.read_text(encoding='utf-8'))
+        # wasm-pack's explicit file list would otherwise exclude notices
+        # from npm even though they are present in the GHA artifact.
+        if 'files' in metadata and 'licenses' not in metadata['files']:
+            metadata['files'].append('licenses')
+            package.write_text(json.dumps(metadata, indent=2) + '\n', encoding='utf-8')
 
 
 def verify_contents(contents):
@@ -52,10 +61,22 @@ def verify(folder):
     print(f'{folder}: all {len(NAMES)} Onigmo notice files match source; two negatives rejected')
 
 
+def verify_npm(folder):
+    packed = json.loads(subprocess.check_output(
+        ['npm', 'pack', '--dry-run', '--json', '--ignore-scripts'], cwd=folder, text=True))
+    paths = {entry['path'] for entry in packed[0]['files']}
+    if not REQUIRED <= paths:
+        raise ValueError(f'npm excludes required Onigmo notices: {REQUIRED - paths}')
+    print(f'{folder}: npm dry run includes all {len(NAMES)} Onigmo notice files')
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('action', choices=('stage', 'verify'))
+    parser.add_argument('--npm', action='store_true', help='also audit npm pack file selection (GHA only)')
     parser.add_argument('directories', nargs='+', type=Path)
     args = parser.parse_args()
     for directory in args.directories:
         (stage if args.action == 'stage' else verify)(directory)
+        if args.npm:
+            verify_npm(directory)
