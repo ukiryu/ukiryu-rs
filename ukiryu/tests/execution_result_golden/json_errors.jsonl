@@ -1,0 +1,3 @@
+{"source":"lib/ukiryu/execution/result.rb #to_json (json 3.1.0)","timeout":"Infinity","timed_out":false,"expect":{"class":"JSON::GeneratorError","message":"Infinity not allowed in JSON"}}
+{"source":"lib/ukiryu/execution/result.rb #to_json (json 3.1.0)","timeout":"-Infinity","timed_out":true,"expect":{"class":"JSON::GeneratorError","message":"-Infinity not allowed in JSON"}}
+{"source":"lib/ukiryu/execution/result.rb #to_json (json 3.1.0)","timeout":"NaN","timed_out":false,"expect":{"class":"JSON::GeneratorError","message":"NaN not allowed in JSON"}}
