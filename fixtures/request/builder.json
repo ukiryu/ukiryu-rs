@@ -1,0 +1,82 @@
+{
+  "provenance": {
+    "source": "https://github.com/ukiryu/ukiryu",
+    "revision": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+    "methods": [
+      "Ukiryu::CliCommands::RunFileCommand#load_execution_request",
+      "Ukiryu::CliCommands::BaseCommand#stringify_keys",
+      "Ukiryu::CommandBuilder#build_args"
+    ],
+    "shell": "bash",
+    "platform": "linux",
+    "ruby": "4.0.1",
+    "psych": "5.3.1",
+    "gemfile_lock_sha256": "fc3b12f2ede259028b638d2f26c65ddf9506d142c20a8bf0c1b151741078b65e",
+    "ruby_platform": "x86_64-linux"
+  },
+  "command": {
+    "name": "convert",
+    "options": [
+      {
+        "name": "quality",
+        "cli": "-quality",
+        "type": "integer"
+      }
+    ],
+    "flags": [
+      {
+        "name": "strip",
+        "cli": "-strip"
+      }
+    ],
+    "arguments": [
+      {
+        "name": "inputs",
+        "variadic": true,
+        "position": "1"
+      },
+      {
+        "name": "output",
+        "position": "last"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "spec-valid",
+      "build_args": {
+        "ok": [
+          "spec/fixtures/input.png",
+          "spec/fixtures/output.jpg"
+        ]
+      }
+    },
+    {
+      "id": "builder-convert",
+      "build_args": {
+        "ok": [
+          "-quality",
+          "85",
+          "-strip",
+          "a.png",
+          "b.png",
+          "out.jpg"
+        ]
+      }
+    },
+    {
+      "id": "arguments-key-collision",
+      "build_args": {
+        "ok": [
+          "symbol"
+        ]
+      }
+    },
+    {
+      "id": "extra-top-level-fields",
+      "build_args": {
+        "ok": []
+      }
+    }
+  ]
+}

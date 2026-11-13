@@ -1,0 +1,7 @@
+tool: a
+command: b
+arguments:
+  1: int-key
+  true: bool-key
+  :sym: symbol-key
+  str: string-key
