@@ -10,6 +10,7 @@ pub mod executable;
 pub mod execution;
 pub mod execution_context;
 pub mod extractors;
+pub mod model_loading;
 pub mod models;
 pub mod options;
 pub mod render;
