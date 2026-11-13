@@ -6,7 +6,7 @@
 //! types ([`Value`]); errors carry the Ruby exception class and message
 //! ([`Error`]). Filesystem, local-time-zone and clock access go through
 //! [`Host`], so the pure data behaviour is separate from the environment;
-//! Ruby `Regexp` matching runs on a portable Onigmo-compatible engine
+//! Ruby `Regexp` matching runs on Ruby 4.0.1's own Onigmo engine
 //! ([`onig`]). Inputs that need Ruby behaviour this port does not reproduce
 //! fail with [`ErrorClass::Unsupported`] instead of a guessed answer.
 pub mod constraints;
