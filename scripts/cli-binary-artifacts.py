@@ -3,7 +3,9 @@
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path, PurePosixPath
+import platform
 import re
 import shutil
 import struct
@@ -86,6 +88,9 @@ def stage(directory, target):
             'core_commit': output('git', 'rev-parse', 'HEAD'),
             'crate_version': core['version'], 'target': target, 'binary': name,
             'profile': 'release', 'rust': output('rustc', '--version', '--verbose'),
+            'build_platform': platform.platform(), 'machine': platform.machine(),
+            'runner_image': os.environ.get('ImageOS'),
+            'runner_image_version': os.environ.get('ImageVersion'),
             'lock_sha256': digest(Path('Cargo.lock').read_bytes()),
             'yeptris_source': engine['source'],
             'engine_ref': (engine_root / 'ENGINE_REF').read_text().strip(),
