@@ -9,6 +9,7 @@
 # Usage: ruby capture_native_shells.rb OUT.json
 require 'json'
 require 'rbconfig'
+require 'tempfile'
 require 'ukiryu'
 
 E = Ukiryu::Executor
@@ -54,6 +55,13 @@ if WINDOWS
   rows << capture('cmd_exit_42', :cmd, 'cmd', ['/c', 'exit 42'], nil)
 end
 
+# What a child actually receives on stdin and writes on stdout, as bytes:
+# a Ruby child hex-dumps its binary stdin and writes CR LF itself.
+dump = ['-e', 'STDOUT.binmode; STDIN.binmode; print STDIN.read.unpack1(%q(H*)); print 13.chr, 10.chr']
+child_rows = []
+child_rows << capture('child_stdin_bytes', WINDOWS ? :cmd : :bash, RbConfig.ruby, dump, "a\nb\r\nc\x00")
+
+
 ps = WINDOWS ? 'powershell' : 'pwsh'
 
 # Diagnostics (not golden rows): the script the source builds and the
@@ -61,6 +69,11 @@ ps = WINDOWS ? 'powershell' : 'pwsh'
 require 'open3'
 require 'stringio'
 probes = []
+tf = Tempfile.new('ukiryu_probe')
+tf.write("a\nb\r\nc")
+tf.close
+probes << { 'tempfile_write_hex' => File.binread(tf.path).unpack1('H*') }
+tf.unlink
 [[echo[0], echo[1]], [fail_cmd[0], fail_cmd[1]]].each do |exe, args|
   saved_err = $stderr
   $stderr = StringIO.new
@@ -94,6 +107,7 @@ out = {
     'powershell_version' => version
   },
   'rows' => rows,
+  'child_rows' => child_rows,
   'probes' => probes
 }
 File.binwrite(ARGV.fetch(0), JSON.pretty_generate(out) + "\n")
