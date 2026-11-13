@@ -9,6 +9,9 @@
 //! - `author_data/cases.json` (validate, definitions, extract, lint), captured
 //!   by K22-CLI-AUTHOR from the same oracle.
 //!
+//! - `execute_data/cases.json` (exec, run-file, cache), captured by
+//!   K22-CLI-EXECUTE from the same oracle.
+//!
 //! Rows are split into three contracts and counted separately:
 //! - source rows: captured from exe/ukiryu and expected byte for byte (or with
 //!   the recorded comparison mode), apart from the recorded deviations below;
@@ -19,8 +22,11 @@
 //!   performs the handler's designed output, not source parity, and the owner
 //!   has not accepted them as #21/#22 success;
 //! - gated rows: paths whose component is not merged (Register.default,
-//!   `validate --executable`), which must fail with the gated status and never
-//!   print a success.
+//!   `validate --executable`, the execute rows the handlers gate), which must
+//!   fail with the gated status and never print a success;
+//! - terminal rows (`pty`): captured with a terminal on stdout. The test
+//!   spawns the binary over pipes, so they cannot run here; they are counted
+//!   and asserted by number, and the handler test `execute.rs` replays them.
 //!
 //! Recorded deviations (all decided outside this file):
 //! - the version line carries `ukiryu::VERSION` (D3), not the gem's 0.3.1;
@@ -526,6 +532,246 @@ fn author_target_trace_rows_through_the_binary_unqualified() {
     assert!(replayed >= 40, "only {replayed} target-trace rows replayed");
 }
 
+// ------------------------------------------------------------------ execute
+
+/// Execute rows the handlers gate (the handler test's `OPEN`): the binary
+/// must exit with the gated status and report it, never succeed.
+#[cfg(target_os = "linux")]
+const EXECUTE_GATED: [&str; 5] = [
+    "exec_register_no_command",
+    "exec_help_register",
+    "exec_register_unknown_param",
+    "runfile_execute",
+    "runfile_execute_json",
+];
+
+/// Recorded deviation: the YAML diagnostic is the Yeptris parser's, not
+/// libyaml's. The row must run, not match.
+#[cfg(target_os = "linux")]
+const EXECUTE_UNQUALIFIED: [&str; 1] = ["runfile_invalid_yaml"];
+
+/// The environment `capture/cli.rb` gives the Ruby CLI, plus the case's own
+/// variables (`null` removes one).
+#[cfg(target_os = "linux")]
+fn execute_env(root: &str, case_env: &Value) -> Vec<(String, String)> {
+    let mut vars: Vec<(String, Option<String>)> = vec![
+        ("HOME".into(), Some(format!("{root}/home"))),
+        ("XDG_DATA_HOME".into(), Some(format!("{root}/xdg"))),
+        ("XDG_DATA_DIRS".into(), Some(format!("{root}/sysdata"))),
+        ("PATH".into(), Some("/usr/bin:/bin".into())),
+        ("SHELL".into(), Some("/bin/bash".into())),
+        ("UKIRYU_REGISTER".into(), Some(format!("{root}/register"))),
+        ("TERM".into(), Some("dumb".into())),
+        ("TZ".into(), Some("UTC".into())),
+        ("LANG".into(), Some("C.UTF-8".into())),
+    ];
+    if let Some(map) = case_env.as_object() {
+        for (k, v) in map {
+            vars.retain(|(name, _)| name != k);
+            vars.push((k.clone(), v.as_str().map(str::to_owned)));
+        }
+    }
+    vars.into_iter()
+        .filter_map(|(k, v)| v.map(|v| (k, v)))
+        .collect()
+}
+
+/// Masks the values of timing fields, whose values differ per run.
+#[cfg(target_os = "linux")]
+fn mask_timing(text: &str) -> String {
+    const KEYS: [&str; 4] = [
+        "started_at",
+        "finished_at",
+        "duration_seconds",
+        "formatted_duration",
+    ];
+    text.split_inclusive('\n')
+        .map(|line| {
+            let trimmed = line.trim_start().trim_start_matches('"');
+            let timing = KEYS.iter().any(|k| {
+                trimmed.starts_with(&format!("{k}:")) || trimmed.starts_with(&format!("{k}\":"))
+            }) || line.starts_with("Duration: ");
+            match (timing, line.find(':')) {
+                (true, Some(i)) => format!("{}: <masked>\n", &line[..i]),
+                _ => line.to_owned(),
+            }
+        })
+        .collect()
+}
+
+#[cfg(target_os = "linux")]
+fn mask_timing_value(value: &mut Value) {
+    match value {
+        Value::Object(map) => {
+            for (k, v) in map.iter_mut() {
+                if matches!(
+                    k.as_str(),
+                    "started_at" | "finished_at" | "duration_seconds" | "formatted_duration"
+                ) {
+                    *v = Value::String("<masked>".into());
+                } else {
+                    mask_timing_value(v);
+                }
+            }
+        }
+        Value::Array(items) => items.iter_mut().for_each(mask_timing_value),
+        _ => {}
+    }
+}
+
+/// A YAML response document as loaded values (Psych's and the emitter's
+/// scalar styles differ; YAML responses are compared by value).
+#[cfg(target_os = "linux")]
+fn response_yaml(text: &str) -> Option<Value> {
+    if !text.starts_with("---") {
+        return None;
+    }
+    let unmasked = text.replace(": <masked>", ": '<masked>'");
+    let mut value: Value = ukiryu::from_yaml(&unmasked).ok()?;
+    mask_timing_value(&mut value);
+    Some(value)
+}
+
+#[cfg(target_os = "linux")]
+fn response_json(text: &str) -> Option<Value> {
+    let mut value: Value = serde_json::from_str(text).ok()?;
+    mask_timing_value(&mut value);
+    Some(value)
+}
+
+/// Equal stdout: bytes, except YAML responses (by value).
+#[cfg(target_os = "linux")]
+fn same_stdout(want: &str, got: &str) -> bool {
+    match (response_yaml(want), response_yaml(got)) {
+        (Some(a), Some(b)) => a == b,
+        _ => want == got,
+    }
+}
+
+/// Equal written file: bytes, except JSON (timing masked).
+#[cfg(target_os = "linux")]
+fn same_file(want: &Option<String>, got: &Option<String>) -> bool {
+    match (want, got) {
+        (Some(a), Some(b)) => match (response_json(a), response_json(b)) {
+            (Some(x), Some(y)) => x == y,
+            _ => a == b,
+        },
+        (a, b) => a == b,
+    }
+}
+
+/// Counts of replayed execute rows by contract.
+#[cfg(target_os = "linux")]
+#[derive(Default, Debug, PartialEq)]
+struct ExecuteCounts {
+    exact: usize,
+    gated: usize,
+    unqualified: usize,
+    terminal: usize,
+}
+
+#[cfg(target_os = "linux")]
+fn replay_execute() -> (ExecuteCounts, Vec<String>) {
+    let data: Value = serde_json::from_str(include_str!("execute_data/cases.json")).unwrap();
+    let fixture = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/execute_data/fixture");
+    let mut counts = ExecuteCounts::default();
+    let mut failures = Vec::new();
+    for case in data["cases"].as_array().unwrap() {
+        let id = case["id"].as_str().unwrap();
+        if case["pty"].as_bool().unwrap_or(false) {
+            counts.terminal += 1;
+            continue;
+        }
+        let root = scratch(&format!("execute-{id}"));
+        copy_tree(&fixture, &root, SystemTime::now());
+        for dir in ["home", "xdg", "sysdata"] {
+            std::fs::create_dir_all(root.join(dir)).unwrap();
+        }
+        let r = root.to_str().unwrap().to_owned();
+        let got = run(
+            &strings(&case["args"]),
+            &execute_env(&r, &case["env"]),
+            &root,
+            Some(case["stdin"].as_str().unwrap_or("")),
+        );
+        let stdout = mask_timing(&got.stdout.replace(&r, "{root}"));
+        let stderr = mask_timing(&got.stderr.replace(&r, "{root}"));
+        let files: Vec<(String, Option<String>)> = case["files"]
+            .as_object()
+            .map(|m| {
+                m.keys()
+                    .map(|name| (name.clone(), std::fs::read_to_string(root.join(name)).ok()))
+                    .collect()
+            })
+            .unwrap_or_default();
+        let _ = std::fs::remove_dir_all(&root);
+
+        if EXECUTE_GATED.contains(&id) {
+            if got.code == GATED_EXIT && stderr.contains("not available") {
+                counts.gated += 1;
+            } else {
+                failures.push(format!(
+                    "{id}: expected the gated status {GATED_EXIT}, got {} with stderr {stderr:?}",
+                    got.code
+                ));
+            }
+            continue;
+        }
+        if EXECUTE_UNQUALIFIED.contains(&id) {
+            if got.code == GATED_EXIT {
+                failures.push(format!("{id}: gated, but it must run"));
+            } else {
+                counts.unqualified += 1;
+            }
+            continue;
+        }
+        let want_stdout = mask_timing(case["stdout"].as_str().unwrap_or(""));
+        let want_stderr = mask_timing(case["stderr"].as_str().unwrap_or(""));
+        let want_files: Vec<(String, Option<String>)> = case["files"]
+            .as_object()
+            .map(|m| {
+                m.iter()
+                    .map(|(k, v)| (k.clone(), v.as_str().map(str::to_owned)))
+                    .collect()
+            })
+            .unwrap_or_default();
+        let files_match = want_files.len() == files.len()
+            && want_files
+                .iter()
+                .zip(&files)
+                .all(|((wn, wc), (gn, gc))| wn == gn && same_file(wc, gc));
+        if i64::from(got.code) == case["status"].as_i64().unwrap()
+            && stderr == want_stderr
+            && same_stdout(&want_stdout, &stdout)
+            && files_match
+        {
+            counts.exact += 1;
+        } else {
+            failures.push(format!(
+                "{id}: status {} (want {}), stdout {stdout:?} (want {want_stdout:?}), \
+                 stderr {stderr:?} (want {want_stderr:?}), files match {files_match}",
+                got.code, case["status"]
+            ));
+        }
+    }
+    (counts, failures)
+}
+
+/// The compiled binary replays the K22 execute captures for exec, run-file
+/// and cache. Gated rows must be gated (counted), terminal rows are counted
+/// (they need a pty), every other row must match the Ruby capture.
+#[cfg(target_os = "linux")]
+#[test]
+fn execute_cases_through_the_binary() {
+    let (counts, failures) = replay_execute();
+    eprintln!("execute rows through the binary: {counts:?}");
+    assert!(failures.is_empty(), "{}", failures.join("\n\n"));
+    assert_eq!(counts.gated, EXECUTE_GATED.len(), "{counts:?}");
+    assert_eq!(counts.unqualified, EXECUTE_UNQUALIFIED.len(), "{counts:?}");
+    assert_eq!(counts.terminal, 12, "{counts:?}");
+    assert_eq!(counts.exact, 79, "{counts:?}");
+}
+
 // ------------------------------------------------------------------ grammar
 
 fn simple(args: &[&str]) -> Output {
@@ -544,15 +790,12 @@ fn simple(args: &[&str]) -> Output {
 #[test]
 fn verbs_without_a_merged_handler_fail_gated() {
     for args in [
-        &["run-file", "request.yaml"][..],
-        &["exec", "ls"],
-        &["list"],
+        &["list"][..],
         &["info", "ls"],
         &["commands", "ls"],
         &["opts", "ls"],
         &["describe", "ls"],
         &["which", "ls"],
-        &["cache", "info"],
         &["resolve", "ls"],
         &["register"],
         &["config"],
