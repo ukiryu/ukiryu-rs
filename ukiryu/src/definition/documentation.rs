@@ -16,6 +16,14 @@
 //! whose last line is empty therefore ends in `"\n"`), and no Markdown or
 //! AsciiDoc escaping is applied to values. [`DocumentationGenerator::generate_to_file`]
 //! writes those bytes unchanged (no CRLF translation).
+//!
+//! Measured Ruby behavior (`definition/documentation/file_write_record.json`,
+//! Ruby 4.0.1 under the locked oracle Gemfile): on Linux `File.write` writes
+//! the same bytes; on Windows it writes every LF byte as CR LF and keeps CR
+//! bytes already in the text, so a value's embedded CR LF becomes CR CR LF.
+//! The port keeps the LF target on Windows; the two are compared canonically
+//! (only that measured line-terminator transform is allowed), not as Windows
+//! byte parity.
 use super::ruby_inspect_str;
 use std::cmp::Ordering;
 use std::fmt;
