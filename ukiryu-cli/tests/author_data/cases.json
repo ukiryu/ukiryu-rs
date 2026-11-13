@@ -1,0 +1,4236 @@
+{
+ "provenance": "Captured by handoffs/batch-04/K22-CLI-AUTHOR/capture/cli.rb from the pinned Ruby oracle ukiryu/ukiryu ab6df353c6dc2d7faf7817a86aafcafa82579896 (lib/ukiryu/cli.rb, cli_commands/{validate,lint,docs,definitions,extract}_command.rb) with thor 1.5.0, json-schema 6.2.1, lutaml-model 0.8.175. Remote schema download stubbed as unavailable. Target-trace rows (__target, __fileutils) remove the oracle defects listed in ORACLE_DEFECTS (capture/target.rb); uncaught exceptions of standalone rows are rendered as FriendlyCLI prints them under exe/ukiryu ('[Class] message', exit 1).",
+ "oracle": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+ "ruby": "4.0.1",
+ "fixed_mtime_unix": 1767323045,
+ "cases": [
+  {
+   "id": "validate_file_convert_text",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/convert.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Validating: defs/convert.yaml\n✓ Valid\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "validate_file_convert_json",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/convert.yaml",
+    "--format",
+    "json"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "{\"valid\":true,\"errors\":[],\"warnings\":[],\"schema_path\":null,\"error_count\":0,\"warning_count\":0}\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "validate_file_warnings_text",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/warnings.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Validating: defs/warnings.yaml\n✓ Valid with warnings\n\n  Warning: Tool name should contain only lowercase letters, numbers, hyphens, and underscores\n  Warning: Invalid schema version format: v1 (expected format: '1.0')\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "validate_file_warnings_json",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/warnings.yaml",
+    "--format",
+    "json"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "{\"valid\":true,\"errors\":[],\"warnings\":[\"Tool name should contain only lowercase letters, numbers, hyphens, and underscores\",\"Invalid schema version format: v1 (expected format: '1.0')\"],\"schema_path\":null,\"error_count\":0,\"warning_count\":2}\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "validate_file_bad_name_text",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/bad_name.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Validating: defs/bad_name.yaml\n✗ Invalid\n\n  Error: Tool name must not contain whitespace\n\n  Warning: Tool name should contain only lowercase letters, numbers, hyphens, and underscores\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "validate_file_bad_name_json",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/bad_name.yaml",
+    "--format",
+    "json"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "{\"valid\":false,\"errors\":[\"Tool name must not contain whitespace\"],\"warnings\":[\"Tool name should contain only lowercase letters, numbers, hyphens, and underscores\"],\"schema_path\":null,\"error_count\":1,\"warning_count\":1}\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "validate_file_invalid_yaml_text",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/invalid_yaml.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "prefix",
+   "expect": {
+    "stdout": "Validating: defs/invalid_yaml.yaml\n✗ Invalid\n\n  Error: Invalid YAML: (<unknown>): did not find expected ',' or ']' while parsing a flow sequence at line 1 column 7\n",
+    "stderr": "",
+    "exit": 1
+   },
+   "prefix": "Invalid YAML: "
+  },
+  {
+   "id": "validate_file_invalid_yaml_json",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/invalid_yaml.yaml",
+    "--format",
+    "json"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "prefix",
+   "expect": {
+    "stdout": "{\"valid\":false,\"errors\":[\"Invalid YAML: (<unknown>): did not find expected ',' or ']' while parsing a flow sequence at line 1 column 7\"],\"warnings\":[],\"schema_path\":null,\"error_count\":1,\"warning_count\":0}\n",
+    "stderr": "",
+    "exit": 1
+   },
+   "prefix": "Invalid YAML: "
+  },
+  {
+   "id": "validate_file_list_text",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/list.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Validating: defs/list.yaml\n✗ Invalid\n\n  Error: Definition must be a hash/object\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "validate_file_list_json",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/list.yaml",
+    "--format",
+    "json"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "{\"valid\":false,\"errors\":[\"Definition must be a hash/object\"],\"warnings\":[],\"schema_path\":null,\"error_count\":1,\"warning_count\":0}\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "validate_file_digit_text",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/digit.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Validating: defs/digit.yaml\n✓ Valid with warnings\n\n  Warning: Tool name starting with number may cause issues\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "validate_file_digit_json",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/digit.yaml",
+    "--format",
+    "json"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "{\"valid\":true,\"errors\":[],\"warnings\":[\"Tool name starting with number may cause issues\"],\"schema_path\":null,\"error_count\":0,\"warning_count\":1}\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "validate_file_minimal_text",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/minimal.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Validating: defs/minimal.yaml\n✓ Valid\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "validate_file_minimal_json",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/minimal.yaml",
+    "--format",
+    "json"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "{\"valid\":true,\"errors\":[],\"warnings\":[],\"schema_path\":null,\"error_count\":0,\"warning_count\":0}\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "validate_file_jq_text",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/jq.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Validating: defs/jq.yaml\n✓ Valid\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "validate_file_jq_json",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/jq.yaml",
+    "--format",
+    "json"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "{\"valid\":true,\"errors\":[],\"warnings\":[],\"schema_path\":null,\"error_count\":0,\"warning_count\":0}\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "validate_file_warnings_strict",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/warnings.yaml",
+    "--strict"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Validating: defs/warnings.yaml\n✓ Valid with warnings\n\n  Warning: Tool name should contain only lowercase letters, numbers, hyphens, and underscores\n  Warning: Invalid schema version format: v1 (expected format: '1.0')\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "validate_file_warnings_strict_json",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/warnings.yaml",
+    "--strict",
+    "--format",
+    "json"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "{\"valid\":true,\"errors\":[],\"warnings\":[\"Tool name should contain only lowercase letters, numbers, hyphens, and underscores\",\"Invalid schema version format: v1 (expected format: '1.0')\"],\"schema_path\":null,\"error_count\":0,\"warning_count\":2}\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "validate_file_convert_strict",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/convert.yaml",
+    "--strict"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Validating: defs/convert.yaml\n✓ Valid\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "validate_file_missing_text",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/missing.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Validating: defs/missing.yaml\n✗ Invalid\n\n  Error: File not found: defs/missing.yaml\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "validate_file_missing_json",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/missing.yaml",
+    "--format",
+    "json"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "{\"valid\":false,\"errors\":[\"File not found: defs/missing.yaml\"],\"warnings\":[],\"schema_path\":null,\"error_count\":1,\"warning_count\":0}\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "validate_file_directory",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "[Errno::EISDIR] Is a directory @ io_fread - defs\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "validate_file_minimal_schema_json_text",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/minimal.yaml",
+    "--schema",
+    "schema/tool.schema.json"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Validating: defs/minimal.yaml\n✗ Invalid\n\n  Error: The property '#/' did not contain a required property of 'version' in schema f2fff845-9115-546d-bf9a-8b91156eeb00 (at #/)\n  Error: The property '#/' did not contain a required property of 'profiles' in schema f2fff845-9115-546d-bf9a-8b91156eeb00 (at #/)\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "validate_file_minimal_schema_json_json",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/minimal.yaml",
+    "--schema",
+    "schema/tool.schema.json",
+    "--format",
+    "json"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "{\"valid\":false,\"errors\":[\"The property '#/' did not contain a required property of 'version' in schema f2fff845-9115-546d-bf9a-8b91156eeb00 (at #/)\",\"The property '#/' did not contain a required property of 'profiles' in schema f2fff845-9115-546d-bf9a-8b91156eeb00 (at #/)\"],\"warnings\":[],\"schema_path\":null,\"error_count\":2,\"warning_count\":0}\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "validate_file_jq_schema_json",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/jq.yaml",
+    "--schema",
+    "schema/tool.schema.json"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Validating: defs/jq.yaml\n✗ Invalid\n\n  Error: The property '#/' did not contain a required property of 'profiles' in schema f2fff845-9115-546d-bf9a-8b91156eeb00 (at #/)\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "validate_file_convert_schema_yaml",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/convert.yaml",
+    "--schema",
+    "schema/tool.schema.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Validating: defs/convert.yaml\n✓ Valid\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "validate_file_warnings_schema_yaml",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/warnings.yaml",
+    "--schema",
+    "schema/tool.schema.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Validating: defs/warnings.yaml\n✗ Invalid\n\n  Error: The property '#/' did not contain a required property of 'description' in schema 98f79506-dd64-50ee-8e7f-7e4ac8b75a23 (at #/)\n\n  Warning: Tool name should contain only lowercase letters, numbers, hyphens, and underscores\n  Warning: Invalid schema version format: v1 (expected format: '1.0')\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "validate_file_minimal_schema_missing",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/minimal.yaml",
+    "--schema",
+    "schema/none.json"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Validating: defs/minimal.yaml\n✓ Valid\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "validate_file_minimal_schema_env",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/minimal.yaml"
+   ],
+   "env": {
+    "UKIRYU_SCHEMA_PATH": "{root}/schema/tool.schema.json"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Validating: defs/minimal.yaml\n✗ Invalid\n\n  Error: The property '#/' did not contain a required property of 'version' in schema f2fff845-9115-546d-bf9a-8b91156eeb00 (at #/)\n  Error: The property '#/' did not contain a required property of 'profiles' in schema f2fff845-9115-546d-bf9a-8b91156eeb00 (at #/)\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "validate_string_ok_text",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "string",
+    "name: x"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Validating: <string>\n✓ Valid\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "validate_string_ok_json",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "string",
+    "name: x",
+    "--format",
+    "json"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "{\"valid\":true,\"errors\":[],\"warnings\":[],\"schema_path\":null,\"error_count\":0,\"warning_count\":0}\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "validate_string_ws_text",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "string",
+    "name: a b"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Validating: <string>\n✗ Invalid\n\n  Error: Tool name must not contain whitespace\n\n  Warning: Tool name should contain only lowercase letters, numbers, hyphens, and underscores\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "validate_string_ws_json",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "string",
+    "name: a b",
+    "--format",
+    "json"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "{\"valid\":false,\"errors\":[\"Tool name must not contain whitespace\"],\"warnings\":[\"Tool name should contain only lowercase letters, numbers, hyphens, and underscores\"],\"schema_path\":null,\"error_count\":1,\"warning_count\":1}\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "validate_string_upper_strict",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "string",
+    "name: Abc",
+    "--strict"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Validating: <string>\n✓ Valid with warnings\n\n  Warning: Tool name should contain only lowercase letters, numbers, hyphens, and underscores\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "validate_string_scalar",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "string",
+    "hello"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Validating: <string>\n✗ Invalid\n\n  Error: Definition must be a hash/object\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "validate_string_badyaml_text",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "string",
+    "a: [1\n"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "prefix",
+   "expect": {
+    "stdout": "Validating: <string>\n✗ Invalid\n\n  Error: Invalid YAML: (<unknown>): did not find expected ',' or ']' while parsing a flow sequence at line 1 column 4\n",
+    "stderr": "",
+    "exit": 1
+   },
+   "prefix": "Invalid YAML: "
+  },
+  {
+   "id": "validate_string_badyaml_json",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "string",
+    "a: [1\n",
+    "--format",
+    "json"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "prefix",
+   "expect": {
+    "stdout": "{\"valid\":false,\"errors\":[\"Invalid YAML: (<unknown>): did not find expected ',' or ']' while parsing a flow sequence at line 1 column 4\"],\"warnings\":[],\"schema_path\":null,\"error_count\":1,\"warning_count\":0}\n",
+    "stderr": "",
+    "exit": 1
+   },
+   "prefix": "Invalid YAML: "
+  },
+  {
+   "id": "validate_string_schema_json",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "string",
+    "name: 3\n",
+    "--schema",
+    "schema/tool.schema.json"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Validating: <string>\n✗ Invalid\n\n  Error: The property '#/' did not contain a required property of 'version' in schema f2fff845-9115-546d-bf9a-8b91156eeb00 (at #/)\n  Error: The property '#/' did not contain a required property of 'profiles' in schema f2fff845-9115-546d-bf9a-8b91156eeb00 (at #/)\n  Error: The property '#/name' of type integer did not match the following type: string in schema f2fff845-9115-546d-bf9a-8b91156eeb00 (at #/name)\n\n  Warning: Tool name starting with number may cause issues\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "validate_all_text",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "all"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Validating 2 tool definitions...\n\n  convert/convert.yaml                ✓ VALID\n  warnings/warnings.yaml              ✗ INVALID\n    - Tool name must not contain whitespace\n    ⚠ Tool name should contain only lowercase letters, numbers, hyphens, and underscores\n\nValidation Summary:\n  Total:   2\n  Valid:   1\n  Invalid: 1\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "validate_all_json",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "all",
+    "--format",
+    "json"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Validating 2 tool definitions...\n\n  convert/convert.yaml                ✓ VALID\n  warnings/warnings.yaml              ✗ INVALID\n    - Tool name must not contain whitespace\n    ⚠ Tool name should contain only lowercase letters, numbers, hyphens, and underscores\n\nValidation Summary:\n  Total:   2\n  Valid:   1\n  Invalid: 1\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "validate_all_register_option_ignored",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "all",
+    "--register",
+    "defs"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Validating 2 tool definitions...\n\n  convert/convert.yaml                ✓ VALID\n  warnings/warnings.yaml              ✗ INVALID\n    - Tool name must not contain whitespace\n    ⚠ Tool name should contain only lowercase letters, numbers, hyphens, and underscores\n\nValidation Summary:\n  Total:   2\n  Valid:   1\n  Invalid: 1\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "validate_all_no_tools",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "all"
+   ],
+   "env": {
+    "UKIRYU_REGISTER": "{root}/defs"
+   },
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "Register.default discovery (auto-clone) belongs to the register owner",
+   "expect": {
+    "stdout": "",
+    "stderr": "[Errno::ENOENT] No such file or directory - git\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "validate_format_yaml",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/convert.yaml",
+    "--format",
+    "yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "Expected '--format' to be one of text, json; got yaml\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "validate_executable_gated",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/convert.yaml",
+    "--executable"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "gated",
+   "expect": {
+    "stdout": "Validating: defs/convert.yaml\n✓ Valid\n\nTesting executable...\n✗ Tool not found: Tool not found: convert\n",
+    "stderr": "",
+    "exit": 1
+   },
+   "partial_stdout": "Validating: defs/convert.yaml\n✓ Valid\n"
+  },
+  {
+   "id": "validate_file_pty",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/warnings.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "tty",
+   "expect": {
+    "stdout": "",
+    "stderr": "",
+    "exit": 0
+   },
+   "tty_output": "\u001b[36mValidating: defs/warnings.yaml\u001b[0m\r\n\u001b[33m✓ Valid with warnings\u001b[0m\r\n\u001b[0m\u001b[0m\r\n\u001b[33m  Warning: Tool name should contain only lowercase letters, numbers, hyphens, and underscores\u001b[0m\r\n\u001b[33m  Warning: Invalid schema version format: v1 (expected format: '1.0')\u001b[0m\r\n"
+  },
+  {
+   "id": "validate_bad_name_pty",
+   "runner": "exe",
+   "args": [
+    "validate",
+    "file",
+    "defs/bad_name.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "tty",
+   "expect": {
+    "stdout": "",
+    "stderr": "",
+    "exit": 1
+   },
+   "tty_output": "\u001b[36mValidating: defs/bad_name.yaml\u001b[0m\r\n\u001b[31m✗ Invalid\u001b[0m\r\n\u001b[0m\u001b[0m\r\n\u001b[31m  Error: Tool name must not contain whitespace\u001b[0m\r\n\u001b[0m\u001b[0m\r\n\u001b[33m  Warning: Tool name should contain only lowercase letters, numbers, hyphens, and underscores\u001b[0m\r\n"
+  },
+  {
+   "id": "lint_file_convert_text",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/convert.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::LintCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::ListCommand\n               Ukiryu::CliCommands::RunCommand\n               Ukiryu::CliCommands::InfoCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_convert_json",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/convert.yaml",
+    "--format",
+    "json"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::LintCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::ListCommand\n               Ukiryu::CliCommands::RunCommand\n               Ukiryu::CliCommands::InfoCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_warnings_text",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/warnings.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::LintCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::ListCommand\n               Ukiryu::CliCommands::RunCommand\n               Ukiryu::CliCommands::InfoCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_warnings_json",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/warnings.yaml",
+    "--format",
+    "json"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::LintCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::ListCommand\n               Ukiryu::CliCommands::RunCommand\n               Ukiryu::CliCommands::InfoCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_bad_name_text",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/bad_name.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::LintCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::ListCommand\n               Ukiryu::CliCommands::RunCommand\n               Ukiryu::CliCommands::InfoCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_bad_name_json",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/bad_name.yaml",
+    "--format",
+    "json"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::LintCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::ListCommand\n               Ukiryu::CliCommands::RunCommand\n               Ukiryu::CliCommands::InfoCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_invalid_yaml_text",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/invalid_yaml.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::LintCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::ListCommand\n               Ukiryu::CliCommands::RunCommand\n               Ukiryu::CliCommands::InfoCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_invalid_yaml_json",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/invalid_yaml.yaml",
+    "--format",
+    "json"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::LintCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::ListCommand\n               Ukiryu::CliCommands::RunCommand\n               Ukiryu::CliCommands::InfoCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_list_text",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/list.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::LintCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::ListCommand\n               Ukiryu::CliCommands::RunCommand\n               Ukiryu::CliCommands::InfoCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_list_json",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/list.yaml",
+    "--format",
+    "json"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::LintCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::ListCommand\n               Ukiryu::CliCommands::RunCommand\n               Ukiryu::CliCommands::InfoCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_digit_text",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/digit.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::LintCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::ListCommand\n               Ukiryu::CliCommands::RunCommand\n               Ukiryu::CliCommands::InfoCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_digit_json",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/digit.yaml",
+    "--format",
+    "json"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::LintCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::ListCommand\n               Ukiryu::CliCommands::RunCommand\n               Ukiryu::CliCommands::InfoCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_minimal_text",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/minimal.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::LintCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::ListCommand\n               Ukiryu::CliCommands::RunCommand\n               Ukiryu::CliCommands::InfoCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_minimal_json",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/minimal.yaml",
+    "--format",
+    "json"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::LintCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::ListCommand\n               Ukiryu::CliCommands::RunCommand\n               Ukiryu::CliCommands::InfoCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_jq_text",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/jq.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::LintCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::ListCommand\n               Ukiryu::CliCommands::RunCommand\n               Ukiryu::CliCommands::InfoCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_jq_json",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/jq.yaml",
+    "--format",
+    "json"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::LintCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::ListCommand\n               Ukiryu::CliCommands::RunCommand\n               Ukiryu::CliCommands::InfoCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_missing_text",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/missing.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::LintCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::ListCommand\n               Ukiryu::CliCommands::RunCommand\n               Ukiryu::CliCommands::InfoCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_directory",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::LintCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::ListCommand\n               Ukiryu::CliCommands::RunCommand\n               Ukiryu::CliCommands::InfoCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_severity_ignored",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/warnings.yaml",
+    "--severity",
+    "error"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::LintCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::ListCommand\n               Ukiryu::CliCommands::RunCommand\n               Ukiryu::CliCommands::InfoCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_format_yaml",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/convert.yaml",
+    "--format",
+    "yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::LintCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::ListCommand\n               Ukiryu::CliCommands::RunCommand\n               Ukiryu::CliCommands::InfoCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_rules",
+   "runner": "lint",
+   "args": [
+    "rules"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::LintCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::ListCommand\n               Ukiryu::CliCommands::RunCommand\n               Ukiryu::CliCommands::InfoCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_rules_pty",
+   "runner": "lint",
+   "args": [
+    "rules"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_pty",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/warnings.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_all_register",
+   "runner": "lint",
+   "args": [
+    "all",
+    "--register",
+    "register"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::LintCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::ListCommand\n               Ukiryu::CliCommands::RunCommand\n               Ukiryu::CliCommands::InfoCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_all_default_register",
+   "runner": "lint",
+   "args": [
+    "all"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::LintCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::ListCommand\n               Ukiryu::CliCommands::RunCommand\n               Ukiryu::CliCommands::InfoCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_all_empty_tools",
+   "runner": "lint",
+   "args": [
+    "all",
+    "--register",
+    "emptyreg"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::LintCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::ListCommand\n               Ukiryu::CliCommands::RunCommand\n               Ukiryu::CliCommands::InfoCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_all_missing_register",
+   "runner": "lint",
+   "args": [
+    "all",
+    "--register",
+    "nowhere"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::LintCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::ListCommand\n               Ukiryu::CliCommands::RunCommand\n               Ukiryu::CliCommands::InfoCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_all_no_tools_dir",
+   "runner": "lint",
+   "args": [
+    "all",
+    "--register",
+    "defs"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::LintCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::ListCommand\n               Ukiryu::CliCommands::RunCommand\n               Ukiryu::CliCommands::InfoCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_not_registered_in_exe",
+   "runner": "exe",
+   "args": [
+    "lint",
+    "file",
+    "defs/convert.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "lint/docs are not registered in cli.rb; root owns verb wiring",
+   "expect": {
+    "stdout": "",
+    "stderr": "Could not find command \"lint\".\nDid you mean?  \"list\"\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_generate_convert_markdown",
+   "runner": "docs",
+   "args": [
+    "generate",
+    "convert",
+    "--register",
+    "register"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::DocsCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::OptsCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_generate_convert_md",
+   "runner": "docs",
+   "args": [
+    "generate",
+    "convert",
+    "--register",
+    "register",
+    "--format",
+    "md"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::DocsCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::OptsCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_generate_convert_asciidoc",
+   "runner": "docs",
+   "args": [
+    "generate",
+    "convert",
+    "--register",
+    "register",
+    "--format",
+    "asciidoc"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::DocsCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::OptsCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_generate_convert_adoc",
+   "runner": "docs",
+   "args": [
+    "generate",
+    "convert",
+    "--register",
+    "register",
+    "--format",
+    "adoc"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::DocsCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::OptsCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_generate_convert_html",
+   "runner": "docs",
+   "args": [
+    "generate",
+    "convert",
+    "--register",
+    "register",
+    "--format",
+    "html"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::DocsCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::OptsCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_generate_convert_output",
+   "runner": "docs",
+   "args": [
+    "generate",
+    "convert",
+    "--register",
+    "register",
+    "--output",
+    "out.md"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::DocsCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::OptsCommand\n",
+    "exit": 1,
+    "files": []
+   }
+  },
+  {
+   "id": "docs_generate_jq",
+   "runner": "docs",
+   "args": [
+    "generate",
+    "jq",
+    "--register",
+    "register"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::DocsCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::OptsCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_generate_warnings",
+   "runner": "docs",
+   "args": [
+    "generate",
+    "warnings",
+    "--register",
+    "register"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::DocsCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::OptsCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_generate_missing",
+   "runner": "docs",
+   "args": [
+    "generate",
+    "nothere",
+    "--register",
+    "register"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::DocsCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::OptsCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_generate_default_register",
+   "runner": "docs",
+   "args": [
+    "generate",
+    "convert"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::DocsCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::OptsCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_generate_all",
+   "runner": "docs",
+   "args": [
+    "generate-all",
+    "--register",
+    "register",
+    "--output-dir",
+    "outdocs"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::DocsCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::OptsCommand\n",
+    "exit": 1,
+    "files": []
+   }
+  },
+  {
+   "id": "docs_generate_all_adoc",
+   "runner": "docs",
+   "args": [
+    "generate-all",
+    "--register",
+    "register",
+    "--output-dir",
+    "outdocs",
+    "--format",
+    "adoc"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::DocsCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::OptsCommand\n",
+    "exit": 1,
+    "files": []
+   }
+  },
+  {
+   "id": "docs_generate_all_no_tools",
+   "runner": "docs",
+   "args": [
+    "generate-all",
+    "--register",
+    "defs",
+    "--output-dir",
+    "outdocs"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::DocsCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::OptsCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_serve",
+   "runner": "docs",
+   "args": [
+    "serve"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::DocsCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::OptsCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_serve_port",
+   "runner": "docs",
+   "args": [
+    "serve",
+    "--port",
+    "9000"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "-e:1:in '<main>': uninitialized constant Ukiryu::CliCommands::DocsCommand (NameError)\nDid you mean?  Ukiryu::CliCommands::OptsCommand\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_serve_pty",
+   "runner": "docs",
+   "args": [
+    "serve"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_not_registered_in_exe",
+   "runner": "exe",
+   "args": [
+    "docs",
+    "generate",
+    "convert"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "lint/docs are not registered in cli.rb; root owns verb wiring",
+   "expect": {
+    "stdout": "",
+    "stderr": "Could not find command \"docs\".\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "definitions_default",
+   "runner": "exe",
+   "args": [
+    "definitions"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "lines",
+   "expect": {
+    "stdout": "gzip: 1.0 [user]\nconvert: 2.1, 1.9 [user]\nFancy-Tool: 1.0 [user]\n\nLegend: * = highest priority (will be used by default)\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "definitions_list",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "list"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "lines",
+   "expect": {
+    "stdout": "gzip: 1.0 [user]\nconvert: 2.1, 1.9 [user]\nFancy-Tool: 1.0 [user]\n\nLegend: * = highest priority (will be used by default)\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "definitions_list_verbose",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "list",
+    "-v"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "lines",
+   "expect": {
+    "stdout": "gzip:\n  * 1.0 (user)\n    Path: {root}/xdg/ukiryu/definitions/gzip/1.0.yaml\n\nconvert:\n  * 2.1 (user)\n    Path: {root}/xdg/ukiryu/definitions/convert/2.1.yaml\n    1.9 (user)\n    Path: {root}/xdg/ukiryu/definitions/convert/1.9.yaml\n\nFancy-Tool:\n  * 1.0 (user)\n    Path: {root}/xdg/ukiryu/definitions/fancy-1.0.yaml\n\n\nLegend: * = highest priority (will be used by default)\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "definitions_list_empty",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "list"
+   ],
+   "env": {
+    "XDG_DATA_HOME": "{root}/empty"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "No definitions found.\n\nSearch paths:\n  - {root}/empty/ukiryu/definitions\n  - {root}/sysdata/ukiryu/definitions\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "definitions_path",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "path"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Definition search paths (in priority order):\n\n(1) [Highest Priority] ✓ {root}/xdg/ukiryu/definitions\n(2) ✗ {root}/sysdata/ukiryu/definitions\n\nUser directory: {root}/xdg/ukiryu/definitions\nXDG_DATA_HOME: {root}/xdg\nXDG_DATA_DIRS: {root}/sysdata\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "definitions_path_bundled",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "path"
+   ],
+   "env": {
+    "PATH": "{root}/tooldir/bin"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Definition search paths (in priority order):\n\n(1) [Highest Priority] ✓ {root}/xdg/ukiryu/definitions\n(2) ✓ {root}/tooldir/share/ukiryu\n(3) ✗ {root}/sysdata/ukiryu/definitions\n\nUser directory: {root}/xdg/ukiryu/definitions\nXDG_DATA_HOME: {root}/xdg\nXDG_DATA_DIRS: {root}/sysdata\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "definitions_list_bundled",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "list",
+    "-v"
+   ],
+   "env": {
+    "PATH": "{root}/tooldir/bin"
+   },
+   "stdin": null,
+   "mode": "lines",
+   "expect": {
+    "stdout": "gzip:\n  * 1.0 (user)\n    Path: {root}/xdg/ukiryu/definitions/gzip/1.0.yaml\n\nconvert:\n  * 2.1 (user)\n    Path: {root}/xdg/ukiryu/definitions/convert/2.1.yaml\n    1.9 (user)\n    Path: {root}/xdg/ukiryu/definitions/convert/1.9.yaml\n\nFancy-Tool:\n  * 1.0 (user)\n    Path: {root}/xdg/ukiryu/definitions/fancy-1.0.yaml\n\n7zip:\n  * 9.20 (bundled)\n    Path: {root}/tooldir/share/ukiryu/zip/9.20.yaml\n\n\nLegend: * = highest priority (will be used by default)\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "definitions_info_convert",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "info",
+    "convert"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Tool: convert\nVersion: 2.1\nSource: user\nPath: {root}/xdg/ukiryu/definitions/convert/2.1.yaml\nExists: Yes\nModified: 2026-01-02 03:04:05 +0000\n\nAvailable versions:\n  * 2.1 (user) [default]\n    1.9 (user)\n\nValidation: ✓ Valid\nDisplay Name: Convert\nHomepage: https://example.org/convert\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "definitions_info_convert_version",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "info",
+    "convert",
+    "-v",
+    "1.9"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Tool: convert\nVersion: 1.9\nSource: user\nPath: {root}/xdg/ukiryu/definitions/convert/1.9.yaml\nExists: Yes\nModified: 2026-01-02 03:04:05 +0000\n\nAvailable versions:\n    2.1 (user) [default]\n  * 1.9 (user)\n\nValidation: ✓ Valid\nDisplay Name: Convert\nHomepage: https://example.org/convert\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "definitions_info_convert_bad_version",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "info",
+    "convert",
+    "-v",
+    "9"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "Error: Version '9' not found for tool 'convert'\nAvailable versions: 2.1, 1.9\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "definitions_info_missing",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "info",
+    "nothere"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "Error: No definitions found for tool 'nothere'\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "definitions_info_gzip",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "info",
+    "gzip"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Tool: gzip\nVersion: 1.0\nSource: user\nPath: {root}/xdg/ukiryu/definitions/gzip/1.0.yaml\nExists: Yes\nModified: 2026-01-02 03:04:05 +0000\n\nValidation: ✗ Invalid\nError: Profile validation failed:\n  - Missing 'profiles' field or profiles is empty\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "definitions_info_fancy",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "info",
+    "Fancy-Tool"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Tool: Fancy-Tool\nVersion: 1.0\nSource: user\nPath: {root}/xdg/ukiryu/definitions/fancy-1.0.yaml\nExists: Yes\nModified: 2026-01-02 03:04:05 +0000\n\nValidation: ✗ Invalid\nError: Profile validation failed:\n  - Invalid ukiryu_schema format: v1\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "definitions_add_digit",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "add",
+    "defs/digit.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "exe/ukiryu never loads fileutils; see the __fileutils row",
+   "expect": {
+    "stdout": "",
+    "stderr": "[NameError] uninitialized constant Ukiryu::CliCommands::DefinitionsCommand::FileUtils\n",
+    "exit": 1,
+    "files": [
+     "{root}/xdg/ukiryu/definitions/convert/1.9.yaml",
+     "{root}/xdg/ukiryu/definitions/convert/2.1.yaml",
+     "{root}/xdg/ukiryu/definitions/fancy-1.0.yaml",
+     "{root}/xdg/ukiryu/definitions/gzip/1.0.yaml"
+    ]
+   }
+  },
+  {
+   "id": "definitions_add_convert_exists",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "add",
+    "defs/convert.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "exe/ukiryu never loads fileutils; see the __fileutils row",
+   "expect": {
+    "stdout": "",
+    "stderr": "[NameError] uninitialized constant Ukiryu::CliCommands::DefinitionsCommand::FileUtils\n",
+    "exit": 1,
+    "files": [
+     "{root}/xdg/ukiryu/definitions/convert/1.9.yaml",
+     "{root}/xdg/ukiryu/definitions/convert/2.1.yaml",
+     "{root}/xdg/ukiryu/definitions/fancy-1.0.yaml",
+     "{root}/xdg/ukiryu/definitions/gzip/1.0.yaml"
+    ]
+   }
+  },
+  {
+   "id": "definitions_add_named",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "add",
+    "defs/convert.yaml",
+    "-n",
+    "mytool",
+    "-V",
+    "3"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "exe/ukiryu never loads fileutils; see the __fileutils row",
+   "expect": {
+    "stdout": "",
+    "stderr": "[NameError] uninitialized constant Ukiryu::CliCommands::DefinitionsCommand::FileUtils\n",
+    "exit": 1,
+    "files": [
+     "{root}/xdg/ukiryu/definitions/convert/1.9.yaml",
+     "{root}/xdg/ukiryu/definitions/convert/2.1.yaml",
+     "{root}/xdg/ukiryu/definitions/fancy-1.0.yaml",
+     "{root}/xdg/ukiryu/definitions/gzip/1.0.yaml"
+    ]
+   }
+  },
+  {
+   "id": "definitions_add_missing",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "add",
+    "defs/missing.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "Error: Source file not found: {root}/defs/missing.yaml\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "definitions_add_minimal",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "add",
+    "defs/minimal.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "Error: Failed to load definition: Profile validation failed:\n  - Missing 'version' field\n  - Missing 'profiles' field or profiles is empty\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "definitions_add_invalid_yaml",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "add",
+    "defs/invalid_yaml.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "prefix",
+   "expect": {
+    "stdout": "",
+    "stderr": "Error: Failed to load definition: Invalid YAML format in file:file:6e8e27b186e932ebe99c02ccebb28c9a7479d085c1fa74741ae3aec35d77b721:2026-01-02 03:04:05 +0000: input format is invalid, try to pass correct `yaml` format \n(<unknown>): unexpected parser state at line 2 column 8\n\n",
+    "exit": 1
+   },
+   "prefix": "Invalid YAML format in file:"
+  },
+  {
+   "id": "definitions_add_list",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "add",
+    "defs/list.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "prefix",
+   "expect": {
+    "stdout": "",
+    "stderr": "Error: Failed to load definition: Invalid YAML format in file:file:1512aeda03bb900075f56e118e3959765626edfece4c018d7dc99f07f433ad55:2026-01-02 03:04:05 +0000: input format is invalid, try to pass correct `yaml` format \nundefined method 'key?' for an instance of String\n\n",
+    "exit": 1
+   },
+   "prefix": "Invalid YAML format in file:"
+  },
+  {
+   "id": "definitions_add_jq",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "add",
+    "defs/jq.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "Error: Failed to load definition: Profile validation failed:\n  - Missing 'profiles' field or profiles is empty\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "definitions_add_bad_name",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "add",
+    "defs/bad_name.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "exe/ukiryu never loads fileutils; see the __fileutils row",
+   "expect": {
+    "stdout": "",
+    "stderr": "[NameError] uninitialized constant Ukiryu::CliCommands::DefinitionsCommand::FileUtils\n",
+    "exit": 1,
+    "files": [
+     "{root}/xdg/ukiryu/definitions/convert/1.9.yaml",
+     "{root}/xdg/ukiryu/definitions/convert/2.1.yaml",
+     "{root}/xdg/ukiryu/definitions/fancy-1.0.yaml",
+     "{root}/xdg/ukiryu/definitions/gzip/1.0.yaml"
+    ]
+   }
+  },
+  {
+   "id": "definitions_remove_force",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "remove",
+    "convert",
+    "-f"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "exe/ukiryu never loads fileutils; see the __fileutils row",
+   "expect": {
+    "stdout": "",
+    "stderr": "[NameError] uninitialized constant Ukiryu::CliCommands::DefinitionsCommand::FileUtils\n",
+    "exit": 1,
+    "files": [
+     "{root}/xdg/ukiryu/definitions/convert/1.9.yaml",
+     "{root}/xdg/ukiryu/definitions/convert/2.1.yaml",
+     "{root}/xdg/ukiryu/definitions/fancy-1.0.yaml",
+     "{root}/xdg/ukiryu/definitions/gzip/1.0.yaml"
+    ]
+   }
+  },
+  {
+   "id": "definitions_remove_version",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "remove",
+    "convert",
+    "-v",
+    "1.9",
+    "-f"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "exe/ukiryu never loads fileutils; see the __fileutils row",
+   "expect": {
+    "stdout": "",
+    "stderr": "[NameError] uninitialized constant Ukiryu::CliCommands::DefinitionsCommand::FileUtils\n",
+    "exit": 1,
+    "files": [
+     "{root}/xdg/ukiryu/definitions/convert/1.9.yaml",
+     "{root}/xdg/ukiryu/definitions/convert/2.1.yaml",
+     "{root}/xdg/ukiryu/definitions/fancy-1.0.yaml",
+     "{root}/xdg/ukiryu/definitions/gzip/1.0.yaml"
+    ]
+   }
+  },
+  {
+   "id": "definitions_remove_last_version",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "remove",
+    "gzip",
+    "-v",
+    "1.0",
+    "-f"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "exe/ukiryu never loads fileutils; see the __fileutils row",
+   "expect": {
+    "stdout": "",
+    "stderr": "[NameError] uninitialized constant Ukiryu::CliCommands::DefinitionsCommand::FileUtils\n",
+    "exit": 1,
+    "files": [
+     "{root}/xdg/ukiryu/definitions/convert/1.9.yaml",
+     "{root}/xdg/ukiryu/definitions/convert/2.1.yaml",
+     "{root}/xdg/ukiryu/definitions/fancy-1.0.yaml",
+     "{root}/xdg/ukiryu/definitions/gzip/1.0.yaml"
+    ]
+   }
+  },
+  {
+   "id": "definitions_remove_bad_version",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "remove",
+    "convert",
+    "-v",
+    "5",
+    "-f"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "Error: Version 5 not found for tool 'convert'\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "definitions_remove_missing",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "remove",
+    "nothere"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "Error: No definitions found for tool 'nothere'\nUser definitions directory: {root}/xdg/ukiryu/definitions\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "definitions_remove_confirm_yes",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "remove",
+    "gzip"
+   ],
+   "env": {},
+   "stdin": "y\n",
+   "mode": "frozen",
+   "reason": "exe/ukiryu never loads fileutils; see the __fileutils row",
+   "expect": {
+    "stdout": "This will remove the following definitions:\n  - gzip/1.0\nAre you sure? [y/N] ",
+    "stderr": "[NameError] uninitialized constant Ukiryu::CliCommands::DefinitionsCommand::FileUtils\n",
+    "exit": 1,
+    "files": [
+     "{root}/xdg/ukiryu/definitions/convert/1.9.yaml",
+     "{root}/xdg/ukiryu/definitions/convert/2.1.yaml",
+     "{root}/xdg/ukiryu/definitions/fancy-1.0.yaml",
+     "{root}/xdg/ukiryu/definitions/gzip/1.0.yaml"
+    ]
+   }
+  },
+  {
+   "id": "definitions_remove_confirm_no",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "remove",
+    "gzip"
+   ],
+   "env": {},
+   "stdin": "n\n",
+   "mode": "exact",
+   "expect": {
+    "stdout": "This will remove the following definitions:\n  - gzip/1.0\nAre you sure? [y/N] Cancelled.\n",
+    "stderr": "",
+    "exit": 0,
+    "files": [
+     "{root}/xdg/ukiryu/definitions/convert/1.9.yaml",
+     "{root}/xdg/ukiryu/definitions/convert/2.1.yaml",
+     "{root}/xdg/ukiryu/definitions/fancy-1.0.yaml",
+     "{root}/xdg/ukiryu/definitions/gzip/1.0.yaml"
+    ]
+   }
+  },
+  {
+   "id": "definitions_remove_confirm_upper",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "remove",
+    "convert",
+    "-v",
+    "2.1"
+   ],
+   "env": {},
+   "stdin": "Y\n",
+   "mode": "frozen",
+   "reason": "exe/ukiryu never loads fileutils; see the __fileutils row",
+   "expect": {
+    "stdout": "This will remove the following definitions:\n  - convert/2.1\nAre you sure? [y/N] ",
+    "stderr": "[NameError] uninitialized constant Ukiryu::CliCommands::DefinitionsCommand::FileUtils\n",
+    "exit": 1,
+    "files": [
+     "{root}/xdg/ukiryu/definitions/convert/1.9.yaml",
+     "{root}/xdg/ukiryu/definitions/convert/2.1.yaml",
+     "{root}/xdg/ukiryu/definitions/fancy-1.0.yaml",
+     "{root}/xdg/ukiryu/definitions/gzip/1.0.yaml"
+    ]
+   }
+  },
+  {
+   "id": "extract_missing_tool_gated",
+   "runner": "exe",
+   "args": [
+    "extract",
+    "ukiryu-k22-no-such-tool"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "extract waits on the native extractor API",
+   "expect": {
+    "stdout": "",
+    "stderr": "[RuntimeError] Shell 'bash' not found in system PATH\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_magick_text",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/magick.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "Linting: defs/magick.yaml\n\n✓ No issues found\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "lint_file_magick_json",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/magick.yaml",
+    "--format",
+    "json"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "{oracle}/lib/ukiryu/cli_commands/lint_command.rb:123:in 'Ukiryu::CliCommands::LintCommand#output_result': undefined method 'to_json' for an instance of Hash (NoMethodError)\n\n          say result.to_h.to_json, :white\n                         ^^^^^^^^\nDid you mean?  to_s\n\tfrom {oracle}/lib/ukiryu/cli_commands/lint_command.rb:40:in 'Ukiryu::CliCommands::LintCommand#lint_file'\n\tfrom {oracle}/lib/ukiryu/cli_commands/lint_command.rb:18:in 'Ukiryu::CliCommands::LintCommand#file'\n\tfrom {gems}/thor-1.5.0/lib/thor/command.rb:28:in 'Thor::Command#run'\n\tfrom {gems}/thor-1.5.0/lib/thor/invocation.rb:127:in 'Thor::Invocation#invoke_command'\n\tfrom {gems}/thor-1.5.0/lib/thor.rb:538:in 'Thor.dispatch'\n\tfrom {gems}/thor-1.5.0/lib/thor/base.rb:585:in 'Thor::Base::ClassMethods#start'\n\tfrom -e:1:in '<main>'\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_fancy_text",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/fancy.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "Linting: defs/fancy.yaml\n\nFound 8 issue(s):\n\nErrors:\n  [ERROR] Subcommand contains potentially dangerous shell commands (at profiles[0].commands.Run-It.subcommand)\n  Suggestion: Avoid using destructive commands in subcommands\n\nWarnings:\n  [WARNING] Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores (at name)\n  Suggestion: Use lowercase with hyphens for multi-word names (e.g., \"my-tool\")\n  [WARNING] Command names should be lowercase with underscores (at profiles[0].commands.Run-It)\n  Suggestion: Use snake_case for command names (e.g., \"build_command\")\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n  [WARNING] Arguments should specify type validation (at profiles[0].commands.Run-It.arguments[0])\n  Suggestion: Add \"type\" field to all arguments for validation\n\nInfo:\n  [INFO] Tool is missing a description (at definition)\n  Suggestion: Add a \"description\" field to help users understand what this tool does\n  [INFO] Tool is missing a homepage URL (at definition)\n  Suggestion: Add a \"homepage\" field linking to the tool's website\n\nStyle:\n  [STYLE] Single profile named \"default\" is redundant (at profiles[0])\n  Suggestion: For single-profile definitions, omit the profiles array and define commands directly\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_fancy_json",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/fancy.yaml",
+    "--format",
+    "json"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "{oracle}/lib/ukiryu/cli_commands/lint_command.rb:123:in 'Ukiryu::CliCommands::LintCommand#output_result': undefined method 'to_json' for an instance of Hash (NoMethodError)\n\n          say result.to_h.to_json, :white\n                         ^^^^^^^^\nDid you mean?  to_s\n\tfrom {oracle}/lib/ukiryu/cli_commands/lint_command.rb:40:in 'Ukiryu::CliCommands::LintCommand#lint_file'\n\tfrom {oracle}/lib/ukiryu/cli_commands/lint_command.rb:18:in 'Ukiryu::CliCommands::LintCommand#file'\n\tfrom {gems}/thor-1.5.0/lib/thor/command.rb:28:in 'Thor::Command#run'\n\tfrom {gems}/thor-1.5.0/lib/thor/invocation.rb:127:in 'Thor::Invocation#invoke_command'\n\tfrom {gems}/thor-1.5.0/lib/thor.rb:538:in 'Thor.dispatch'\n\tfrom {gems}/thor-1.5.0/lib/thor/base.rb:585:in 'Thor::Base::ClassMethods#start'\n\tfrom -e:1:in '<main>'\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_all_register2",
+   "runner": "lint",
+   "args": [
+    "all",
+    "--register",
+    "register2"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "{oracle}/lib/ukiryu/cli_commands/lint_command.rb:65:in 'Array#sum': undefined method 'error_count' for an instance of Ukiryu::Definition::DefinitionLinter::LintResult (NoMethodError)\n\n        total_errors = results.values.sum(&:error_count)\n                                     ^^^^\n\tfrom {oracle}/lib/ukiryu/cli_commands/lint_command.rb:65:in 'Ukiryu::CliCommands::LintCommand#lint_all'\n\tfrom {oracle}/lib/ukiryu/cli_commands/lint_command.rb:24:in 'Ukiryu::CliCommands::LintCommand#all'\n\tfrom {gems}/thor-1.5.0/lib/thor/command.rb:28:in 'Thor::Command#run'\n\tfrom {gems}/thor-1.5.0/lib/thor/invocation.rb:127:in 'Thor::Invocation#invoke_command'\n\tfrom {gems}/thor-1.5.0/lib/thor.rb:538:in 'Thor.dispatch'\n\tfrom {gems}/thor-1.5.0/lib/thor/base.rb:585:in 'Thor::Base::ClassMethods#start'\n\tfrom -e:1:in '<main>'\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_all_register3",
+   "runner": "lint",
+   "args": [
+    "all",
+    "--register",
+    "register3"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "{oracle}/lib/ukiryu/cli_commands/lint_command.rb:65:in 'Array#sum': undefined method 'error_count' for an instance of Ukiryu::Definition::DefinitionLinter::LintResult (NoMethodError)\n\n        total_errors = results.values.sum(&:error_count)\n                                     ^^^^\n\tfrom {oracle}/lib/ukiryu/cli_commands/lint_command.rb:65:in 'Ukiryu::CliCommands::LintCommand#lint_all'\n\tfrom {oracle}/lib/ukiryu/cli_commands/lint_command.rb:24:in 'Ukiryu::CliCommands::LintCommand#all'\n\tfrom {gems}/thor-1.5.0/lib/thor/command.rb:28:in 'Thor::Command#run'\n\tfrom {gems}/thor-1.5.0/lib/thor/invocation.rb:127:in 'Thor::Invocation#invoke_command'\n\tfrom {gems}/thor-1.5.0/lib/thor.rb:538:in 'Thor.dispatch'\n\tfrom {gems}/thor-1.5.0/lib/thor/base.rb:585:in 'Thor::Base::ClassMethods#start'\n\tfrom -e:1:in '<main>'\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_magick_pty",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/fancy.yaml"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_generate_magick_markdown",
+   "runner": "docs",
+   "args": [
+    "generate",
+    "magick",
+    "--register",
+    "register2"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "{gems}/lutaml-model-0.8.175/lib/lutaml/model/serialize.rb:290:in 'Lutaml::Model::Serialize#method_missing': undefined method '[]' for an instance of Ukiryu::Models::ToolDefinition (NoMethodError)\n\tfrom {gems}/lutaml-model-0.8.175/lib/lutaml/model/serialize/builder.rb:171:in 'Lutaml::Model::Serialize::Builder#method_missing'\n\tfrom {oracle}/lib/ukiryu/definition/documentation_generator.rb:79:in 'Ukiryu::Definition::DocumentationGenerator.generate_markdown'\n\tfrom {oracle}/lib/ukiryu/definition/documentation_generator.rb:24:in 'Ukiryu::Definition::DocumentationGenerator.generate'\n\tfrom {oracle}/lib/ukiryu/cli_commands/docs_command.rb:63:in 'Ukiryu::CliCommands::DocsCommand#generate_docs'\n\tfrom {oracle}/lib/ukiryu/cli_commands/docs_command.rb:19:in 'Ukiryu::CliCommands::DocsCommand#generate'\n\tfrom {gems}/thor-1.5.0/lib/thor/command.rb:28:in 'Thor::Command#run'\n\tfrom {gems}/thor-1.5.0/lib/thor/invocation.rb:127:in 'Thor::Invocation#invoke_command'\n\tfrom {gems}/thor-1.5.0/lib/thor.rb:538:in 'Thor.dispatch'\n\tfrom {gems}/thor-1.5.0/lib/thor/base.rb:585:in 'Thor::Base::ClassMethods#start'\n\tfrom -e:1:in '<main>'\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_generate_magick_adoc",
+   "runner": "docs",
+   "args": [
+    "generate",
+    "magick",
+    "--register",
+    "register2",
+    "--format",
+    "adoc"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "{gems}/lutaml-model-0.8.175/lib/lutaml/model/serialize.rb:290:in 'Lutaml::Model::Serialize#method_missing': undefined method '[]' for an instance of Ukiryu::Models::ToolDefinition (NoMethodError)\n\tfrom {gems}/lutaml-model-0.8.175/lib/lutaml/model/serialize/builder.rb:171:in 'Lutaml::Model::Serialize::Builder#method_missing'\n\tfrom {oracle}/lib/ukiryu/definition/documentation_generator.rb:281:in 'Ukiryu::Definition::DocumentationGenerator.generate_asciidoc'\n\tfrom {oracle}/lib/ukiryu/definition/documentation_generator.rb:26:in 'Ukiryu::Definition::DocumentationGenerator.generate'\n\tfrom {oracle}/lib/ukiryu/cli_commands/docs_command.rb:63:in 'Ukiryu::CliCommands::DocsCommand#generate_docs'\n\tfrom {oracle}/lib/ukiryu/cli_commands/docs_command.rb:19:in 'Ukiryu::CliCommands::DocsCommand#generate'\n\tfrom {gems}/thor-1.5.0/lib/thor/command.rb:28:in 'Thor::Command#run'\n\tfrom {gems}/thor-1.5.0/lib/thor/invocation.rb:127:in 'Thor::Invocation#invoke_command'\n\tfrom {gems}/thor-1.5.0/lib/thor.rb:538:in 'Thor.dispatch'\n\tfrom {gems}/thor-1.5.0/lib/thor/base.rb:585:in 'Thor::Base::ClassMethods#start'\n\tfrom -e:1:in '<main>'\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_generate_magick_output",
+   "runner": "docs",
+   "args": [
+    "generate",
+    "magick",
+    "--register",
+    "register2",
+    "--output",
+    "out.md"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "{gems}/lutaml-model-0.8.175/lib/lutaml/model/serialize.rb:290:in 'Lutaml::Model::Serialize#method_missing': undefined method '[]' for an instance of Ukiryu::Models::ToolDefinition (NoMethodError)\n\tfrom {gems}/lutaml-model-0.8.175/lib/lutaml/model/serialize/builder.rb:171:in 'Lutaml::Model::Serialize::Builder#method_missing'\n\tfrom {oracle}/lib/ukiryu/definition/documentation_generator.rb:79:in 'Ukiryu::Definition::DocumentationGenerator.generate_markdown'\n\tfrom {oracle}/lib/ukiryu/definition/documentation_generator.rb:24:in 'Ukiryu::Definition::DocumentationGenerator.generate'\n\tfrom {oracle}/lib/ukiryu/cli_commands/docs_command.rb:63:in 'Ukiryu::CliCommands::DocsCommand#generate_docs'\n\tfrom {oracle}/lib/ukiryu/cli_commands/docs_command.rb:19:in 'Ukiryu::CliCommands::DocsCommand#generate'\n\tfrom {gems}/thor-1.5.0/lib/thor/command.rb:28:in 'Thor::Command#run'\n\tfrom {gems}/thor-1.5.0/lib/thor/invocation.rb:127:in 'Thor::Invocation#invoke_command'\n\tfrom {gems}/thor-1.5.0/lib/thor.rb:538:in 'Thor.dispatch'\n\tfrom {gems}/thor-1.5.0/lib/thor/base.rb:585:in 'Thor::Base::ClassMethods#start'\n\tfrom -e:1:in '<main>'\n",
+    "exit": 1,
+    "files": []
+   }
+  },
+  {
+   "id": "docs_generate_fancy",
+   "runner": "docs",
+   "args": [
+    "generate",
+    "fancy",
+    "--register",
+    "register2"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "{oracle}/lib/ukiryu/definition/loader.rb:124:in 'Ukiryu::Definition::Loader.validate_profile': Profile validation failed: (Ukiryu::Errors::DefinitionValidationError)\n  - Invalid ukiryu_schema format: v1\n\tfrom {oracle}/lib/ukiryu/definition/loader.rb:32:in 'Ukiryu::Definition::Loader.load_from_source'\n\tfrom {oracle}/lib/ukiryu/definition/loader.rb:50:in 'Ukiryu::Definition::Loader.load_from_file'\n\tfrom {oracle}/lib/ukiryu/cli_commands/docs_command.rb:59:in 'Ukiryu::CliCommands::DocsCommand#generate_docs'\n\tfrom {oracle}/lib/ukiryu/cli_commands/docs_command.rb:19:in 'Ukiryu::CliCommands::DocsCommand#generate'\n\tfrom {gems}/thor-1.5.0/lib/thor/command.rb:28:in 'Thor::Command#run'\n\tfrom {gems}/thor-1.5.0/lib/thor/invocation.rb:127:in 'Thor::Invocation#invoke_command'\n\tfrom {gems}/thor-1.5.0/lib/thor.rb:538:in 'Thor.dispatch'\n\tfrom {gems}/thor-1.5.0/lib/thor/base.rb:585:in 'Thor::Base::ClassMethods#start'\n\tfrom -e:1:in '<main>'\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_generate_all_register3",
+   "runner": "docs",
+   "args": [
+    "generate-all",
+    "--register",
+    "register3",
+    "--output-dir",
+    "outdocs"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "{oracle}/lib/ukiryu/cli_commands/docs_command.rb:85:in 'Ukiryu::CliCommands::DocsCommand#generate_all_docs': uninitialized constant Ukiryu::CliCommands::DocsCommand::FileUtils (NameError)\n\n        FileUtils.mkdir_p(output_dir)\n        ^^^^^^^^^\nDid you mean?  FileTest\n\tfrom {oracle}/lib/ukiryu/cli_commands/docs_command.rb:26:in 'Ukiryu::CliCommands::DocsCommand#generate_all'\n\tfrom {gems}/thor-1.5.0/lib/thor/command.rb:28:in 'Thor::Command#run'\n\tfrom {gems}/thor-1.5.0/lib/thor/invocation.rb:127:in 'Thor::Invocation#invoke_command'\n\tfrom {gems}/thor-1.5.0/lib/thor.rb:538:in 'Thor.dispatch'\n\tfrom {gems}/thor-1.5.0/lib/thor/base.rb:585:in 'Thor::Base::ClassMethods#start'\n\tfrom -e:1:in '<main>'\n",
+    "exit": 1,
+    "files": []
+   }
+  },
+  {
+   "id": "docs_generate_all_register3_adoc",
+   "runner": "docs",
+   "args": [
+    "generate-all",
+    "--register",
+    "register3",
+    "--output-dir",
+    "outdocs",
+    "--format",
+    "asciidoc"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "{oracle}/lib/ukiryu/cli_commands/docs_command.rb:85:in 'Ukiryu::CliCommands::DocsCommand#generate_all_docs': uninitialized constant Ukiryu::CliCommands::DocsCommand::FileUtils (NameError)\n\n        FileUtils.mkdir_p(output_dir)\n        ^^^^^^^^^\nDid you mean?  FileTest\n\tfrom {oracle}/lib/ukiryu/cli_commands/docs_command.rb:26:in 'Ukiryu::CliCommands::DocsCommand#generate_all'\n\tfrom {gems}/thor-1.5.0/lib/thor/command.rb:28:in 'Thor::Command#run'\n\tfrom {gems}/thor-1.5.0/lib/thor/invocation.rb:127:in 'Thor::Invocation#invoke_command'\n\tfrom {gems}/thor-1.5.0/lib/thor.rb:538:in 'Thor.dispatch'\n\tfrom {gems}/thor-1.5.0/lib/thor/base.rb:585:in 'Thor::Base::ClassMethods#start'\n\tfrom -e:1:in '<main>'\n",
+    "exit": 1,
+    "files": []
+   }
+  },
+  {
+   "id": "docs_generate_all_register2",
+   "runner": "docs",
+   "args": [
+    "generate-all",
+    "--register",
+    "register2",
+    "--output-dir",
+    "outdocs"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "{oracle}/lib/ukiryu/cli_commands/docs_command.rb:85:in 'Ukiryu::CliCommands::DocsCommand#generate_all_docs': uninitialized constant Ukiryu::CliCommands::DocsCommand::FileUtils (NameError)\n\n        FileUtils.mkdir_p(output_dir)\n        ^^^^^^^^^\nDid you mean?  FileTest\n\tfrom {oracle}/lib/ukiryu/cli_commands/docs_command.rb:26:in 'Ukiryu::CliCommands::DocsCommand#generate_all'\n\tfrom {gems}/thor-1.5.0/lib/thor/command.rb:28:in 'Thor::Command#run'\n\tfrom {gems}/thor-1.5.0/lib/thor/invocation.rb:127:in 'Thor::Invocation#invoke_command'\n\tfrom {gems}/thor-1.5.0/lib/thor.rb:538:in 'Thor.dispatch'\n\tfrom {gems}/thor-1.5.0/lib/thor/base.rb:585:in 'Thor::Base::ClassMethods#start'\n\tfrom -e:1:in '<main>'\n",
+    "exit": 1,
+    "files": []
+   }
+  },
+  {
+   "id": "docs_serve_port_float",
+   "runner": "docs",
+   "args": [
+    "serve",
+    "--port",
+    "80.5"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "Documentation server is not yet implemented.\n\nFor now, you can use a simple HTTP server:\n  python3 -m http.server 80.5\n  ruby -run -e httpd . -p 80.5\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "docs_serve_port_bad",
+   "runner": "docs",
+   "args": [
+    "serve",
+    "--port",
+    "abc"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "frozen",
+   "reason": "standalone Thor class run; see the __target row",
+   "expect": {
+    "stdout": "",
+    "stderr": "Expected numeric value for '--port'; got \"abc\"\nDeprecation warning: Thor exit with status 0 on errors. To keep this behavior, you must define `exit_on_failure?` in `Ukiryu::CliCommands::DocsCommand`\nYou can silence deprecations warning by setting the environment variable THOR_SILENCE_DEPRECATION.\n",
+    "exit": 0
+   }
+  },
+  {
+   "id": "definitions_info_fancy",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "info",
+    "Fancy-Tool"
+   ],
+   "env": {},
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Tool: Fancy-Tool\nVersion: 1.0\nSource: user\nPath: {root}/xdg/ukiryu/definitions/fancy-1.0.yaml\nExists: Yes\nModified: 2026-01-02 03:04:05 +0000\n\nValidation: ✗ Invalid\nError: Profile validation failed:\n  - Invalid ukiryu_schema format: v1\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "definitions_add_digit__fileutils",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "add",
+    "defs/digit.yaml"
+   ],
+   "env": {
+    "RUBYOPT": "-rfileutils"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Definition added successfully:\n  Tool: 7zip\n  Version: 9.20\n  Location: {root}/xdg/ukiryu/definitions/7zip/9.20.yaml\n",
+    "stderr": "",
+    "exit": 0,
+    "files": [
+     "{root}/xdg/ukiryu/definitions/7zip/9.20.yaml",
+     "{root}/xdg/ukiryu/definitions/convert/1.9.yaml",
+     "{root}/xdg/ukiryu/definitions/convert/2.1.yaml",
+     "{root}/xdg/ukiryu/definitions/fancy-1.0.yaml",
+     "{root}/xdg/ukiryu/definitions/gzip/1.0.yaml"
+    ]
+   }
+  },
+  {
+   "id": "definitions_add_convert_exists__fileutils",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "add",
+    "defs/convert.yaml"
+   ],
+   "env": {
+    "RUBYOPT": "-rfileutils"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "Error: Definition already exists: {root}/xdg/ukiryu/definitions/convert/2.1.yaml\nUse --name and --version to specify a different tool/version.\n",
+    "exit": 1,
+    "files": [
+     "{root}/xdg/ukiryu/definitions/convert/1.9.yaml",
+     "{root}/xdg/ukiryu/definitions/convert/2.1.yaml",
+     "{root}/xdg/ukiryu/definitions/fancy-1.0.yaml",
+     "{root}/xdg/ukiryu/definitions/gzip/1.0.yaml"
+    ]
+   }
+  },
+  {
+   "id": "definitions_add_named__fileutils",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "add",
+    "defs/convert.yaml",
+    "-n",
+    "mytool",
+    "-V",
+    "3"
+   ],
+   "env": {
+    "RUBYOPT": "-rfileutils"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Definition added successfully:\n  Tool: mytool\n  Version: 3\n  Location: {root}/xdg/ukiryu/definitions/mytool/3.yaml\n",
+    "stderr": "",
+    "exit": 0,
+    "files": [
+     "{root}/xdg/ukiryu/definitions/convert/1.9.yaml",
+     "{root}/xdg/ukiryu/definitions/convert/2.1.yaml",
+     "{root}/xdg/ukiryu/definitions/fancy-1.0.yaml",
+     "{root}/xdg/ukiryu/definitions/gzip/1.0.yaml",
+     "{root}/xdg/ukiryu/definitions/mytool/3.yaml"
+    ]
+   }
+  },
+  {
+   "id": "definitions_add_missing__fileutils",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "add",
+    "defs/missing.yaml"
+   ],
+   "env": {
+    "RUBYOPT": "-rfileutils"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "Error: Source file not found: {root}/defs/missing.yaml\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "definitions_add_minimal__fileutils",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "add",
+    "defs/minimal.yaml"
+   ],
+   "env": {
+    "RUBYOPT": "-rfileutils"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "Error: Failed to load definition: Profile validation failed:\n  - Missing 'version' field\n  - Missing 'profiles' field or profiles is empty\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "definitions_add_invalid_yaml__fileutils",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "add",
+    "defs/invalid_yaml.yaml"
+   ],
+   "env": {
+    "RUBYOPT": "-rfileutils"
+   },
+   "stdin": null,
+   "mode": "prefix",
+   "expect": {
+    "stdout": "",
+    "stderr": "Error: Failed to load definition: Invalid YAML format in file:file:abc9d2c89cec544b1beb347d306f50f6909f4b30e47c1592880c182a29ded9b2:2026-01-02 03:04:05 +0000: input format is invalid, try to pass correct `yaml` format \n(<unknown>): unexpected parser state at line 2 column 8\n\n",
+    "exit": 1
+   },
+   "prefix": "Invalid YAML format in file:"
+  },
+  {
+   "id": "definitions_add_list__fileutils",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "add",
+    "defs/list.yaml"
+   ],
+   "env": {
+    "RUBYOPT": "-rfileutils"
+   },
+   "stdin": null,
+   "mode": "prefix",
+   "expect": {
+    "stdout": "",
+    "stderr": "Error: Failed to load definition: Invalid YAML format in file:file:923941cd1ea4e19f64f0529d1917a86741be153a24e0fa33c7afa13bdead9d03:2026-01-02 03:04:05 +0000: input format is invalid, try to pass correct `yaml` format \nundefined method 'key?' for an instance of String\n\n",
+    "exit": 1
+   },
+   "prefix": "Invalid YAML format in file:"
+  },
+  {
+   "id": "definitions_add_jq__fileutils",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "add",
+    "defs/jq.yaml"
+   ],
+   "env": {
+    "RUBYOPT": "-rfileutils"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "Error: Failed to load definition: Profile validation failed:\n  - Missing 'profiles' field or profiles is empty\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "definitions_add_bad_name__fileutils",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "add",
+    "defs/bad_name.yaml"
+   ],
+   "env": {
+    "RUBYOPT": "-rfileutils"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Definition added successfully:\n  Tool: my tool\n  Version: 1.0\n  Location: {root}/xdg/ukiryu/definitions/my tool/1.0.yaml\n",
+    "stderr": "",
+    "exit": 0,
+    "files": [
+     "{root}/xdg/ukiryu/definitions/convert/1.9.yaml",
+     "{root}/xdg/ukiryu/definitions/convert/2.1.yaml",
+     "{root}/xdg/ukiryu/definitions/fancy-1.0.yaml",
+     "{root}/xdg/ukiryu/definitions/gzip/1.0.yaml",
+     "{root}/xdg/ukiryu/definitions/my tool/1.0.yaml"
+    ]
+   }
+  },
+  {
+   "id": "definitions_remove_force__fileutils",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "remove",
+    "convert",
+    "-f"
+   ],
+   "env": {
+    "RUBYOPT": "-rfileutils"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Removed: convert/1.9\nRemoved: convert/2.1\nRemoved empty directory: {root}/xdg/ukiryu/definitions/convert\nDone.\n",
+    "stderr": "",
+    "exit": 0,
+    "files": [
+     "{root}/xdg/ukiryu/definitions/fancy-1.0.yaml",
+     "{root}/xdg/ukiryu/definitions/gzip/1.0.yaml"
+    ]
+   }
+  },
+  {
+   "id": "definitions_remove_version__fileutils",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "remove",
+    "convert",
+    "-v",
+    "1.9",
+    "-f"
+   ],
+   "env": {
+    "RUBYOPT": "-rfileutils"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Removed: convert/1.9\nDone.\n",
+    "stderr": "",
+    "exit": 0,
+    "files": [
+     "{root}/xdg/ukiryu/definitions/convert/2.1.yaml",
+     "{root}/xdg/ukiryu/definitions/fancy-1.0.yaml",
+     "{root}/xdg/ukiryu/definitions/gzip/1.0.yaml"
+    ]
+   }
+  },
+  {
+   "id": "definitions_remove_last_version__fileutils",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "remove",
+    "gzip",
+    "-v",
+    "1.0",
+    "-f"
+   ],
+   "env": {
+    "RUBYOPT": "-rfileutils"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Removed: gzip/1.0\nRemoved empty directory: {root}/xdg/ukiryu/definitions/gzip\nDone.\n",
+    "stderr": "",
+    "exit": 0,
+    "files": [
+     "{root}/xdg/ukiryu/definitions/convert/1.9.yaml",
+     "{root}/xdg/ukiryu/definitions/convert/2.1.yaml",
+     "{root}/xdg/ukiryu/definitions/fancy-1.0.yaml"
+    ]
+   }
+  },
+  {
+   "id": "definitions_remove_bad_version__fileutils",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "remove",
+    "convert",
+    "-v",
+    "5",
+    "-f"
+   ],
+   "env": {
+    "RUBYOPT": "-rfileutils"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "Error: Version 5 not found for tool 'convert'\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "definitions_remove_missing__fileutils",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "remove",
+    "nothere"
+   ],
+   "env": {
+    "RUBYOPT": "-rfileutils"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "Error: No definitions found for tool 'nothere'\nUser definitions directory: {root}/xdg/ukiryu/definitions\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "definitions_remove_confirm_yes__fileutils",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "remove",
+    "gzip"
+   ],
+   "env": {
+    "RUBYOPT": "-rfileutils"
+   },
+   "stdin": "y\n",
+   "mode": "exact",
+   "expect": {
+    "stdout": "This will remove the following definitions:\n  - gzip/1.0\nAre you sure? [y/N] Removed: gzip/1.0\nRemoved empty directory: {root}/xdg/ukiryu/definitions/gzip\nDone.\n",
+    "stderr": "",
+    "exit": 0,
+    "files": [
+     "{root}/xdg/ukiryu/definitions/convert/1.9.yaml",
+     "{root}/xdg/ukiryu/definitions/convert/2.1.yaml",
+     "{root}/xdg/ukiryu/definitions/fancy-1.0.yaml"
+    ]
+   }
+  },
+  {
+   "id": "definitions_remove_confirm_no__fileutils",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "remove",
+    "gzip"
+   ],
+   "env": {
+    "RUBYOPT": "-rfileutils"
+   },
+   "stdin": "n\n",
+   "mode": "exact",
+   "expect": {
+    "stdout": "This will remove the following definitions:\n  - gzip/1.0\nAre you sure? [y/N] Cancelled.\n",
+    "stderr": "",
+    "exit": 0,
+    "files": [
+     "{root}/xdg/ukiryu/definitions/convert/1.9.yaml",
+     "{root}/xdg/ukiryu/definitions/convert/2.1.yaml",
+     "{root}/xdg/ukiryu/definitions/fancy-1.0.yaml",
+     "{root}/xdg/ukiryu/definitions/gzip/1.0.yaml"
+    ]
+   }
+  },
+  {
+   "id": "definitions_remove_confirm_upper__fileutils",
+   "runner": "exe",
+   "args": [
+    "definitions",
+    "remove",
+    "convert",
+    "-v",
+    "2.1"
+   ],
+   "env": {
+    "RUBYOPT": "-rfileutils"
+   },
+   "stdin": "Y\n",
+   "mode": "exact",
+   "expect": {
+    "stdout": "This will remove the following definitions:\n  - convert/2.1\nAre you sure? [y/N] Removed: convert/2.1\nDone.\n",
+    "stderr": "",
+    "exit": 0,
+    "files": [
+     "{root}/xdg/ukiryu/definitions/convert/1.9.yaml",
+     "{root}/xdg/ukiryu/definitions/fancy-1.0.yaml",
+     "{root}/xdg/ukiryu/definitions/gzip/1.0.yaml"
+    ]
+   }
+  },
+  {
+   "id": "lint_file_convert_text__target",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/convert.yaml"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "[NoMethodError] undefined method 'each_key' for an instance of Array\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_convert_json__target",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/convert.yaml",
+    "--format",
+    "json"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "[NoMethodError] undefined method 'each_key' for an instance of Array\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_warnings_text__target",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/warnings.yaml"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "[NoMethodError] undefined method 'each_key' for an instance of Array\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_warnings_json__target",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/warnings.yaml",
+    "--format",
+    "json"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "[NoMethodError] undefined method 'each_key' for an instance of Array\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_bad_name_text__target",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/bad_name.yaml"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Linting: defs/bad_name.yaml\n\nFound 4 issue(s):\n\nWarnings:\n  [WARNING] Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores (at name)\n  Suggestion: Use lowercase with hyphens for multi-word names (e.g., \"my-tool\")\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n\nInfo:\n  [INFO] Tool is missing a description (at definition)\n  Suggestion: Add a \"description\" field to help users understand what this tool does\n  [INFO] Tool is missing a homepage URL (at definition)\n  Suggestion: Add a \"homepage\" field linking to the tool's website\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "lint_file_bad_name_json__target",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/bad_name.yaml",
+    "--format",
+    "json"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "{\"issues\":[{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores\",\"location\":\"name\",\"suggestion\":\"Use lowercase with hyphens for multi-word names (e.g., \\\"my-tool\\\")\",\"rule_id\":\"naming_tool_name_format\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a description\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"description\\\" field to help users understand what this tool does\",\"rule_id\":\"complete_missing_description\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a homepage URL\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"homepage\\\" field linking to the tool's website\",\"rule_id\":\"complete_missing_homepage\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool is missing version detection\",\"location\":\"definition\",\"suggestion\":\"Add \\\"version_detection\\\" to auto-detect installed versions\",\"rule_id\":\"complete_missing_version_detection\"}],\"total_count\":4,\"error_count\":0,\"warning_count\":2,\"info_count\":2,\"style_count\":0}\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "lint_file_invalid_yaml_text__target",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/invalid_yaml.yaml"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "prefix",
+   "expect": {
+    "stdout": "Linting: defs/invalid_yaml.yaml\n\nFound 1 issue(s):\n\nErrors:\n  [ERROR] Invalid YAML: (<unknown>): did not find expected ',' or ']' while parsing a flow sequence at line 1 column 7\n",
+    "stderr": "",
+    "exit": 1
+   },
+   "prefix": "Invalid YAML: "
+  },
+  {
+   "id": "lint_file_invalid_yaml_json__target",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/invalid_yaml.yaml",
+    "--format",
+    "json"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "prefix",
+   "expect": {
+    "stdout": "{\"issues\":[{\"severity\":\"error\",\"severity_string\":\"ERROR\",\"message\":\"Invalid YAML: (<unknown>): did not find expected ',' or ']' while parsing a flow sequence at line 1 column 7\",\"location\":null,\"suggestion\":null,\"rule_id\":null}],\"total_count\":1,\"error_count\":1,\"warning_count\":0,\"info_count\":0,\"style_count\":0}\n",
+    "stderr": "",
+    "exit": 1
+   },
+   "prefix": "Invalid YAML: "
+  },
+  {
+   "id": "lint_file_list_text__target",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/list.yaml"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Linting: defs/list.yaml\n\nFound 1 issue(s):\n\nErrors:\n  [ERROR] Definition must be a hash/object\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_list_json__target",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/list.yaml",
+    "--format",
+    "json"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "{\"issues\":[{\"severity\":\"error\",\"severity_string\":\"ERROR\",\"message\":\"Definition must be a hash/object\",\"location\":null,\"suggestion\":null,\"rule_id\":null}],\"total_count\":1,\"error_count\":1,\"warning_count\":0,\"info_count\":0,\"style_count\":0}\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_digit_text__target",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/digit.yaml"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Linting: defs/digit.yaml\n\nFound 5 issue(s):\n\nWarnings:\n  [WARNING] Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores (at name)\n  Suggestion: Use lowercase with hyphens for multi-word names (e.g., \"my-tool\")\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n\nInfo:\n  [INFO] Tool is missing a description (at definition)\n  Suggestion: Add a \"description\" field to help users understand what this tool does\n  [INFO] Tool is missing a homepage URL (at definition)\n  Suggestion: Add a \"homepage\" field linking to the tool's website\n\nStyle:\n  [STYLE] Single profile named \"default\" is redundant (at profiles[0])\n  Suggestion: For single-profile definitions, omit the profiles array and define commands directly\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "lint_file_digit_json__target",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/digit.yaml",
+    "--format",
+    "json"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "{\"issues\":[{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores\",\"location\":\"name\",\"suggestion\":\"Use lowercase with hyphens for multi-word names (e.g., \\\"my-tool\\\")\",\"rule_id\":\"naming_tool_name_format\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a description\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"description\\\" field to help users understand what this tool does\",\"rule_id\":\"complete_missing_description\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a homepage URL\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"homepage\\\" field linking to the tool's website\",\"rule_id\":\"complete_missing_homepage\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool is missing version detection\",\"location\":\"definition\",\"suggestion\":\"Add \\\"version_detection\\\" to auto-detect installed versions\",\"rule_id\":\"complete_missing_version_detection\"},{\"severity\":\"style\",\"severity_string\":\"STYLE\",\"message\":\"Single profile named \\\"default\\\" is redundant\",\"location\":\"profiles[0]\",\"suggestion\":\"For single-profile definitions, omit the profiles array and define commands directly\",\"rule_id\":\"style_redundant_default_profile\"}],\"total_count\":5,\"error_count\":0,\"warning_count\":2,\"info_count\":2,\"style_count\":1}\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "lint_file_minimal_text__target",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/minimal.yaml"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Linting: defs/minimal.yaml\n\nFound 3 issue(s):\n\nWarnings:\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n\nInfo:\n  [INFO] Tool is missing a description (at definition)\n  Suggestion: Add a \"description\" field to help users understand what this tool does\n  [INFO] Tool is missing a homepage URL (at definition)\n  Suggestion: Add a \"homepage\" field linking to the tool's website\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "lint_file_minimal_json__target",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/minimal.yaml",
+    "--format",
+    "json"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "{\"issues\":[{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a description\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"description\\\" field to help users understand what this tool does\",\"rule_id\":\"complete_missing_description\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a homepage URL\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"homepage\\\" field linking to the tool's website\",\"rule_id\":\"complete_missing_homepage\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool is missing version detection\",\"location\":\"definition\",\"suggestion\":\"Add \\\"version_detection\\\" to auto-detect installed versions\",\"rule_id\":\"complete_missing_version_detection\"}],\"total_count\":3,\"error_count\":0,\"warning_count\":1,\"info_count\":2,\"style_count\":0}\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "lint_file_jq_text__target",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/jq.yaml"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Linting: defs/jq.yaml\n\nFound 1 issue(s):\n\nInfo:\n  [INFO] Tool is missing a description (at definition)\n  Suggestion: Add a \"description\" field to help users understand what this tool does\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "lint_file_jq_json__target",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/jq.yaml",
+    "--format",
+    "json"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "{\"issues\":[{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a description\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"description\\\" field to help users understand what this tool does\",\"rule_id\":\"complete_missing_description\"}],\"total_count\":1,\"error_count\":0,\"warning_count\":0,\"info_count\":1,\"style_count\":0}\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "lint_file_missing_text__target",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/missing.yaml"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Linting: defs/missing.yaml\n\nFound 1 issue(s):\n\nErrors:\n  [ERROR] File not found: defs/missing.yaml\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_directory__target",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "[Errno::EISDIR] Is a directory @ io_fread - defs\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_severity_ignored__target",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/warnings.yaml",
+    "--severity",
+    "error"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "[NoMethodError] undefined method 'each_key' for an instance of Array\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_format_yaml__target",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/convert.yaml",
+    "--format",
+    "yaml"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "Expected '--format' to be one of text, json; got yaml\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_rules__target",
+   "runner": "lint",
+   "args": [
+    "rules"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Linting Rules:\n\nNaming Convention Rules:\n  naming_tool_name_format - Tool name format\n  naming_command_name_format - Command name format\n\nCompleteness Rules:\n  complete_missing_description - Missing description\n  complete_missing_homepage - Missing homepage\n  complete_missing_version_detection - Missing version detection\n\nSecurity Rules:\n  security_suspicious_subcommand - Dangerous shell commands\n  security_unvalidated_input - Arguments without type validation\n\nBest Practice Rules:\n  style_redundant_default_profile - Redundant default profile\n  complete_missing_platforms - Missing platforms specification\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "lint_rules_pty__target",
+   "runner": "lint",
+   "args": [
+    "rules"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "tty",
+   "expect": {
+    "stdout": "",
+    "stderr": "",
+    "exit": 1
+   },
+   "tty_output": "\u001b[36mLinting Rules:\u001b[0m\r\n\u001b[0m\u001b[0m\r\n\u001b[37mNaming Convention Rules:\u001b[0m\r\n{gems}/thor-1.5.0/lib/thor/shell/basic.rb:275:in 'Thor::Shell::Basic#lookup_color': \u001b[1muninitialized constant Thor::Shell::Color::DIM (\u001b[1;4mNameError\u001b[m\u001b[1m)\u001b[m\r\n\r\n\u001b[1m......\u001b[m\r\n\u001b[1m^^^^^^\u001b[m\r\n\u001b[1mDid you mean?  Dir\u001b[m\r\n\tfrom {gems}/thor-1.5.0/lib/thor/shell/color.rb:88:in 'block in Thor::Shell::Color#set_color'\r\n\tfrom {gems}/thor-1.5.0/lib/thor/shell/color.rb:88:in 'Array#map'\r\n\tfrom {gems}/thor-1.5.0/lib/thor/shell/color.rb:88:in 'Thor::Shell::Color#set_color'\r\n\tfrom {gems}/thor-1.5.0/lib/thor/shell/basic.rb:266:in 'Thor::Shell::Basic#prepare_message'\r\n\tfrom {gems}/thor-1.5.0/lib/thor/shell/basic.rb:101:in 'Thor::Shell::Basic#say'\r\n\tfrom {gems}/thor-1.5.0/lib/thor/shell.rb:60:in 'Thor::Shell#say'\r\n\tfrom {oracle}/lib/ukiryu/cli_commands/lint_command.rb:96:in 'Ukiryu::CliCommands::LintCommand#list_rules'\r\n\tfrom {oracle}/lib/ukiryu/cli_commands/lint_command.rb:29:in 'Ukiryu::CliCommands::LintCommand#rules'\r\n\tfrom {gems}/thor-1.5.0/lib/thor/command.rb:28:in 'Thor::Command#run'\r\n\tfrom {gems}/thor-1.5.0/lib/thor/invocation.rb:127:in 'Thor::Invocation#invoke_command'\r\n\tfrom {gems}/thor-1.5.0/lib/thor.rb:538:in 'Thor.dispatch'\r\n\tfrom {gems}/thor-1.5.0/lib/thor/base.rb:585:in 'Thor::Base::ClassMethods#start'\r\n\tfrom -e:1:in '<main>'\r\n"
+  },
+  {
+   "id": "lint_file_pty__target",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/warnings.yaml"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "tty",
+   "expect": {
+    "stdout": "",
+    "stderr": "",
+    "exit": 1
+   },
+   "tty_output": "{oracle}/lib/ukiryu/definition/definition_linter.rb:284:in 'block in Ukiryu::Definition::DefinitionLinter.check_naming_conventions': \u001b[1mundefined method 'each_key' for an instance of Array (\u001b[1;4mNoMethodError\u001b[m\u001b[1m)\u001b[m\r\n\r\n\u001b[1m......\u001b[m\r\n\u001b[1m^^^^^^\u001b[m\r\n\u001b[1mDid you mean?  each_entry\u001b[m\r\n\tfrom {oracle}/lib/ukiryu/definition/definition_linter.rb:281:in 'Array#each'\r\n\tfrom {oracle}/lib/ukiryu/definition/definition_linter.rb:281:in 'Enumerable#each_with_index'\r\n\tfrom {oracle}/lib/ukiryu/definition/definition_linter.rb:281:in 'Ukiryu::Definition::DefinitionLinter.check_naming_conventions'\r\n\tfrom {oracle}/lib/ukiryu/definition/definition_linter.rb:199:in 'Ukiryu::Definition::DefinitionLinter.lint'\r\n\tfrom {oracle}/lib/ukiryu/definition/definition_linter.rb:234:in 'Ukiryu::Definition::DefinitionLinter.lint_file'\r\n\tfrom {oracle}/lib/ukiryu/cli_commands/lint_command.rb:38:in 'Ukiryu::CliCommands::LintCommand#lint_file'\r\n\tfrom {oracle}/lib/ukiryu/cli_commands/lint_command.rb:18:in 'Ukiryu::CliCommands::LintCommand#file'\r\n\tfrom {gems}/thor-1.5.0/lib/thor/command.rb:28:in 'Thor::Command#run'\r\n\tfrom {gems}/thor-1.5.0/lib/thor/invocation.rb:127:in 'Thor::Invocation#invoke_command'\r\n\tfrom {gems}/thor-1.5.0/lib/thor.rb:538:in 'Thor.dispatch'\r\n\tfrom {gems}/thor-1.5.0/lib/thor/base.rb:585:in 'Thor::Base::ClassMethods#start'\r\n\tfrom -e:1:in '<main>'\r\n"
+  },
+  {
+   "id": "lint_all_register__target",
+   "runner": "lint",
+   "args": [
+    "all",
+    "--register",
+    "register"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "[NoMethodError] undefined method 'each_key' for an instance of Array\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_all_default_register__target",
+   "runner": "lint",
+   "args": [
+    "all"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "[NoMethodError] undefined method 'each_key' for an instance of Array\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_all_empty_tools__target",
+   "runner": "lint",
+   "args": [
+    "all",
+    "--register",
+    "emptyreg"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "\nLint Summary:\n  Files: 0\n  Issues: 0\n  Errors: 0\n  Warnings: 0\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "lint_all_missing_register__target",
+   "runner": "lint",
+   "args": [
+    "all",
+    "--register",
+    "nowhere"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Register not found: nowhere\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_all_no_tools_dir__target",
+   "runner": "lint",
+   "args": [
+    "all",
+    "--register",
+    "defs"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Tools directory not found: defs/tools\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_generate_convert_markdown__target",
+   "runner": "docs",
+   "args": [
+    "generate",
+    "convert",
+    "--register",
+    "register"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "[NoMethodError] undefined method '[]' for nil\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_generate_convert_md__target",
+   "runner": "docs",
+   "args": [
+    "generate",
+    "convert",
+    "--register",
+    "register",
+    "--format",
+    "md"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "[NoMethodError] undefined method '[]' for nil\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_generate_convert_asciidoc__target",
+   "runner": "docs",
+   "args": [
+    "generate",
+    "convert",
+    "--register",
+    "register",
+    "--format",
+    "asciidoc"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "[NoMethodError] undefined method '[]' for nil\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_generate_convert_adoc__target",
+   "runner": "docs",
+   "args": [
+    "generate",
+    "convert",
+    "--register",
+    "register",
+    "--format",
+    "adoc"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "[NoMethodError] undefined method '[]' for nil\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_generate_convert_html__target",
+   "runner": "docs",
+   "args": [
+    "generate",
+    "convert",
+    "--register",
+    "register",
+    "--format",
+    "html"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "Expected '--format' to be one of markdown, md, asciidoc, adoc; got html\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_generate_convert_output__target",
+   "runner": "docs",
+   "args": [
+    "generate",
+    "convert",
+    "--register",
+    "register",
+    "--output",
+    "out.md"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "[NoMethodError] undefined method '[]' for nil\n",
+    "exit": 1,
+    "files": []
+   }
+  },
+  {
+   "id": "docs_generate_jq__target",
+   "runner": "docs",
+   "args": [
+    "generate",
+    "jq",
+    "--register",
+    "register"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "[Ukiryu::Errors::DefinitionValidationError] Profile validation failed:\n  - Missing 'profiles' field or profiles is empty\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_generate_warnings__target",
+   "runner": "docs",
+   "args": [
+    "generate",
+    "warnings",
+    "--register",
+    "register"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "[Ukiryu::Errors::DefinitionValidationError] Profile validation failed:\n  - Invalid ukiryu_schema format: v1\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_generate_missing__target",
+   "runner": "docs",
+   "args": [
+    "generate",
+    "nothere",
+    "--register",
+    "register"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Tool not found: nothere\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_generate_default_register__target",
+   "runner": "docs",
+   "args": [
+    "generate",
+    "convert"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "[NoMethodError] undefined method '[]' for nil\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_generate_all__target",
+   "runner": "docs",
+   "args": [
+    "generate-all",
+    "--register",
+    "register",
+    "--output-dir",
+    "outdocs"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "[NoMethodError] undefined method '[]' for nil\n",
+    "exit": 1,
+    "files": [],
+    "file_contents": {}
+   }
+  },
+  {
+   "id": "docs_generate_all_adoc__target",
+   "runner": "docs",
+   "args": [
+    "generate-all",
+    "--register",
+    "register",
+    "--output-dir",
+    "outdocs",
+    "--format",
+    "adoc"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "[NoMethodError] undefined method '[]' for nil\n",
+    "exit": 1,
+    "files": [],
+    "file_contents": {}
+   }
+  },
+  {
+   "id": "docs_generate_all_no_tools__target",
+   "runner": "docs",
+   "args": [
+    "generate-all",
+    "--register",
+    "defs",
+    "--output-dir",
+    "outdocs"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Tools directory not found: defs/tools\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_serve__target",
+   "runner": "docs",
+   "args": [
+    "serve"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Documentation server is not yet implemented.\n\nFor now, you can use a simple HTTP server:\n  python3 -m http.server 8000\n  ruby -run -e httpd . -p 8000\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "docs_serve_port__target",
+   "runner": "docs",
+   "args": [
+    "serve",
+    "--port",
+    "9000"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Documentation server is not yet implemented.\n\nFor now, you can use a simple HTTP server:\n  python3 -m http.server 9000\n  ruby -run -e httpd . -p 9000\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "docs_serve_pty__target",
+   "runner": "docs",
+   "args": [
+    "serve"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "tty",
+   "expect": {
+    "stdout": "",
+    "stderr": "",
+    "exit": 1
+   },
+   "tty_output": "\u001b[33mDocumentation server is not yet implemented.\u001b[0m\r\n\u001b[37m\r\nFor now, you can use a simple HTTP server:\u001b[0m\r\n{gems}/thor-1.5.0/lib/thor/shell/basic.rb:275:in 'Thor::Shell::Basic#lookup_color': \u001b[1muninitialized constant Thor::Shell::Color::DIM (\u001b[1;4mNameError\u001b[m\u001b[1m)\u001b[m\r\n\r\n\u001b[1m......\u001b[m\r\n\u001b[1m^^^^^^\u001b[m\r\n\u001b[1mDid you mean?  Dir\u001b[m\r\n\tfrom {gems}/thor-1.5.0/lib/thor/shell/color.rb:88:in 'block in Thor::Shell::Color#set_color'\r\n\tfrom {gems}/thor-1.5.0/lib/thor/shell/color.rb:88:in 'Array#map'\r\n\tfrom {gems}/thor-1.5.0/lib/thor/shell/color.rb:88:in 'Thor::Shell::Color#set_color'\r\n\tfrom {gems}/thor-1.5.0/lib/thor/shell/basic.rb:266:in 'Thor::Shell::Basic#prepare_message'\r\n\tfrom {gems}/thor-1.5.0/lib/thor/shell/basic.rb:101:in 'Thor::Shell::Basic#say'\r\n\tfrom {gems}/thor-1.5.0/lib/thor/shell.rb:60:in 'Thor::Shell#say'\r\n\tfrom {oracle}/lib/ukiryu/cli_commands/docs_command.rb:120:in 'Ukiryu::CliCommands::DocsCommand#serve_docs'\r\n\tfrom {oracle}/lib/ukiryu/cli_commands/docs_command.rb:32:in 'Ukiryu::CliCommands::DocsCommand#serve'\r\n\tfrom {gems}/thor-1.5.0/lib/thor/command.rb:28:in 'Thor::Command#run'\r\n\tfrom {gems}/thor-1.5.0/lib/thor/invocation.rb:127:in 'Thor::Invocation#invoke_command'\r\n\tfrom {gems}/thor-1.5.0/lib/thor.rb:538:in 'Thor.dispatch'\r\n\tfrom {gems}/thor-1.5.0/lib/thor/base.rb:585:in 'Thor::Base::ClassMethods#start'\r\n\tfrom -e:1:in '<main>'\r\n"
+  },
+  {
+   "id": "lint_file_magick_text__target",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/magick.yaml"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Linting: defs/magick.yaml\n\n✓ No issues found\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "lint_file_magick_json__target",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/magick.yaml",
+    "--format",
+    "json"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "{\"issues\":[],\"total_count\":0,\"error_count\":0,\"warning_count\":0,\"info_count\":0,\"style_count\":0}\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "lint_file_fancy_text__target",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/fancy.yaml"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Linting: defs/fancy.yaml\n\nFound 8 issue(s):\n\nErrors:\n  [ERROR] Subcommand contains potentially dangerous shell commands (at profiles[0].commands.Run-It.subcommand)\n  Suggestion: Avoid using destructive commands in subcommands\n\nWarnings:\n  [WARNING] Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores (at name)\n  Suggestion: Use lowercase with hyphens for multi-word names (e.g., \"my-tool\")\n  [WARNING] Command names should be lowercase with underscores (at profiles[0].commands.Run-It)\n  Suggestion: Use snake_case for command names (e.g., \"build_command\")\n  [WARNING] Tool is missing version detection (at definition)\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\n  [WARNING] Arguments should specify type validation (at profiles[0].commands.Run-It.arguments[0])\n  Suggestion: Add \"type\" field to all arguments for validation\n\nInfo:\n  [INFO] Tool is missing a description (at definition)\n  Suggestion: Add a \"description\" field to help users understand what this tool does\n  [INFO] Tool is missing a homepage URL (at definition)\n  Suggestion: Add a \"homepage\" field linking to the tool's website\n\nStyle:\n  [STYLE] Single profile named \"default\" is redundant (at profiles[0])\n  Suggestion: For single-profile definitions, omit the profiles array and define commands directly\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_file_fancy_json__target",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/fancy.yaml",
+    "--format",
+    "json"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "{\"issues\":[{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores\",\"location\":\"name\",\"suggestion\":\"Use lowercase with hyphens for multi-word names (e.g., \\\"my-tool\\\")\",\"rule_id\":\"naming_tool_name_format\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Command names should be lowercase with underscores\",\"location\":\"profiles[0].commands.Run-It\",\"suggestion\":\"Use snake_case for command names (e.g., \\\"build_command\\\")\",\"rule_id\":\"naming_command_name_format\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a description\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"description\\\" field to help users understand what this tool does\",\"rule_id\":\"complete_missing_description\"},{\"severity\":\"info\",\"severity_string\":\"INFO\",\"message\":\"Tool is missing a homepage URL\",\"location\":\"definition\",\"suggestion\":\"Add a \\\"homepage\\\" field linking to the tool's website\",\"rule_id\":\"complete_missing_homepage\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Tool is missing version detection\",\"location\":\"definition\",\"suggestion\":\"Add \\\"version_detection\\\" to auto-detect installed versions\",\"rule_id\":\"complete_missing_version_detection\"},{\"severity\":\"error\",\"severity_string\":\"ERROR\",\"message\":\"Subcommand contains potentially dangerous shell commands\",\"location\":\"profiles[0].commands.Run-It.subcommand\",\"suggestion\":\"Avoid using destructive commands in subcommands\",\"rule_id\":\"security_suspicious_subcommand\"},{\"severity\":\"warning\",\"severity_string\":\"WARNING\",\"message\":\"Arguments should specify type validation\",\"location\":\"profiles[0].commands.Run-It.arguments[0]\",\"suggestion\":\"Add \\\"type\\\" field to all arguments for validation\",\"rule_id\":\"security_unvalidated_input\"},{\"severity\":\"style\",\"severity_string\":\"STYLE\",\"message\":\"Single profile named \\\"default\\\" is redundant\",\"location\":\"profiles[0]\",\"suggestion\":\"For single-profile definitions, omit the profiles array and define commands directly\",\"rule_id\":\"style_redundant_default_profile\"}],\"total_count\":8,\"error_count\":1,\"warning_count\":4,\"info_count\":2,\"style_count\":1}\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_all_register2__target",
+   "runner": "lint",
+   "args": [
+    "all",
+    "--register",
+    "register2"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "\nLint Summary:\n  Files: 3\n  Issues: 8\n  Errors: 1\n  Warnings: 4\n\nFiles with Issues:\n  ✗ register2/tools/fancy/1.0/fancy.yaml (8 issues)\n",
+    "stderr": "",
+    "exit": 1
+   }
+  },
+  {
+   "id": "lint_all_register3__target",
+   "runner": "lint",
+   "args": [
+    "all",
+    "--register",
+    "register3"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "\nLint Summary:\n  Files: 1\n  Issues: 0\n  Errors: 0\n  Warnings: 0\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "lint_file_magick_pty__target",
+   "runner": "lint",
+   "args": [
+    "file",
+    "defs/fancy.yaml"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "tty",
+   "expect": {
+    "stdout": "",
+    "stderr": "",
+    "exit": 1
+   },
+   "tty_output": "\u001b[36mLinting: defs/fancy.yaml\u001b[0m\r\n\u001b[33m\r\nFound 8 issue(s):\u001b[0m\r\n\u001b[0m\u001b[0m\r\n\u001b[31mErrors:\u001b[0m\r\n\u001b[37m  [ERROR] Subcommand contains potentially dangerous shell commands (at profiles[0].commands.Run-It.subcommand)\r\n  Suggestion: Avoid using destructive commands in subcommands\u001b[0m\r\n\u001b[0m\u001b[0m\r\n\u001b[37mWarnings:\u001b[0m\r\n\u001b[37m  [WARNING] Tool name should start with a lowercase letter and contain only lowercase letters, numbers, hyphens, and underscores (at name)\r\n  Suggestion: Use lowercase with hyphens for multi-word names (e.g., \"my-tool\")\u001b[0m\r\n\u001b[37m  [WARNING] Command names should be lowercase with underscores (at profiles[0].commands.Run-It)\r\n  Suggestion: Use snake_case for command names (e.g., \"build_command\")\u001b[0m\r\n\u001b[37m  [WARNING] Tool is missing version detection (at definition)\r\n  Suggestion: Add \"version_detection\" to auto-detect installed versions\u001b[0m\r\n\u001b[37m  [WARNING] Arguments should specify type validation (at profiles[0].commands.Run-It.arguments[0])\r\n  Suggestion: Add \"type\" field to all arguments for validation\u001b[0m\r\n\u001b[0m\u001b[0m\r\n\u001b[37mInfo:\u001b[0m\r\n\u001b[37m  [INFO] Tool is missing a description (at definition)\r\n  Suggestion: Add a \"description\" field to help users understand what this tool does\u001b[0m\r\n\u001b[37m  [INFO] Tool is missing a homepage URL (at definition)\r\n  Suggestion: Add a \"homepage\" field linking to the tool's website\u001b[0m\r\n\u001b[0m\u001b[0m\r\n\u001b[37mStyle:\u001b[0m\r\n\u001b[37m  [STYLE] Single profile named \"default\" is redundant (at profiles[0])\r\n  Suggestion: For single-profile definitions, omit the profiles array and define commands directly\u001b[0m\r\n"
+  },
+  {
+   "id": "docs_generate_magick_markdown__target",
+   "runner": "docs",
+   "args": [
+    "generate",
+    "magick",
+    "--register",
+    "register2"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "# magick\n\nVersion: 7.1\n\nImage toolkit\n\n## Overview\n\n| Property | Value |\n|----------|-------|\n| Name | `magick` |\n| Version | `7.1` |\n| Homepage | https://example.org/magick |\n\n### Supported Platforms\n\n- **Linux**: bash, zsh\n- **Macos**: bash, zsh\n\n## Commands\n\n### `resize`\n\nResize an image\n\n#### Arguments\n\n- **`input`** (file, optional) - Input image\n\n## Options Reference\n\n### `resize`\n\n#### Options\n\n- `--width` (optional) - Target width\n\n  Type: `integer`\n#### Flags\n\n- `-v` - Verbose output\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "docs_generate_magick_adoc__target",
+   "runner": "docs",
+   "args": [
+    "generate",
+    "magick",
+    "--register",
+    "register2",
+    "--format",
+    "adoc"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "= magick\n\n:toc:\n\nVersion: 7.1\n\nImage toolkit\n\n== Overview\n\n[cols=\"1,2\"]\n|===\n| Property | Value\n| Name | `magick`\n| Version | `7.1`\n| Homepage | https://example.org/magick\n|===\n\n=== Supported Platforms\n\n* *Linux*: bash, zsh\n* *Macos*: bash, zsh\n\n== Commands\n\n=== `resize`\n\nResize an image\n\n==== Arguments\n\n* **`input`** (file, optional)\n: Input image\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "docs_generate_magick_output__target",
+   "runner": "docs",
+   "args": [
+    "generate",
+    "magick",
+    "--register",
+    "register2",
+    "--output",
+    "out.md"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "✓ Documentation written to: out.md\n",
+    "stderr": "",
+    "exit": 0,
+    "files": [],
+    "file_contents": {
+     "out.md": "# magick\n\nVersion: 7.1\n\nImage toolkit\n\n## Overview\n\n| Property | Value |\n|----------|-------|\n| Name | `magick` |\n| Version | `7.1` |\n| Homepage | https://example.org/magick |\n\n### Supported Platforms\n\n- **Linux**: bash, zsh\n- **Macos**: bash, zsh\n\n## Commands\n\n### `resize`\n\nResize an image\n\n#### Arguments\n\n- **`input`** (file, optional) - Input image\n\n## Options Reference\n\n### `resize`\n\n#### Options\n\n- `--width` (optional) - Target width\n\n  Type: `integer`\n#### Flags\n\n- `-v` - Verbose output\n"
+    }
+   }
+  },
+  {
+   "id": "docs_generate_fancy__target",
+   "runner": "docs",
+   "args": [
+    "generate",
+    "fancy",
+    "--register",
+    "register2"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "[Ukiryu::Errors::DefinitionValidationError] Profile validation failed:\n  - Invalid ukiryu_schema format: v1\n",
+    "exit": 1
+   }
+  },
+  {
+   "id": "docs_generate_all_register3__target",
+   "runner": "docs",
+   "args": [
+    "generate-all",
+    "--register",
+    "register3",
+    "--output-dir",
+    "outdocs"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "✓ Generated: outdocs/magick-7.1.md\n\nGenerated 1 documentation file(s) in: outdocs\n",
+    "stderr": "",
+    "exit": 0,
+    "files": [
+     "{root}/outdocs/magick-7.1.md"
+    ],
+    "file_contents": {
+     "outdocs/magick-7.1.md": "# magick\n\nVersion: 7.1\n\nImage toolkit\n\n## Overview\n\n| Property | Value |\n|----------|-------|\n| Name | `magick` |\n| Version | `7.1` |\n| Homepage | https://example.org/magick |\n\n### Supported Platforms\n\n- **Linux**: bash, zsh\n- **Macos**: bash, zsh\n\n## Commands\n\n### `resize`\n\nResize an image\n\n#### Arguments\n\n- **`input`** (file, optional) - Input image\n\n## Options Reference\n\n### `resize`\n\n#### Options\n\n- `--width` (optional) - Target width\n\n  Type: `integer`\n#### Flags\n\n- `-v` - Verbose output\n"
+    }
+   }
+  },
+  {
+   "id": "docs_generate_all_register3_adoc__target",
+   "runner": "docs",
+   "args": [
+    "generate-all",
+    "--register",
+    "register3",
+    "--output-dir",
+    "outdocs",
+    "--format",
+    "asciidoc"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "✓ Generated: outdocs/magick-7.1.adoc\n\nGenerated 1 documentation file(s) in: outdocs\n",
+    "stderr": "",
+    "exit": 0,
+    "files": [
+     "{root}/outdocs/magick-7.1.adoc"
+    ],
+    "file_contents": {
+     "outdocs/magick-7.1.adoc": "= magick\n\n:toc:\n\nVersion: 7.1\n\nImage toolkit\n\n== Overview\n\n[cols=\"1,2\"]\n|===\n| Property | Value\n| Name | `magick`\n| Version | `7.1`\n| Homepage | https://example.org/magick\n|===\n\n=== Supported Platforms\n\n* *Linux*: bash, zsh\n* *Macos*: bash, zsh\n\n== Commands\n\n=== `resize`\n\nResize an image\n\n==== Arguments\n\n* **`input`** (file, optional)\n: Input image\n"
+    }
+   }
+  },
+  {
+   "id": "docs_generate_all_register2__target",
+   "runner": "docs",
+   "args": [
+    "generate-all",
+    "--register",
+    "register2",
+    "--output-dir",
+    "outdocs"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "[Ukiryu::Errors::DefinitionValidationError] Profile validation failed:\n  - Invalid ukiryu_schema format: v1\n",
+    "exit": 1,
+    "files": [],
+    "file_contents": {}
+   }
+  },
+  {
+   "id": "docs_serve_port_float__target",
+   "runner": "docs",
+   "args": [
+    "serve",
+    "--port",
+    "80.5"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "Documentation server is not yet implemented.\n\nFor now, you can use a simple HTTP server:\n  python3 -m http.server 80.5\n  ruby -run -e httpd . -p 80.5\n",
+    "stderr": "",
+    "exit": 0
+   }
+  },
+  {
+   "id": "docs_serve_port_bad__target",
+   "runner": "docs",
+   "args": [
+    "serve",
+    "--port",
+    "abc"
+   ],
+   "env": {
+    "RUBYOPT": "-r{capture}/target.rb"
+   },
+   "stdin": null,
+   "mode": "exact",
+   "expect": {
+    "stdout": "",
+    "stderr": "Expected numeric value for '--port'; got \"abc\"\n",
+    "exit": 1
+   }
+  }
+ ]
+}
