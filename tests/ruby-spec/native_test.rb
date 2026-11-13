@@ -199,8 +199,15 @@ golden.fetch('cases').each do |kase|
   id = kase['id']
   klass = NATIVE::Models.const_get(kase['class'])
   expect = kase['expect']
-  model = nil
-  error = raised { model = klass.from_yaml(kase['input_yaml']) }
+  # As ukiryu/tests/models_serializable.rs: the outcome is loading plus
+  # serializing (a value lutaml keeps raw may only fail on output).
+  model = json = yaml = nil
+  error = raised do
+    loaded = klass.from_yaml(kase['input_yaml'])
+    json = loaded.to_json
+    yaml = loaded.to_yaml
+    model = loaded
+  end
   if error && !error.is_a?(Ukiryu::Native::ModelError)
     check('models', id, false, "unexpected #{error.class}: #{error.message[0, 200]}")
     next
@@ -216,26 +223,23 @@ golden.fetch('cases').each do |kase|
       next
     end
     outcomes["#{kase['kind']}/ok"] += 1
-    json = model.to_json
     check('models', "#{id}.json", json == expect['ok']['json'], "source #{expect['ok']['json']}, native #{json}")
     reread = begin
-      klass.from_yaml(model.to_yaml)
+      klass.from_yaml(yaml).to_json
     rescue StandardError => e
       e
     end
-    ok = reread.is_a?(NATIVE::Model) && reread.to_json == json
-    check('models', "#{id}.yaml-self-roundtrip", ok, "#{model.to_yaml.inspect} -> #{reread.inspect[0, 200]}")
+    check('models', "#{id}.yaml-self-roundtrip", reread == json, "#{yaml.inspect[0, 300]} -> #{reread.inspect[0, 300]}")
     hashed = begin
-      klass.from_hash(model.to_hash)
+      klass.from_hash(model.to_hash).to_json
     rescue StandardError => e
       e
     end
-    ok = hashed.is_a?(NATIVE::Model) && hashed.to_json == json
-    check('models', "#{id}.hash-self-roundtrip", ok, "#{model.to_hash.inspect[0, 200]} -> #{hashed.inspect[0, 200]}")
+    check('models', "#{id}.hash-self-roundtrip", hashed == json, "#{json[0, 300]} -> #{hashed.inspect[0, 300]}")
   else
     outcomes["#{kase['kind']}/error"] += 1
     check('models', id, error && error.source_class == expect['error']['class'],
-          "source #{expect['error']['class']}, native #{model ? model.to_json : "#{error.kind} #{error.source_class}"}")
+          "source #{expect['error']['class']}, native #{model ? json : "#{error.kind} #{error.source_class}"}")
   end
 end
 a = NATIVE::Models::Argument.from_yaml("name: x\nvalue: y\n")
