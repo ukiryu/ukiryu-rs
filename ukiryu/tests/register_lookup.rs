@@ -655,17 +655,37 @@ fn alias_collision_is_settled_by_the_runtime_platform_and_shell() {
 }
 
 #[test]
-fn alias_tool_without_a_profile_for_the_options_is_rescued_then_not_found() {
-    let w = World::new("alias-profile");
+fn alias_tool_without_a_profile_for_the_options_is_rescued_then_raised_by_exhaustive_search() {
+    // The runtime says macos, so the alias resolves to the tool, but the
+    // options are linux/bash.
+    let mac = runtime(Platform::Macos, ShellName::Zsh);
+
+    // A single profile is always the fallback (`find_command_profile`
+    // returns `profiles.first` when there is one), so the alias step finds
+    // the tool even though the profile names only macos/zsh.
+    let w = World::new("alias-profile-single");
     w.index_doc("only-mac", &index_document("m", "al", "macos", "zsh"));
-    // The runtime says macos, so the alias resolves to only-mac, but the
-    // options are linux/bash and the tool has no such profile.
     let stub = Stub::new(&[(
         "only-mac",
         definition("only-mac", "no-such-only-mac", "macos", "zsh"),
     )]);
-    let mac = runtime(Platform::Macos, ShellName::Zsh);
-    assert!(w.find(&stub, "al", &options(), &mac).unwrap().is_none());
+    assert_eq!(
+        w.found(&stub, "al", &options(), &mac).as_deref(),
+        Some("only-mac")
+    );
+
+    // With two profiles, neither linux/bash, `Tool.get` raises
+    // ProfileNotFoundError. The alias step rescues it; the exhaustive step
+    // then reaches the same tool and does not rescue it.
+    let w = World::new("alias-profile-two");
+    w.index_doc("two-mac", &index_document("m", "al", "macos", "zsh"));
+    let two_profiles = "name: two-mac\nversion: '1.0'\nprofiles:\n- name: zsh\n  platforms: [macos]\n  shells: [zsh]\n  executable_name: no-such-two-mac\n  commands:\n  - name: run\n    subcommand: run\n- name: fish\n  platforms: [macos]\n  shells: [fish]\n  executable_name: no-such-two-mac\n  commands:\n  - name: run\n    subcommand: run\n";
+    let stub = Stub::new(&[("two-mac", two_profiles.to_string())]);
+    let err = w.find(&stub, "al", &options(), &mac).unwrap_err();
+    assert!(
+        matches!(err, LookupError::Tool(ToolError::ProfileNotFound { .. })),
+        "{err:?}"
+    );
 }
 
 #[test]
