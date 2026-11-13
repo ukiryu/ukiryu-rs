@@ -1,0 +1,917 @@
+{
+  "source": {
+    "repository": "ukiryu/ukiryu",
+    "revision": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+    "files": [
+      "lib/ukiryu/cli.rb",
+      "lib/ukiryu/cli_commands/base_command.rb",
+      "lib/ukiryu/cli_commands/config_command.rb",
+      "lib/ukiryu/cli_commands/list_command.rb",
+      "lib/ukiryu/cli_commands/commands_command.rb",
+      "lib/ukiryu/cli_commands/register_command.rb",
+      "lib/ukiryu/cli_commands/resolve_command.rb"
+    ],
+    "ruby": "ruby 4.0.1 (2026-01-13 revision e04267a14b) +PRISM [x86_64-linux]",
+    "capture": "handoffs/batch-09/B09-CLI-INSPECT-REMAINDER/capture/capture.rb",
+    "context": "env -i; HOME, PATH, XDG_DATA_HOME, XDG_DATA_DIRS, UKIRYU_REGISTER are per-case temp dirs ({HOME}, {BIN}, {XDG}, {SYSDATA}, {REGISTER}); TZ=UTC; PATH holds symlinks to /bin/true for the listed bins; the register is a copy of the fixture tree; definition files have mtime 1700000000"
+  },
+  "fixed_mtime_unix": 1700000000,
+  "cases": [
+    {
+      "name": "config-list-default",
+      "args": [
+        "config",
+        "list"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "env",
+      "home_before": {},
+      "defs": {},
+      "note": null,
+      "stdout": "\u001b[36mCurrent configuration:\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[37m  Register            : '{REGISTER} [env] (2 tools)'\u001b[0m\n\u001b[37m  Timeout             : '(no timeout)'\u001b[0m\n\u001b[37m  Debug               : false\u001b[0m\n\u001b[37m  Dry run             : false\u001b[0m\n\u001b[37m  Metrics             : false\u001b[0m\n\u001b[37m  Shell               : '(auto-detect)'\u001b[0m\n\u001b[37m  Format              : yaml\u001b[0m\n\u001b[37m  Output              : '(stdout)'\u001b[0m\n\u001b[37m  Use color           : '(nil)'\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[2mNo persistent configuration file found.\u001b[0m\n\u001b[2m  Config would be saved to: {HOME}/.ukiryu/config.yml\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mEnvironment variables:\u001b[0m\n\u001b[37m  UKIRYU_REGISTER          : {REGISTER}\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "config-list-implicit",
+      "args": [
+        "config"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "env",
+      "home_before": {},
+      "defs": {},
+      "note": null,
+      "stdout": "\u001b[36mCurrent configuration:\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[37m  Register            : '{REGISTER} [env] (2 tools)'\u001b[0m\n\u001b[37m  Timeout             : '(no timeout)'\u001b[0m\n\u001b[37m  Debug               : false\u001b[0m\n\u001b[37m  Dry run             : false\u001b[0m\n\u001b[37m  Metrics             : false\u001b[0m\n\u001b[37m  Shell               : '(auto-detect)'\u001b[0m\n\u001b[37m  Format              : yaml\u001b[0m\n\u001b[37m  Output              : '(stdout)'\u001b[0m\n\u001b[37m  Use color           : '(nil)'\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[2mNo persistent configuration file found.\u001b[0m\n\u001b[2m  Config would be saved to: {HOME}/.ukiryu/config.yml\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mEnvironment variables:\u001b[0m\n\u001b[37m  UKIRYU_REGISTER          : {REGISTER}\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "config-list-env",
+      "args": [
+        "config",
+        "list"
+      ],
+      "env": {
+        "SHELL": "/bin/bash",
+        "UKIRYU_FORMAT": "json",
+        "UKIRYU_TIMEOUT": "30",
+        "UKIRYU_SHELL": "bash",
+        "UKIRYU_DEBUG": "true",
+        "UKIRYU_OUTPUT": "/tmp/out.txt",
+        "UKIRYU_USE_COLOR": "true"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "env",
+      "home_before": {},
+      "defs": {},
+      "note": null,
+      "stdout": "\u001b[36mCurrent configuration:\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[37m  Register            : '{REGISTER} [env] (2 tools)'\u001b[0m\n\u001b[37m  Timeout             : 30\u001b[0m\n\u001b[37m  Debug               : true\u001b[0m\n\u001b[37m  Dry run             : false\u001b[0m\n\u001b[37m  Metrics             : false\u001b[0m\n\u001b[37m  Shell               : bash\u001b[0m\n\u001b[37m  Format              : json\u001b[0m\n\u001b[37m  Output              : '/tmp/out.txt'\u001b[0m\n\u001b[37m  Use color           : true\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[2mNo persistent configuration file found.\u001b[0m\n\u001b[2m  Config would be saved to: {HOME}/.ukiryu/config.yml\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mEnvironment variables:\u001b[0m\n\u001b[37m  UKIRYU_REGISTER          : {REGISTER}\u001b[0m\n\u001b[37m  UKIRYU_TIMEOUT           : 30\u001b[0m\n\u001b[37m  UKIRYU_DEBUG             : true\u001b[0m\n\u001b[37m  UKIRYU_SHELL             : bash\u001b[0m\n\u001b[37m  UKIRYU_FORMAT            : json\u001b[0m\n\u001b[37m  UKIRYU_OUTPUT            : /tmp/out.txt\u001b[0m\n\u001b[37m  UKIRYU_USE_COLOR         : true\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "config-list-no-color",
+      "args": [
+        "config",
+        "list"
+      ],
+      "env": {
+        "SHELL": "/bin/bash",
+        "NO_COLOR": "1"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "env",
+      "home_before": {},
+      "defs": {},
+      "note": null,
+      "stdout": "Current configuration:\n\n  Register            : '{REGISTER} [env] (2 tools)'\n  Timeout             : '(no timeout)'\n  Debug               : false\n  Dry run             : false\n  Metrics             : false\n  Shell               : '(auto-detect)'\n  Format              : yaml\n  Output              : '(stdout)'\n  Use color           : false\n\nNo persistent configuration file found.\n  Config would be saved to: {HOME}/.ukiryu/config.yml\n\nEnvironment variables:\n  UKIRYU_REGISTER          : {REGISTER}\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "config-list-persistent",
+      "args": [
+        "config",
+        "list"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "env",
+      "home_before": {
+        ".ukiryu/config.yml": "---\nformat: json\ntimeout: '10'\nflag: true\n"
+      },
+      "defs": {},
+      "note": null,
+      "stdout": "\u001b[36mCurrent configuration:\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[37m  Register            : '{REGISTER} [env] (2 tools)'\u001b[0m\n\u001b[37m  Timeout             : '(no timeout)'\u001b[0m\n\u001b[37m  Debug               : false\u001b[0m\n\u001b[37m  Dry run             : false\u001b[0m\n\u001b[37m  Metrics             : false\u001b[0m\n\u001b[37m  Shell               : '(auto-detect)'\u001b[0m\n\u001b[37m  Format              : yaml\u001b[0m\n\u001b[37m  Output              : '(stdout)'\u001b[0m\n\u001b[37m  Use color           : '(nil)'\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mPersistent configuration:\u001b[0m\n\u001b[2m  File: {HOME}/.ukiryu/config.yml\u001b[0m\n\u001b[2m  format: json\u001b[0m\n\u001b[2m  timeout: 10\u001b[0m\n\u001b[2m  flag: true\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mEnvironment variables:\u001b[0m\n\u001b[37m  UKIRYU_REGISTER          : {REGISTER}\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {
+        ".ukiryu/config.yml": "---\nformat: json\ntimeout: '10'\nflag: true\n"
+      }
+    },
+    {
+      "name": "config-list-persistent-empty",
+      "args": [
+        "config",
+        "list"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "env",
+      "home_before": {
+        ".ukiryu/config.yml": "--- {}\n"
+      },
+      "defs": {},
+      "note": null,
+      "stdout": "\u001b[36mCurrent configuration:\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[37m  Register            : '{REGISTER} [env] (2 tools)'\u001b[0m\n\u001b[37m  Timeout             : '(no timeout)'\u001b[0m\n\u001b[37m  Debug               : false\u001b[0m\n\u001b[37m  Dry run             : false\u001b[0m\n\u001b[37m  Metrics             : false\u001b[0m\n\u001b[37m  Shell               : '(auto-detect)'\u001b[0m\n\u001b[37m  Format              : yaml\u001b[0m\n\u001b[37m  Output              : '(stdout)'\u001b[0m\n\u001b[37m  Use color           : '(nil)'\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mPersistent configuration:\u001b[0m\n\u001b[2m  File: {HOME}/.ukiryu/config.yml\u001b[0m\n\u001b[2m  (empty)\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mEnvironment variables:\u001b[0m\n\u001b[37m  UKIRYU_REGISTER          : {REGISTER}\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {
+        ".ukiryu/config.yml": "--- {}\n"
+      }
+    },
+    {
+      "name": "config-list-persistent-malformed",
+      "args": [
+        "config",
+        "list"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "env",
+      "home_before": {
+        ".ukiryu/config.yml": "format: [unclosed\n"
+      },
+      "defs": {},
+      "note": null,
+      "stdout": "\u001b[36mCurrent configuration:\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[37m  Register            : '{REGISTER} [env] (2 tools)'\u001b[0m\n\u001b[37m  Timeout             : '(no timeout)'\u001b[0m\n\u001b[37m  Debug               : false\u001b[0m\n\u001b[37m  Dry run             : false\u001b[0m\n\u001b[37m  Metrics             : false\u001b[0m\n\u001b[37m  Shell               : '(auto-detect)'\u001b[0m\n\u001b[37m  Format              : yaml\u001b[0m\n\u001b[37m  Output              : '(stdout)'\u001b[0m\n\u001b[37m  Use color           : '(nil)'\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mPersistent configuration:\u001b[0m\n\u001b[2m  File: {HOME}/.ukiryu/config.yml\u001b[0m\n\u001b[31mWarning: Failed to load config file: ({HOME}/.ukiryu/config.yml): did not find expected ',' or ']' while parsing a flow sequence at line 1 column 9\u001b[0m\n\u001b[2m  (empty)\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mEnvironment variables:\u001b[0m\n\u001b[37m  UKIRYU_REGISTER          : {REGISTER}\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {
+        ".ukiryu/config.yml": "format: [unclosed\n"
+      }
+    },
+    {
+      "name": "config-list-register-option",
+      "args": [
+        "config",
+        "list",
+        "-r",
+        "{REGISTER}"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "user",
+      "home_before": {},
+      "defs": {},
+      "note": null,
+      "stdout": "\u001b[36mCurrent configuration:\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[37m  Register            : '{REGISTER} [env] (2 tools)'\u001b[0m\n\u001b[37m  Timeout             : '(no timeout)'\u001b[0m\n\u001b[37m  Debug               : false\u001b[0m\n\u001b[37m  Dry run             : false\u001b[0m\n\u001b[37m  Metrics             : false\u001b[0m\n\u001b[37m  Shell               : '(auto-detect)'\u001b[0m\n\u001b[37m  Format              : yaml\u001b[0m\n\u001b[37m  Output              : '(stdout)'\u001b[0m\n\u001b[37m  Use color           : '(nil)'\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[2mNo persistent configuration file found.\u001b[0m\n\u001b[2m  Config would be saved to: {HOME}/.ukiryu/config.yml\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mEnvironment variables:\u001b[0m\n\u001b[37m  UKIRYU_REGISTER          : {REGISTER}\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "config-list-user-register",
+      "args": [
+        "config",
+        "list"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "user",
+      "home_before": {},
+      "defs": {},
+      "note": null,
+      "stdout": "\u001b[36mCurrent configuration:\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[37m  Register            : '{REGISTER} [env] (2 tools)'\u001b[0m\n\u001b[37m  Timeout             : '(no timeout)'\u001b[0m\n\u001b[37m  Debug               : false\u001b[0m\n\u001b[37m  Dry run             : false\u001b[0m\n\u001b[37m  Metrics             : false\u001b[0m\n\u001b[37m  Shell               : '(auto-detect)'\u001b[0m\n\u001b[37m  Format              : yaml\u001b[0m\n\u001b[37m  Output              : '(stdout)'\u001b[0m\n\u001b[37m  Use color           : '(nil)'\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[2mNo persistent configuration file found.\u001b[0m\n\u001b[2m  Config would be saved to: {HOME}/.ukiryu/config.yml\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mEnvironment variables:\u001b[0m\n\u001b[37m  UKIRYU_REGISTER          : {REGISTER}\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "config-list-invalid-timeout-env",
+      "args": [
+        "config",
+        "list"
+      ],
+      "env": {
+        "SHELL": "/bin/bash",
+        "UKIRYU_TIMEOUT": "abc"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "env",
+      "home_before": {},
+      "defs": {},
+      "note": null,
+      "stdout": "",
+      "stderr": "[ArgumentError] Invalid integer value: abc\n",
+      "exit": 1,
+      "home_after": {}
+    },
+    {
+      "name": "list-basic",
+      "args": [
+        "list"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "env",
+      "home_before": {},
+      "defs": {},
+      "note": null,
+      "stdout": "\u001b[36mAvailable tools (2):\u001b[0m\n\u001b[36m  beta/1.0:\u001b[0m\n\u001b[32m    [✓]  beta                 v2.1\u001b[0m\n\u001b[32m  [✓]  zeta                 v1.0\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "list-nothing-installed",
+      "args": [
+        "list"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [],
+      "register": "env",
+      "home_before": {},
+      "defs": {},
+      "note": null,
+      "stdout": "\u001b[36mAvailable tools (2):\u001b[0m\n\u001b[36m  beta/1.0:\u001b[0m\n\u001b[31m    [✗]  beta                 v2.1\u001b[0m\n\u001b[31m  [✗]  zeta                 v1.0\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "list-only-interface-installed",
+      "args": [
+        "list"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "beta"
+      ],
+      "register": "env",
+      "home_before": {},
+      "defs": {},
+      "note": null,
+      "stdout": "\u001b[36mAvailable tools (2):\u001b[0m\n\u001b[36m  beta/1.0:\u001b[0m\n\u001b[32m    [✓]  beta                 v2.1\u001b[0m\n\u001b[31m  [✗]  zeta                 v1.0\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "list-no-color",
+      "args": [
+        "list"
+      ],
+      "env": {
+        "SHELL": "/bin/bash",
+        "NO_COLOR": "1"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "env",
+      "home_before": {},
+      "defs": {},
+      "note": null,
+      "stdout": "Available tools (2):\n  beta/1.0:\n    [✓]  beta                 v2.1\n  [✓]  zeta                 v1.0\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "list-register-option",
+      "args": [
+        "list",
+        "-r",
+        "{REGISTER}"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "user",
+      "home_before": {},
+      "defs": {},
+      "note": null,
+      "stdout": "\u001b[36mAvailable tools (2):\u001b[0m\n\u001b[36m  beta/1.0:\u001b[0m\n\u001b[32m    [✓]  beta                 v2.1\u001b[0m\n\u001b[32m  [✓]  zeta                 v1.0\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "list-empty-register",
+      "args": [
+        "list"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "empty",
+      "home_before": {},
+      "defs": {},
+      "note": null,
+      "stdout": "",
+      "stderr": "No tools found in register\n",
+      "exit": 1,
+      "home_after": {}
+    },
+    {
+      "name": "list-invalid-config-env",
+      "args": [
+        "list"
+      ],
+      "env": {
+        "SHELL": "/bin/bash",
+        "UKIRYU_DEBUG": "maybe"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "env",
+      "home_before": {},
+      "defs": {},
+      "note": null,
+      "stdout": "",
+      "stderr": "[ArgumentError] Invalid boolean value: maybe. Valid values: true, 1, yes, false, 0, no\n",
+      "exit": 1,
+      "home_after": {}
+    },
+    {
+      "name": "list-unknown-shell",
+      "args": [
+        "list"
+      ],
+      "env": {
+        "SHELL": "/opt/bin/xonsh"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "env",
+      "home_before": {},
+      "defs": {},
+      "note": "D2: source guesses; the migrated contract raises for an unknown SHELL",
+      "stdout": "\u001b[36mAvailable tools (2):\u001b[0m\n\u001b[36m  beta/1.0:\u001b[0m\n\u001b[32m    [✓]  beta                 v2.1\u001b[0m\n\u001b[32m  [✓]  zeta                 v1.0\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "commands-flat",
+      "args": [
+        "commands",
+        "beta"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "env",
+      "home_before": {},
+      "defs": {},
+      "note": null,
+      "stdout": "\u001b[36mCommands for beta:\u001b[0m\n\u001b[37m  show                 Show things\u001b[0m\n\u001b[2m    Usage: beta [file...]\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "commands-hierarchical",
+      "args": [
+        "commands",
+        "zeta"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "env",
+      "home_before": {},
+      "defs": {},
+      "note": null,
+      "stdout": "\u001b[36mCommands for zeta:\u001b[0m\n\u001b[36m  Top-level commands:\u001b[0m\n\u001b[37m  run                  Run the thing\u001b[0m\n\u001b[2m    Usage: zeta run [options] target\u001b[0m\n\u001b[37m  help                 Show help\u001b[0m\n\u001b[2m    Action flag: --help\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36m  remote commands (route to: remote):\u001b[0m\n\u001b[37m  add                  Add a remote\u001b[0m\n\u001b[2m    Usage: zeta remote add NAME\u001b[0m\n\u001b[2m    Subcommand: add\u001b[0m\n\u001b[37m\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "commands-no-color",
+      "args": [
+        "commands",
+        "zeta"
+      ],
+      "env": {
+        "SHELL": "/bin/bash",
+        "NO_COLOR": "1"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "env",
+      "home_before": {},
+      "defs": {},
+      "note": null,
+      "stdout": "Commands for zeta:\n  Top-level commands:\n  run                  Run the thing\n    Usage: zeta run [options] target\n  help                 Show help\n    Action flag: --help\n\n  remote commands (route to: remote):\n  add                  Add a remote\n    Usage: zeta remote add NAME\n    Subcommand: add\n\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "commands-unknown-tool",
+      "args": [
+        "commands",
+        "nosuch"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "env",
+      "home_before": {},
+      "defs": {},
+      "note": null,
+      "stdout": "",
+      "stderr": "[Ukiryu::Errors::ToolNotFoundError] Tool not found: nosuch\n",
+      "exit": 1,
+      "home_after": {}
+    },
+    {
+      "name": "commands-register-option",
+      "args": [
+        "commands",
+        "beta",
+        "-r",
+        "{REGISTER}"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "user",
+      "home_before": {},
+      "defs": {},
+      "note": null,
+      "stdout": "\u001b[36mCommands for beta:\u001b[0m\n\u001b[37m  show                 Show things\u001b[0m\n\u001b[2m    Usage: beta [file...]\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "commands-by-interface",
+      "args": [
+        "commands",
+        "beta/1.0"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "env",
+      "home_before": {},
+      "defs": {},
+      "note": null,
+      "stdout": "",
+      "stderr": "[Ukiryu::Errors::ToolNotFoundError] Tool not found: beta/1.0\n",
+      "exit": 1,
+      "home_after": {}
+    },
+    {
+      "name": "register-info",
+      "args": [
+        "register",
+        "info"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "env",
+      "home_before": {},
+      "defs": {},
+      "note": null,
+      "stdout": "\u001b[36mRegister Information\u001b[0m\n\n\u001b[32m  Status: OK\u001b[0m\n\u001b[2m  Path: {REGISTER}\u001b[0m\n\u001b[2m  Source: Environment variable (UKIRYU_REGISTER)\u001b[0m\n\u001b[2m  Tools available: 2\u001b[0m\n\n\u001b[36mEnvironment variable:\u001b[0m\n\u001b[2m  UKIRYU_REGISTER={REGISTER}\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "register-default-subcommand",
+      "args": [
+        "register"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "env",
+      "home_before": {},
+      "defs": {},
+      "note": null,
+      "stdout": "\u001b[36mRegister Information\u001b[0m\n\n\u001b[32m  Status: OK\u001b[0m\n\u001b[2m  Path: {REGISTER}\u001b[0m\n\u001b[2m  Source: Environment variable (UKIRYU_REGISTER)\u001b[0m\n\u001b[2m  Tools available: 2\u001b[0m\n\n\u001b[36mEnvironment variable:\u001b[0m\n\u001b[2m  UKIRYU_REGISTER={REGISTER}\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "register-info-user",
+      "args": [
+        "register",
+        "info"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "user",
+      "home_before": {},
+      "defs": {},
+      "note": null,
+      "stdout": "\u001b[36mRegister Information\u001b[0m\n\n\u001b[32m  Status: OK\u001b[0m\n\u001b[2m  Path: {REGISTER}\u001b[0m\n\u001b[2m  Source: User local clone (~/.ukiryu/register)\u001b[0m\n\u001b[2m  Tools available: 2\u001b[0m\n\n\u001b[36mEnvironment variable:\u001b[0m\n\u001b[2m  UKIRYU_REGISTER (not set)\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "register-path",
+      "args": [
+        "register",
+        "path"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "env",
+      "home_before": {},
+      "defs": {},
+      "note": null,
+      "stdout": "{REGISTER}\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "register-path-user",
+      "args": [
+        "register",
+        "path"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "user",
+      "home_before": {},
+      "defs": {},
+      "note": null,
+      "stdout": "{REGISTER}\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "register-unknown-subcommand",
+      "args": [
+        "register",
+        "bogus"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "env",
+      "home_before": {},
+      "defs": {},
+      "note": null,
+      "stdout": "",
+      "stderr": "Unknown subcommand: bogus. Valid subcommands: info, update, path\n",
+      "exit": 1,
+      "home_after": {}
+    },
+    {
+      "name": "register-update-not-git",
+      "args": [
+        "register",
+        "update"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "git"
+      ],
+      "register": "env",
+      "home_before": {},
+      "defs": {},
+      "note": null,
+      "stdout": "\u001b[36mUpdating register...\u001b[0m\n",
+      "stderr": "[ArgumentError] '{REGISTER}' is not in a git working tree\n",
+      "exit": 1,
+      "home_after": {}
+    },
+    {
+      "name": "register-info-no-color",
+      "args": [
+        "register",
+        "info"
+      ],
+      "env": {
+        "SHELL": "/bin/bash",
+        "NO_COLOR": "1"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "env",
+      "home_before": {},
+      "defs": {},
+      "note": null,
+      "stdout": "Register Information\n\n  Status: OK\n  Path: {REGISTER}\n  Source: Environment variable (UKIRYU_REGISTER)\n  Tools available: 2\n\nEnvironment variable:\n  UKIRYU_REGISTER={REGISTER}\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "resolve-none",
+      "args": [
+        "resolve",
+        "nosuch"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "env",
+      "home_before": {},
+      "defs": {},
+      "note": null,
+      "stdout": "\u001b[36mResolution for: nosuch\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[31m✗ No definitions found for 'nosuch'\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mTo see available tools:\u001b[0m\n\u001b[37m  ukiryu list\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mTo search for definitions:\u001b[0m\n\u001b[37m  ukiryu definitions list\u001b[0m\n",
+      "stderr": "",
+      "exit": 1,
+      "home_after": {}
+    },
+    {
+      "name": "resolve-highest-priority",
+      "args": [
+        "resolve",
+        "gamma"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "env",
+      "home_before": {},
+      "defs": {
+        "user/gamma/1.0.yaml": "---\nname: gamma\nversion: '1.0'\n",
+        "user/gamma/2.5.yaml": "---\nname: gamma\nversion: '2.5'\n",
+        "sys/gamma/3.0.yaml": "---\nname: gamma\nversion: '3.0'\n"
+      },
+      "note": null,
+      "stdout": "\u001b[36mResolution for: gamma\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[37mAvailable Definitions (3):\u001b[0m\n\u001b[37m  ★ 2.5 (user)\u001b[0m\n\u001b[2m    Path: {XDG}/ukiryu/definitions/gamma/2.5.yaml\u001b[0m\n\u001b[2m    Mtime: 2023-11-14 22:13:20 +0000\u001b[0m\n\u001b[2m    Priority: 1\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[37m  ★ 1.0 (user)\u001b[0m\n\u001b[2m    Path: {XDG}/ukiryu/definitions/gamma/1.0.yaml\u001b[0m\n\u001b[2m    Mtime: 2023-11-14 22:13:20 +0000\u001b[0m\n\u001b[2m    Priority: 1\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[37m  ◆ 3.0 (bundled)\u001b[0m\n\u001b[2m    Path: {SYSDATA}/ukiryu/definitions/gamma/3.0.yaml\u001b[0m\n\u001b[2m    Mtime: 2023-11-14 22:13:20 +0000\u001b[0m\n\u001b[2m    Priority: 2\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mSelected Definition (highest priority):\u001b[0m\n\u001b[32m  ✓ gamma/2.5\u001b[0m\n\u001b[37m    Source: user\u001b[0m\n\u001b[37m    Path: {XDG}/ukiryu/definitions/gamma/2.5.yaml\u001b[0m\n\u001b[37m    Priority: 1\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "resolve-constraint-min",
+      "args": [
+        "resolve",
+        "gamma",
+        ">=2.0"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "env",
+      "home_before": {},
+      "defs": {
+        "user/gamma/1.0.yaml": "---\nname: gamma\nversion: '1.0'\n",
+        "user/gamma/2.5.yaml": "---\nname: gamma\nversion: '2.5'\n",
+        "sys/gamma/3.0.yaml": "---\nname: gamma\nversion: '3.0'\n"
+      },
+      "note": null,
+      "stdout": "\u001b[36mResolution for: gamma\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[37mAvailable Definitions (3):\u001b[0m\n\u001b[37m  ★ 2.5 (user)\u001b[0m\n\u001b[2m    Path: {XDG}/ukiryu/definitions/gamma/2.5.yaml\u001b[0m\n\u001b[2m    Mtime: 2023-11-14 22:13:20 +0000\u001b[0m\n\u001b[2m    Priority: 1\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[37m  ★ 1.0 (user)\u001b[0m\n\u001b[2m    Path: {XDG}/ukiryu/definitions/gamma/1.0.yaml\u001b[0m\n\u001b[2m    Mtime: 2023-11-14 22:13:20 +0000\u001b[0m\n\u001b[2m    Priority: 1\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[37m  ◆ 3.0 (bundled)\u001b[0m\n\u001b[2m    Path: {SYSDATA}/ukiryu/definitions/gamma/3.0.yaml\u001b[0m\n\u001b[2m    Mtime: 2023-11-14 22:13:20 +0000\u001b[0m\n\u001b[2m    Priority: 2\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mSelected Definition (constraint: >=2.0):\u001b[0m\n\u001b[32m  ✓ gamma/3.0\u001b[0m\n\u001b[37m    Source: bundled\u001b[0m\n\u001b[37m    Path: {SYSDATA}/ukiryu/definitions/gamma/3.0.yaml\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "resolve-constraint-pessimistic",
+      "args": [
+        "resolve",
+        "gamma",
+        "~>1.0"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "env",
+      "home_before": {},
+      "defs": {
+        "user/gamma/1.0.yaml": "---\nname: gamma\nversion: '1.0'\n",
+        "user/gamma/1.5.yaml": "---\nname: gamma\nversion: '1.5'\n",
+        "sys/gamma/3.0.yaml": "---\nname: gamma\nversion: '3.0'\n"
+      },
+      "note": null,
+      "stdout": "\u001b[36mResolution for: gamma\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[37mAvailable Definitions (3):\u001b[0m\n\u001b[37m  ★ 1.5 (user)\u001b[0m\n\u001b[2m    Path: {XDG}/ukiryu/definitions/gamma/1.5.yaml\u001b[0m\n\u001b[2m    Mtime: 2023-11-14 22:13:20 +0000\u001b[0m\n\u001b[2m    Priority: 1\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[37m  ★ 1.0 (user)\u001b[0m\n\u001b[2m    Path: {XDG}/ukiryu/definitions/gamma/1.0.yaml\u001b[0m\n\u001b[2m    Mtime: 2023-11-14 22:13:20 +0000\u001b[0m\n\u001b[2m    Priority: 1\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[37m  ◆ 3.0 (bundled)\u001b[0m\n\u001b[2m    Path: {SYSDATA}/ukiryu/definitions/gamma/3.0.yaml\u001b[0m\n\u001b[2m    Mtime: 2023-11-14 22:13:20 +0000\u001b[0m\n\u001b[2m    Priority: 2\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mSelected Definition (constraint: ~>1.0):\u001b[0m\n\u001b[32m  ✓ gamma/1.0\u001b[0m\n\u001b[37m    Source: user\u001b[0m\n\u001b[37m    Path: {XDG}/ukiryu/definitions/gamma/1.0.yaml\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "resolve-constraint-unsatisfied",
+      "args": [
+        "resolve",
+        "gamma",
+        ">9"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "env",
+      "home_before": {},
+      "defs": {
+        "user/gamma/1.0.yaml": "---\nname: gamma\nversion: '1.0'\n",
+        "sys/gamma/3.0.yaml": "---\nname: gamma\nversion: '3.0'\n"
+      },
+      "note": null,
+      "stdout": "\u001b[36mResolution for: gamma\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[37mAvailable Definitions (2):\u001b[0m\n\u001b[37m  ★ 1.0 (user)\u001b[0m\n\u001b[2m    Path: {XDG}/ukiryu/definitions/gamma/1.0.yaml\u001b[0m\n\u001b[2m    Mtime: 2023-11-14 22:13:20 +0000\u001b[0m\n\u001b[2m    Priority: 1\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[37m  ◆ 3.0 (bundled)\u001b[0m\n\u001b[2m    Path: {SYSDATA}/ukiryu/definitions/gamma/3.0.yaml\u001b[0m\n\u001b[2m    Mtime: 2023-11-14 22:13:20 +0000\u001b[0m\n\u001b[2m    Priority: 2\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[31m✗ No version satisfies constraint: >9\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[37mAvailable versions:\u001b[0m\n\u001b[2m  - 1.0\u001b[0m\n\u001b[2m  - 3.0\u001b[0m\n",
+      "stderr": "",
+      "exit": 1,
+      "home_after": {}
+    },
+    {
+      "name": "resolve-no-color",
+      "args": [
+        "resolve",
+        "gamma"
+      ],
+      "env": {
+        "SHELL": "/bin/bash",
+        "NO_COLOR": "1"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "env",
+      "home_before": {},
+      "defs": {
+        "user/gamma/1.0.yaml": "---\nname: gamma\nversion: '1.0'\n"
+      },
+      "note": null,
+      "stdout": "Resolution for: gamma\n\nAvailable Definitions (1):\n  ★ 1.0 (user)\n    Path: {XDG}/ukiryu/definitions/gamma/1.0.yaml\n    Mtime: 2023-11-14 22:13:20 +0000\n    Priority: 1\n\nSelected Definition (highest priority):\n  ✓ gamma/1.0\n    Source: user\n    Path: {XDG}/ukiryu/definitions/gamma/1.0.yaml\n    Priority: 1\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    },
+    {
+      "name": "resolve-system-only",
+      "args": [
+        "resolve",
+        "gamma"
+      ],
+      "env": {
+        "SHELL": "/bin/bash"
+      },
+      "bins": [
+        "beta",
+        "zeta"
+      ],
+      "register": "env",
+      "home_before": {},
+      "defs": {
+        "sys/gamma/3.0.yaml": "---\nname: gamma\nversion: '3.0'\n"
+      },
+      "note": null,
+      "stdout": "\u001b[36mResolution for: gamma\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[37mAvailable Definitions (1):\u001b[0m\n\u001b[37m  ◆ 3.0 (bundled)\u001b[0m\n\u001b[2m    Path: {SYSDATA}/ukiryu/definitions/gamma/3.0.yaml\u001b[0m\n\u001b[2m    Mtime: 2023-11-14 22:13:20 +0000\u001b[0m\n\u001b[2m    Priority: 2\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mSelected Definition (highest priority):\u001b[0m\n\u001b[32m  ✓ gamma/3.0\u001b[0m\n\u001b[37m    Source: bundled\u001b[0m\n\u001b[37m    Path: {SYSDATA}/ukiryu/definitions/gamma/3.0.yaml\u001b[0m\n\u001b[37m    Priority: 2\u001b[0m\n",
+      "stderr": "",
+      "exit": 0,
+      "home_after": {}
+    }
+  ]
+}

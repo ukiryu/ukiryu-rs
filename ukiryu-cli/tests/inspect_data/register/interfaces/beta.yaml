@@ -1,0 +1,16 @@
+---
+ukiryu_schema: '1.0'
+name: beta
+version: '1.0'
+display_name: Beta Interface
+actions:
+- name: show
+  description: Show things
+  signature:
+    inputs:
+      inputs:
+      - name: files
+        type: file
+        required:
+aliases:
+- beta
