@@ -13,6 +13,8 @@ pub enum ErrorClass {
     ValidationIssue,
     /// Ruby `ArgumentError` (for example a failed numeric comparison)
     Argument,
+    /// Ruby `RangeError` (`NUM2INT` overflow in `Time.utc` arguments)
+    Range,
     /// Ruby `TypeError`
     Type,
     /// Ruby `FloatDomainError` (`Integer(Float::NAN)`)
