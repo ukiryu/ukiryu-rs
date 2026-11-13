@@ -1,0 +1,3470 @@
+{
+  "provenance": {
+    "source": "https://github.com/ukiryu/ukiryu",
+    "revision": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+    "methods": [
+      "Ukiryu::CliCommands::RunFileCommand#load_execution_request",
+      "Ukiryu::CliCommands::RunFileCommand#validate_request!",
+      "Ukiryu::CliCommands::BaseCommand#stringify_keys"
+    ],
+    "ruby": "4.0.1",
+    "psych": "5.3.1",
+    "gemfile_lock_sha256": "fc3b12f2ede259028b638d2f26c65ddf9506d142c20a8bf0c1b151741078b65e",
+    "platform": "x86_64-linux"
+  },
+  "cases": [
+    {
+      "id": "alias-value",
+      "path": "alias-value.yaml",
+      "load": {
+        "error": {
+          "class": "Thor::Error",
+          "message": "Error loading request file: Alias parsing was not enabled. To enable it, pass `aliases: true` to `Psych::load` or `Psych::safe_load`."
+        }
+      }
+    },
+    {
+      "id": "all-missing-mapping",
+      "path": "all-missing-mapping.yaml",
+      "load": {
+        "error": {
+          "class": "RuntimeError",
+          "message": "Request must include 'tool' field"
+        }
+      }
+    },
+    {
+      "id": "anchor-only",
+      "path": "anchor-only.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "string",
+                "value": "a"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "b"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": [
+                  [
+                    {
+                      "type": "string",
+                      "value": "x"
+                    },
+                    {
+                      "type": "integer",
+                      "value": "1"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "symbol",
+                "value": "x"
+              },
+              {
+                "type": "integer",
+                "value": "1"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "arguments-bool-key",
+      "path": "arguments-bool-key.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "string",
+                "value": "a"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "b"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": [
+                  [
+                    {
+                      "type": "boolean",
+                      "value": true
+                    },
+                    {
+                      "type": "string",
+                      "value": "bool-key"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "error": {
+          "class": "NoMethodError",
+          "message": "undefined method 'to_sym' for true"
+        }
+      }
+    },
+    {
+      "id": "arguments-duplicate-key",
+      "path": "arguments-duplicate-key.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "string",
+                "value": "a"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "b"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": [
+                  [
+                    {
+                      "type": "string",
+                      "value": "output"
+                    },
+                    {
+                      "type": "string",
+                      "value": "second"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "symbol",
+                "value": "output"
+              },
+              {
+                "type": "string",
+                "value": "second"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "arguments-empty-mapping",
+      "path": "arguments-empty-mapping.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "string",
+                "value": "a"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "b"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": []
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "ok": {
+          "type": "hash",
+          "entries": []
+        }
+      }
+    },
+    {
+      "id": "arguments-empty-sequence",
+      "path": "arguments-empty-sequence.yaml",
+      "load": {
+        "error": {
+          "class": "RuntimeError",
+          "message": "'arguments' must be a YAML object (hash)"
+        }
+      }
+    },
+    {
+      "id": "arguments-empty-string",
+      "path": "arguments-empty-string.yaml",
+      "load": {
+        "error": {
+          "class": "RuntimeError",
+          "message": "'arguments' must be a YAML object (hash)"
+        }
+      }
+    },
+    {
+      "id": "arguments-empty-value",
+      "path": "arguments-empty-value.yaml",
+      "load": {
+        "error": {
+          "class": "RuntimeError",
+          "message": "Request must include 'arguments' field"
+        }
+      }
+    },
+    {
+      "id": "arguments-false-key",
+      "path": "arguments-false-key.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "string",
+                "value": "a"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "b"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": [
+                  [
+                    {
+                      "type": "boolean",
+                      "value": false
+                    },
+                    {
+                      "type": "string",
+                      "value": "bool-key"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "error": {
+          "class": "NoMethodError",
+          "message": "undefined method 'to_sym' for false"
+        }
+      }
+    },
+    {
+      "id": "arguments-false",
+      "path": "arguments-false.yaml",
+      "load": {
+        "error": {
+          "class": "RuntimeError",
+          "message": "Request must include 'arguments' field"
+        }
+      }
+    },
+    {
+      "id": "arguments-float-key",
+      "path": "arguments-float-key.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "string",
+                "value": "a"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "b"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": [
+                  [
+                    {
+                      "type": "float",
+                      "value": "1.5"
+                    },
+                    {
+                      "type": "string",
+                      "value": "float-key"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "error": {
+          "class": "NoMethodError",
+          "message": "undefined method 'to_sym' for an instance of Float"
+        }
+      }
+    },
+    {
+      "id": "arguments-key-collision",
+      "path": "arguments-key-collision.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "string",
+                "value": "a"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "b"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": [
+                  [
+                    {
+                      "type": "string",
+                      "value": "output"
+                    },
+                    {
+                      "type": "string",
+                      "value": "string"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "symbol",
+                      "value": "output"
+                    },
+                    {
+                      "type": "string",
+                      "value": "symbol"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "symbol",
+                "value": "output"
+              },
+              {
+                "type": "string",
+                "value": "symbol"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "arguments-key-types",
+      "path": "arguments-key-types.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "string",
+                "value": "a"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "b"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": [
+                  [
+                    {
+                      "type": "integer",
+                      "value": "1"
+                    },
+                    {
+                      "type": "string",
+                      "value": "int-key"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "boolean",
+                      "value": true
+                    },
+                    {
+                      "type": "string",
+                      "value": "bool-key"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "symbol",
+                      "value": "sym"
+                    },
+                    {
+                      "type": "string",
+                      "value": "symbol-key"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "str"
+                    },
+                    {
+                      "type": "string",
+                      "value": "string-key"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "error": {
+          "class": "NoMethodError",
+          "message": "undefined method 'to_sym' for an instance of Integer"
+        }
+      }
+    },
+    {
+      "id": "arguments-mapping-key",
+      "path": "arguments-mapping-key.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "string",
+                "value": "a"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "b"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": [
+                  [
+                    {
+                      "type": "hash",
+                      "entries": [
+                        [
+                          {
+                            "type": "string",
+                            "value": "a"
+                          },
+                          {
+                            "type": "integer",
+                            "value": "1"
+                          }
+                        ]
+                      ]
+                    },
+                    {
+                      "type": "string",
+                      "value": "map-key"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "error": {
+          "class": "NoMethodError",
+          "message": "undefined method 'to_sym' for an instance of Hash"
+        }
+      }
+    },
+    {
+      "id": "arguments-missing",
+      "path": "arguments-missing.yaml",
+      "load": {
+        "error": {
+          "class": "RuntimeError",
+          "message": "Request must include 'arguments' field"
+        }
+      }
+    },
+    {
+      "id": "arguments-nested",
+      "path": "arguments-nested.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "string",
+                "value": "a"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "b"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": [
+                  [
+                    {
+                      "type": "string",
+                      "value": "list"
+                    },
+                    {
+                      "type": "array",
+                      "items": [
+                        {
+                          "type": "integer",
+                          "value": "1"
+                        },
+                        {
+                          "type": "string",
+                          "value": "two"
+                        },
+                        {
+                          "type": "float",
+                          "value": "3.0"
+                        },
+                        {
+                          "type": "nil"
+                        },
+                        {
+                          "type": "boolean",
+                          "value": false
+                        },
+                        {
+                          "type": "array",
+                          "items": [
+                            {
+                              "type": "string",
+                              "value": "nested"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "hash",
+                          "entries": [
+                            [
+                              {
+                                "type": "string",
+                                "value": "k"
+                              },
+                              {
+                                "type": "string",
+                                "value": "v"
+                              }
+                            ]
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "map"
+                    },
+                    {
+                      "type": "hash",
+                      "entries": [
+                        [
+                          {
+                            "type": "string",
+                            "value": "inner"
+                          },
+                          {
+                            "type": "hash",
+                            "entries": [
+                              [
+                                {
+                                  "type": "string",
+                                  "value": "deep"
+                                },
+                                {
+                                  "type": "array",
+                                  "items": [
+                                    {
+                                      "type": "string",
+                                      "value": "x"
+                                    }
+                                  ]
+                                }
+                              ]
+                            ]
+                          }
+                        ],
+                        [
+                          {
+                            "type": "string",
+                            "value": "flag"
+                          },
+                          {
+                            "type": "boolean",
+                            "value": false
+                          }
+                        ],
+                        [
+                          {
+                            "type": "string",
+                            "value": "none"
+                          },
+                          {
+                            "type": "nil"
+                          }
+                        ]
+                      ]
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "empty_list"
+                    },
+                    {
+                      "type": "array",
+                      "items": []
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "empty_map"
+                    },
+                    {
+                      "type": "hash",
+                      "entries": []
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "symbol",
+                "value": "list"
+              },
+              {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "integer",
+                    "value": "1"
+                  },
+                  {
+                    "type": "string",
+                    "value": "two"
+                  },
+                  {
+                    "type": "float",
+                    "value": "3.0"
+                  },
+                  {
+                    "type": "nil"
+                  },
+                  {
+                    "type": "boolean",
+                    "value": false
+                  },
+                  {
+                    "type": "array",
+                    "items": [
+                      {
+                        "type": "string",
+                        "value": "nested"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "hash",
+                    "entries": [
+                      [
+                        {
+                          "type": "string",
+                          "value": "k"
+                        },
+                        {
+                          "type": "string",
+                          "value": "v"
+                        }
+                      ]
+                    ]
+                  }
+                ]
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "map"
+              },
+              {
+                "type": "hash",
+                "entries": [
+                  [
+                    {
+                      "type": "string",
+                      "value": "inner"
+                    },
+                    {
+                      "type": "hash",
+                      "entries": [
+                        [
+                          {
+                            "type": "string",
+                            "value": "deep"
+                          },
+                          {
+                            "type": "array",
+                            "items": [
+                              {
+                                "type": "string",
+                                "value": "x"
+                              }
+                            ]
+                          }
+                        ]
+                      ]
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "flag"
+                    },
+                    {
+                      "type": "boolean",
+                      "value": false
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "none"
+                    },
+                    {
+                      "type": "nil"
+                    }
+                  ]
+                ]
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "empty_list"
+              },
+              {
+                "type": "array",
+                "items": []
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "empty_map"
+              },
+              {
+                "type": "hash",
+                "entries": []
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "arguments-null-key",
+      "path": "arguments-null-key.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "string",
+                "value": "a"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "b"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": [
+                  [
+                    {
+                      "type": "nil"
+                    },
+                    {
+                      "type": "string",
+                      "value": "null-key"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "error": {
+          "class": "NoMethodError",
+          "message": "undefined method 'to_sym' for nil"
+        }
+      }
+    },
+    {
+      "id": "arguments-null",
+      "path": "arguments-null.yaml",
+      "load": {
+        "error": {
+          "class": "RuntimeError",
+          "message": "Request must include 'arguments' field"
+        }
+      }
+    },
+    {
+      "id": "arguments-quoted-number-key",
+      "path": "arguments-quoted-number-key.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "string",
+                "value": "a"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "b"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": [
+                  [
+                    {
+                      "type": "string",
+                      "value": "1"
+                    },
+                    {
+                      "type": "string",
+                      "value": "quoted-key"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "symbol",
+                "value": "1"
+              },
+              {
+                "type": "string",
+                "value": "quoted-key"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "arguments-scalar",
+      "path": "arguments-scalar.yaml",
+      "load": {
+        "error": {
+          "class": "RuntimeError",
+          "message": "'arguments' must be a YAML object (hash)"
+        }
+      }
+    },
+    {
+      "id": "arguments-scalars",
+      "path": "arguments-scalars.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "string",
+                "value": "a"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "b"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": [
+                  [
+                    {
+                      "type": "string",
+                      "value": "str"
+                    },
+                    {
+                      "type": "string",
+                      "value": "text"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "quoted"
+                    },
+                    {
+                      "type": "string",
+                      "value": "yes"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "dq"
+                    },
+                    {
+                      "type": "string",
+                      "value": "line\nbreak"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "int"
+                    },
+                    {
+                      "type": "integer",
+                      "value": "42"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "neg"
+                    },
+                    {
+                      "type": "integer",
+                      "value": "-7"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "big"
+                    },
+                    {
+                      "type": "integer",
+                      "value": "123456789012345678901234567890"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "float"
+                    },
+                    {
+                      "type": "float",
+                      "value": "1.5"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "exp"
+                    },
+                    {
+                      "type": "string",
+                      "value": "1.0e3"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "nexp"
+                    },
+                    {
+                      "type": "string",
+                      "value": "1e3"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "dotfloat"
+                    },
+                    {
+                      "type": "float",
+                      "value": "0.5"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "inf"
+                    },
+                    {
+                      "type": "float",
+                      "value": "Infinity"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "ninf"
+                    },
+                    {
+                      "type": "float",
+                      "value": "-Infinity"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "nan"
+                    },
+                    {
+                      "type": "float",
+                      "value": "NaN"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "t"
+                    },
+                    {
+                      "type": "boolean",
+                      "value": true
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "f"
+                    },
+                    {
+                      "type": "boolean",
+                      "value": false
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "yes_"
+                    },
+                    {
+                      "type": "boolean",
+                      "value": true
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "no_"
+                    },
+                    {
+                      "type": "boolean",
+                      "value": false
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "on_"
+                    },
+                    {
+                      "type": "boolean",
+                      "value": true
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "off_"
+                    },
+                    {
+                      "type": "boolean",
+                      "value": false
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "y_"
+                    },
+                    {
+                      "type": "string",
+                      "value": "y"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "n_"
+                    },
+                    {
+                      "type": "string",
+                      "value": "n"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "TRUE_"
+                    },
+                    {
+                      "type": "boolean",
+                      "value": true
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "nul"
+                    },
+                    {
+                      "type": "nil"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "tilde"
+                    },
+                    {
+                      "type": "nil"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "empty"
+                    },
+                    {
+                      "type": "nil"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "octal"
+                    },
+                    {
+                      "type": "string",
+                      "value": "0o17"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "leading_zero"
+                    },
+                    {
+                      "type": "integer",
+                      "value": "10"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "hex"
+                    },
+                    {
+                      "type": "integer",
+                      "value": "31"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "underscore"
+                    },
+                    {
+                      "type": "integer",
+                      "value": "1000"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "sexagesimal"
+                    },
+                    {
+                      "type": "integer",
+                      "value": "5400"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "plus"
+                    },
+                    {
+                      "type": "integer",
+                      "value": "5"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "sym"
+                    },
+                    {
+                      "type": "symbol",
+                      "value": "name"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "quoted_sym"
+                    },
+                    {
+                      "type": "string",
+                      "value": ":name"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "literal"
+                    },
+                    {
+                      "type": "string",
+                      "value": "a\nb\n"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "folded"
+                    },
+                    {
+                      "type": "string",
+                      "value": "a b\n"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "symbol",
+                "value": "str"
+              },
+              {
+                "type": "string",
+                "value": "text"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "quoted"
+              },
+              {
+                "type": "string",
+                "value": "yes"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "dq"
+              },
+              {
+                "type": "string",
+                "value": "line\nbreak"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "int"
+              },
+              {
+                "type": "integer",
+                "value": "42"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "neg"
+              },
+              {
+                "type": "integer",
+                "value": "-7"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "big"
+              },
+              {
+                "type": "integer",
+                "value": "123456789012345678901234567890"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "float"
+              },
+              {
+                "type": "float",
+                "value": "1.5"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "exp"
+              },
+              {
+                "type": "string",
+                "value": "1.0e3"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "nexp"
+              },
+              {
+                "type": "string",
+                "value": "1e3"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "dotfloat"
+              },
+              {
+                "type": "float",
+                "value": "0.5"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "inf"
+              },
+              {
+                "type": "float",
+                "value": "Infinity"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "ninf"
+              },
+              {
+                "type": "float",
+                "value": "-Infinity"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "nan"
+              },
+              {
+                "type": "float",
+                "value": "NaN"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "t"
+              },
+              {
+                "type": "boolean",
+                "value": true
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "f"
+              },
+              {
+                "type": "boolean",
+                "value": false
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "yes_"
+              },
+              {
+                "type": "boolean",
+                "value": true
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "no_"
+              },
+              {
+                "type": "boolean",
+                "value": false
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "on_"
+              },
+              {
+                "type": "boolean",
+                "value": true
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "off_"
+              },
+              {
+                "type": "boolean",
+                "value": false
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "y_"
+              },
+              {
+                "type": "string",
+                "value": "y"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "n_"
+              },
+              {
+                "type": "string",
+                "value": "n"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "TRUE_"
+              },
+              {
+                "type": "boolean",
+                "value": true
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "nul"
+              },
+              {
+                "type": "nil"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "tilde"
+              },
+              {
+                "type": "nil"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "empty"
+              },
+              {
+                "type": "nil"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "octal"
+              },
+              {
+                "type": "string",
+                "value": "0o17"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "leading_zero"
+              },
+              {
+                "type": "integer",
+                "value": "10"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "hex"
+              },
+              {
+                "type": "integer",
+                "value": "31"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "underscore"
+              },
+              {
+                "type": "integer",
+                "value": "1000"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "sexagesimal"
+              },
+              {
+                "type": "integer",
+                "value": "5400"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "plus"
+              },
+              {
+                "type": "integer",
+                "value": "5"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "sym"
+              },
+              {
+                "type": "symbol",
+                "value": "name"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "quoted_sym"
+              },
+              {
+                "type": "string",
+                "value": ":name"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "literal"
+              },
+              {
+                "type": "string",
+                "value": "a\nb\n"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "folded"
+              },
+              {
+                "type": "string",
+                "value": "a b\n"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "arguments-sequence-key",
+      "path": "arguments-sequence-key.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "string",
+                "value": "a"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "b"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": [
+                  [
+                    {
+                      "type": "array",
+                      "items": [
+                        {
+                          "type": "string",
+                          "value": "a"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "string",
+                      "value": "seq-key"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "error": {
+          "class": "NoMethodError",
+          "message": "undefined method 'to_sym' for an instance of Array"
+        }
+      }
+    },
+    {
+      "id": "arguments-zero",
+      "path": "arguments-zero.yaml",
+      "load": {
+        "error": {
+          "class": "RuntimeError",
+          "message": "'arguments' must be a YAML object (hash)"
+        }
+      }
+    },
+    {
+      "id": "binary-tag",
+      "path": "binary-tag.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "string",
+                "value": "a"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "b"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": [
+                  [
+                    {
+                      "type": "string",
+                      "value": "s"
+                    },
+                    {
+                      "type": "bytes",
+                      "encoding": "ASCII-8BIT",
+                      "hex": "68656c6c6f"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "symbol",
+                "value": "s"
+              },
+              {
+                "type": "bytes",
+                "encoding": "ASCII-8BIT",
+                "hex": "68656c6c6f"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "bom-prefixed",
+      "path": "bom-prefixed.yaml",
+      "load": {
+        "error": {
+          "class": "RuntimeError",
+          "message": "Request must include 'command' field"
+        }
+      }
+    },
+    {
+      "id": "builder-convert",
+      "path": "builder-convert.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "string",
+                "value": "imagemagick"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "convert"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": [
+                  [
+                    {
+                      "type": "string",
+                      "value": "inputs"
+                    },
+                    {
+                      "type": "array",
+                      "items": [
+                        {
+                          "type": "string",
+                          "value": "a.png"
+                        },
+                        {
+                          "type": "string",
+                          "value": "b.png"
+                        }
+                      ]
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "output"
+                    },
+                    {
+                      "type": "string",
+                      "value": "out.jpg"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "quality"
+                    },
+                    {
+                      "type": "integer",
+                      "value": "85"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "strip"
+                    },
+                    {
+                      "type": "boolean",
+                      "value": true
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "symbol",
+                "value": "inputs"
+              },
+              {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "string",
+                    "value": "a.png"
+                  },
+                  {
+                    "type": "string",
+                    "value": "b.png"
+                  }
+                ]
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "output"
+              },
+              {
+                "type": "string",
+                "value": "out.jpg"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "quality"
+              },
+              {
+                "type": "integer",
+                "value": "85"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "strip"
+              },
+              {
+                "type": "boolean",
+                "value": true
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "command-false",
+      "path": "command-false.yaml",
+      "load": {
+        "error": {
+          "class": "RuntimeError",
+          "message": "Request must include 'command' field"
+        }
+      }
+    },
+    {
+      "id": "command-missing",
+      "path": "command-missing.yaml",
+      "load": {
+        "error": {
+          "class": "RuntimeError",
+          "message": "Request must include 'command' field"
+        }
+      }
+    },
+    {
+      "id": "command-null",
+      "path": "command-null.yaml",
+      "load": {
+        "error": {
+          "class": "RuntimeError",
+          "message": "Request must include 'command' field"
+        }
+      }
+    },
+    {
+      "id": "command-yes",
+      "path": "command-yes.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "string",
+                "value": "a"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "boolean",
+                "value": true
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": []
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "ok": {
+          "type": "hash",
+          "entries": []
+        }
+      }
+    },
+    {
+      "id": "comment-only",
+      "path": "comment-only.yaml",
+      "load": {
+        "error": {
+          "class": "RuntimeError",
+          "message": "Request must be a YAML object (hash)"
+        }
+      }
+    },
+    {
+      "id": "core-str-tag",
+      "path": "core-str-tag.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "string",
+                "value": "a"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "b"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": [
+                  [
+                    {
+                      "type": "string",
+                      "value": "s"
+                    },
+                    {
+                      "type": "string",
+                      "value": "123"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "symbol",
+                "value": "s"
+              },
+              {
+                "type": "string",
+                "value": "123"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "custom-scalar-tag",
+      "path": "custom-scalar-tag.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "string",
+                "value": "a"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "b"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": [
+                  [
+                    {
+                      "type": "string",
+                      "value": "s"
+                    },
+                    {
+                      "type": "string",
+                      "value": "value"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "symbol",
+                "value": "s"
+              },
+              {
+                "type": "string",
+                "value": "value"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "date-value",
+      "path": "date-value.yaml",
+      "load": {
+        "error": {
+          "class": "Thor::Error",
+          "message": "Error loading request file: Tried to load unspecified class: Date"
+        }
+      }
+    },
+    {
+      "id": "duplicate-top-level-key",
+      "path": "duplicate-top-level-key.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "string",
+                "value": "c"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "b"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": []
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "ok": {
+          "type": "hash",
+          "entries": []
+        }
+      }
+    },
+    {
+      "id": "empty-file",
+      "path": "empty-file.yaml",
+      "load": {
+        "error": {
+          "class": "RuntimeError",
+          "message": "Request must be a YAML object (hash)"
+        }
+      }
+    },
+    {
+      "id": "explicit-null-document",
+      "path": "explicit-null-document.yaml",
+      "load": {
+        "error": {
+          "class": "RuntimeError",
+          "message": "Request must be a YAML object (hash)"
+        }
+      }
+    },
+    {
+      "id": "extra-top-level-fields",
+      "path": "extra-top-level-fields.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "string",
+                "value": "a"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "b"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": [
+                  [
+                    {
+                      "type": "string",
+                      "value": "x"
+                    },
+                    {
+                      "type": "integer",
+                      "value": "1"
+                    }
+                  ]
+                ]
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "timeout"
+              },
+              {
+                "type": "integer",
+                "value": "5"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "extra"
+              },
+              {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "integer",
+                    "value": "1"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "symbol",
+                "value": "x"
+              },
+              {
+                "type": "integer",
+                "value": "1"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "flow-scalar-continuation-unindented",
+      "path": "flow-scalar-continuation-unindented.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "string",
+                "value": "a"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "b"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": [
+                  [
+                    {
+                      "type": "string",
+                      "value": "dq"
+                    },
+                    {
+                      "type": "string",
+                      "value": "line break"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "symbol",
+                "value": "dq"
+              },
+              {
+                "type": "string",
+                "value": "line break"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "invalid-utf8",
+      "path": "invalid-utf8.yaml",
+      "load": {
+        "error": {
+          "class": "Thor::Error",
+          "message": "Invalid YAML in request file: (<unknown>): invalid leading UTF-8 octet at line 1 column 1"
+        }
+      }
+    },
+    {
+      "id": "multiple-documents",
+      "path": "multiple-documents.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "string",
+                "value": "a"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "b"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": [
+                  [
+                    {
+                      "type": "string",
+                      "value": "x"
+                    },
+                    {
+                      "type": "integer",
+                      "value": "1"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "symbol",
+                "value": "x"
+              },
+              {
+                "type": "integer",
+                "value": "1"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "quoted-date",
+      "path": "quoted-date.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "string",
+                "value": "a"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "b"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": [
+                  [
+                    {
+                      "type": "string",
+                      "value": "when"
+                    },
+                    {
+                      "type": "string",
+                      "value": "2024-01-01"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "symbol",
+                "value": "when"
+              },
+              {
+                "type": "string",
+                "value": "2024-01-01"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "ruby-object-tag",
+      "path": "ruby-object-tag.yaml",
+      "load": {
+        "error": {
+          "class": "Thor::Error",
+          "message": "Error loading request file: Tried to load unspecified class: Object"
+        }
+      }
+    },
+    {
+      "id": "ruby-symbol-tag",
+      "path": "ruby-symbol-tag.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "string",
+                "value": "a"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "b"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": [
+                  [
+                    {
+                      "type": "string",
+                      "value": "s"
+                    },
+                    {
+                      "type": "symbol",
+                      "value": "name"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "symbol",
+                "value": "s"
+              },
+              {
+                "type": "symbol",
+                "value": "name"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "scalar-document",
+      "path": "scalar-document.yaml",
+      "load": {
+        "error": {
+          "class": "RuntimeError",
+          "message": "Request must be a YAML object (hash)"
+        }
+      }
+    },
+    {
+      "id": "sequence-document",
+      "path": "sequence-document.yaml",
+      "load": {
+        "error": {
+          "class": "RuntimeError",
+          "message": "Request must be a YAML object (hash)"
+        }
+      }
+    },
+    {
+      "id": "spec-arguments-sequence",
+      "path": "spec-arguments-sequence.yaml",
+      "load": {
+        "error": {
+          "class": "RuntimeError",
+          "message": "'arguments' must be a YAML object (hash)"
+        }
+      }
+    },
+    {
+      "id": "spec-missing-fields",
+      "path": "spec-missing-fields.yaml",
+      "load": {
+        "error": {
+          "class": "RuntimeError",
+          "message": "Request must include 'tool' field"
+        }
+      }
+    },
+    {
+      "id": "spec-valid",
+      "path": "spec-valid.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "string",
+                "value": "imagemagick"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "convert"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": [
+                  [
+                    {
+                      "type": "string",
+                      "value": "inputs"
+                    },
+                    {
+                      "type": "array",
+                      "items": [
+                        {
+                          "type": "string",
+                          "value": "spec/fixtures/input.png"
+                        }
+                      ]
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "output"
+                    },
+                    {
+                      "type": "string",
+                      "value": "spec/fixtures/output.jpg"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "symbol",
+                "value": "inputs"
+              },
+              {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "string",
+                    "value": "spec/fixtures/input.png"
+                  }
+                ]
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "output"
+              },
+              {
+                "type": "string",
+                "value": "spec/fixtures/output.jpg"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "syntax-bad-indent",
+      "path": "syntax-bad-indent.yaml",
+      "load": {
+        "error": {
+          "class": "Thor::Error",
+          "message": "Invalid YAML in request file: (<unknown>): mapping values are not allowed in this context at line 2 column 10"
+        }
+      }
+    },
+    {
+      "id": "syntax-tab-indent",
+      "path": "syntax-tab-indent.yaml",
+      "load": {
+        "error": {
+          "class": "Thor::Error",
+          "message": "Invalid YAML in request file: (<unknown>): found character that cannot start any token while scanning for the next token at line 3 column 1"
+        }
+      }
+    },
+    {
+      "id": "syntax-unclosed-flow",
+      "path": "syntax-unclosed-flow.yaml",
+      "load": {
+        "error": {
+          "class": "Thor::Error",
+          "message": "Invalid YAML in request file: (<unknown>): did not find expected ',' or ']' while parsing a flow sequence at line 1 column 7"
+        }
+      }
+    },
+    {
+      "id": "syntax-unclosed-quote",
+      "path": "syntax-unclosed-quote.yaml",
+      "load": {
+        "error": {
+          "class": "Thor::Error",
+          "message": "Invalid YAML in request file: (<unknown>): found unexpected end of stream while scanning a quoted scalar at line 1 column 7"
+        }
+      }
+    },
+    {
+      "id": "timestamp-value",
+      "path": "timestamp-value.yaml",
+      "load": {
+        "error": {
+          "class": "Thor::Error",
+          "message": "Error loading request file: Tried to load unspecified class: Time"
+        }
+      }
+    },
+    {
+      "id": "tool-and-arguments-missing",
+      "path": "tool-and-arguments-missing.yaml",
+      "load": {
+        "error": {
+          "class": "RuntimeError",
+          "message": "Request must include 'tool' field"
+        }
+      }
+    },
+    {
+      "id": "tool-empty-string",
+      "path": "tool-empty-string.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "string",
+                "value": ""
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "b"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": []
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "ok": {
+          "type": "hash",
+          "entries": []
+        }
+      }
+    },
+    {
+      "id": "tool-empty-value",
+      "path": "tool-empty-value.yaml",
+      "load": {
+        "error": {
+          "class": "RuntimeError",
+          "message": "Request must include 'tool' field"
+        }
+      }
+    },
+    {
+      "id": "tool-false",
+      "path": "tool-false.yaml",
+      "load": {
+        "error": {
+          "class": "RuntimeError",
+          "message": "Request must include 'tool' field"
+        }
+      }
+    },
+    {
+      "id": "tool-mapping",
+      "path": "tool-mapping.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "hash",
+                "entries": [
+                  [
+                    {
+                      "type": "string",
+                      "value": "a"
+                    },
+                    {
+                      "type": "integer",
+                      "value": "1"
+                    }
+                  ]
+                ]
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "b"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": []
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "ok": {
+          "type": "hash",
+          "entries": []
+        }
+      }
+    },
+    {
+      "id": "tool-missing",
+      "path": "tool-missing.yaml",
+      "load": {
+        "error": {
+          "class": "RuntimeError",
+          "message": "Request must include 'tool' field"
+        }
+      }
+    },
+    {
+      "id": "tool-no",
+      "path": "tool-no.yaml",
+      "load": {
+        "error": {
+          "class": "RuntimeError",
+          "message": "Request must include 'tool' field"
+        }
+      }
+    },
+    {
+      "id": "tool-null-word",
+      "path": "tool-null-word.yaml",
+      "load": {
+        "error": {
+          "class": "RuntimeError",
+          "message": "Request must include 'tool' field"
+        }
+      }
+    },
+    {
+      "id": "tool-off",
+      "path": "tool-off.yaml",
+      "load": {
+        "error": {
+          "class": "RuntimeError",
+          "message": "Request must include 'tool' field"
+        }
+      }
+    },
+    {
+      "id": "tool-quoted-false",
+      "path": "tool-quoted-false.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "string",
+                "value": "false"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "b"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": []
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "ok": {
+          "type": "hash",
+          "entries": []
+        }
+      }
+    },
+    {
+      "id": "tool-sequence",
+      "path": "tool-sequence.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "string",
+                    "value": "a"
+                  }
+                ]
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "b"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": []
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "ok": {
+          "type": "hash",
+          "entries": []
+        }
+      }
+    },
+    {
+      "id": "tool-symbol-key",
+      "path": "tool-symbol-key.yaml",
+      "load": {
+        "error": {
+          "class": "RuntimeError",
+          "message": "Request must include 'tool' field"
+        }
+      }
+    },
+    {
+      "id": "tool-symbol-value",
+      "path": "tool-symbol-value.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "symbol",
+                "value": "a"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "b"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": []
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "ok": {
+          "type": "hash",
+          "entries": []
+        }
+      }
+    },
+    {
+      "id": "tool-tilde",
+      "path": "tool-tilde.yaml",
+      "load": {
+        "error": {
+          "class": "RuntimeError",
+          "message": "Request must include 'tool' field"
+        }
+      }
+    },
+    {
+      "id": "tool-zero",
+      "path": "tool-zero.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "integer",
+                "value": "0"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "b"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": []
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "ok": {
+          "type": "hash",
+          "entries": []
+        }
+      }
+    },
+    {
+      "id": "missing-file",
+      "path": "does-not-exist.yaml",
+      "load": {
+        "error": {
+          "class": "Thor::Error",
+          "message": "Request file not found: $CASES/does-not-exist.yaml"
+        }
+      }
+    },
+    {
+      "id": "directory",
+      "path": "",
+      "load": {
+        "error": {
+          "class": "Thor::Error",
+          "message": "Error loading request file: Is a directory @ io_fread - $CASES"
+        }
+      }
+    }
+  ]
+}

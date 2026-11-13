@@ -387,6 +387,55 @@ fn timeout_kills_descendants() {
     );
 }
 
+/// Whether a process is gone: no such pid, or a zombie awaiting its reaper.
+fn terminated(pid: &str) -> bool {
+    let out = std::process::Command::new("ps")
+        .args(["-o", "stat=", "-p", pid])
+        .output()
+        .expect("run ps");
+    let stat = String::from_utf8_lossy(&out.stdout);
+    let stat = stat.trim();
+    stat.is_empty() || stat.starts_with('Z')
+}
+
+#[test]
+fn timeout_kills_child_and_grandchild_that_hold_the_pipes() {
+    let dir = temp_dir("tree-ids");
+    let ids = dir.join("ids");
+    // The shell records its own pid and a grandchild that inherits stdout
+    // and stderr, then waits for it.
+    let script = format!(
+        "echo $$ > '{0}'; sleep 30 & echo $! >> '{0}'; wait",
+        ids.display()
+    );
+    let start = Instant::now();
+    let err = execute(bash("sh", &["-c", &script], Seconds::Int(2))).unwrap_err();
+    let elapsed = start.elapsed();
+    assert!(matches!(err, ExecuteError::TimedOut(_)), "{err:?}");
+    assert!(
+        elapsed < Duration::from_secs(6),
+        "returned after {elapsed:?}"
+    );
+    let recorded = std::fs::read_to_string(&ids).expect("pid file");
+    let pids: Vec<&str> = recorded.split_whitespace().collect();
+    assert_eq!(pids.len(), 2, "{recorded:?}");
+    let mut gone = false;
+    for _ in 0..50 {
+        gone = pids.iter().all(|pid| terminated(pid));
+        if gone {
+            break;
+        }
+        std::thread::sleep(Duration::from_millis(100));
+    }
+    println!(
+        "EVIDENCE executor tree timeout: child={} grandchild={} returned_after_ms={} all_terminated={gone}",
+        pids[0],
+        pids[1],
+        elapsed.as_millis()
+    );
+    assert!(gone, "processes {pids:?} survived the timeout");
+}
+
 #[test]
 fn descendant_holding_pipes_waits_then_times_out_at_deadline() {
     // Parity: the run lasts until inherited pipes close.
@@ -460,21 +509,8 @@ fn environment_rows() {
     );
 }
 
-#[test]
-fn display_is_removed_from_the_child() {
-    let request = ExecuteRequest::new(
-        "sh",
-        strings(&["-c", "echo \"${DISPLAY-unset}\""]),
-        Environment::from_pairs([("DISPLAY", ":5")]),
-        ShellName::Bash,
-        Seconds::Int(30),
-    );
-    assert_result("display_user_set_parent_unset", &run(request));
-    for id in ["display_parent_set", "display_user_set"] {
-        assert_eq!(row(id)["stdout"], ":99\n", "frozen Ruby observation");
-        assert_eq!(row(id)["contract"], "migrated");
-    }
-}
+// The DISPLAY and time-zone rows change the process environment, so they
+// run in their own test binary (executor_host_env.rs).
 
 // --- Working directory ---
 

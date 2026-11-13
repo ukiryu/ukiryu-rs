@@ -1,4 +1,6 @@
 //! Versioned, length-delimited JSON boundary for thin runtime adapters.
+pub mod portable;
+
 use crate::config::{self, Environment, OverrideResolver, Values};
 use serde::Deserialize;
 use serde_json::{json, Value};
@@ -7,6 +9,7 @@ use serde_json::{json, Value};
 #[serde(tag = "op", rename_all = "snake_case", deny_unknown_fields)]
 enum Request {
     Version,
+    Escape(portable::EscapeRequest),
     ParseYaml {
         yaml: String,
     },
@@ -30,6 +33,7 @@ pub fn process(input: &[u8]) -> Value {
         Err(error) => return failure("INVALID_REQUEST", error),
     };
     match request {
+        Request::Escape(request) => portable::escape(request),
         Request::Version => json!({"ok":true,"version":crate::VERSION,"abi_version":1}),
         Request::ParseYaml { yaml } => parse_yaml_json(&yaml),
         Request::ResolveConfig {
