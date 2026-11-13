@@ -25,11 +25,12 @@ mod support;
 use serde_json::{json, Value as Json};
 use std::fs;
 use std::path::{Path, PathBuf};
+use ukiryu::cache::ToolCache;
 use ukiryu::executable::Platform;
 use ukiryu::models::{Model, ToolDefinition, Value};
 use ukiryu::register::Register;
 use ukiryu::runtime::ShellName;
-use ukiryu::tool::{self, DefinitionSource, ToolCache, ToolError, ToolOptions};
+use ukiryu::tool::{self, DefinitionSource, ToolError, ToolOptions};
 use ukiryu::tool_loader::{self, LoadError, LoadOptions, RegisterSource};
 use ukiryu::version_detection::{CommandOutput, CommandRequest, CommandRunner, RunnerError};
 
