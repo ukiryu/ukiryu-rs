@@ -238,7 +238,8 @@ fn month_days(y: i64, m: i64) -> Option<i64> {
 }
 
 /// `apply_offset`: shifts a local civil time to UTC; `day` may become nil.
-#[allow(clippy::type_complexity)]
+// The if-chain mirrors time.rb `apply_offset`.
+#[allow(clippy::type_complexity, clippy::comparison_chain)]
 fn apply_offset(
     mut year: i64,
     mut mon: i64,
