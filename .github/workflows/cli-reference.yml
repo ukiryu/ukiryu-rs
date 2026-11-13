@@ -1,0 +1,46 @@
+name: CLI parser reference
+on:
+  pull_request:
+    paths:
+      - 'ukiryu-cli/**'
+      - 'fixtures/reference/cli-flags.json'
+      - 'scripts/capture-cli-flags.rb'
+      - 'corpus/oracle-ruby/Gemfile*'
+      - '.github/workflows/cli-reference.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'ukiryu-cli/**'
+      - 'fixtures/reference/cli-flags.json'
+      - 'scripts/capture-cli-flags.rb'
+      - 'corpus/oracle-ruby/Gemfile*'
+      - '.github/workflows/cli-reference.yml'
+permissions:
+  contents: read
+concurrency:
+  group: cli-reference-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  flags:
+    name: Regenerate pinned Ruby CLI flags
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: ukiryu/ukiryu
+          ref: ab6df353c6dc2d7faf7817a86aafcafa82579896
+          path: ruby-reference
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '4.0.1'
+          bundler-cache: true
+          working-directory: corpus/oracle-ruby
+      - name: Compare actual source parser observations
+        env:
+          BUNDLE_GEMFILE: ${{ github.workspace }}/corpus/oracle-ruby/Gemfile
+          BUNDLE_FROZEN: 'true'
+        run: |
+          bundle exec ruby scripts/capture-cli-flags.rb ruby-reference > "$RUNNER_TEMP/cli-flags.json"
+          diff -u fixtures/reference/cli-flags.json "$RUNNER_TEMP/cli-flags.json"

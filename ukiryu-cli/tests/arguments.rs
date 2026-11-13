@@ -86,6 +86,73 @@ fn absent_options_do_not_override_configuration_environment_defaults() {
 }
 
 #[test]
+fn boolean_values_match_the_pinned_ruby_thor_capture() {
+    let reference: serde_json::Value =
+        serde_json::from_str(include_str!("../../fixtures/reference/cli-flags.json")).unwrap();
+    for row in reference["rows"].as_array().unwrap() {
+        let argv: Vec<_> = row["argv"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|v| v.as_str().unwrap())
+            .collect();
+        let result = command().try_get_matches_from(std::iter::once("ukiryu").chain(argv));
+        if row.get("error").is_some() {
+            assert!(result.is_err());
+            continue;
+        }
+        let matches = result.unwrap();
+        let (verb, actual) = matches.subcommand().unwrap();
+        let actual = if verb == "validate" {
+            actual.subcommand().unwrap().1
+        } else {
+            actual
+        };
+        let expected: serde_json::Value =
+            serde_json::from_str(row["stdout"].as_str().unwrap()).unwrap();
+        for (source, target) in [
+            ("dry_run", "dry-run"),
+            ("stdin", "stdin"),
+            ("raw", "raw"),
+            ("strict", "strict"),
+        ] {
+            if expected["options"].get(source).is_none() {
+                continue;
+            }
+            assert_eq!(
+                actual.get_flag(target),
+                expected["options"][source].as_bool().unwrap(),
+                "{row}"
+            );
+        }
+    }
+}
+
+#[test]
+fn nested_boolean_negation_and_explicit_false_preserve_command_arguments() {
+    for argv in [
+        vec![
+            "validate",
+            "file",
+            "profile.yaml",
+            "--strict",
+            "--no-strict",
+        ],
+        vec!["validate", "file", "profile.yaml", "--strict=false"],
+    ] {
+        let matches = command()
+            .try_get_matches_from(std::iter::once("ukiryu").chain(argv))
+            .unwrap();
+        let validation = matches.subcommand().unwrap().1;
+        assert!(!validation.subcommand().unwrap().1.get_flag("strict"));
+    }
+    let matches = command()
+        .try_get_matches_from(["ukiryu", "exec", "tool", "--no-raw", "--raw", "--raw=false"])
+        .unwrap();
+    assert!(!matches.subcommand().unwrap().1.get_flag("raw"));
+}
+
+#[test]
 fn version_and_help_exit_without_execution() {
     for argv in [
         vec!["--version"],

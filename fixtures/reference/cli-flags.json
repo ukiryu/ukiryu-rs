@@ -1,0 +1,128 @@
+{
+  "source_commit": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+  "lock_sha256": "fc3b12f2ede259028b638d2f26c65ddf9506d142c20a8bf0c1b151741078b65e",
+  "ruby": "4.0.1",
+  "thor": "1.5.0",
+  "rows": [
+    {
+      "argv": [
+        "exec",
+        "tool"
+      ],
+      "stdout": "{\"arguments\":[\"tool\",null],\"options\":{\"format\":\"yaml\",\"dry_run\":false,\"stdin\":false,\"raw\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "exec",
+        "tool",
+        "--dry-run"
+      ],
+      "stdout": "{\"arguments\":[\"tool\",null],\"options\":{\"format\":\"yaml\",\"dry_run\":true,\"stdin\":false,\"raw\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "exec",
+        "tool",
+        "--no-dry-run"
+      ],
+      "stdout": "{\"arguments\":[\"tool\",null],\"options\":{\"format\":\"yaml\",\"dry_run\":false,\"stdin\":false,\"raw\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "exec",
+        "tool",
+        "--dry-run",
+        "--no-dry-run"
+      ],
+      "stdout": "{\"arguments\":[\"tool\",null],\"options\":{\"format\":\"yaml\",\"dry_run\":false,\"stdin\":false,\"raw\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "exec",
+        "tool",
+        "--no-dry-run",
+        "--dry-run"
+      ],
+      "stdout": "{\"arguments\":[\"tool\",null],\"options\":{\"format\":\"yaml\",\"dry_run\":true,\"stdin\":false,\"raw\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "exec",
+        "tool",
+        "--no-stdin",
+        "--no-raw"
+      ],
+      "stdout": "{\"arguments\":[\"tool\",null],\"options\":{\"format\":\"yaml\",\"dry_run\":false,\"stdin\":false,\"raw\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "exec",
+        "tool",
+        "--dry-run=false"
+      ],
+      "stdout": "{\"arguments\":[\"tool\",null],\"options\":{\"format\":\"yaml\",\"dry_run\":false,\"stdin\":false,\"raw\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "exec",
+        "tool",
+        "--",
+        "action",
+        "--raw",
+        "x=1"
+      ],
+      "stdout": "{\"arguments\":[\"tool\",\"action\",\"--raw\",\"x=1\"],\"options\":{\"format\":\"yaml\",\"dry_run\":false,\"stdin\":false,\"raw\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "exec",
+        "tool",
+        "--unknown"
+      ],
+      "stdout": "",
+      "stderr": "Unknown switches \"--unknown\"\n",
+      "error": "SystemExit",
+      "message": "exit"
+    },
+    {
+      "argv": [
+        "validate",
+        "file",
+        "profile.yaml",
+        "--strict",
+        "--no-strict"
+      ],
+      "stdout": "{\"arguments\":[\"profile.yaml\"],\"options\":{\"verbose\":false,\"format\":\"text\",\"strict\":false,\"executable\":false,\"all\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "validate",
+        "file",
+        "profile.yaml",
+        "--strict=false"
+      ],
+      "stdout": "{\"arguments\":[\"profile.yaml\"],\"options\":{\"verbose\":false,\"format\":\"text\",\"strict\":false,\"executable\":false,\"all\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "validate",
+        "file",
+        "profile.yaml",
+        "--no-strict",
+        "--strict"
+      ],
+      "stdout": "{\"arguments\":[\"profile.yaml\"],\"options\":{\"verbose\":false,\"format\":\"text\",\"strict\":true,\"executable\":false,\"all\":false}}\n",
+      "stderr": ""
+    }
+  ]
+}
