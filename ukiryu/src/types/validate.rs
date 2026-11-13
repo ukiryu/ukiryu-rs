@@ -4,24 +4,29 @@
 //! message and returned Ruby type follows the pinned implementation, including
 //! its quirks (for example `of:` validates each element with the array's own
 //! options, and `allow_empty` does not skip a pattern check).
-use super::datetime;
+use num_bigint::BigInt;
+
+use super::datetime::{self, Now};
 use super::error::{Error, ErrorClass, Result};
 use super::number::{parse_float, parse_integer};
+use super::onig;
 use super::ruby::{
     bigint_from_integral_f64, bigint_to_f64, downcase, float_to_s, gt, inspect, lt, strip, to_s,
 };
 use super::uri::{self, UriError};
 use super::value::{eql, ruby_eq, OptionSource, Regexp, Value};
+use crate::runtime::Clock;
 
 /// The environment that type validation reads but pure data cannot supply.
 pub trait Host {
     /// `File.exist?(path)` (follows symlinks).
     fn file_exists(&self, path: &str) -> bool;
 
-    /// `string =~ regexp`. `None` means this host has no Onigmo-compatible
-    /// engine; validation then fails with an `Unsupported` error.
-    fn regexp_match(&self, _regexp: &Regexp, _string: &str) -> Option<bool> {
-        None
+    /// `string =~ regexp`. The default runs the portable Onigmo-compatible
+    /// engine ([`super::onig`]); `None` means the answer could differ from
+    /// Ruby's, and validation then fails with an `Unsupported` error.
+    fn regexp_match(&self, regexp: &Regexp, string: &str) -> Option<bool> {
+        onig::regexp_match(regexp, string)
     }
 
     /// The local UTC offset (seconds) for a local civil time, as Ruby's
@@ -37,12 +42,30 @@ pub trait Host {
     ) -> Option<i32> {
         None
     }
+
+    /// `Time.local(year, month, day).zone`. `None` when the host cannot tell.
+    fn local_zone_abbreviation(&self, _year: i64, _month: u32, _day: u32) -> Option<String> {
+        None
+    }
+
+    /// `Time.now`, which `Time.parse` uses for the fields a text leaves out.
+    /// `None` when the host has no clock.
+    fn now(&self) -> Option<Now> {
+        None
+    }
 }
 
-/// The process environment: the real filesystem; the local offset only when
-/// `TZ` names UTC; no regular-expression engine.
+/// The process environment: the real filesystem; the local zone and the
+/// system clock only when `TZ` names UTC.
 #[derive(Debug, Clone, Copy, Default)]
 pub struct StdHost;
+
+fn tz_is_utc() -> bool {
+    matches!(
+        std::env::var("TZ").ok().as_deref(),
+        Some("UTC" | "UTC0" | "Etc/UTC" | "Etc/UCT" | "UCT" | "Zulu" | "Etc/Zulu")
+    )
+}
 
 impl Host for StdHost {
     fn file_exists(&self, path: &str) -> bool {
@@ -50,10 +73,19 @@ impl Host for StdHost {
     }
 
     fn local_offset(&self, _: i64, _: u32, _: u32, _: u32, _: u32, _: u32) -> Option<i32> {
-        match std::env::var("TZ").ok().as_deref() {
-            Some("UTC" | "UTC0" | "Etc/UTC" | "Etc/UCT" | "UCT" | "Zulu" | "Etc/Zulu") => Some(0),
-            _ => None,
+        tz_is_utc().then_some(0)
+    }
+
+    fn local_zone_abbreviation(&self, _: i64, _: u32, _: u32) -> Option<String> {
+        tz_is_utc().then(|| "UTC".to_string())
+    }
+
+    fn now(&self) -> Option<Now> {
+        // wasm32-unknown-unknown has no system clock.
+        if cfg!(all(target_arch = "wasm32", not(target_os = "wasi"))) || !tz_is_utc() {
+            return None;
         }
+        Some(Now::from_clock(Clock::System { utc_offset_secs: 0 }, 0))
     }
 }
 
@@ -238,20 +270,21 @@ fn validate_integer(value: &Value, options: &dyn OptionSource) -> Result<Value> 
     Ok(integer)
 }
 
+/// `Time#to_f`: on 64-bit Ruby the time is an Integer count of nanoseconds
+/// and `to_f` is `Integer#quo(1e9)`, a Float division (`time.c`
+/// `rb_time_unmagnify_to_float`).
+fn time_to_f(t: &super::value::Time) -> f64 {
+    let ns = BigInt::from(t.seconds) * 1_000_000_000 + t.nanos;
+    bigint_to_f64(&ns) / 1e9
+}
+
 /// `Float(value)`; `Ok(None)` is a rescued ArgumentError/TypeError.
 fn kernel_float(value: &Value) -> Result<Option<f64>> {
     Ok(match value {
         Value::Float(f) => Some(*f),
         Value::Integer(i) => Some(bigint_to_f64(i)),
         Value::String(s) => parse_float(s)?,
-        Value::Time(t) => {
-            if t.nanos != 0 || t.seconds.unsigned_abs() >= 1 << 53 {
-                return Err(Error::unsupported(
-                    "Float(Time) with sub-second part is not ported",
-                ));
-            }
-            Some(t.seconds as f64)
-        }
+        Value::Time(t) => Some(time_to_f(t)),
         _ => None,
     })
 }
