@@ -386,7 +386,8 @@ pub fn time_to_s(t: &Time) -> String {
     format!("{} {}", time_parts(t), time_zone(t))
 }
 
-/// `Time#inspect` (sub-second digits without trailing zeros).
+/// `Time#inspect` (sub-second digits without trailing zeros; an offset with
+/// seconds prints them, `+053015`).
 pub fn time_inspect(t: &Time) -> String {
     let mut s = time_parts(t);
     if t.nanos != 0 {
@@ -394,7 +395,11 @@ pub fn time_inspect(t: &Time) -> String {
         s.push('.');
         s.push_str(frac.trim_end_matches('0'));
     }
-    format!("{s} {}", time_zone(t))
+    let mut zone = time_zone(t);
+    if !t.utc && t.utc_offset % 60 != 0 {
+        zone.push_str(&format!("{:02}", t.utc_offset.abs() % 60));
+    }
+    format!("{s} {zone}")
 }
 
 /// Exact decimal BigInt for an integral finite f64.

@@ -15,6 +15,8 @@ was produced by running the original Ruby implementation, ukiryu/ukiryu at
 | `constraints.jsonl` | each `Ukiryu::Validation::*Constraint#validate` |
 | `validator.jsonl` | `Ukiryu::Validation::Validator` (`constraints`, `validate!`, `valid?`, `errors`) |
 | `ruby_format.jsonl` | Ruby core formatting that appears in messages (`Float#to_s`, `inspect`, `dump`, `downcase`) |
+| `datetime_parse.jsonl` | `Type.validate(value, :datetime, {})` (`Time.parse`, date gem 3.5.1) with `Time.now` pinned |
+| `regexp_match.jsonl` | `Type.validate(value, :string, pattern: re, allow_empty: true)` (`String#=~`) |
 
 Each row has an `id`, a `source` (oracle commit and Ruby API), the `input`,
 and the `expect`ed outcome: `{"ok": value}` or `{"error": {"class", "message"}}`.
@@ -37,5 +39,12 @@ row `validator.reachability` records that, and the capture loads both files
 explicitly. Row `validator.037` records that the validator cannot read a
 `Models::CommandDefinition` (`NoMethodError` for `#[]`).
 
+`datetime_parse.jsonl` was captured with `Time.now` replaced by a fixed
+instant, recorded in each row as `input.now` (UTC) and `input.now_utc_offset`;
+the test hands that instant to the port as the host clock. The datetime rows
+of `type_validate.jsonl` ran against the real clock on 2026-11-12 (UTC); the
+test pins that day. Both files come from `capture_gaps.rb` in the F7 evidence,
+which loads the same oracle bundle.
+
 `gaps.txt` lists rows whose Ruby behaviour the port does not reproduce
-(the port answers `Unsupported` for them instead of a guess).
+(the port answers `Unsupported` for them instead of a guess), with the reason.

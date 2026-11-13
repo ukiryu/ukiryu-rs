@@ -37,6 +37,7 @@ impl ErrorClass {
             ErrorClass::Validation => "Ukiryu::Errors::ValidationError",
             ErrorClass::ValidationIssue => "Ukiryu::Validation::ValidationIssue",
             ErrorClass::Argument => "ArgumentError",
+            ErrorClass::Range => "RangeError",
             ErrorClass::Type => "TypeError",
             ErrorClass::FloatDomain => "FloatDomainError",
             ErrorClass::NoMethod => "NoMethodError",
