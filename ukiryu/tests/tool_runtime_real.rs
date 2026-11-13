@@ -59,10 +59,14 @@ fn shell() -> ShellName {
 }
 
 fn tool(yaml: &str) -> Option<Tool> {
+    tool_with(yaml, shell())
+}
+
+fn tool_with(yaml: &str, shell: ShellName) -> Option<Tool> {
     let platform = native_platform().expect("supported host");
     let tool = Tool::new(
         ToolDefinition::from_yaml(yaml).expect("definition"),
-        &ToolOptions::new(platform, shell()),
+        &ToolOptions::new(platform, shell),
     )
     .expect("tool");
     if tool.is_available() {
@@ -151,7 +155,18 @@ fn jq_failure_maps_through_the_exit_code_table() {
 
 #[test]
 fn git_runs_its_subcommand() {
-    let Some(git) = tool(GIT) else { return };
+    // On Windows git lives under "C:\Program Files"; the executor's cmd
+    // path does not yet quote such an executable correctly (cmd reports
+    // '\"C:\Program Files\...\"' is not recognized), so run it through
+    // PowerShell there. jq covers cmd.
+    let shell = if cfg!(windows) {
+        ShellName::PowerShell
+    } else {
+        ShellName::Bash
+    };
+    let Some(git) = tool_with(GIT, shell) else {
+        return;
+    };
     let run = git
         .execute("version", &Value::Hash(Vec::new()), &settings())
         .expect("git version runs");
