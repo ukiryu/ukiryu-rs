@@ -106,8 +106,8 @@ fn time_zone_rows(golden: &Value) {
         let row = find(&golden["time_zone"], id);
         std::env::set_var("TZ", row["tz"].as_str().unwrap());
         let execution = execute(echo("echo", &["x"], Environment::new())).expect("echo");
-        let started = *execution.result.started_at().unwrap();
-        let finished = *execution.result.finished_at().unwrap();
+        let started = execution.result.started_at().unwrap().clone();
+        let finished = execution.result.finished_at().unwrap().clone();
         // The source rows were captured in November; America/St_Johns
         // observes daylight saving time, so its offset is compared with the
         // host rules for the same instant rather than with the capture.
@@ -161,7 +161,7 @@ fn windows_offset() {
         Seconds::Int(60),
     ))
     .expect("cmd echo");
-    let started = *execution.result.started_at().unwrap();
+    let started = execution.result.started_at().unwrap().clone();
     let out = std::process::Command::new("powershell")
         .args([
             "-NoLogo",
@@ -202,7 +202,7 @@ fn explicit_clock_offset() {
         utc_offset_secs: -12_600,
     });
     let execution = execute(request).expect("echo");
-    let started = *execution.result.started_at().unwrap();
+    let started = execution.result.started_at().unwrap().clone();
     assert_eq!(started.utc_offset, -12_600);
     let text = time_to_s(&started);
     assert!(text.ends_with(" -0330"), "{text}");
