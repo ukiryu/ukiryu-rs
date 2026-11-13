@@ -4,11 +4,11 @@
 //! `response.to_json(pretty: true)` (lutaml-model through the json gem's
 //! pretty generator). The port serializes the same serde model through the
 //! Yeptris emitter and `serde_json`.
-use super::RenderError;
+use super::{RenderError, RenderErrorKind};
 use serde::Serialize;
 use serde_json::ser::{Formatter, PrettyFormatter};
 use std::io;
-use yeptris::{EmitOptions, LineWidth};
+use yeptris::{EmitOptions, LineWidth, Number, Value};
 
 /// The pinned emitter settings for the `yaml` format (ukiryu#27):
 /// fidelity (non-canonical) form, indent 2, the explicit `---` document
@@ -42,8 +42,25 @@ pub fn to_yaml<T: Serialize + ?Sized>(value: &T) -> Result<String, RenderError> 
 }
 
 /// The pretty JSON text (two-space indent, `"key": value`), with floats
-/// laid out as the json gem's generator writes them.
+/// laid out as the json gem's generator writes them. A NaN or infinite
+/// float fails with [`RenderErrorKind::Generator`] and the json gem's
+/// `GeneratorError` message (`NaN not allowed in JSON`), where
+/// `serde_json` alone would write `null`.
 pub fn to_json_pretty<T: Serialize + ?Sized>(value: &T) -> Result<String, RenderError> {
+    let tree = yeptris::to_value(value).map_err(|e| RenderError::new(e.to_string()))?;
+    if let Some(x) = first_non_finite(&tree) {
+        let word = if x.is_nan() {
+            "NaN"
+        } else if x > 0.0 {
+            "Infinity"
+        } else {
+            "-Infinity"
+        };
+        return Err(RenderError::with_kind(
+            RenderErrorKind::Generator,
+            format!("{word} not allowed in JSON"),
+        ));
+    }
     let mut out = Vec::new();
     let mut ser =
         serde_json::Serializer::with_formatter(&mut out, RubyFloats(PrettyFormatter::new()));
@@ -53,14 +70,29 @@ pub fn to_json_pretty<T: Serialize + ?Sized>(value: &T) -> Result<String, Render
     String::from_utf8(out).map_err(|e| RenderError::new(e.to_string()))
 }
 
+/// The first NaN or infinite float in document order.
+fn first_non_finite(value: &Value) -> Option<f64> {
+    match value {
+        Value::Number(Number::F64(x)) if !x.is_finite() => Some(*x),
+        Value::Sequence(items) => items.iter().find_map(first_non_finite),
+        Value::Mapping(map) => map
+            .0
+            .iter()
+            .find_map(|(k, v)| first_non_finite(k).or_else(|| first_non_finite(v))),
+        Value::Tagged(t) => first_non_finite(&t.value),
+        _ => None,
+    }
+}
+
 /// The float text of the json gem 3.1.0 generator: `fpconv_dtoa` in
 /// `ext/json/ext/vendor/fpconv.c`, whose `emit_digits` writes plain
 /// decimals (`0.00002`, `123456789.0`) inside its exponent window and
 /// `1e+16`/`1e-10` outside it. The digits are the shortest round-trip
 /// digits; fpconv's Grisu2 can return a longer digit string for a few
-/// values (the json gem writes `1.2345e21` as `1.2344999999999999e+21`),
-/// a recorded gap. `serde_json` turns non-finite floats into `null` before
-/// the formatter runs, where the json gem raises `GeneratorError`.
+/// values (the json gem writes `1.2345e21` as `1.2344999999999999e+21`).
+/// Those values are gated by an explicit numeric-equality policy in the
+/// oracle tests (same `f64` bits, different digits; ukiryu-rs#23), not by
+/// adjusted expectations.
 fn json_float_text(x: f64) -> String {
     let mut out = String::with_capacity(32);
     if x.is_sign_negative() {
