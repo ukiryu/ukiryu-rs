@@ -52,7 +52,8 @@ inputs.each { |name, data| rows << capture("powershell_stdin_#{name}", :powershe
 rows << capture('powershell_echo', :powershell, *echo, nil)
 rows << capture('powershell_stderr_exit', :powershell, *fail_cmd, nil)
 if WINDOWS
-  inputs.each { |name, data| rows << capture("cmd_stdin_#{name}", :cmd, 'more', [], data) }
+  # `more.com`: cmd also searches PATH, where MSYS2's more.exe comes first.
+  inputs.each { |name, data| rows << capture("cmd_stdin_#{name}", :cmd, 'more.com', [], data) }
   rows << capture('cmd_echo', :cmd, 'echo', ['hello'], nil)
   rows << capture('cmd_exit_42', :cmd, 'cmd', ['/c', 'exit 42'], nil)
 end
