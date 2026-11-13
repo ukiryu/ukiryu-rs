@@ -1,0 +1,4287 @@
+{
+  "provenance": {
+    "oracle": "ukiryu/ukiryu",
+    "sha": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+    "files": [
+      "lib/ukiryu/cache.rb",
+      "lib/ukiryu/tool_cache.rb",
+      "lib/ukiryu/cache_registry.rb",
+      "lib/ukiryu/shell/instance_cache.rb"
+    ],
+    "script": "handoffs/batch-04/K24-CACHES/capture_caches.rb (ukiryu-planning)",
+    "clock": "Time.now replaced by a fake clock (base 1000000 s); advance ops move it"
+  },
+  "tool_cache_config": {
+    "max_size": 50,
+    "ttl": 3600
+  },
+  "definition_cache_config": {
+    "max_size": 100,
+    "ttl": 3600
+  },
+  "key_cases": [
+    {
+      "name": "imagemagick",
+      "name_is_symbol": false,
+      "platform": null,
+      "shell": null,
+      "version": null,
+      "version_given": false,
+      "runtime_platform": "linux",
+      "runtime_shell": "bash",
+      "key": "imagemagick-linux-bash-latest"
+    },
+    {
+      "name": "imagemagick",
+      "name_is_symbol": true,
+      "platform": null,
+      "shell": null,
+      "version": null,
+      "version_given": false,
+      "runtime_platform": "linux",
+      "runtime_shell": "bash",
+      "key": "imagemagick-linux-bash-latest"
+    },
+    {
+      "name": "ffmpeg",
+      "name_is_symbol": false,
+      "platform": "macos",
+      "shell": null,
+      "version": null,
+      "version_given": false,
+      "runtime_platform": "linux",
+      "runtime_shell": "bash",
+      "key": "ffmpeg-macos-bash-latest"
+    },
+    {
+      "name": "ffmpeg",
+      "name_is_symbol": false,
+      "platform": null,
+      "shell": "zsh",
+      "version": null,
+      "version_given": false,
+      "runtime_platform": "linux",
+      "runtime_shell": "bash",
+      "key": "ffmpeg-linux-zsh-latest"
+    },
+    {
+      "name": "ffmpeg",
+      "name_is_symbol": false,
+      "platform": "windows",
+      "shell": "powershell",
+      "version": null,
+      "version_given": false,
+      "runtime_platform": "linux",
+      "runtime_shell": "bash",
+      "key": "ffmpeg-windows-powershell-latest"
+    },
+    {
+      "name": "ffmpeg",
+      "name_is_symbol": false,
+      "platform": null,
+      "shell": null,
+      "version": "6.1",
+      "version_given": true,
+      "runtime_platform": "linux",
+      "runtime_shell": "bash",
+      "key": "ffmpeg-linux-bash-6.1"
+    },
+    {
+      "name": "ffmpeg",
+      "name_is_symbol": false,
+      "platform": null,
+      "shell": null,
+      "version": null,
+      "version_given": true,
+      "runtime_platform": "linux",
+      "runtime_shell": "bash",
+      "key": "ffmpeg-linux-bash-latest"
+    },
+    {
+      "name": "ffmpeg",
+      "name_is_symbol": false,
+      "platform": null,
+      "shell": null,
+      "version": false,
+      "version_given": true,
+      "runtime_platform": "linux",
+      "runtime_shell": "bash",
+      "key": "ffmpeg-linux-bash-latest"
+    },
+    {
+      "name": "ffmpeg",
+      "name_is_symbol": false,
+      "platform": null,
+      "shell": null,
+      "version": "",
+      "version_given": true,
+      "runtime_platform": "linux",
+      "runtime_shell": "bash",
+      "key": "ffmpeg-linux-bash-"
+    },
+    {
+      "name": "ffmpeg",
+      "name_is_symbol": false,
+      "platform": null,
+      "shell": null,
+      "version": "latest",
+      "version_given": true,
+      "runtime_platform": "linux",
+      "runtime_shell": "bash",
+      "key": "ffmpeg-linux-bash-latest"
+    },
+    {
+      "name": "ffmpeg",
+      "name_is_symbol": false,
+      "platform": "linux",
+      "shell": "bash",
+      "version": "1.0",
+      "version_given": true,
+      "runtime_platform": "linux",
+      "runtime_shell": "bash",
+      "key": "ffmpeg-linux-bash-1.0"
+    },
+    {
+      "name": "a-b",
+      "name_is_symbol": false,
+      "platform": "c",
+      "shell": "d",
+      "version": "e-f",
+      "version_given": true,
+      "runtime_platform": "linux",
+      "runtime_shell": "bash",
+      "key": "a-b-c-d-e-f"
+    },
+    {
+      "name": "",
+      "name_is_symbol": false,
+      "platform": null,
+      "shell": null,
+      "version": null,
+      "version_given": false,
+      "runtime_platform": "linux",
+      "runtime_shell": "bash",
+      "key": "-linux-bash-latest"
+    }
+  ],
+  "lru_scenarios": [
+    {
+      "name": "basic_get_set_miss",
+      "ops": [
+        {
+          "op": "get",
+          "key": "ffmpeg-linux-bash-latest",
+          "result": null
+        },
+        {
+          "op": "set",
+          "key": "ffmpeg-linux-bash-latest",
+          "value": "tool-a"
+        },
+        {
+          "op": "get",
+          "key": "ffmpeg-linux-bash-latest",
+          "result": "tool-a"
+        },
+        {
+          "op": "get",
+          "key": "ffmpeg-linux-zsh-latest",
+          "result": null
+        },
+        {
+          "op": "size",
+          "result": 1
+        },
+        {
+          "op": "empty?",
+          "result": false
+        },
+        {
+          "op": "keys",
+          "result": [
+            "ffmpeg-linux-bash-latest"
+          ]
+        },
+        {
+          "op": "stats",
+          "result": {
+            "size": 1,
+            "max_size": 50,
+            "ttl": 3600,
+            "utilization": 0.02
+          }
+        }
+      ]
+    },
+    {
+      "name": "fill_to_capacity_then_evict_oldest",
+      "ops": [
+        {
+          "op": "set",
+          "key": "k0",
+          "value": "v0"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k1",
+          "value": "v1"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k2",
+          "value": "v2"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k3",
+          "value": "v3"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k4",
+          "value": "v4"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k5",
+          "value": "v5"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k6",
+          "value": "v6"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k7",
+          "value": "v7"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k8",
+          "value": "v8"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k9",
+          "value": "v9"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k10",
+          "value": "v10"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k11",
+          "value": "v11"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k12",
+          "value": "v12"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k13",
+          "value": "v13"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k14",
+          "value": "v14"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k15",
+          "value": "v15"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k16",
+          "value": "v16"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k17",
+          "value": "v17"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k18",
+          "value": "v18"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k19",
+          "value": "v19"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k20",
+          "value": "v20"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k21",
+          "value": "v21"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k22",
+          "value": "v22"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k23",
+          "value": "v23"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k24",
+          "value": "v24"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k25",
+          "value": "v25"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k26",
+          "value": "v26"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k27",
+          "value": "v27"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k28",
+          "value": "v28"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k29",
+          "value": "v29"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k30",
+          "value": "v30"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k31",
+          "value": "v31"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k32",
+          "value": "v32"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k33",
+          "value": "v33"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k34",
+          "value": "v34"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k35",
+          "value": "v35"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k36",
+          "value": "v36"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k37",
+          "value": "v37"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k38",
+          "value": "v38"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k39",
+          "value": "v39"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k40",
+          "value": "v40"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k41",
+          "value": "v41"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k42",
+          "value": "v42"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k43",
+          "value": "v43"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k44",
+          "value": "v44"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k45",
+          "value": "v45"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k46",
+          "value": "v46"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k47",
+          "value": "v47"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k48",
+          "value": "v48"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k49",
+          "value": "v49"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "size",
+          "result": 50
+        },
+        {
+          "op": "set",
+          "key": "k50",
+          "value": "v50"
+        },
+        {
+          "op": "size",
+          "result": 50
+        },
+        {
+          "op": "key?",
+          "key": "k0",
+          "result": false
+        },
+        {
+          "op": "key?",
+          "key": "k1",
+          "result": true
+        },
+        {
+          "op": "keys",
+          "result": [
+            "k1",
+            "k2",
+            "k3",
+            "k4",
+            "k5",
+            "k6",
+            "k7",
+            "k8",
+            "k9",
+            "k10",
+            "k11",
+            "k12",
+            "k13",
+            "k14",
+            "k15",
+            "k16",
+            "k17",
+            "k18",
+            "k19",
+            "k20",
+            "k21",
+            "k22",
+            "k23",
+            "k24",
+            "k25",
+            "k26",
+            "k27",
+            "k28",
+            "k29",
+            "k30",
+            "k31",
+            "k32",
+            "k33",
+            "k34",
+            "k35",
+            "k36",
+            "k37",
+            "k38",
+            "k39",
+            "k40",
+            "k41",
+            "k42",
+            "k43",
+            "k44",
+            "k45",
+            "k46",
+            "k47",
+            "k48",
+            "k49",
+            "k50"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "access_refreshes_lru",
+      "ops": [
+        {
+          "op": "set",
+          "key": "k0",
+          "value": "v0"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k1",
+          "value": "v1"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k2",
+          "value": "v2"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k3",
+          "value": "v3"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k4",
+          "value": "v4"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k5",
+          "value": "v5"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k6",
+          "value": "v6"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k7",
+          "value": "v7"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k8",
+          "value": "v8"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k9",
+          "value": "v9"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k10",
+          "value": "v10"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k11",
+          "value": "v11"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k12",
+          "value": "v12"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k13",
+          "value": "v13"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k14",
+          "value": "v14"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k15",
+          "value": "v15"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k16",
+          "value": "v16"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k17",
+          "value": "v17"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k18",
+          "value": "v18"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k19",
+          "value": "v19"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k20",
+          "value": "v20"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k21",
+          "value": "v21"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k22",
+          "value": "v22"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k23",
+          "value": "v23"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k24",
+          "value": "v24"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k25",
+          "value": "v25"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k26",
+          "value": "v26"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k27",
+          "value": "v27"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k28",
+          "value": "v28"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k29",
+          "value": "v29"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k30",
+          "value": "v30"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k31",
+          "value": "v31"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k32",
+          "value": "v32"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k33",
+          "value": "v33"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k34",
+          "value": "v34"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k35",
+          "value": "v35"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k36",
+          "value": "v36"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k37",
+          "value": "v37"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k38",
+          "value": "v38"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k39",
+          "value": "v39"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k40",
+          "value": "v40"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k41",
+          "value": "v41"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k42",
+          "value": "v42"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k43",
+          "value": "v43"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k44",
+          "value": "v44"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k45",
+          "value": "v45"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k46",
+          "value": "v46"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k47",
+          "value": "v47"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k48",
+          "value": "v48"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k49",
+          "value": "v49"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "get",
+          "key": "k0",
+          "result": "v0"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "new",
+          "value": "n"
+        },
+        {
+          "op": "key?",
+          "key": "k0",
+          "result": true
+        },
+        {
+          "op": "key?",
+          "key": "k1",
+          "result": false
+        },
+        {
+          "op": "key?",
+          "key": "k2",
+          "result": true
+        }
+      ]
+    },
+    {
+      "name": "key_check_does_not_refresh_lru",
+      "ops": [
+        {
+          "op": "set",
+          "key": "k0",
+          "value": "v0"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k1",
+          "value": "v1"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k2",
+          "value": "v2"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k3",
+          "value": "v3"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k4",
+          "value": "v4"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k5",
+          "value": "v5"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k6",
+          "value": "v6"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k7",
+          "value": "v7"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k8",
+          "value": "v8"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k9",
+          "value": "v9"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k10",
+          "value": "v10"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k11",
+          "value": "v11"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k12",
+          "value": "v12"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k13",
+          "value": "v13"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k14",
+          "value": "v14"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k15",
+          "value": "v15"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k16",
+          "value": "v16"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k17",
+          "value": "v17"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k18",
+          "value": "v18"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k19",
+          "value": "v19"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k20",
+          "value": "v20"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k21",
+          "value": "v21"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k22",
+          "value": "v22"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k23",
+          "value": "v23"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k24",
+          "value": "v24"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k25",
+          "value": "v25"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k26",
+          "value": "v26"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k27",
+          "value": "v27"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k28",
+          "value": "v28"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k29",
+          "value": "v29"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k30",
+          "value": "v30"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k31",
+          "value": "v31"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k32",
+          "value": "v32"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k33",
+          "value": "v33"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k34",
+          "value": "v34"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k35",
+          "value": "v35"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k36",
+          "value": "v36"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k37",
+          "value": "v37"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k38",
+          "value": "v38"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k39",
+          "value": "v39"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k40",
+          "value": "v40"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k41",
+          "value": "v41"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k42",
+          "value": "v42"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k43",
+          "value": "v43"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k44",
+          "value": "v44"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k45",
+          "value": "v45"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k46",
+          "value": "v46"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k47",
+          "value": "v47"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k48",
+          "value": "v48"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k49",
+          "value": "v49"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "key?",
+          "key": "k0",
+          "result": true
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "new",
+          "value": "n"
+        },
+        {
+          "op": "key?",
+          "key": "k0",
+          "result": false
+        },
+        {
+          "op": "key?",
+          "key": "k1",
+          "result": true
+        }
+      ]
+    },
+    {
+      "name": "overwrite_at_capacity_still_evicts",
+      "ops": [
+        {
+          "op": "set",
+          "key": "k0",
+          "value": "v0"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k1",
+          "value": "v1"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k2",
+          "value": "v2"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k3",
+          "value": "v3"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k4",
+          "value": "v4"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k5",
+          "value": "v5"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k6",
+          "value": "v6"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k7",
+          "value": "v7"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k8",
+          "value": "v8"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k9",
+          "value": "v9"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k10",
+          "value": "v10"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k11",
+          "value": "v11"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k12",
+          "value": "v12"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k13",
+          "value": "v13"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k14",
+          "value": "v14"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k15",
+          "value": "v15"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k16",
+          "value": "v16"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k17",
+          "value": "v17"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k18",
+          "value": "v18"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k19",
+          "value": "v19"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k20",
+          "value": "v20"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k21",
+          "value": "v21"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k22",
+          "value": "v22"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k23",
+          "value": "v23"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k24",
+          "value": "v24"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k25",
+          "value": "v25"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k26",
+          "value": "v26"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k27",
+          "value": "v27"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k28",
+          "value": "v28"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k29",
+          "value": "v29"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k30",
+          "value": "v30"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k31",
+          "value": "v31"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k32",
+          "value": "v32"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k33",
+          "value": "v33"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k34",
+          "value": "v34"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k35",
+          "value": "v35"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k36",
+          "value": "v36"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k37",
+          "value": "v37"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k38",
+          "value": "v38"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k39",
+          "value": "v39"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k40",
+          "value": "v40"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k41",
+          "value": "v41"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k42",
+          "value": "v42"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k43",
+          "value": "v43"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k44",
+          "value": "v44"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k45",
+          "value": "v45"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k46",
+          "value": "v46"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k47",
+          "value": "v47"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k48",
+          "value": "v48"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k49",
+          "value": "v49"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k10",
+          "value": "replaced"
+        },
+        {
+          "op": "size",
+          "result": 49
+        },
+        {
+          "op": "key?",
+          "key": "k0",
+          "result": false
+        },
+        {
+          "op": "get",
+          "key": "k10",
+          "result": "replaced"
+        },
+        {
+          "op": "keys",
+          "result": [
+            "k1",
+            "k2",
+            "k3",
+            "k4",
+            "k5",
+            "k6",
+            "k7",
+            "k8",
+            "k9",
+            "k10",
+            "k11",
+            "k12",
+            "k13",
+            "k14",
+            "k15",
+            "k16",
+            "k17",
+            "k18",
+            "k19",
+            "k20",
+            "k21",
+            "k22",
+            "k23",
+            "k24",
+            "k25",
+            "k26",
+            "k27",
+            "k28",
+            "k29",
+            "k30",
+            "k31",
+            "k32",
+            "k33",
+            "k34",
+            "k35",
+            "k36",
+            "k37",
+            "k38",
+            "k39",
+            "k40",
+            "k41",
+            "k42",
+            "k43",
+            "k44",
+            "k45",
+            "k46",
+            "k47",
+            "k48",
+            "k49"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "overwrite_lru_key_itself_moves_to_end",
+      "ops": [
+        {
+          "op": "set",
+          "key": "k0",
+          "value": "v0"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k1",
+          "value": "v1"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k2",
+          "value": "v2"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k3",
+          "value": "v3"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k4",
+          "value": "v4"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k5",
+          "value": "v5"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k6",
+          "value": "v6"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k7",
+          "value": "v7"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k8",
+          "value": "v8"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k9",
+          "value": "v9"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k10",
+          "value": "v10"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k11",
+          "value": "v11"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k12",
+          "value": "v12"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k13",
+          "value": "v13"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k14",
+          "value": "v14"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k15",
+          "value": "v15"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k16",
+          "value": "v16"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k17",
+          "value": "v17"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k18",
+          "value": "v18"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k19",
+          "value": "v19"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k20",
+          "value": "v20"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k21",
+          "value": "v21"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k22",
+          "value": "v22"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k23",
+          "value": "v23"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k24",
+          "value": "v24"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k25",
+          "value": "v25"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k26",
+          "value": "v26"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k27",
+          "value": "v27"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k28",
+          "value": "v28"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k29",
+          "value": "v29"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k30",
+          "value": "v30"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k31",
+          "value": "v31"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k32",
+          "value": "v32"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k33",
+          "value": "v33"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k34",
+          "value": "v34"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k35",
+          "value": "v35"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k36",
+          "value": "v36"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k37",
+          "value": "v37"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k38",
+          "value": "v38"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k39",
+          "value": "v39"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k40",
+          "value": "v40"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k41",
+          "value": "v41"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k42",
+          "value": "v42"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k43",
+          "value": "v43"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k44",
+          "value": "v44"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k45",
+          "value": "v45"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k46",
+          "value": "v46"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k47",
+          "value": "v47"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k48",
+          "value": "v48"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k49",
+          "value": "v49"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k0",
+          "value": "again"
+        },
+        {
+          "op": "size",
+          "result": 50
+        },
+        {
+          "op": "keys",
+          "result": [
+            "k1",
+            "k2",
+            "k3",
+            "k4",
+            "k5",
+            "k6",
+            "k7",
+            "k8",
+            "k9",
+            "k10",
+            "k11",
+            "k12",
+            "k13",
+            "k14",
+            "k15",
+            "k16",
+            "k17",
+            "k18",
+            "k19",
+            "k20",
+            "k21",
+            "k22",
+            "k23",
+            "k24",
+            "k25",
+            "k26",
+            "k27",
+            "k28",
+            "k29",
+            "k30",
+            "k31",
+            "k32",
+            "k33",
+            "k34",
+            "k35",
+            "k36",
+            "k37",
+            "k38",
+            "k39",
+            "k40",
+            "k41",
+            "k42",
+            "k43",
+            "k44",
+            "k45",
+            "k46",
+            "k47",
+            "k48",
+            "k49",
+            "k0"
+          ]
+        },
+        {
+          "op": "get",
+          "key": "k0",
+          "result": "again"
+        }
+      ]
+    },
+    {
+      "name": "overwrite_below_capacity_keeps_position",
+      "ops": [
+        {
+          "op": "set",
+          "key": "k0",
+          "value": "v0"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k1",
+          "value": "v1"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k2",
+          "value": "v2"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k0",
+          "value": "again"
+        },
+        {
+          "op": "keys",
+          "result": [
+            "k0",
+            "k1",
+            "k2"
+          ]
+        },
+        {
+          "op": "size",
+          "result": 3
+        }
+      ]
+    },
+    {
+      "name": "ties_evict_first_inserted",
+      "ops": [
+        {
+          "op": "set",
+          "key": "k0",
+          "value": "v0"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k1",
+          "value": "v1"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k2",
+          "value": "v2"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k3",
+          "value": "v3"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k4",
+          "value": "v4"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k5",
+          "value": "v5"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k6",
+          "value": "v6"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k7",
+          "value": "v7"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k8",
+          "value": "v8"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k9",
+          "value": "v9"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k10",
+          "value": "v10"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k11",
+          "value": "v11"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k12",
+          "value": "v12"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k13",
+          "value": "v13"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k14",
+          "value": "v14"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k15",
+          "value": "v15"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k16",
+          "value": "v16"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k17",
+          "value": "v17"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k18",
+          "value": "v18"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k19",
+          "value": "v19"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k20",
+          "value": "v20"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k21",
+          "value": "v21"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k22",
+          "value": "v22"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k23",
+          "value": "v23"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k24",
+          "value": "v24"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k25",
+          "value": "v25"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k26",
+          "value": "v26"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k27",
+          "value": "v27"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k28",
+          "value": "v28"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k29",
+          "value": "v29"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k30",
+          "value": "v30"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k31",
+          "value": "v31"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k32",
+          "value": "v32"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k33",
+          "value": "v33"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k34",
+          "value": "v34"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k35",
+          "value": "v35"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k36",
+          "value": "v36"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k37",
+          "value": "v37"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k38",
+          "value": "v38"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k39",
+          "value": "v39"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k40",
+          "value": "v40"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k41",
+          "value": "v41"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k42",
+          "value": "v42"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k43",
+          "value": "v43"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k44",
+          "value": "v44"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k45",
+          "value": "v45"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k46",
+          "value": "v46"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k47",
+          "value": "v47"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k48",
+          "value": "v48"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "k49",
+          "value": "v49"
+        },
+        {
+          "op": "advance",
+          "by": 0
+        },
+        {
+          "op": "set",
+          "key": "x",
+          "value": "x"
+        },
+        {
+          "op": "key?",
+          "key": "k0",
+          "result": false
+        },
+        {
+          "op": "key?",
+          "key": "k1",
+          "result": true
+        }
+      ]
+    },
+    {
+      "name": "ttl_boundary",
+      "ops": [
+        {
+          "op": "set",
+          "key": "a",
+          "value": "1"
+        },
+        {
+          "op": "advance",
+          "by": 3600
+        },
+        {
+          "op": "get",
+          "key": "a",
+          "result": "1"
+        },
+        {
+          "op": "advance",
+          "by": 0.5
+        },
+        {
+          "op": "size",
+          "result": 1
+        },
+        {
+          "op": "get",
+          "key": "a",
+          "result": null
+        },
+        {
+          "op": "size",
+          "result": 0
+        }
+      ]
+    },
+    {
+      "name": "ttl_from_creation_not_access",
+      "ops": [
+        {
+          "op": "set",
+          "key": "a",
+          "value": "1"
+        },
+        {
+          "op": "advance",
+          "by": 3000
+        },
+        {
+          "op": "get",
+          "key": "a",
+          "result": "1"
+        },
+        {
+          "op": "advance",
+          "by": 601
+        },
+        {
+          "op": "get",
+          "key": "a",
+          "result": null
+        }
+      ]
+    },
+    {
+      "name": "expired_counts_in_size_until_cleanup",
+      "ops": [
+        {
+          "op": "set",
+          "key": "a",
+          "value": "1"
+        },
+        {
+          "op": "advance",
+          "by": 10
+        },
+        {
+          "op": "set",
+          "key": "b",
+          "value": "2"
+        },
+        {
+          "op": "advance",
+          "by": 3595
+        },
+        {
+          "op": "size",
+          "result": 2
+        },
+        {
+          "op": "empty?",
+          "result": false
+        },
+        {
+          "op": "stats",
+          "result": {
+            "size": 1,
+            "max_size": 50,
+            "ttl": 3600,
+            "utilization": 0.02
+          }
+        },
+        {
+          "op": "size",
+          "result": 1
+        },
+        {
+          "op": "keys",
+          "result": [
+            "b"
+          ]
+        },
+        {
+          "op": "advance",
+          "by": 10
+        },
+        {
+          "op": "key?",
+          "key": "b",
+          "result": false
+        },
+        {
+          "op": "size",
+          "result": 0
+        },
+        {
+          "op": "empty?",
+          "result": true
+        }
+      ]
+    },
+    {
+      "name": "expired_entry_still_occupies_capacity",
+      "ops": [
+        {
+          "op": "set",
+          "key": "k0",
+          "value": "v0"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k1",
+          "value": "v1"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k2",
+          "value": "v2"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k3",
+          "value": "v3"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k4",
+          "value": "v4"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k5",
+          "value": "v5"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k6",
+          "value": "v6"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k7",
+          "value": "v7"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k8",
+          "value": "v8"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k9",
+          "value": "v9"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k10",
+          "value": "v10"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k11",
+          "value": "v11"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k12",
+          "value": "v12"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k13",
+          "value": "v13"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k14",
+          "value": "v14"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k15",
+          "value": "v15"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k16",
+          "value": "v16"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k17",
+          "value": "v17"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k18",
+          "value": "v18"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k19",
+          "value": "v19"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k20",
+          "value": "v20"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k21",
+          "value": "v21"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k22",
+          "value": "v22"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k23",
+          "value": "v23"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k24",
+          "value": "v24"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k25",
+          "value": "v25"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k26",
+          "value": "v26"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k27",
+          "value": "v27"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k28",
+          "value": "v28"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k29",
+          "value": "v29"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k30",
+          "value": "v30"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k31",
+          "value": "v31"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k32",
+          "value": "v32"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k33",
+          "value": "v33"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k34",
+          "value": "v34"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k35",
+          "value": "v35"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k36",
+          "value": "v36"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k37",
+          "value": "v37"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k38",
+          "value": "v38"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k39",
+          "value": "v39"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k40",
+          "value": "v40"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k41",
+          "value": "v41"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k42",
+          "value": "v42"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k43",
+          "value": "v43"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k44",
+          "value": "v44"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k45",
+          "value": "v45"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k46",
+          "value": "v46"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k47",
+          "value": "v47"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k48",
+          "value": "v48"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "set",
+          "key": "k49",
+          "value": "v49"
+        },
+        {
+          "op": "advance",
+          "by": 1
+        },
+        {
+          "op": "advance",
+          "by": 4000
+        },
+        {
+          "op": "size",
+          "result": 50
+        },
+        {
+          "op": "set",
+          "key": "fresh",
+          "value": "f"
+        },
+        {
+          "op": "size",
+          "result": 50
+        },
+        {
+          "op": "keys",
+          "result": [
+            "fresh"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "delete_and_clear",
+      "ops": [
+        {
+          "op": "set",
+          "key": "a",
+          "value": "1"
+        },
+        {
+          "op": "set",
+          "key": "b",
+          "value": "2"
+        },
+        {
+          "op": "delete",
+          "key": "a",
+          "result": "1"
+        },
+        {
+          "op": "delete",
+          "key": "a",
+          "result": null
+        },
+        {
+          "op": "size",
+          "result": 1
+        },
+        {
+          "op": "advance",
+          "by": 3601
+        },
+        {
+          "op": "delete",
+          "key": "b",
+          "result": "2"
+        },
+        {
+          "op": "set",
+          "key": "c",
+          "value": "3"
+        },
+        {
+          "op": "clear"
+        },
+        {
+          "op": "size",
+          "result": 0
+        },
+        {
+          "op": "get",
+          "key": "c",
+          "result": null
+        },
+        {
+          "op": "stats",
+          "result": {
+            "size": 0,
+            "max_size": 50,
+            "ttl": 3600,
+            "utilization": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "name": "isolation_by_key_component",
+      "ops": [
+        {
+          "op": "set",
+          "key": "ffmpeg-linux-bash-latest",
+          "value": "bash-tool"
+        },
+        {
+          "op": "set",
+          "key": "ffmpeg-linux-zsh-latest",
+          "value": "zsh-tool"
+        },
+        {
+          "op": "set",
+          "key": "ffmpeg-macos-bash-latest",
+          "value": "mac-tool"
+        },
+        {
+          "op": "set",
+          "key": "ffmpeg-linux-bash-6.1",
+          "value": "v61-tool"
+        },
+        {
+          "op": "get",
+          "key": "ffmpeg-linux-bash-latest",
+          "result": "bash-tool"
+        },
+        {
+          "op": "get",
+          "key": "ffmpeg-linux-zsh-latest",
+          "result": "zsh-tool"
+        },
+        {
+          "op": "get",
+          "key": "ffmpeg-macos-bash-latest",
+          "result": "mac-tool"
+        },
+        {
+          "op": "get",
+          "key": "ffmpeg-linux-bash-6.1",
+          "result": "v61-tool"
+        },
+        {
+          "op": "size",
+          "result": 4
+        }
+      ]
+    }
+  ],
+  "registry": [
+    {
+      "step": "empty",
+      "state": {
+        "registry_stats": {
+          "tool_cache": {
+            "size": 0,
+            "max_size": 50
+          },
+          "definition_cache": {
+            "size": 0,
+            "max_size": 100
+          }
+        },
+        "registry_stats_keys": [
+          "tool_cache",
+          "definition_cache"
+        ],
+        "registry_cache_count": 2,
+        "tool_size": 0,
+        "definition_size": 0,
+        "generator_size": 0,
+        "options_size": 0,
+        "shell_instances": 0
+      }
+    },
+    {
+      "step": "populated",
+      "state": {
+        "registry_stats": {
+          "tool_cache": {
+            "size": 2,
+            "max_size": 50
+          },
+          "definition_cache": {
+            "size": 1,
+            "max_size": 100
+          }
+        },
+        "registry_stats_keys": [
+          "tool_cache",
+          "definition_cache"
+        ],
+        "registry_cache_count": 2,
+        "tool_size": 2,
+        "definition_size": 1,
+        "generator_size": 1,
+        "options_size": 1,
+        "shell_instances": 1
+      }
+    },
+    {
+      "step": "after_ttl_no_access",
+      "state": {
+        "registry_stats": {
+          "tool_cache": {
+            "size": 2,
+            "max_size": 50
+          },
+          "definition_cache": {
+            "size": 1,
+            "max_size": 100
+          }
+        },
+        "registry_stats_keys": [
+          "tool_cache",
+          "definition_cache"
+        ],
+        "registry_cache_count": 2,
+        "tool_size": 2,
+        "definition_size": 1,
+        "generator_size": 1,
+        "options_size": 1,
+        "shell_instances": 1
+      }
+    },
+    {
+      "step": "after_clear_all",
+      "state": {
+        "registry_stats": {
+          "tool_cache": {
+            "size": 0,
+            "max_size": 50
+          },
+          "definition_cache": {
+            "size": 0,
+            "max_size": 100
+          }
+        },
+        "registry_stats_keys": [
+          "tool_cache",
+          "definition_cache"
+        ],
+        "registry_cache_count": 2,
+        "tool_size": 0,
+        "definition_size": 0,
+        "generator_size": 1,
+        "options_size": 1,
+        "shell_instances": 1
+      },
+      "clear_all_return": null
+    },
+    {
+      "step": "after_tool_cache_clear",
+      "state": {
+        "registry_stats": {
+          "tool_cache": {
+            "size": 0,
+            "max_size": 50
+          },
+          "definition_cache": {
+            "size": 1,
+            "max_size": 100
+          }
+        },
+        "registry_stats_keys": [
+          "tool_cache",
+          "definition_cache"
+        ],
+        "registry_cache_count": 2,
+        "tool_size": 0,
+        "definition_size": 1,
+        "generator_size": 0,
+        "options_size": 1,
+        "shell_instances": 1
+      }
+    },
+    {
+      "step": "after_clear_definition_cache",
+      "state": {
+        "registry_stats": {
+          "tool_cache": {
+            "size": 1,
+            "max_size": 50
+          },
+          "definition_cache": {
+            "size": 0,
+            "max_size": 100
+          }
+        },
+        "registry_stats_keys": [
+          "tool_cache",
+          "definition_cache"
+        ],
+        "registry_cache_count": 2,
+        "tool_size": 1,
+        "definition_size": 0,
+        "generator_size": 0,
+        "options_size": 1,
+        "shell_instances": 1
+      }
+    }
+  ],
+  "instance_cache": {
+    "rows": [
+      {
+        "name": "unix",
+        "class": "Ukiryu::Shell::Bash",
+        "shell_name": "bash",
+        "same_object": true,
+        "size_after": 1
+      },
+      {
+        "name": "windows",
+        "class": "Ukiryu::Shell::Cmd",
+        "shell_name": "cmd",
+        "same_object": true,
+        "size_after": 2
+      },
+      {
+        "name": "powershell",
+        "class": "Ukiryu::Shell::PowerShell",
+        "shell_name": "powershell",
+        "same_object": true,
+        "size_after": 3
+      },
+      {
+        "name": "bash",
+        "class": "Ukiryu::Shell::Bash",
+        "shell_name": "bash",
+        "same_object": true,
+        "size_after": 4
+      },
+      {
+        "name": "zsh",
+        "class": "Ukiryu::Shell::Zsh",
+        "shell_name": "zsh",
+        "same_object": true,
+        "size_after": 5
+      },
+      {
+        "name": "fish",
+        "class": "Ukiryu::Shell::Fish",
+        "shell_name": "fish",
+        "same_object": true,
+        "size_after": 6
+      },
+      {
+        "name": "sh",
+        "class": "Ukiryu::Shell::Sh",
+        "shell_name": "sh",
+        "same_object": true,
+        "size_after": 7
+      },
+      {
+        "name": "dash",
+        "class": "Ukiryu::Shell::Dash",
+        "shell_name": "dash",
+        "same_object": true,
+        "size_after": 8
+      },
+      {
+        "name": "tcsh",
+        "class": "Ukiryu::Shell::Tcsh",
+        "shell_name": "tcsh",
+        "same_object": true,
+        "size_after": 9
+      },
+      {
+        "name": "pwsh",
+        "class": "Ukiryu::Shell::PowerShell",
+        "shell_name": "powershell",
+        "same_object": true,
+        "size_after": 10
+      },
+      {
+        "name": "cmd",
+        "class": "Ukiryu::Shell::Cmd",
+        "shell_name": "cmd",
+        "same_object": true,
+        "size_after": 11
+      }
+    ],
+    "aliases": {
+      "unix_vs_bash_same_object": false,
+      "pwsh_vs_powershell_same_object": false,
+      "windows_vs_cmd_same_object": false
+    },
+    "errors": [
+      {
+        "name": "nushell",
+        "is_symbol": true,
+        "error_class": "Ukiryu::Errors::UnknownShellError",
+        "message": "Unknown shell: nushell",
+        "size_before": 11,
+        "size_after": 11
+      },
+      {
+        "name": "ksh",
+        "is_symbol": true,
+        "error_class": "Ukiryu::Errors::UnknownShellError",
+        "message": "Unknown shell: ksh",
+        "size_before": 11,
+        "size_after": 11
+      },
+      {
+        "name": "bash",
+        "is_symbol": false,
+        "error_class": "Ukiryu::Errors::UnknownShellError",
+        "message": "Unknown shell: bash",
+        "size_before": 11,
+        "size_after": 11
+      },
+      {
+        "name": "Bash",
+        "is_symbol": true,
+        "error_class": "Ukiryu::Errors::UnknownShellError",
+        "message": "Unknown shell: Bash",
+        "size_before": 11,
+        "size_after": 11
+      }
+    ],
+    "clear": {
+      "size_before": 11,
+      "size_after": 0,
+      "new_object_after_clear": true
+    },
+    "concurrent_distinct_objects": 1,
+    "concurrent_threads": 16,
+    "in_registry": false
+  }
+}

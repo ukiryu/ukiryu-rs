@@ -3,6 +3,60 @@
 use super::pattern::{PatternError, RubyPattern};
 use super::runner::{CommandRequest, CommandRunner, ManPageDates};
 use super::text;
+use crate::extractors::man::ManPageError;
+use std::fmt;
+
+/// An error `detect_with_methods` (and so `Tool#detect_version`) lets escape.
+#[derive(Debug)]
+pub enum DetectionError {
+    /// A command method's pattern this port cannot reproduce.
+    Pattern(PatternError),
+    /// `ManPageParser.parse_date` raised; the source does not rescue it in
+    /// `detect_with_methods`, so it propagates with its class and message.
+    ManPage(ManPageError),
+}
+
+impl DetectionError {
+    /// The Ruby exception class for man-page errors (`Date::Error`,
+    /// `RangeError`, `ArgumentError`, `Errno::EISDIR`, ...). Pattern errors
+    /// have no Ruby counterpart (Ruby itself rescues or accepts them).
+    pub fn ruby_class(&self) -> Option<&'static str> {
+        match self {
+            DetectionError::Pattern(_) => None,
+            DetectionError::ManPage(e) => Some(e.ruby_class()),
+        }
+    }
+}
+
+impl fmt::Display for DetectionError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            DetectionError::Pattern(e) => write!(f, "{e}"),
+            DetectionError::ManPage(e) => write!(f, "{e}"),
+        }
+    }
+}
+
+impl std::error::Error for DetectionError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            DetectionError::Pattern(e) => Some(e),
+            DetectionError::ManPage(e) => Some(e),
+        }
+    }
+}
+
+impl From<PatternError> for DetectionError {
+    fn from(e: PatternError) -> Self {
+        DetectionError::Pattern(e)
+    }
+}
+
+impl From<ManPageError> for DetectionError {
+    fn from(e: ManPageError) -> Self {
+        DetectionError::ManPage(e)
+    }
+}
 
 /// `VersionInfo#method_used` / `available_methods` entries (Ruby symbols).
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -194,12 +248,13 @@ pub struct MethodsRequest {
 }
 
 /// `VersionDetector.detect_with_methods`: the first method that yields a
-/// result wins, in declaration order.
+/// result wins, in declaration order. A man-page error stops the loop and
+/// propagates, as in the source; later methods are not tried.
 pub fn detect_with_methods(
     request: &MethodsRequest,
     runner: &mut dyn CommandRunner,
     man_pages: &mut dyn ManPageDates,
-) -> Result<Option<DetectedVersion>, PatternError> {
+) -> Result<Option<DetectedVersion>, DetectionError> {
     let mut available: Vec<DetectionMethod> = Vec::new();
     for method in &request.methods {
         let m = method.method();
@@ -236,7 +291,7 @@ pub fn detect_with_methods(
                     .find(|(platform, _)| *platform == request.platform)
                     .map(|(_, path)| path.as_str());
                 let Some(man_path) = man_path else { continue };
-                let Some(date) = man_pages.parse_date(man_path) else {
+                let Some(date) = man_pages.parse_date(man_path)? else {
                     continue;
                 };
                 return Ok(Some(DetectedVersion {
