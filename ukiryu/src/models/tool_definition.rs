@@ -5,7 +5,7 @@ use super::components::Components;
 use super::error::ModelError;
 use super::invocation::Invocation;
 use super::platform_profile::PlatformProfile;
-use super::value::{RubyValue, Text};
+use super::value::{Text, Value};
 use super::version_detection::VersionDetection;
 use serde::{Deserialize, Serialize};
 
@@ -132,7 +132,7 @@ impl ToolDefinition {
     /// `#available_on?(platform)` (`profiles.empty?` raises when profiles is nil).
     pub fn is_available_on(&self, platform: &str) -> Result<bool, ModelError> {
         let Some(profiles) = &self.profiles else {
-            return Err(ModelError::no_method("empty?", &RubyValue::Nil));
+            return Err(ModelError::no_method("empty?", &Value::Nil));
         };
         if profiles.is_empty() {
             return Ok(true);

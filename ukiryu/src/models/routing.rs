@@ -5,13 +5,13 @@
 //! Ruby objects: `child(name)` returns the same cached child each time, and
 //! a child sees later changes to its parent. Children are owned by their
 //! parent; a child keeps a weak link back to it.
-use super::value::RubyValue;
+use super::value::Value;
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
 
 #[derive(Debug, Default)]
 struct Node {
-    table: Vec<(String, RubyValue)>,
+    table: Vec<(String, Value)>,
     parent: Weak<RefCell<Node>>,
     children: Vec<(String, Routing)>,
 }
@@ -26,9 +26,9 @@ impl PartialEq for Routing {
     }
 }
 
-fn symbolize(table: &RubyValue) -> Vec<(String, RubyValue)> {
-    let mut out: Vec<(String, RubyValue)> = Vec::new();
-    if let RubyValue::Hash(pairs) = table {
+fn symbolize(table: &Value) -> Vec<(String, Value)> {
+    let mut out: Vec<(String, Value)> = Vec::new();
+    if let Value::Hash(pairs) = table {
         for (k, v) in pairs {
             let key = k.to_ruby_s();
             if let Some(slot) = out.iter_mut().find(|(existing, _)| *existing == key) {
@@ -43,7 +43,7 @@ fn symbolize(table: &RubyValue) -> Vec<(String, RubyValue)> {
 
 impl Routing {
     /// `Routing.new(table)` (keys become Symbols).
-    pub fn new(table: &RubyValue) -> Routing {
+    pub fn new(table: &Value) -> Routing {
         Routing(Rc::new(RefCell::new(Node {
             table: symbolize(table),
             ..Node::default()
@@ -51,7 +51,7 @@ impl Routing {
     }
 
     /// `Routing.new(table, parent: parent)`.
-    pub fn with_parent(table: &RubyValue, parent: &Routing) -> Routing {
+    pub fn with_parent(table: &Value, parent: &Routing) -> Routing {
         let r = Routing::new(table);
         r.0.borrow_mut().parent = Rc::downgrade(&parent.0);
         r
@@ -63,12 +63,12 @@ impl Routing {
     }
 
     /// `#table` (Symbol keys, as names).
-    pub fn table(&self) -> Vec<(String, RubyValue)> {
+    pub fn table(&self) -> Vec<(String, Value)> {
         self.0.borrow().table.clone()
     }
 
     /// `#resolve(command_name)`: own table, then the parent chain.
-    pub fn resolve(&self, command_name: &str) -> Option<RubyValue> {
+    pub fn resolve(&self, command_name: &str) -> Option<Value> {
         let own = self
             .0
             .borrow()
@@ -76,12 +76,12 @@ impl Routing {
             .iter()
             .find(|(k, _)| k == command_name)
             .map(|(_, v)| v.clone())
-            .filter(RubyValue::truthy);
+            .filter(Value::truthy);
         own.or_else(|| self.parent().and_then(|p| p.resolve(command_name)))
     }
 
     /// `#resolve_path(path)`
-    pub fn resolve_path(&self, path: &[&str]) -> Vec<RubyValue> {
+    pub fn resolve_path(&self, path: &[&str]) -> Vec<Value> {
         let Some((first, rest)) = path.split_first() else {
             return Vec::new();
         };
@@ -112,7 +112,7 @@ impl Routing {
         {
             return c.clone();
         }
-        let child = Routing::with_parent(&RubyValue::Hash(Vec::new()), self);
+        let child = Routing::with_parent(&Value::Hash(Vec::new()), self);
         self.0
             .borrow_mut()
             .children
@@ -121,7 +121,7 @@ impl Routing {
     }
 
     /// `#merge!(other)`
-    pub fn merge(&self, other: &RubyValue) -> &Self {
+    pub fn merge(&self, other: &Value) -> &Self {
         let incoming = symbolize(other);
         let mut node = self.0.borrow_mut();
         for (k, v) in incoming {
@@ -158,13 +158,13 @@ impl Routing {
     }
 
     /// `#to_h` (String keys).
-    pub fn to_h(&self) -> RubyValue {
-        RubyValue::Hash(
+    pub fn to_h(&self) -> Value {
+        Value::Hash(
             self.0
                 .borrow()
                 .table
                 .iter()
-                .map(|(k, v)| (RubyValue::Str(k.clone()), v.clone()))
+                .map(|(k, v)| (Value::String(k.clone()), v.clone()))
                 .collect(),
         )
     }

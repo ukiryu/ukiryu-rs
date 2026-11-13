@@ -8,7 +8,7 @@
 //! * a collection attribute given a single value wraps it in an Array.
 use super::error::{ModelError, ModelErrorKind};
 use super::ruby;
-use super::value::{text_item, RubyValue, Text};
+use super::value::{text_item, Text, Value};
 use serde::de::value::MapAccessDeserializer;
 use serde::de::{self, DeserializeOwned, DeserializeSeed, Deserializer, IgnoredAny, MapAccess};
 use serde::de::{SeqAccess, Visitor};
@@ -96,7 +96,7 @@ impl Omit for Text {
         self.is_empty()
     }
 }
-impl Omit for RubyValue {
+impl Omit for Value {
     fn omit(&self) -> bool {
         self.is_nil() || self.is_empty_container()
     }
@@ -198,7 +198,7 @@ impl Coerce for Text {
         })
     }
     fn coerce_item<'de, D: Deserializer<'de>>(d: D) -> Result<Option<Self>, D::Error> {
-        let v = RubyValue::deserialize(d)?;
+        let v = Value::deserialize(d)?;
         text_item(&v)
             .map(Some)
             .map_err(|e| de::Error::custom(e.kind.tag(&e.message)))
@@ -405,9 +405,9 @@ impl Coerce for bool {
 }
 
 /// `Lutaml::Model::Type::Hash.cast`: a mapping, or an Array of pairs (`to_h`).
-impl Coerce for RubyValue {
+impl Coerce for Value {
     fn coerce<'de, D: Deserializer<'de>>(d: D) -> Result<Option<Self>, D::Error> {
-        let v = RubyValue::deserialize(d)?;
+        let v = Value::deserialize(d)?;
         let invalid = || {
             err::<D::Error>(
                 ModelErrorKind::InvalidFormat,
@@ -415,13 +415,13 @@ impl Coerce for RubyValue {
             )
         };
         match v {
-            RubyValue::Nil => Ok(None),
-            RubyValue::Hash(_) => Ok(Some(v)),
-            RubyValue::Array(items) => {
-                let mut out = RubyValue::Hash(Vec::new());
+            Value::Nil => Ok(None),
+            Value::Hash(_) => Ok(Some(v)),
+            Value::Array(items) => {
+                let mut out = Value::Hash(Vec::new());
                 for item in items {
                     match item {
-                        RubyValue::Array(pair) if pair.len() == 2 => {
+                        Value::Array(pair) if pair.len() == 2 => {
                             let mut it = pair.into_iter();
                             let k = it.next().expect("pair key");
                             let val = it.next().expect("pair value");
@@ -731,16 +731,16 @@ pub trait Model: Serialize + DeserializeOwned + Sized {
     }
 
     /// `Model.from_hash(hash)` (string and symbol keys alike).
-    fn from_ruby(value: &RubyValue) -> Result<Self, ModelError> {
+    fn from_ruby(value: &Value) -> Result<Self, ModelError> {
         yeptris::from_value::<de_fns::Root<Self>>(&value.to_yaml_value())
             .map(|r| r.0)
             .map_err(|e| ModelError::from_message(e.to_string(), ModelErrorKind::InvalidFormat))
     }
 
     /// `#to_hash`, as Ruby data.
-    fn to_hash(&self) -> Result<RubyValue, ModelError> {
+    fn to_hash(&self) -> Result<Value, ModelError> {
         let v = yeptris::to_value(self).map_err(ser_error)?;
-        Ok(RubyValue::from_yaml_value(&v))
+        Value::from_yaml_value(&v)
     }
 
     /// `#to_yaml` content, emitted by the Yeptris engine.

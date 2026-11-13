@@ -6,7 +6,7 @@
 //! implementation mirrors through a derived view.
 use super::attr::{de_fns as d, omit_opt, Attr, Model};
 use super::error::ModelError;
-use super::value::{RubyValue, Text};
+use super::value::{Text, Value};
 use serde::{Deserialize, Serialize, Serializer};
 
 fn default_list() -> Attr<Text> {
@@ -127,11 +127,11 @@ fn sym(t: &Option<Text>) -> Result<Option<String>, ModelError> {
     t.as_ref().map(Text::to_sym).transpose()
 }
 
-fn rv(t: &Option<Text>) -> RubyValue {
-    t.as_ref().map_or(RubyValue::Nil, Text::to_ruby_value)
+fn rv(t: &Option<Text>) -> Value {
+    t.as_ref().map_or(Value::Nil, Text::to_ruby_value)
 }
 
-fn text(v: Option<&RubyValue>) -> Result<Option<Text>, ModelError> {
+fn text(v: Option<&Value>) -> Result<Option<Text>, ModelError> {
     match v {
         None => Ok(None),
         Some(v) => Text::from_ruby_value(v),
@@ -184,10 +184,10 @@ impl ToolMetadata {
     pub fn may_provide_list(&self) -> Result<Vec<String>, ModelError> {
         self.may_provide
             .get()
-            .map_or(RubyValue::Nil, Text::to_ruby_value)
+            .map_or(Value::Nil, Text::to_ruby_value)
             .to_array()
             .iter()
-            .map(RubyValue::to_sym)
+            .map(Value::to_sym)
             .collect()
     }
 
@@ -197,10 +197,10 @@ impl ToolMetadata {
     }
 
     /// `#aliases` (`Array(@aliases || [])`).
-    pub fn aliases(&self) -> Vec<RubyValue> {
+    pub fn aliases(&self) -> Vec<Value> {
         self.aliases
             .get()
-            .map_or(RubyValue::Nil, Text::to_ruby_value)
+            .map_or(Value::Nil, Text::to_ruby_value)
             .to_array()
     }
 
@@ -230,9 +230,9 @@ impl ToolMetadata {
     }
 
     /// `ToolMetadata.parse_implements(value)` → `[interface, version]`.
-    pub fn parse_implements(value: Option<&RubyValue>) -> (Option<String>, Option<String>) {
+    pub fn parse_implements(value: Option<&Value>) -> (Option<String>, Option<String>) {
         match value {
-            None | Some(RubyValue::Nil) | Some(RubyValue::Bool(false)) => (None, None),
+            None | Some(Value::Nil) | Some(Value::Bool(false)) => (None, None),
             Some(v) => {
                 let s = v.to_ruby_s();
                 match s.split_once('@') {
@@ -245,7 +245,7 @@ impl ToolMetadata {
 
     /// `ToolMetadata.from_hash(hash, tool_name:, register_path:)` (string keys).
     pub fn from_hash(
-        hash: &RubyValue,
+        hash: &Value,
         tool_name: &str,
         register_path: Option<&str>,
     ) -> Result<ToolMetadata, ModelError> {

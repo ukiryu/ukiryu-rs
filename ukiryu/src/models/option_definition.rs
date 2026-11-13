@@ -2,7 +2,7 @@
 use super::argument_definition::{int_list_value, opt_value, sym_of, text_list_value};
 use super::attr::{de_fns as d, omit_list, omit_opt, ser_int_list, Attr, Model};
 use super::error::ModelError;
-use super::value::{RubyValue, Text};
+use super::value::{Text, Value};
 use serde::{Deserialize, Serialize};
 
 fn default_type() -> Attr<Text> {
@@ -102,7 +102,7 @@ impl OptionDefinition {
     }
 
     /// `#[](key)`: attribute readers by name.
-    pub fn index(&self, key: &str) -> Option<RubyValue> {
+    pub fn index(&self, key: &str) -> Option<Value> {
         Some(match key {
             "name" => opt_value(self.name.as_ref()),
             "cli" => opt_value(self.cli.as_ref()),
@@ -126,3 +126,12 @@ impl OptionDefinition {
 }
 
 impl Model for OptionDefinition {}
+
+/// `Ukiryu::Type` reads its options through `OptionDefinition#[]`:
+/// attribute readers by name, `nil` for every other key (`min`, `max` and
+/// `size` included: the model has no such attributes).
+impl crate::types::OptionSource for OptionDefinition {
+    fn option(&self, key: &str) -> Value {
+        self.index(key).unwrap_or(Value::Nil)
+    }
+}

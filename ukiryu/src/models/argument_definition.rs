@@ -1,7 +1,7 @@
 //! Source: lib/ukiryu/models/argument_definition.rb (`Ukiryu::Models::ArgumentDefinition`).
 use super::attr::{de_fns as d, omit_list, omit_opt, ser_int_list, Attr, Model};
 use super::error::ModelError;
-use super::value::{RubyValue, Text};
+use super::value::{Text, Value};
 use serde::{Deserialize, Serialize};
 
 fn default_type() -> Attr<Text> {
@@ -99,33 +99,33 @@ pub(crate) fn digits_line(s: &str) -> bool {
         .any(|l| !l.is_empty() && l.bytes().all(|b| b.is_ascii_digit()))
 }
 
-pub(crate) fn opt_value(v: Option<&Text>) -> RubyValue {
-    v.map_or(RubyValue::Nil, Text::to_ruby_value)
+pub(crate) fn opt_value(v: Option<&Text>) -> Value {
+    v.map_or(Value::Nil, Text::to_ruby_value)
 }
 
-pub(crate) fn int_list_value(v: &Option<Vec<Option<i64>>>) -> RubyValue {
+pub(crate) fn int_list_value(v: &Option<Vec<Option<i64>>>) -> Value {
     match v {
-        None => RubyValue::Nil,
-        Some(items) => RubyValue::Array(
+        None => Value::Nil,
+        Some(items) => Value::Array(
             items
                 .iter()
-                .map(|i| i.map_or(RubyValue::Nil, |i| RubyValue::Int(i128::from(i))))
+                .map(|i| i.map_or(Value::Nil, Value::int))
                 .collect(),
         ),
     }
 }
 
-pub(crate) fn text_list_value(v: &Option<Vec<Text>>) -> RubyValue {
+pub(crate) fn text_list_value(v: &Option<Vec<Text>>) -> Value {
     match v {
-        None => RubyValue::Nil,
-        Some(items) => RubyValue::Array(items.iter().map(Text::to_ruby_value).collect()),
+        None => Value::Nil,
+        Some(items) => Value::Array(items.iter().map(Text::to_ruby_value).collect()),
     }
 }
 
 pub(crate) fn sym_of(v: Option<&Text>) -> Result<String, ModelError> {
     match v {
         Some(t) => t.to_sym(),
-        None => Err(ModelError::no_method("to_sym", &RubyValue::Nil)),
+        None => Err(ModelError::no_method("to_sym", &Value::Nil)),
     }
 }
 
@@ -160,25 +160,15 @@ impl ArgumentDefinition {
     }
 
     /// `#[](key)`: attribute readers by name (other methods are not exposed).
-    pub fn index(&self, key: &str) -> Option<RubyValue> {
+    pub fn index(&self, key: &str) -> Option<Value> {
         Some(match key {
             "name" => opt_value(self.name.as_ref()),
             "type" => opt_value(self.r#type.get()),
-            "required" => self
-                .required
-                .get()
-                .map_or(RubyValue::Nil, |b| RubyValue::Bool(*b)),
+            "required" => self.required.get().map_or(Value::Nil, |b| Value::Bool(*b)),
             "position" => opt_value(self.position.get()),
-            "variadic" => self
-                .variadic
-                .get()
-                .map_or(RubyValue::Nil, |b| RubyValue::Bool(*b)),
-            "min" => self
-                .min
-                .map_or(RubyValue::Nil, |i| RubyValue::Int(i128::from(i))),
-            "max" => self
-                .max
-                .map_or(RubyValue::Nil, |i| RubyValue::Int(i128::from(i))),
+            "variadic" => self.variadic.get().map_or(Value::Nil, |b| Value::Bool(*b)),
+            "min" => self.min.map_or(Value::Nil, Value::int),
+            "max" => self.max.map_or(Value::Nil, Value::int),
             "size" => int_list_value(&self.size),
             "of" => opt_value(self.of.as_ref()),
             "range" => int_list_value(&self.range),
@@ -202,3 +192,11 @@ impl ArgumentDefinition {
 }
 
 impl Model for ArgumentDefinition {}
+
+/// `Ukiryu::Type` reads its options through `ArgumentDefinition#[]`:
+/// attribute readers by name, `nil` for every other key.
+impl crate::types::OptionSource for ArgumentDefinition {
+    fn option(&self, key: &str) -> Value {
+        self.index(key).unwrap_or(Value::Nil)
+    }
+}

@@ -1,22 +1,22 @@
 //! Source: lib/ukiryu/models/components.rb (`Ukiryu::Models::Components`).
 use super::attr::{de_fns as d, omit_model, Attr, Model};
 use super::exit_codes::ExitCodes;
-use super::value::RubyValue;
+use super::value::Value;
 use serde::{Deserialize, Serialize};
 
-fn default_hash() -> Attr<RubyValue> {
-    Attr::Set(RubyValue::Hash(Vec::new()))
+fn default_hash() -> Attr<Value> {
+    Attr::Set(Value::Hash(Vec::new()))
 }
 
 /// Reusable definitions referenced as `#/components/<type>/<name>`.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Components {
     #[serde(default = "default_hash", skip_serializing_if = "Attr::omit")]
-    pub options: Attr<RubyValue>,
+    pub options: Attr<Value>,
     #[serde(default = "default_hash", skip_serializing_if = "Attr::omit")]
-    pub flags: Attr<RubyValue>,
+    pub flags: Attr<Value>,
     #[serde(default = "default_hash", skip_serializing_if = "Attr::omit")]
-    pub arguments: Attr<RubyValue>,
+    pub arguments: Attr<Value>,
     #[serde(
         default,
         deserialize_with = "d::model",
@@ -28,9 +28,9 @@ pub struct Components {
 impl Default for Components {
     fn default() -> Self {
         Components {
-            options: Attr::Default(RubyValue::Hash(Vec::new())),
-            flags: Attr::Default(RubyValue::Hash(Vec::new())),
-            arguments: Attr::Default(RubyValue::Hash(Vec::new())),
+            options: Attr::Default(Value::Hash(Vec::new())),
+            flags: Attr::Default(Value::Hash(Vec::new())),
+            arguments: Attr::Default(Value::Hash(Vec::new())),
             exit_codes: None,
         }
     }
@@ -39,7 +39,7 @@ impl Default for Components {
 /// What `#resolve(ref)` returns.
 #[derive(Clone, Debug, PartialEq)]
 pub enum ComponentRef<'a> {
-    Value(&'a RubyValue),
+    Value(&'a Value),
     ExitCodes(&'a ExitCodes),
 }
 
@@ -53,23 +53,23 @@ fn parse_ref(reference: &str) -> Option<(&str, &str)> {
     })
 }
 
-fn dig<'a>(h: &'a Attr<RubyValue>, name: &str) -> Option<&'a RubyValue> {
+fn dig<'a>(h: &'a Attr<Value>, name: &str) -> Option<&'a Value> {
     h.get().and_then(|h| h.get_str(name))
 }
 
 impl Components {
     /// `#option(name)`
-    pub fn option(&self, name: &str) -> Option<&RubyValue> {
+    pub fn option(&self, name: &str) -> Option<&Value> {
         dig(&self.options, name)
     }
 
     /// `#flag(name)`
-    pub fn flag(&self, name: &str) -> Option<&RubyValue> {
+    pub fn flag(&self, name: &str) -> Option<&Value> {
         dig(&self.flags, name)
     }
 
     /// `#argument(name)`
-    pub fn argument(&self, name: &str) -> Option<&RubyValue> {
+    pub fn argument(&self, name: &str) -> Option<&Value> {
         dig(&self.arguments, name)
     }
 
@@ -78,9 +78,9 @@ impl Components {
         let Some((kind, name)) = parse_ref(reference) else {
             return false;
         };
-        let has = |h: &Attr<RubyValue>| {
+        let has = |h: &Attr<Value>| {
             h.get()
-                .is_some_and(|h| h.get(&RubyValue::str(name)).is_some())
+                .is_some_and(|h| h.hash_get(&Value::str(name)).is_some())
         };
         match kind {
             "options" => has(&self.options),

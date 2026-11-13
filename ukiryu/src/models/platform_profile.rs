@@ -4,14 +4,14 @@ use super::command_definition::CommandDefinition;
 use super::error::ModelError;
 use super::exit_codes::ExitCodes;
 use super::routing::Routing;
-use super::value::{RubyValue, Text};
+use super::value::{Text, Value};
 use serde::{Deserialize, Serialize};
 
 fn default_option_style() -> Attr<Text> {
     Attr::Set(Text::new("single_dash_space"))
 }
-fn default_hash() -> Attr<RubyValue> {
-    Attr::Set(RubyValue::Hash(Vec::new()))
+fn default_hash() -> Attr<Value> {
+    Attr::Set(Value::Hash(Vec::new()))
 }
 
 /// The commands of a tool on a set of platforms and shells.
@@ -52,7 +52,7 @@ pub struct PlatformProfile {
         default = "default_hash",
         skip_serializing_if = "Attr::omit"
     )]
-    pub routing_data: Attr<RubyValue>,
+    pub routing_data: Attr<Value>,
     #[serde(default, deserialize_with = "d::opt", skip_serializing_if = "omit_opt")]
     pub version_requirement: Option<Text>,
     #[serde(
@@ -62,7 +62,7 @@ pub struct PlatformProfile {
     )]
     pub exit_codes: Option<Box<ExitCodes>>,
     #[serde(default = "default_hash", skip_serializing_if = "Attr::omit")]
-    pub env_var_sets: Attr<RubyValue>,
+    pub env_var_sets: Attr<Value>,
     /// The memoized `#routing` object.
     #[serde(skip)]
     routing_cache: std::cell::OnceCell<Routing>,
@@ -79,10 +79,10 @@ impl Default for PlatformProfile {
             executable_name: None,
             commands: Some(Vec::new()),
             inherits: None,
-            routing_data: Attr::Default(RubyValue::Hash(Vec::new())),
+            routing_data: Attr::Default(Value::Hash(Vec::new())),
             version_requirement: None,
             exit_codes: None,
-            env_var_sets: Attr::Default(RubyValue::Hash(Vec::new())),
+            env_var_sets: Attr::Default(Value::Hash(Vec::new())),
             routing_cache: std::cell::OnceCell::new(),
         }
     }
@@ -107,11 +107,7 @@ impl PlatformProfile {
     pub fn routing(&self) -> Routing {
         self.routing_cache
             .get_or_init(|| {
-                Routing::new(
-                    self.routing_data
-                        .get()
-                        .unwrap_or(&RubyValue::Hash(Vec::new())),
-                )
+                Routing::new(self.routing_data.get().unwrap_or(&Value::Hash(Vec::new())))
             })
             .clone()
     }
@@ -144,10 +140,10 @@ impl PlatformProfile {
     }
 
     /// `#command_names` (unique names, first-seen order).
-    pub fn command_names(&self) -> Vec<RubyValue> {
-        let mut out: Vec<RubyValue> = Vec::new();
+    pub fn command_names(&self) -> Vec<Value> {
+        let mut out: Vec<Value> = Vec::new();
         for c in self.commands.iter().flatten() {
-            let key = c.name.as_ref().map_or(RubyValue::Nil, Text::to_ruby_value);
+            let key = c.name.as_ref().map_or(Value::Nil, Text::to_ruby_value);
             if !out.contains(&key) {
                 out.push(key);
             }

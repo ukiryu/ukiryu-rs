@@ -5,22 +5,22 @@
 //! every `data[:key]` lookup misses there, exactly as in the source.
 use super::error::ModelError;
 use super::interface::{load_yaml_file, register_hash};
-use super::value::RubyValue;
+use super::value::Value;
 use std::path::Path;
 
 /// A tool's implementation index (`index.yaml`).
 #[derive(Clone, Debug, PartialEq)]
 pub struct ImplementationIndex {
-    pub name: RubyValue,
-    pub interface: RubyValue,
-    pub interface_version: RubyValue,
+    pub name: Value,
+    pub interface: Value,
+    pub interface_version: Value,
     /// Symbolized implementation Hashes.
-    pub implementations: Vec<RubyValue>,
+    pub implementations: Vec<Value>,
 }
 
-fn sym_get(data: &RubyValue, key: &str) -> Result<RubyValue, ModelError> {
+fn sym_get(data: &Value, key: &str) -> Result<Value, ModelError> {
     match data {
-        RubyValue::Hash(_) => Ok(data.get_sym(key).cloned().unwrap_or(RubyValue::Nil)),
+        Value::Hash(_) => Ok(data.get_sym(key).cloned().unwrap_or(Value::Nil)),
         other => Err(ModelError::no_method("[]", other)),
     }
 }
@@ -28,15 +28,15 @@ fn sym_get(data: &RubyValue, key: &str) -> Result<RubyValue, ModelError> {
 impl ImplementationIndex {
     /// `ImplementationIndex.new(name:, interface:, implementations:, interface_version: '1.0')`.
     pub fn new(
-        name: RubyValue,
-        interface: RubyValue,
-        implementations: &[RubyValue],
-        interface_version: RubyValue,
+        name: Value,
+        interface: Value,
+        implementations: &[Value],
+        interface_version: Value,
     ) -> Result<ImplementationIndex, ModelError> {
         let implementations = implementations
             .iter()
             .map(|i| match i {
-                RubyValue::Hash(_) => Ok(i.symbolize_keys()),
+                Value::Hash(_) => Ok(i.symbolize_keys()),
                 other => Err(ModelError::no_method("transform_keys", other)),
             })
             .collect::<Result<_, _>>()?;
@@ -54,17 +54,17 @@ impl ImplementationIndex {
     }
 
     /// `ImplementationIndex.from_hash(data)` (Symbol keys).
-    pub fn from_hash(data: &RubyValue) -> Result<ImplementationIndex, ModelError> {
+    pub fn from_hash(data: &Value) -> Result<ImplementationIndex, ModelError> {
         let version = match sym_get(data, "interface_version")? {
             v if v.truthy() => v,
-            _ => RubyValue::str("1.0"),
+            _ => Value::str("1.0"),
         };
         let implementations = match sym_get(data, "implementations")? {
             v if v.truthy() => v,
-            _ => RubyValue::Array(Vec::new()),
+            _ => Value::Array(Vec::new()),
         };
         let items = match implementations {
-            RubyValue::Array(items) => items,
+            Value::Array(items) => items,
             other => return Err(ModelError::no_method("map", &other)),
         };
         ImplementationIndex::new(
@@ -83,17 +83,17 @@ impl ImplementationIndex {
     }
 
     /// `#implementation(impl_name)`
-    pub fn implementation(&self, impl_name: &RubyValue) -> Option<&RubyValue> {
+    pub fn implementation(&self, impl_name: &Value) -> Option<&Value> {
         self.implementations
             .iter()
-            .find(|i| i.get_sym("name").unwrap_or(&RubyValue::Nil) == impl_name)
+            .find(|i| i.get_sym("name").unwrap_or(&Value::Nil) == impl_name)
     }
 
     /// `#implementation_names`
-    pub fn implementation_names(&self) -> Vec<RubyValue> {
+    pub fn implementation_names(&self) -> Vec<Value> {
         self.implementations
             .iter()
-            .map(|i| i.get_sym("name").cloned().unwrap_or(RubyValue::Nil))
+            .map(|i| i.get_sym("name").cloned().unwrap_or(Value::Nil))
             .collect()
     }
 
