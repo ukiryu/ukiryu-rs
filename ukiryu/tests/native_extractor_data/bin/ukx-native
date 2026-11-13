@@ -1,0 +1,18 @@
+#!/bin/sh
+# Fixture: a tool that answers --ukiryu-definition.
+case "$1" in
+  --help)
+    echo "Usage: ukx-native [options] FILE"
+    echo ""
+    echo "Options:"
+    echo "  --ukiryu-definition    Print the ukiryu tool definition"
+    echo "  -v, --verbose          Be verbose"
+    exit 0 ;;
+  --ukiryu-definition)
+    printf 'name: ukx-native\nversion: "1.4.0"\nprofiles:\n- name: default\n'
+    exit 0 ;;
+  --version)
+    echo "ukx-native version 1.4.0"
+    exit 0 ;;
+esac
+exit 2

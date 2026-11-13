@@ -1,0 +1,2255 @@
+{
+  "provenance": {
+    "source": "ukiryu/ukiryu ab6df353c6dc2d7faf7817a86aafcafa82579896",
+    "files": [
+      "lib/ukiryu/extractors/base_extractor.rb",
+      "lib/ukiryu/extractors/native_extractor.rb",
+      "lib/ukiryu/extractors/help_parser.rb",
+      "lib/ukiryu/extractors/extractor.rb",
+      "lib/ukiryu/executor.rb",
+      "lib/ukiryu/shell/unix_base.rb"
+    ],
+    "ruby": "ruby 4.0.1 (2026-01-13 revision e04267a14b) +PRISM [x86_64-linux]",
+    "shell": "Shell.detect pinned to :bash; Environment.from_env; real processes",
+    "fixtures": "ukiryu/tests/native_extractor_data/bin",
+    "script": "capture_native.rb"
+  },
+  "flows": [
+    {
+      "id": "ukx-native/auto",
+      "tool": "ukx-native",
+      "method": "auto",
+      "result": {
+        "ok": {
+          "success": true,
+          "method": "native",
+          "error": null,
+          "yaml": {
+            "raw": "name: ukx-native\nversion: \"1.4.0\"\nprofiles:\n- name: default\n"
+          }
+        }
+      },
+      "calls": [
+        {
+          "argv": [
+            "which",
+            "ukx-native"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "which",
+            "ukx-native"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native",
+            "--ukiryu-definition"
+          ],
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "id": "ukx-native/native",
+      "tool": "ukx-native",
+      "method": "native",
+      "result": {
+        "ok": {
+          "success": true,
+          "method": "native",
+          "error": null,
+          "yaml": {
+            "raw": "name: ukx-native\nversion: \"1.4.0\"\nprofiles:\n- name: default\n"
+          }
+        }
+      },
+      "calls": [
+        {
+          "argv": [
+            "which",
+            "ukx-native"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "which",
+            "ukx-native"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native",
+            "--ukiryu-definition"
+          ],
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "id": "ukx-native/help",
+      "tool": "ukx-native",
+      "method": "help",
+      "result": {
+        "ok": {
+          "success": true,
+          "method": "help",
+          "error": null,
+          "yaml": {
+            "parsed": {
+              "map": [
+                [
+                  "ukiryu_schema",
+                  "1.0"
+                ],
+                [
+                  "$self",
+                  "https://www.ukiryu.com/register/1.0/ukx-native/1.4.0"
+                ],
+                [
+                  "name",
+                  "ukx-native"
+                ],
+                [
+                  "version",
+                  "1.4.0"
+                ],
+                [
+                  "display_name",
+                  "Ukx-native"
+                ],
+                [
+                  "profiles",
+                  [
+                    {
+                      "map": [
+                        [
+                          "name",
+                          "default"
+                        ],
+                        [
+                          "platforms",
+                          [
+                            "macos",
+                            "linux",
+                            "windows"
+                          ]
+                        ],
+                        [
+                          "shells",
+                          [
+                            "bash",
+                            "zsh",
+                            "fish",
+                            "powershell",
+                            "cmd"
+                          ]
+                        ],
+                        [
+                          "commands",
+                          [
+                            {
+                              "map": [
+                                [
+                                  "name",
+                                  "default"
+                                ],
+                                [
+                                  "description",
+                                  "Default ukx-native command"
+                                ],
+                                [
+                                  "options",
+                                  []
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "calls": [
+        {
+          "argv": [
+            "ukx-native",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native",
+            "--version"
+          ],
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "id": "ukx-native/bogus",
+      "tool": "ukx-native",
+      "method": "bogus",
+      "result": {
+        "ok": {
+          "success": false,
+          "method": null,
+          "error": "Unknown extraction method: bogus",
+          "yaml": null
+        }
+      },
+      "calls": []
+    },
+    {
+      "id": "ukx-help/auto",
+      "tool": "ukx-help",
+      "method": "auto",
+      "result": {
+        "ok": {
+          "success": true,
+          "method": "help",
+          "error": null,
+          "yaml": {
+            "parsed": {
+              "map": [
+                [
+                  "ukiryu_schema",
+                  "1.0"
+                ],
+                [
+                  "$self",
+                  "https://www.ukiryu.com/register/1.0/ukx-help/2.3.4"
+                ],
+                [
+                  "name",
+                  "ukx-help"
+                ],
+                [
+                  "version",
+                  "2.3.4"
+                ],
+                [
+                  "display_name",
+                  "Ukx-help"
+                ],
+                [
+                  "profiles",
+                  [
+                    {
+                      "map": [
+                        [
+                          "name",
+                          "default"
+                        ],
+                        [
+                          "platforms",
+                          [
+                            "macos",
+                            "linux",
+                            "windows"
+                          ]
+                        ],
+                        [
+                          "shells",
+                          [
+                            "bash",
+                            "zsh",
+                            "fish",
+                            "powershell",
+                            "cmd"
+                          ]
+                        ],
+                        [
+                          "commands",
+                          [
+                            {
+                              "map": [
+                                [
+                                  "name",
+                                  "default"
+                                ],
+                                [
+                                  "description",
+                                  "Default ukx-help command"
+                                ],
+                                [
+                                  "options",
+                                  [
+                                    {
+                                      "map": [
+                                        [
+                                          "name",
+                                          "output"
+                                        ],
+                                        [
+                                          "description",
+                                          "-o, [--output FILE]    Write output to FILE"
+                                        ],
+                                        [
+                                          "cli",
+                                          "-o"
+                                        ],
+                                        [
+                                          "type",
+                                          "file"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "map": [
+                                        [
+                                          "name",
+                                          "level"
+                                        ],
+                                        [
+                                          "cli",
+                                          "--level"
+                                        ],
+                                        [
+                                          "description",
+                                          "[--level=NUM]          Compression level"
+                                        ],
+                                        [
+                                          "type",
+                                          "integer"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "map": [
+                                        [
+                                          "name",
+                                          "quiet"
+                                        ],
+                                        [
+                                          "description",
+                                          "-q, [--quiet]          Suppress messages"
+                                        ],
+                                        [
+                                          "cli",
+                                          "-q"
+                                        ],
+                                        [
+                                          "type",
+                                          "boolean"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "calls": [
+        {
+          "argv": [
+            "which",
+            "ukx-help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help",
+            "--version"
+          ],
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "id": "ukx-help/native",
+      "tool": "ukx-help",
+      "method": "native",
+      "result": {
+        "ok": {
+          "success": false,
+          "method": "native",
+          "error": "Tool 'ukx-help' does not support native definition extraction",
+          "yaml": null
+        }
+      },
+      "calls": [
+        {
+          "argv": [
+            "which",
+            "ukx-help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help",
+            "--help"
+          ],
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "id": "ukx-help/help",
+      "tool": "ukx-help",
+      "method": "help",
+      "result": {
+        "ok": {
+          "success": true,
+          "method": "help",
+          "error": null,
+          "yaml": {
+            "parsed": {
+              "map": [
+                [
+                  "ukiryu_schema",
+                  "1.0"
+                ],
+                [
+                  "$self",
+                  "https://www.ukiryu.com/register/1.0/ukx-help/2.3.4"
+                ],
+                [
+                  "name",
+                  "ukx-help"
+                ],
+                [
+                  "version",
+                  "2.3.4"
+                ],
+                [
+                  "display_name",
+                  "Ukx-help"
+                ],
+                [
+                  "profiles",
+                  [
+                    {
+                      "map": [
+                        [
+                          "name",
+                          "default"
+                        ],
+                        [
+                          "platforms",
+                          [
+                            "macos",
+                            "linux",
+                            "windows"
+                          ]
+                        ],
+                        [
+                          "shells",
+                          [
+                            "bash",
+                            "zsh",
+                            "fish",
+                            "powershell",
+                            "cmd"
+                          ]
+                        ],
+                        [
+                          "commands",
+                          [
+                            {
+                              "map": [
+                                [
+                                  "name",
+                                  "default"
+                                ],
+                                [
+                                  "description",
+                                  "Default ukx-help command"
+                                ],
+                                [
+                                  "options",
+                                  [
+                                    {
+                                      "map": [
+                                        [
+                                          "name",
+                                          "output"
+                                        ],
+                                        [
+                                          "description",
+                                          "-o, [--output FILE]    Write output to FILE"
+                                        ],
+                                        [
+                                          "cli",
+                                          "-o"
+                                        ],
+                                        [
+                                          "type",
+                                          "file"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "map": [
+                                        [
+                                          "name",
+                                          "level"
+                                        ],
+                                        [
+                                          "cli",
+                                          "--level"
+                                        ],
+                                        [
+                                          "description",
+                                          "[--level=NUM]          Compression level"
+                                        ],
+                                        [
+                                          "type",
+                                          "integer"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "map": [
+                                        [
+                                          "name",
+                                          "quiet"
+                                        ],
+                                        [
+                                          "description",
+                                          "-q, [--quiet]          Suppress messages"
+                                        ],
+                                        [
+                                          "cli",
+                                          "-q"
+                                        ],
+                                        [
+                                          "type",
+                                          "boolean"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "calls": [
+        {
+          "argv": [
+            "ukx-help",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help",
+            "--version"
+          ],
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "id": "ukx-help/bogus",
+      "tool": "ukx-help",
+      "method": "bogus",
+      "result": {
+        "ok": {
+          "success": false,
+          "method": null,
+          "error": "Unknown extraction method: bogus",
+          "yaml": null
+        }
+      },
+      "calls": []
+    },
+    {
+      "id": "ukx-native-broken/auto",
+      "tool": "ukx-native-broken",
+      "method": "auto",
+      "result": {
+        "ok": {
+          "success": true,
+          "method": "help",
+          "error": null,
+          "yaml": {
+            "parsed": {
+              "map": [
+                [
+                  "ukiryu_schema",
+                  "1.0"
+                ],
+                [
+                  "$self",
+                  "https://www.ukiryu.com/register/1.0/ukx-native-broken/1.0"
+                ],
+                [
+                  "name",
+                  "ukx-native-broken"
+                ],
+                [
+                  "version",
+                  "1.0"
+                ],
+                [
+                  "display_name",
+                  "Ukx-native-broken"
+                ],
+                [
+                  "profiles",
+                  [
+                    {
+                      "map": [
+                        [
+                          "name",
+                          "default"
+                        ],
+                        [
+                          "platforms",
+                          [
+                            "macos",
+                            "linux",
+                            "windows"
+                          ]
+                        ],
+                        [
+                          "shells",
+                          [
+                            "bash",
+                            "zsh",
+                            "fish",
+                            "powershell",
+                            "cmd"
+                          ]
+                        ],
+                        [
+                          "commands",
+                          [
+                            {
+                              "map": [
+                                [
+                                  "name",
+                                  "default"
+                                ],
+                                [
+                                  "description",
+                                  "Default ukx-native-broken command"
+                                ],
+                                [
+                                  "options",
+                                  []
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "calls": [
+        {
+          "argv": [
+            "which",
+            "ukx-native-broken"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-broken",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "which",
+            "ukx-native-broken"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-broken",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-broken",
+            "--ukiryu-definition"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-broken",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-broken",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-broken",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-broken",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-broken",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-broken",
+            "--version"
+          ],
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "id": "ukx-native-broken/native",
+      "tool": "ukx-native-broken",
+      "method": "native",
+      "result": {
+        "ok": {
+          "success": false,
+          "method": "native",
+          "error": "Native extraction failed",
+          "yaml": null
+        }
+      },
+      "calls": [
+        {
+          "argv": [
+            "which",
+            "ukx-native-broken"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-broken",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "which",
+            "ukx-native-broken"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-broken",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-broken",
+            "--ukiryu-definition"
+          ],
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "id": "ukx-native-broken/help",
+      "tool": "ukx-native-broken",
+      "method": "help",
+      "result": {
+        "ok": {
+          "success": true,
+          "method": "help",
+          "error": null,
+          "yaml": {
+            "parsed": {
+              "map": [
+                [
+                  "ukiryu_schema",
+                  "1.0"
+                ],
+                [
+                  "$self",
+                  "https://www.ukiryu.com/register/1.0/ukx-native-broken/1.0"
+                ],
+                [
+                  "name",
+                  "ukx-native-broken"
+                ],
+                [
+                  "version",
+                  "1.0"
+                ],
+                [
+                  "display_name",
+                  "Ukx-native-broken"
+                ],
+                [
+                  "profiles",
+                  [
+                    {
+                      "map": [
+                        [
+                          "name",
+                          "default"
+                        ],
+                        [
+                          "platforms",
+                          [
+                            "macos",
+                            "linux",
+                            "windows"
+                          ]
+                        ],
+                        [
+                          "shells",
+                          [
+                            "bash",
+                            "zsh",
+                            "fish",
+                            "powershell",
+                            "cmd"
+                          ]
+                        ],
+                        [
+                          "commands",
+                          [
+                            {
+                              "map": [
+                                [
+                                  "name",
+                                  "default"
+                                ],
+                                [
+                                  "description",
+                                  "Default ukx-native-broken command"
+                                ],
+                                [
+                                  "options",
+                                  []
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "calls": [
+        {
+          "argv": [
+            "ukx-native-broken",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-broken",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-broken",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-broken",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-broken",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-broken",
+            "--version"
+          ],
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "id": "ukx-native-broken/bogus",
+      "tool": "ukx-native-broken",
+      "method": "bogus",
+      "result": {
+        "ok": {
+          "success": false,
+          "method": null,
+          "error": "Unknown extraction method: bogus",
+          "yaml": null
+        }
+      },
+      "calls": []
+    },
+    {
+      "id": "ukx-native-blank/auto",
+      "tool": "ukx-native-blank",
+      "method": "auto",
+      "result": {
+        "ok": {
+          "success": true,
+          "method": "help",
+          "error": null,
+          "yaml": {
+            "parsed": {
+              "map": [
+                [
+                  "ukiryu_schema",
+                  "1.0"
+                ],
+                [
+                  "$self",
+                  "https://www.ukiryu.com/register/1.0/ukx-native-blank/1.0"
+                ],
+                [
+                  "name",
+                  "ukx-native-blank"
+                ],
+                [
+                  "version",
+                  "1.0"
+                ],
+                [
+                  "display_name",
+                  "Ukx-native-blank"
+                ],
+                [
+                  "profiles",
+                  [
+                    {
+                      "map": [
+                        [
+                          "name",
+                          "default"
+                        ],
+                        [
+                          "platforms",
+                          [
+                            "macos",
+                            "linux",
+                            "windows"
+                          ]
+                        ],
+                        [
+                          "shells",
+                          [
+                            "bash",
+                            "zsh",
+                            "fish",
+                            "powershell",
+                            "cmd"
+                          ]
+                        ],
+                        [
+                          "commands",
+                          [
+                            {
+                              "map": [
+                                [
+                                  "name",
+                                  "default"
+                                ],
+                                [
+                                  "description",
+                                  "Default ukx-native-blank command"
+                                ],
+                                [
+                                  "options",
+                                  []
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "calls": [
+        {
+          "argv": [
+            "which",
+            "ukx-native-blank"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-blank",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "which",
+            "ukx-native-blank"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-blank",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-blank",
+            "--ukiryu-definition"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-blank",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-blank",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-blank",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-blank",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-blank",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-blank",
+            "--version"
+          ],
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "id": "ukx-native-blank/native",
+      "tool": "ukx-native-blank",
+      "method": "native",
+      "result": {
+        "ok": {
+          "success": false,
+          "method": "native",
+          "error": "Native extraction failed",
+          "yaml": null
+        }
+      },
+      "calls": [
+        {
+          "argv": [
+            "which",
+            "ukx-native-blank"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-blank",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "which",
+            "ukx-native-blank"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-blank",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-blank",
+            "--ukiryu-definition"
+          ],
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "id": "ukx-native-blank/help",
+      "tool": "ukx-native-blank",
+      "method": "help",
+      "result": {
+        "ok": {
+          "success": true,
+          "method": "help",
+          "error": null,
+          "yaml": {
+            "parsed": {
+              "map": [
+                [
+                  "ukiryu_schema",
+                  "1.0"
+                ],
+                [
+                  "$self",
+                  "https://www.ukiryu.com/register/1.0/ukx-native-blank/1.0"
+                ],
+                [
+                  "name",
+                  "ukx-native-blank"
+                ],
+                [
+                  "version",
+                  "1.0"
+                ],
+                [
+                  "display_name",
+                  "Ukx-native-blank"
+                ],
+                [
+                  "profiles",
+                  [
+                    {
+                      "map": [
+                        [
+                          "name",
+                          "default"
+                        ],
+                        [
+                          "platforms",
+                          [
+                            "macos",
+                            "linux",
+                            "windows"
+                          ]
+                        ],
+                        [
+                          "shells",
+                          [
+                            "bash",
+                            "zsh",
+                            "fish",
+                            "powershell",
+                            "cmd"
+                          ]
+                        ],
+                        [
+                          "commands",
+                          [
+                            {
+                              "map": [
+                                [
+                                  "name",
+                                  "default"
+                                ],
+                                [
+                                  "description",
+                                  "Default ukx-native-blank command"
+                                ],
+                                [
+                                  "options",
+                                  []
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "calls": [
+        {
+          "argv": [
+            "ukx-native-blank",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-blank",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-blank",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-blank",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-blank",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-native-blank",
+            "--version"
+          ],
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "id": "ukx-native-blank/bogus",
+      "tool": "ukx-native-blank",
+      "method": "bogus",
+      "result": {
+        "ok": {
+          "success": false,
+          "method": null,
+          "error": "Unknown extraction method: bogus",
+          "yaml": null
+        }
+      },
+      "calls": []
+    },
+    {
+      "id": "ukx-help-fails/auto",
+      "tool": "ukx-help-fails",
+      "method": "auto",
+      "result": {
+        "ok": {
+          "success": false,
+          "method": "help",
+          "error": "Tool 'ukx-help-fails' does not have help output",
+          "yaml": null
+        }
+      },
+      "calls": [
+        {
+          "argv": [
+            "which",
+            "ukx-help-fails"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help-fails",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help-fails",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help-fails",
+            "--help"
+          ],
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "id": "ukx-help-fails/native",
+      "tool": "ukx-help-fails",
+      "method": "native",
+      "result": {
+        "ok": {
+          "success": false,
+          "method": "native",
+          "error": "Tool 'ukx-help-fails' does not support native definition extraction",
+          "yaml": null
+        }
+      },
+      "calls": [
+        {
+          "argv": [
+            "which",
+            "ukx-help-fails"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help-fails",
+            "--help"
+          ],
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "id": "ukx-help-fails/help",
+      "tool": "ukx-help-fails",
+      "method": "help",
+      "result": {
+        "ok": {
+          "success": false,
+          "method": "help",
+          "error": "Tool 'ukx-help-fails' does not have help output",
+          "yaml": null
+        }
+      },
+      "calls": [
+        {
+          "argv": [
+            "ukx-help-fails",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help-fails",
+            "--help"
+          ],
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "id": "ukx-help-fails/bogus",
+      "tool": "ukx-help-fails",
+      "method": "bogus",
+      "result": {
+        "ok": {
+          "success": false,
+          "method": null,
+          "error": "Unknown extraction method: bogus",
+          "yaml": null
+        }
+      },
+      "calls": []
+    },
+    {
+      "id": "ukx-help-stderr/auto",
+      "tool": "ukx-help-stderr",
+      "method": "auto",
+      "result": {
+        "ok": {
+          "success": true,
+          "method": "help",
+          "error": null,
+          "yaml": {
+            "parsed": {
+              "map": [
+                [
+                  "ukiryu_schema",
+                  "1.0"
+                ],
+                [
+                  "$self",
+                  "https://www.ukiryu.com/register/1.0/ukx-help-stderr/0.9"
+                ],
+                [
+                  "name",
+                  "ukx-help-stderr"
+                ],
+                [
+                  "version",
+                  "0.9"
+                ],
+                [
+                  "display_name",
+                  "Ukx-help-stderr"
+                ],
+                [
+                  "profiles",
+                  [
+                    {
+                      "map": [
+                        [
+                          "name",
+                          "default"
+                        ],
+                        [
+                          "platforms",
+                          [
+                            "macos",
+                            "linux",
+                            "windows"
+                          ]
+                        ],
+                        [
+                          "shells",
+                          [
+                            "bash",
+                            "zsh",
+                            "fish",
+                            "powershell",
+                            "cmd"
+                          ]
+                        ],
+                        [
+                          "commands",
+                          [
+                            {
+                              "map": [
+                                [
+                                  "name",
+                                  "default"
+                                ],
+                                [
+                                  "description",
+                                  "Default ukx-help-stderr command"
+                                ],
+                                [
+                                  "options",
+                                  []
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "calls": [
+        {
+          "argv": [
+            "which",
+            "ukx-help-stderr"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help-stderr",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help-stderr",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help-stderr",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help-stderr",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help-stderr",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help-stderr",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help-stderr",
+            "--version"
+          ],
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "id": "ukx-help-stderr/native",
+      "tool": "ukx-help-stderr",
+      "method": "native",
+      "result": {
+        "ok": {
+          "success": false,
+          "method": "native",
+          "error": "Tool 'ukx-help-stderr' does not support native definition extraction",
+          "yaml": null
+        }
+      },
+      "calls": [
+        {
+          "argv": [
+            "which",
+            "ukx-help-stderr"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help-stderr",
+            "--help"
+          ],
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "id": "ukx-help-stderr/help",
+      "tool": "ukx-help-stderr",
+      "method": "help",
+      "result": {
+        "ok": {
+          "success": true,
+          "method": "help",
+          "error": null,
+          "yaml": {
+            "parsed": {
+              "map": [
+                [
+                  "ukiryu_schema",
+                  "1.0"
+                ],
+                [
+                  "$self",
+                  "https://www.ukiryu.com/register/1.0/ukx-help-stderr/0.9"
+                ],
+                [
+                  "name",
+                  "ukx-help-stderr"
+                ],
+                [
+                  "version",
+                  "0.9"
+                ],
+                [
+                  "display_name",
+                  "Ukx-help-stderr"
+                ],
+                [
+                  "profiles",
+                  [
+                    {
+                      "map": [
+                        [
+                          "name",
+                          "default"
+                        ],
+                        [
+                          "platforms",
+                          [
+                            "macos",
+                            "linux",
+                            "windows"
+                          ]
+                        ],
+                        [
+                          "shells",
+                          [
+                            "bash",
+                            "zsh",
+                            "fish",
+                            "powershell",
+                            "cmd"
+                          ]
+                        ],
+                        [
+                          "commands",
+                          [
+                            {
+                              "map": [
+                                [
+                                  "name",
+                                  "default"
+                                ],
+                                [
+                                  "description",
+                                  "Default ukx-help-stderr command"
+                                ],
+                                [
+                                  "options",
+                                  []
+                                ]
+                              ]
+                            }
+                          ]
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "calls": [
+        {
+          "argv": [
+            "ukx-help-stderr",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help-stderr",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help-stderr",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help-stderr",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help-stderr",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help-stderr",
+            "--version"
+          ],
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "id": "ukx-help-stderr/bogus",
+      "tool": "ukx-help-stderr",
+      "method": "bogus",
+      "result": {
+        "ok": {
+          "success": false,
+          "method": null,
+          "error": "Unknown extraction method: bogus",
+          "yaml": null
+        }
+      },
+      "calls": []
+    },
+    {
+      "id": "ukx-help-blank/auto",
+      "tool": "ukx-help-blank",
+      "method": "auto",
+      "result": {
+        "ok": {
+          "success": false,
+          "method": "help",
+          "error": "Tool 'ukx-help-blank' does not have help output",
+          "yaml": null
+        }
+      },
+      "calls": [
+        {
+          "argv": [
+            "which",
+            "ukx-help-blank"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help-blank",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help-blank",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help-blank",
+            "--help"
+          ],
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "id": "ukx-help-blank/native",
+      "tool": "ukx-help-blank",
+      "method": "native",
+      "result": {
+        "ok": {
+          "success": false,
+          "method": "native",
+          "error": "Tool 'ukx-help-blank' does not support native definition extraction",
+          "yaml": null
+        }
+      },
+      "calls": [
+        {
+          "argv": [
+            "which",
+            "ukx-help-blank"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help-blank",
+            "--help"
+          ],
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "id": "ukx-help-blank/help",
+      "tool": "ukx-help-blank",
+      "method": "help",
+      "result": {
+        "ok": {
+          "success": false,
+          "method": "help",
+          "error": "Tool 'ukx-help-blank' does not have help output",
+          "yaml": null
+        }
+      },
+      "calls": [
+        {
+          "argv": [
+            "ukx-help-blank",
+            "--help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help-blank",
+            "--help"
+          ],
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "id": "ukx-help-blank/bogus",
+      "tool": "ukx-help-blank",
+      "method": "bogus",
+      "result": {
+        "ok": {
+          "success": false,
+          "method": null,
+          "error": "Unknown extraction method: bogus",
+          "yaml": null
+        }
+      },
+      "calls": []
+    },
+    {
+      "id": "ukx-missing/auto",
+      "tool": "ukx-missing",
+      "method": "auto",
+      "result": {
+        "ok": {
+          "success": false,
+          "method": "help",
+          "error": "Tool 'ukx-missing' does not have help output",
+          "yaml": null
+        }
+      },
+      "calls": [
+        {
+          "argv": [
+            "which",
+            "ukx-missing"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-missing",
+            "--help"
+          ],
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "id": "ukx-missing/native",
+      "tool": "ukx-missing",
+      "method": "native",
+      "result": {
+        "ok": {
+          "success": false,
+          "method": "native",
+          "error": "Tool 'ukx-missing' does not support native definition extraction",
+          "yaml": null
+        }
+      },
+      "calls": [
+        {
+          "argv": [
+            "which",
+            "ukx-missing"
+          ],
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "id": "ukx-missing/help",
+      "tool": "ukx-missing",
+      "method": "help",
+      "result": {
+        "ok": {
+          "success": false,
+          "method": "help",
+          "error": "Tool 'ukx-missing' does not have help output",
+          "yaml": null
+        }
+      },
+      "calls": [
+        {
+          "argv": [
+            "ukx-missing",
+            "--help"
+          ],
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "id": "ukx-missing/bogus",
+      "tool": "ukx-missing",
+      "method": "bogus",
+      "result": {
+        "ok": {
+          "success": false,
+          "method": null,
+          "error": "Unknown extraction method: bogus",
+          "yaml": null
+        }
+      },
+      "calls": []
+    }
+  ],
+  "enoent_flows": [
+    {
+      "id": "cmd-enoent/ukx-help/auto",
+      "tool": "ukx-help",
+      "method": "auto",
+      "shell": "cmd",
+      "result": {
+        "ok": {
+          "success": false,
+          "method": "help",
+          "error": "Tool 'ukx-help' does not have help output",
+          "yaml": null
+        }
+      },
+      "calls": [
+        {
+          "argv": [
+            "which",
+            "ukx-help"
+          ],
+          "timeout": 30
+        },
+        {
+          "argv": [
+            "ukx-help",
+            "--help"
+          ],
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "id": "cmd-enoent/ukx-help/native",
+      "tool": "ukx-help",
+      "method": "native",
+      "shell": "cmd",
+      "result": {
+        "ok": {
+          "success": false,
+          "method": "native",
+          "error": "Tool 'ukx-help' does not support native definition extraction",
+          "yaml": null
+        }
+      },
+      "calls": [
+        {
+          "argv": [
+            "which",
+            "ukx-help"
+          ],
+          "timeout": 30
+        }
+      ]
+    },
+    {
+      "id": "cmd-enoent/ukx-help/help",
+      "tool": "ukx-help",
+      "method": "help",
+      "shell": "cmd",
+      "result": {
+        "ok": {
+          "success": false,
+          "method": "help",
+          "error": "Tool 'ukx-help' does not have help output",
+          "yaml": null
+        }
+      },
+      "calls": [
+        {
+          "argv": [
+            "ukx-help",
+            "--help"
+          ],
+          "timeout": 30
+        }
+      ]
+    }
+  ],
+  "enoent_command": {
+    "ok": {
+      "stdout": "",
+      "stderr": "Command not found",
+      "exit_status": 127
+    }
+  },
+  "commands": [
+    {
+      "id": "version",
+      "argv": [
+        "ukx-help",
+        "--version"
+      ],
+      "timeout": 30,
+      "result": {
+        "ok": {
+          "stdout": "ukx-help 2.3.4 (fixture)\n",
+          "stderr": "",
+          "exit_status": 0
+        }
+      }
+    },
+    {
+      "id": "stderr_help",
+      "argv": [
+        "ukx-help-stderr",
+        "--help"
+      ],
+      "timeout": 30,
+      "result": {
+        "ok": {
+          "stdout": "",
+          "stderr": "usage: ukx-help-stderr [-n] [--dry-run] PATH\n  -n, --dry-run          Show what would happen\n",
+          "exit_status": 0
+        }
+      }
+    },
+    {
+      "id": "nonzero",
+      "argv": [
+        "ukx-help-fails",
+        "--nope"
+      ],
+      "timeout": 30,
+      "result": {
+        "ok": {
+          "stdout": "",
+          "stderr": "unknown option: --nope\n",
+          "exit_status": 1
+        }
+      }
+    },
+    {
+      "id": "missing",
+      "argv": [
+        "ukx-missing",
+        "--help"
+      ],
+      "timeout": 30,
+      "result": {
+        "ok": {
+          "stdout": "",
+          "stderr": "/usr/bin/bash: line 1: ukx-missing: command not found\n",
+          "exit_status": 127
+        }
+      }
+    },
+    {
+      "id": "timeout",
+      "argv": [
+        "sleep",
+        "3"
+      ],
+      "timeout": 1,
+      "result": {
+        "error": {
+          "class": "Ukiryu::Errors::TimeoutError",
+          "message": "Command timed out after 1 seconds: sleep"
+        }
+      }
+    }
+  ]
+}
