@@ -6,8 +6,10 @@
 //! `command_profile.command(command_name)`) and answers `nil` when
 //! `tool_name`/`command_name` is missing or any lookup is nil; that lookup is
 //! register/tool integration and stays with its owner. The tables themselves
-//! are `Ukiryu::Models::ExitCodes` (K17 models), which implement
-//! [`ExitCodeTable`].
+//! are `Ukiryu::Models::ExitCodes` ([`crate::models::ExitCodes`]), which
+//! implements [`ExitCodeTable`].
+use crate::models::value::RubyValue;
+use crate::models::ExitCodes;
 
 /// A table that maps an exit status to its meaning
 /// (`Ukiryu::Models::ExitCodes#meaning`).
@@ -30,4 +32,15 @@ pub fn exit_code_meaning<T: ExitCodeTable + ?Sized>(
 /// `#format_meaning`: `": <meaning>"`, or empty without one.
 pub fn format_meaning(meaning: Option<&str>) -> String {
     meaning.map_or_else(String::new, |m| format!(": {m}"))
+}
+
+/// `ExitCodes#meaning(code)` for an Integer status. A nil or false meaning
+/// is `None` (`format_meaning` treats both as absent); any other value reads
+/// as its `to_s`.
+impl ExitCodeTable for ExitCodes {
+    fn meaning(&self, code: i64) -> Option<String> {
+        ExitCodes::meaning(self, &RubyValue::Int(code.into()))
+            .filter(|v| v.truthy())
+            .map(RubyValue::to_ruby_s)
+    }
 }

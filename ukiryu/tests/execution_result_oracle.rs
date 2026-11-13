@@ -14,6 +14,9 @@ use ukiryu::execution::{
     exit_code_meaning, format_duration, format_meaning, CommandInfo, ExecutionMetadata,
     ExecutionResult, ExitCodeTable, Output, PathStyle, Seconds,
 };
+use ukiryu::models::success_response::ExecutionResultParts;
+use ukiryu::models::value::RubyValue;
+use ukiryu::models::{Attr, ExitCodes, ModelErrorKind};
 use ukiryu::types::ruby::float_to_s;
 use ukiryu::types::value::Time;
 
@@ -291,7 +294,38 @@ fn result_matches_oracle() {
         );
         assert_eq!(r.to_string(), text(&e["to_s"]));
         assert_eq!(r.inspect(), text(&e["inspect"]));
+        // The projection `SuccessResponse.from_result` reads.
+        let parts = ExecutionResultParts::try_from(&r).unwrap();
+        assert_eq!(parts.status, e["status"].as_i64().unwrap());
+        assert_eq!(parts.executable, text(&e["executable"]));
+        assert_eq!(parts.full_command, text(&e["command"]));
+        assert_eq!(
+            parts.shell,
+            input["command_info"]["shell"].as_str().unwrap_or("")
+        );
+        assert_eq!(parts.stdout, text(&e["stdout"]));
+        assert_eq!(parts.error_output, text(&e["error_output"]));
+        assert_eq!(float_s(Some(parts.duration)), e["duration"]);
+        assert_eq!(parts.formatted_duration, r.metadata.formatted_duration());
     }
+}
+
+#[test]
+fn result_without_times_cannot_project_to_success_parts() {
+    let r = ExecutionResult::new(
+        CommandInfo {
+            executable: "x".into(),
+            arguments: vec![],
+            full_command: "x".into(),
+            shell: None,
+            tool_name: None,
+            command_name: None,
+        },
+        Output::new("", "", 0),
+        ExecutionMetadata::new(None, None, None),
+    );
+    let err = ExecutionResultParts::try_from(&r).unwrap_err();
+    assert_eq!(err.kind, ModelErrorKind::NoMethod);
 }
 
 #[test]
@@ -362,15 +396,43 @@ fn table(v: &Value) -> Option<Table> {
     })
 }
 
+fn model_table(v: &Value) -> Option<ExitCodes> {
+    if v.is_null() {
+        return None;
+    }
+    let hash = |m: &Value| {
+        RubyValue::Hash(
+            m.as_object()
+                .unwrap()
+                .iter()
+                .map(|(k, v)| (RubyValue::str(k.clone()), RubyValue::str(text(v))))
+                .collect(),
+        )
+    };
+    Some(ExitCodes {
+        standard: Attr::Set(hash(&v["standard"])),
+        custom: Attr::Set(hash(&v["custom"])),
+    })
+}
+
 #[test]
 fn exit_code_mapping_matches_oracle() {
+    check_exit_code_mapping(table);
+}
+
+#[test]
+fn exit_code_mapping_with_models_exit_codes_matches_oracle() {
+    check_exit_code_mapping(model_table);
+}
+
+fn check_exit_code_mapping<T: ExitCodeTable>(build: fn(&Value) -> Option<T>) {
     let rows = golden("exit_code_mapping");
     assert_eq!(rows.len(), 405);
-    let tables: HashMap<String, Option<Table>> = rows[0]["tables"]
+    let tables: HashMap<String, Option<T>> = rows[0]["tables"]
         .as_object()
         .unwrap()
         .iter()
-        .map(|(k, v)| (k.clone(), table(v)))
+        .map(|(k, v)| (k.clone(), build(v)))
         .collect();
     let mut mapped = 0;
     let mut lookup_short_circuits = 0;

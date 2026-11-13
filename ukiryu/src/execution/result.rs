@@ -4,7 +4,10 @@ use serde::Serialize;
 use super::results::command_info::{CommandInfo, CommandInfoHash};
 use super::results::metadata::{ExecutionMetadata, ExecutionMetadataHash};
 use super::results::output::{Output, OutputHash, Pattern};
-use super::results::ruby::{to_ruby_json, JsonGeneratorError, PathStyle};
+use super::results::ruby::{time_iso8601, to_ruby_json, JsonGeneratorError, PathStyle};
+use crate::models::success_response::ExecutionResultParts;
+use crate::models::value::RubyValue;
+use crate::models::ModelError;
 use crate::types::value::Time;
 
 /// `Ukiryu::Execution::Result`: command, output and timing of one run.
@@ -179,5 +182,30 @@ impl std::fmt::Display for ExecutionResult {
                 self.metadata.formatted_duration()
             )
         }
+    }
+}
+
+/// The fields `SuccessResponse.from_result` reads from a result. A missing
+/// start or finish time fails as Ruby's `nil.iso8601` does (`NoMethodError`).
+impl TryFrom<&ExecutionResult> for ExecutionResultParts {
+    type Error = ModelError;
+
+    fn try_from(r: &ExecutionResult) -> Result<Self, Self::Error> {
+        let nil_iso8601 = || ModelError::no_method("iso8601", &RubyValue::Nil);
+        let started = r.started_at().map(time_iso8601).ok_or_else(nil_iso8601)?;
+        let finished = r.finished_at().map(time_iso8601).ok_or_else(nil_iso8601)?;
+        Ok(ExecutionResultParts {
+            status: r.status(),
+            executable: r.executable().to_owned(),
+            full_command: r.command().to_owned(),
+            // `command_info.shell.to_s`: nil reads as "".
+            shell: r.command_info.shell.clone().unwrap_or_default(),
+            stdout: r.stdout().to_owned(),
+            error_output: r.error_output().to_owned(),
+            started_at_iso8601: started,
+            finished_at_iso8601: finished,
+            duration: r.duration().ok_or_else(nil_iso8601)?,
+            formatted_duration: r.metadata.formatted_duration(),
+        })
     }
 }
