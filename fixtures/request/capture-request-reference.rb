@@ -11,6 +11,7 @@
 # `Thor::Error < StandardError`, so the capture needs only Ruby and Psych.
 require 'json'
 require 'yaml'
+require 'digest'
 
 PINNED = 'ab6df353c6dc2d7faf7817a86aafcafa82579896'
 root = File.expand_path(ARGV.fetch(0))
@@ -96,6 +97,7 @@ puts JSON.pretty_generate(
                   'Ukiryu::CliCommands::BaseCommand#stringify_keys'],
     'ruby' => RUBY_VERSION,
     'psych' => Psych::VERSION,
+    'gemfile_lock_sha256' => (ENV['BUNDLE_GEMFILE'] && Digest::SHA256.file("#{ENV['BUNDLE_GEMFILE']}.lock").hexdigest),
     'platform' => RUBY_PLATFORM
   },
   'cases' => cases

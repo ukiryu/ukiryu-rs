@@ -1,15 +1,22 @@
 //! Compares request loading with the pinned Ruby reference captured by
-//! `fixtures/request/capture-request-reference.rb`.
+//! `fixtures/request/capture-request-reference.rb` (Ruby 4.0.1, Psych 5.3.1,
+//! corpus oracle Gemfile.lock fc3b12f2, x86_64-linux).
 //!
 //! Every captured case must match exactly unless `fixtures/request/pending.json`
 //! lists it. `detail` entries match the Ruby class and the public message
-//! prefix while the parser/OS diagnostic after it differs. `pending` entries
-//! are known divergences owned elsewhere; they must still diverge, so a fix
-//! cannot leave a stale entry behind.
+//! prefix while the parser diagnostic after it differs. `pending` entries are
+//! known divergences that need a change outside this module; they must still
+//! diverge, so a fix cannot leave a stale entry behind. The Ruby expectation
+//! of a pending case is never changed to the port's result.
+//!
+//! The `directory` case depends on the host: Ruby reports `io_fread` where
+//! the directory opens (Linux, macOS) and `rb_sysopen` where it does not
+//! (Windows). On Windows it is compared with the native Windows capture in
+//! `reference-windows-ruby3.4.json` (Ruby 3.4.8, Psych 5.3.1, x64-mingw-ucrt).
 use serde_json::{json, Value as Json};
 use std::collections::BTreeMap;
-use ukiryu::request::{load_execution_request, ArgumentValue, ExecutionRequest};
-use yeptris::Number;
+use ukiryu::models::ruby::float_to_s;
+use ukiryu::request::{load_execution_request, ExecutionRequest, Value};
 
 fn root() -> String {
     format!("{}/../fixtures/request", env!("CARGO_MANIFEST_DIR"))
@@ -21,40 +28,35 @@ fn read_json(name: &str) -> Json {
     serde_json::from_str(&text).unwrap()
 }
 
-/// The capture's typed value profile for a Yeptris value.
-fn typed(value: &ArgumentValue) -> Json {
+/// The capture's typed value profile for a Ruby value.
+fn typed(value: &Value) -> Json {
     match value {
-        ArgumentValue::Null => json!({"type": "nil"}),
-        ArgumentValue::Bool(flag) => json!({"type": "boolean", "value": flag}),
-        ArgumentValue::String(text) => json!({"type": "string", "value": text}),
-        ArgumentValue::Number(Number::I64(n)) => json!({"type": "integer", "value": n.to_string()}),
-        ArgumentValue::Number(Number::U64(n)) => json!({"type": "integer", "value": n.to_string()}),
-        ArgumentValue::Number(Number::F64(n)) => json!({"type": "float", "value": float_text(*n)}),
-        ArgumentValue::Sequence(items) => {
+        Value::Nil => json!({"type": "nil"}),
+        Value::Bool(flag) => json!({"type": "boolean", "value": flag}),
+        Value::String(text) => json!({"type": "string", "value": text}),
+        Value::Symbol(name) => json!({"type": "symbol", "value": name}),
+        Value::Integer(n) => json!({"type": "integer", "value": n.to_string()}),
+        Value::Float(n) => json!({"type": "float", "value": float_text(*n)}),
+        Value::Array(items) => {
             json!({"type": "array", "items": items.iter().map(typed).collect::<Vec<_>>()})
         }
-        ArgumentValue::Mapping(mapping) => json!({"type": "hash", "entries":
-            mapping.0.iter().map(|(k, v)| json!([typed(k), typed(v)])).collect::<Vec<_>>()}),
-        ArgumentValue::Tagged(tagged) => {
-            json!({"type": "tagged", "tag": tagged.tag, "value": typed(&tagged.value)})
-        }
+        Value::Hash(pairs) => json!({"type": "hash", "entries":
+            pairs.iter().map(|(k, v)| json!([typed(k), typed(v)])).collect::<Vec<_>>()}),
+        other => json!({"type": "unsupported", "class": other.class_name()}),
     }
 }
 
-/// Ruby `Float#to_s` for the values used in the fixtures.
 fn float_text(n: f64) -> String {
     if n.is_nan() {
         "NaN".into()
     } else if n.is_infinite() {
         if n > 0.0 { "Infinity" } else { "-Infinity" }.into()
-    } else if n.fract() == 0.0 && n.abs() < 1e16 {
-        format!("{n:.1}")
     } else {
-        format!("{n}")
+        float_to_s(n)
     }
 }
 
-fn outcome(id: &str, file: &str) -> (Json, Option<Json>) {
+fn outcome(file: &str) -> (Json, Option<Json>) {
     let cases = format!("{}/cases", root());
     let path = if file.is_empty() {
         cases.clone()
@@ -64,17 +66,15 @@ fn outcome(id: &str, file: &str) -> (Json, Option<Json>) {
     match load_execution_request(&path) {
         Ok(request) => {
             let keys = match request.arguments().stringify_keys() {
-                Ok(entries) => json!({"ok": {"type": "hash", "entries": entries.iter().map(|(k, v)|
-                    json!([{"type": "symbol", "value": k}, typed(v)])).collect::<Vec<_>>()}}),
+                Ok(hash) => json!({"ok": typed(&hash)}),
                 Err(error) => {
-                    json!({"error": {"class": error.source_class(), "message": error.to_string()}})
+                    json!({"error": {"class": error.ruby_class(), "message": error.message}})
                 }
             };
             (json!({"ok": typed(&request.to_value())}), Some(keys))
         }
         Err(error) => {
             let message = error.to_string().replace(&cases, "$CASES");
-            let _ = id;
             (
                 json!({"error": {"class": error.source_class(), "message": message}}),
                 None,
@@ -90,10 +90,18 @@ fn prefix(message: &str) -> &str {
 #[test]
 fn request_loading_matches_pinned_ruby_reference() {
     let reference = read_json("reference.json");
+    let provenance = &reference["provenance"];
     assert_eq!(
-        reference["provenance"]["revision"],
+        provenance["revision"],
         "ab6df353c6dc2d7faf7817a86aafcafa82579896"
     );
+    assert_eq!(provenance["ruby"], "4.0.1");
+    assert_eq!(provenance["psych"], "5.3.1");
+    assert_eq!(
+        provenance["gemfile_lock_sha256"],
+        "fc3b12f2ede259028b638d2f26c65ddf9506d142c20a8bf0c1b151741078b65e"
+    );
+    let windows = read_json("reference-windows-ruby3.4.json");
     let pending = read_json("pending.json");
     let status: BTreeMap<String, String> = pending["cases"]
         .as_object()
@@ -109,42 +117,70 @@ fn request_loading_matches_pinned_ruby_reference() {
             "pending.json names unknown case {id}"
         );
     }
+    let on_disk = std::fs::read_dir(format!("{}/cases", root()))
+        .unwrap()
+        .filter(|entry| {
+            entry
+                .as_ref()
+                .unwrap()
+                .file_name()
+                .to_string_lossy()
+                .ends_with(".yaml")
+        })
+        .count();
+    // Every case file plus the missing-file and directory inputs.
+    assert_eq!(cases.len(), on_disk + 2, "reference.json is stale");
 
     let mut failures = Vec::new();
     let (mut exact, mut detail, mut pending_count) = (0, 0, 0);
     for case in cases {
         let id = case["id"].as_str().unwrap();
-        let (load, keys) = outcome(id, case["path"].as_str().unwrap());
-        let matches = load == case["load"]
+        let mut expected = case.clone();
+        if cfg!(windows) && id == "directory" {
+            expected = windows["cases"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|c| c["id"] == "directory")
+                .unwrap()
+                .clone();
+        }
+        let (load, keys) = outcome(case["path"].as_str().unwrap());
+        let matches = load == expected["load"]
             && keys
                 .as_ref()
-                .map_or(case.get("stringify_keys").is_none(), |k| {
-                    Some(k) == case.get("stringify_keys")
+                .map_or(expected.get("stringify_keys").is_none(), |k| {
+                    Some(k) == expected.get("stringify_keys")
                 });
+        let report = || {
+            format!(
+                "{id}:\n   expected {} / {:?}\n   actual   {load} / {keys:?}",
+                expected["load"],
+                expected.get("stringify_keys")
+            )
+        };
         match status.get(id).map(String::as_str) {
             None => {
                 exact += 1;
                 if !matches {
-                    failures.push(format!(
-                        "{id}: expected {} / {:?}\n   actual {load} / {keys:?}",
-                        case["load"],
-                        case.get("stringify_keys")
-                    ));
+                    failures.push(report());
                 }
             }
             Some("detail") => {
                 detail += 1;
-                let (expected, actual) = (&case["load"]["error"], &load["error"]);
-                let same = expected["class"] == actual["class"]
-                    && actual["message"].is_string()
-                    && prefix(expected["message"].as_str().unwrap())
-                        == prefix(actual["message"].as_str().unwrap());
+                let (want, got) = (&expected["load"]["error"], &load["error"]);
+                let same = want["class"] == got["class"]
+                    && got["message"].is_string()
+                    && prefix(want["message"].as_str().unwrap())
+                        == prefix(got["message"].as_str().unwrap());
+                eprintln!("detail {}", report());
                 if !same {
-                    failures.push(format!("{id}: detail case changed: {expected} vs {actual}"));
+                    failures.push(format!("detail case changed: {}", report()));
                 }
             }
             Some("pending") => {
                 pending_count += 1;
+                eprintln!("pending {}", report());
                 if matches {
                     failures.push(format!(
                         "{id}: now matches Ruby; remove it from pending.json"
@@ -167,23 +203,28 @@ fn authored_spec_requests_validate_as_in_ruby_spec() {
     assert_eq!(valid.command_name(), Some("convert"));
     assert_eq!(
         valid.arguments().get("output"),
-        Some(&ArgumentValue::String("spec/fixtures/output.jpg".into()))
+        Some(&Value::str("spec/fixtures/output.jpg"))
     );
 
     let missing = load_execution_request(format!("{cases}/spec-missing-fields.yaml")).unwrap_err();
-    assert_eq!(missing.source_class(), "RuntimeError");
+    assert_eq!(missing.source_class(), Some("RuntimeError"));
     assert!(missing.to_string().contains("tool"));
 
     let sequence =
         load_execution_request(format!("{cases}/spec-arguments-sequence.yaml")).unwrap_err();
-    assert_eq!(sequence.source_class(), "RuntimeError");
+    assert_eq!(sequence.source_class(), Some("RuntimeError"));
     assert!(sequence.to_string().contains("arguments"));
 
     let absent = load_execution_request("/nonexistent/file.yaml").unwrap_err();
-    assert_eq!(absent.source_class(), "Thor::Error");
+    assert_eq!(absent.source_class(), Some("Thor::Error"));
 
-    // Round trip: a loaded request serializes and reloads unchanged.
+    // Round trip: a loaded request serializes through Yeptris and reloads
+    // unchanged (this request holds no Symbols and no YAML 1.1 lookalikes).
     let tree = yeptris::to_value(&valid).unwrap();
     let yaml = yeptris::to_string(&tree).unwrap();
     assert_eq!(ExecutionRequest::from_yaml(&yaml).unwrap(), valid);
+    assert_eq!(
+        ExecutionRequest::from_value(valid.to_value()).unwrap(),
+        valid
+    );
 }

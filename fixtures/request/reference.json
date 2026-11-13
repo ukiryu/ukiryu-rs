@@ -7,9 +7,10 @@
       "Ukiryu::CliCommands::RunFileCommand#validate_request!",
       "Ukiryu::CliCommands::BaseCommand#stringify_keys"
     ],
-    "ruby": "3.4.8",
+    "ruby": "4.0.1",
     "psych": "5.3.1",
-    "platform": "x64-mingw-ucrt"
+    "gemfile_lock_sha256": "fc3b12f2ede259028b638d2f26c65ddf9506d142c20a8bf0c1b151741078b65e",
+    "platform": "x86_64-linux"
   },
   "cases": [
     {
@@ -2030,6 +2031,153 @@
       }
     },
     {
+      "id": "builder-convert",
+      "path": "builder-convert.yaml",
+      "load": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "string",
+                "value": "tool"
+              },
+              {
+                "type": "string",
+                "value": "imagemagick"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "command"
+              },
+              {
+                "type": "string",
+                "value": "convert"
+              }
+            ],
+            [
+              {
+                "type": "string",
+                "value": "arguments"
+              },
+              {
+                "type": "hash",
+                "entries": [
+                  [
+                    {
+                      "type": "string",
+                      "value": "inputs"
+                    },
+                    {
+                      "type": "array",
+                      "items": [
+                        {
+                          "type": "string",
+                          "value": "a.png"
+                        },
+                        {
+                          "type": "string",
+                          "value": "b.png"
+                        }
+                      ]
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "output"
+                    },
+                    {
+                      "type": "string",
+                      "value": "out.jpg"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "quality"
+                    },
+                    {
+                      "type": "integer",
+                      "value": "85"
+                    }
+                  ],
+                  [
+                    {
+                      "type": "string",
+                      "value": "strip"
+                    },
+                    {
+                      "type": "boolean",
+                      "value": true
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      "stringify_keys": {
+        "ok": {
+          "type": "hash",
+          "entries": [
+            [
+              {
+                "type": "symbol",
+                "value": "inputs"
+              },
+              {
+                "type": "array",
+                "items": [
+                  {
+                    "type": "string",
+                    "value": "a.png"
+                  },
+                  {
+                    "type": "string",
+                    "value": "b.png"
+                  }
+                ]
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "output"
+              },
+              {
+                "type": "string",
+                "value": "out.jpg"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "quality"
+              },
+              {
+                "type": "integer",
+                "value": "85"
+              }
+            ],
+            [
+              {
+                "type": "symbol",
+                "value": "strip"
+              },
+              {
+                "type": "boolean",
+                "value": true
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
       "id": "command-false",
       "path": "command-false.yaml",
       "load": {
@@ -3314,7 +3462,7 @@
       "load": {
         "error": {
           "class": "Thor::Error",
-          "message": "Error loading request file: Is a directory @ rb_sysopen - $CASES"
+          "message": "Error loading request file: Is a directory @ io_fread - $CASES"
         }
       }
     }

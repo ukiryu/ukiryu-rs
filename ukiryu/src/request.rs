@@ -5,28 +5,36 @@
 //! (`lib/ukiryu/cli_commands/run_file_command.rb` and `base_command.rb` at
 //! `ab6df353c6dc2d7faf7817a86aafcafa82579896`).
 //!
+//! The Ruby method reads the file with `File.read` and parses it with
+//! `YAML.safe_load(text, permitted_classes: [Symbol])`. The port parses with
+//! the crate's shared `safe_load` caller policy ([`crate::schema::safe_load`]
+//! with [`Permitted::SYMBOL`]): Yeptris builds the document, the first
+//! document of a stream is used, an empty or comment-only stream is `nil`,
+//! and plain scalars resolve with Psych's YAML 1.1 rules (symbols,
+//! `yes`/`no`/`on`/`off`, sexagesimal and legacy integers, ...). Date, Time
+//! and other classes raise `Psych::DisallowedClass` and aliases raise
+//! `Psych::AliasesNotEnabled`, as in Ruby. Loaded values are the crate's
+//! unified Ruby value ([`Value`]), so Symbols, Strings, Integers and Floats
+//! keep their Ruby identities.
+//!
+//! Inputs that the shared policy does not reproduce (some YAML tags, for
+//! example) fail with [`RequestError::Unsupported`] instead of a guessed
+//! value; they carry no Ruby class.
+//!
 //! This module only loads and validates a request. It does not resolve tools,
 //! build commands, execute processes or implement the `run-file` CLI verb.
-//!
-//! Error messages are the Ruby public messages. [`RequestError::source_class`]
-//! names the Ruby exception class, because the Ruby command reports file and
-//! YAML problems as `Thor::Error` while structure problems escape as
-//! `RuntimeError`.
-//!
-//! Argument values are the shared Yeptris tree ([`ArgumentValue`]). Ruby's
-//! YAML 1.1 scalar resolution (symbols, `yes`/`no` booleans, sexagesimal and
-//! leading-zero integers, disallowed date/time classes, aliases and Ruby tags)
-//! belongs to the shared typed Ruby value model, not to this module; until that
-//! model is integrated those inputs are recorded as pending divergences in
-//! `fixtures/request/pending.json` rather than approximated here.
+//! [`Arguments::stringify_keys`] returns the Symbol-keyed Hash that
+//! `Tool#execute` hands to the command builder
+//! ([`crate::command_builder::Params`] is implemented for it).
 use std::fmt;
+use std::io::Read;
 use std::path::Path;
 
-use serde::de::{Deserialize, Deserializer, Error as _};
 use serde::ser::{Serialize, Serializer};
 
-/// A dynamic YAML value as produced by the shared Yeptris parser.
-pub type ArgumentValue = yeptris::Value;
+use crate::models::ModelError;
+use crate::schema::{safe_load, Data, Permitted, SchemaError};
+pub use crate::types::Value;
 
 const TOOL: &str = "tool";
 const COMMAND: &str = "command";
@@ -35,22 +43,30 @@ const ARGUMENTS: &str = "arguments";
 /// A validated Structured Execution Request.
 ///
 /// `tool` and `command` hold whatever truthy value the document supplied,
-/// because the Ruby validation only rejects missing, `null` and `false`
+/// because the Ruby validation only rejects missing, `nil` and `false`
 /// values. Use [`ExecutionRequest::tool_name`] and
-/// [`ExecutionRequest::command_name`] for the usual string form.
+/// [`ExecutionRequest::command_name`] for the usual String form.
 #[derive(Clone, Debug, PartialEq)]
 pub struct ExecutionRequest {
-    tool: ArgumentValue,
-    command: ArgumentValue,
+    tool: Value,
+    command: Value,
     arguments: Arguments,
-    /// Other top-level entries, in document order. Ruby keeps them in the
-    /// loaded request hash, so they are preserved rather than rejected.
-    other: Vec<(ArgumentValue, ArgumentValue)>,
+    /// The loaded Hash's key order, so [`ExecutionRequest::to_value`]
+    /// returns the Hash Ruby returns.
+    layout: Vec<Field>,
 }
 
-/// The `arguments` mapping, in document order, with its original key values.
+#[derive(Clone, Debug, PartialEq)]
+enum Field {
+    Tool,
+    Command,
+    Arguments,
+    Other(Value, Value),
+}
+
+/// The `arguments` Hash, in document order, with its original keys.
 #[derive(Clone, Debug, Default, PartialEq)]
-pub struct Arguments(Vec<(ArgumentValue, ArgumentValue)>);
+pub struct Arguments(Vec<(Value, Value)>);
 
 /// A structure error raised by `validate_request!` (Ruby `RuntimeError`).
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -81,21 +97,38 @@ impl std::error::Error for ValidationError {}
 pub enum RequestError {
     /// The path does not exist (`Thor::Error`).
     NotFound { path: String },
-    /// The YAML parser rejected the document (`Thor::Error`). `detail` is
-    /// the parser diagnostic, which is parser-specific text.
+    /// The YAML parser rejected the document (`Thor::Error` wrapping
+    /// `Psych::SyntaxError`). `detail` is the parser diagnostic, which is
+    /// Yeptris text, not libyaml text.
     InvalidYaml { detail: String },
-    /// The file could not be read or loaded (`Thor::Error`).
+    /// The file could not be read, or loading raised another
+    /// `StandardError` such as `Psych::DisallowedClass` (`Thor::Error`).
     Load { detail: String },
     /// The document loaded but is not a valid request (`RuntimeError`).
     Invalid(ValidationError),
+    /// The document needs YAML behaviour the shared loader does not
+    /// reproduce. Ruby has no matching error; this is not a parity result.
+    Unsupported { feature: String, detail: String },
 }
 
 impl RequestError {
-    /// The Ruby exception class this error corresponds to.
-    pub fn source_class(&self) -> &'static str {
+    /// The Ruby exception class this error corresponds to, `None` for
+    /// [`RequestError::Unsupported`].
+    pub fn source_class(&self) -> Option<&'static str> {
         match self {
-            Self::Invalid(_) => "RuntimeError",
-            _ => "Thor::Error",
+            Self::Invalid(_) => Some("RuntimeError"),
+            Self::Unsupported { .. } => None,
+            _ => Some("Thor::Error"),
+        }
+    }
+
+    fn from_schema(error: SchemaError) -> Self {
+        match error {
+            SchemaError::YamlSyntax { message } => Self::InvalidYaml { detail: message },
+            SchemaError::Unsupported { feature, detail } => Self::Unsupported { feature, detail },
+            other => Self::Load {
+                detail: other.message(),
+            },
         }
     }
 }
@@ -107,6 +140,7 @@ impl fmt::Display for RequestError {
             Self::InvalidYaml { detail } => write!(f, "Invalid YAML in request file: {detail}"),
             Self::Load { detail } => write!(f, "Error loading request file: {detail}"),
             Self::Invalid(error) => error.fmt(f),
+            Self::Unsupported { feature, detail } => write!(f, "unsupported ({feature}): {detail}"),
         }
     }
 }
@@ -126,37 +160,6 @@ impl From<ValidationError> for RequestError {
     }
 }
 
-/// `BaseCommand#stringify_keys` failure: Ruby calls `to_sym` on every
-/// argument key, which raises `NoMethodError` for non-string keys.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct KeyError {
-    receiver: &'static str,
-}
-
-impl KeyError {
-    /// The Ruby exception class (`NoMethodError`).
-    pub fn source_class(&self) -> &'static str {
-        "NoMethodError"
-    }
-}
-
-impl fmt::Display for KeyError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "undefined method 'to_sym' for {}", self.receiver)
-    }
-}
-
-impl std::error::Error for KeyError {}
-
-/// Ruby truthiness: only `nil` and `false` are falsy.
-fn truthy(value: &ArgumentValue) -> bool {
-    !matches!(value, ArgumentValue::Null | ArgumentValue::Bool(false))
-}
-
-fn is_key(key: &ArgumentValue, name: &str) -> bool {
-    matches!(key, ArgumentValue::String(text) if text == name)
-}
-
 /// Load and validate a request file (`load_execution_request`).
 pub fn load_execution_request(path: impl AsRef<Path>) -> Result<ExecutionRequest, RequestError> {
     let path = path.as_ref();
@@ -165,124 +168,200 @@ pub fn load_execution_request(path: impl AsRef<Path>) -> Result<ExecutionRequest
             path: path.display().to_string(),
         });
     }
-    let bytes = std::fs::read(path).map_err(|error| RequestError::Load {
-        detail: error.to_string(),
-    })?;
+    let bytes = read_file(path)?;
     ExecutionRequest::from_yaml_slice(&bytes)
 }
 
+/// `File.read(path)` with Ruby's `Errno` message shape: the error text, the
+/// failing call (`rb_sysopen` when opening, `io_fread` when reading) and the
+/// path. A directory is reported as `Is a directory` on every platform, as
+/// Ruby does (Windows refuses to open it, POSIX systems refuse to read it).
+fn read_file(path: &Path) -> Result<Vec<u8>, RequestError> {
+    let shown = path.display();
+    let errno = |error: &std::io::Error| {
+        if path.is_dir() {
+            "Is a directory".to_owned()
+        } else {
+            crate::definition::sources::file::strerror(error)
+        }
+    };
+    let mut file = std::fs::File::open(path).map_err(|error| RequestError::Load {
+        detail: format!("{} @ rb_sysopen - {shown}", errno(&error)),
+    })?;
+    let mut bytes = Vec::new();
+    file.read_to_end(&mut bytes)
+        .map_err(|error| RequestError::Load {
+            detail: format!("{} @ io_fread - {shown}", errno(&error)),
+        })?;
+    Ok(bytes)
+}
+
+/// The Ruby object `YAML.safe_load` built, as the unified value. `Date` and
+/// `Time` cannot occur because the request loader does not permit them.
+fn ruby_value(data: Data) -> Result<Value, RequestError> {
+    Ok(match data {
+        Data::Null => Value::Nil,
+        Data::Bool(flag) => Value::Bool(flag),
+        Data::Integer(number) => Value::Integer(number),
+        Data::Float(number) => Value::Float(number),
+        Data::String(text) => Value::String(text),
+        Data::Symbol(name) => Value::Symbol(name),
+        Data::Date { .. } | Data::Time(_) => {
+            return Err(RequestError::Unsupported {
+                feature: "YAML timestamp".to_owned(),
+                detail: "Date and Time are not permitted request classes".to_owned(),
+            })
+        }
+        Data::Array(items) => Value::Array(
+            items
+                .into_iter()
+                .map(ruby_value)
+                .collect::<Result<_, _>>()?,
+        ),
+        Data::Hash(pairs) => Value::Hash(
+            pairs
+                .into_iter()
+                .map(|(key, item)| Ok((ruby_value(key)?, ruby_value(item)?)))
+                .collect::<Result<_, RequestError>>()?,
+        ),
+    })
+}
+
+/// The diagnostic for a request file that is not UTF-8. Ruby hands the
+/// bytes to libyaml, which raises `Psych::SyntaxError`; the Yeptris
+/// diagnostic for the same bytes is used when it has one.
+fn invalid_encoding(bytes: &[u8], error: std::str::Utf8Error) -> RequestError {
+    let detail = match yeptris::Document::parse(bytes) {
+        Err(parse) => parse
+            .message()
+            .map(str::to_owned)
+            .unwrap_or_else(|| parse.to_string()),
+        Ok(_) => error.to_string(),
+    };
+    RequestError::InvalidYaml { detail }
+}
+
 impl ExecutionRequest {
-    /// Parse and validate a request document.
+    /// Parse and validate request file contents.
     pub fn from_yaml_slice(yaml: &[u8]) -> Result<Self, RequestError> {
-        let value: ArgumentValue =
-            crate::from_yaml_slice(yaml).map_err(|error| RequestError::InvalidYaml {
-                detail: error.to_string(),
-            })?;
-        Ok(Self::from_value(value)?)
+        match std::str::from_utf8(yaml) {
+            Ok(text) => Self::from_yaml(text),
+            Err(error) => Err(invalid_encoding(yaml, error)),
+        }
     }
 
     /// Parse and validate a request document held as text.
     pub fn from_yaml(yaml: &str) -> Result<Self, RequestError> {
-        Self::from_yaml_slice(yaml.as_bytes())
+        let data = safe_load(yaml, Permitted::SYMBOL).map_err(RequestError::from_schema)?;
+        Ok(Self::from_value(ruby_value(data)?)?)
     }
 
-    /// Validate a loaded document (`validate_request!`). Checks run in the
+    /// Validate a loaded object (`validate_request!`). Checks run in the
     /// Ruby order, so the first failing requirement is the one reported.
-    pub fn from_value(value: ArgumentValue) -> Result<Self, ValidationError> {
-        let ArgumentValue::Mapping(mapping) = value else {
+    /// Fields are looked up with String keys (`request['tool']`), so a
+    /// Symbol key `:tool` does not count.
+    pub fn from_value(value: Value) -> Result<Self, ValidationError> {
+        let Value::Hash(pairs) = value else {
             return Err(ValidationError::NotMapping);
         };
         let mut tool = None;
         let mut command = None;
         let mut arguments = None;
-        let mut other = Vec::new();
-        // Yeptris resolves duplicate keys last-value-wins; keep the last
-        // occurrence here as well so a repeated key cannot shadow it.
-        for (key, item) in mapping.0 {
-            if is_key(&key, TOOL) {
-                tool = Some(item);
-            } else if is_key(&key, COMMAND) {
-                command = Some(item);
-            } else if is_key(&key, ARGUMENTS) {
-                arguments = Some(item);
-            } else {
-                other.push((key, item));
+        let mut layout = Vec::with_capacity(pairs.len());
+        for (key, item) in pairs {
+            match key.as_str() {
+                Some(TOOL) => {
+                    tool = Some(item);
+                    layout.push(Field::Tool);
+                }
+                Some(COMMAND) => {
+                    command = Some(item);
+                    layout.push(Field::Command);
+                }
+                Some(ARGUMENTS) => {
+                    arguments = Some(item);
+                    layout.push(Field::Arguments);
+                }
+                _ => layout.push(Field::Other(key, item)),
             }
         }
-        let tool = tool.filter(truthy).ok_or(ValidationError::MissingTool)?;
+        let tool = tool
+            .filter(Value::truthy)
+            .ok_or(ValidationError::MissingTool)?;
         let command = command
-            .filter(truthy)
+            .filter(Value::truthy)
             .ok_or(ValidationError::MissingCommand)?;
         let arguments = arguments
-            .filter(truthy)
+            .filter(Value::truthy)
             .ok_or(ValidationError::MissingArguments)?;
-        let ArgumentValue::Mapping(arguments) = arguments else {
+        let Value::Hash(arguments) = arguments else {
             return Err(ValidationError::ArgumentsNotMapping);
         };
         Ok(Self {
             tool,
             command,
-            arguments: Arguments(arguments.0),
-            other,
+            arguments: Arguments(arguments),
+            layout,
         })
     }
 
     /// The `tool` value as supplied.
-    pub fn tool(&self) -> &ArgumentValue {
+    pub fn tool(&self) -> &Value {
         &self.tool
     }
 
-    /// The `tool` value when it is a string.
+    /// The `tool` value when it is a String.
     pub fn tool_name(&self) -> Option<&str> {
-        as_str(&self.tool)
+        self.tool.as_str()
     }
 
     /// The `command` value as supplied.
-    pub fn command(&self) -> &ArgumentValue {
+    pub fn command(&self) -> &Value {
         &self.command
     }
 
-    /// The `command` value when it is a string.
+    /// The `command` value when it is a String.
     pub fn command_name(&self) -> Option<&str> {
-        as_str(&self.command)
+        self.command.as_str()
     }
 
-    /// The validated `arguments` mapping.
+    /// The validated `arguments` Hash.
     pub fn arguments(&self) -> &Arguments {
         &self.arguments
     }
 
-    /// Top-level entries other than `tool`, `command` and `arguments`.
-    pub fn other_fields(&self) -> &[(ArgumentValue, ArgumentValue)] {
-        &self.other
+    /// Top-level entries other than `tool`, `command` and `arguments`, in
+    /// document order. Ruby keeps them in the loaded request.
+    pub fn other_fields(&self) -> Vec<(&Value, &Value)> {
+        self.layout
+            .iter()
+            .filter_map(|field| match field {
+                Field::Other(key, item) => Some((key, item)),
+                _ => None,
+            })
+            .collect()
     }
 
-    /// The request as a YAML mapping: `tool`, `command`, `arguments`, then
-    /// the other fields in document order.
-    pub fn to_value(&self) -> ArgumentValue {
-        let mut entries = vec![
-            (ArgumentValue::String(TOOL.into()), self.tool.clone()),
-            (ArgumentValue::String(COMMAND.into()), self.command.clone()),
-            (
-                ArgumentValue::String(ARGUMENTS.into()),
-                ArgumentValue::Mapping(yeptris::Mapping(self.arguments.0.clone())),
-            ),
-        ];
-        entries.extend(self.other.iter().cloned());
-        ArgumentValue::Mapping(yeptris::Mapping(entries))
-    }
-}
-
-fn as_str(value: &ArgumentValue) -> Option<&str> {
-    match value {
-        ArgumentValue::String(text) => Some(text),
-        _ => None,
+    /// The request Hash `load_execution_request` returns, keys in document
+    /// order.
+    pub fn to_value(&self) -> Value {
+        Value::Hash(
+            self.layout
+                .iter()
+                .map(|field| match field {
+                    Field::Tool => (Value::str(TOOL), self.tool.clone()),
+                    Field::Command => (Value::str(COMMAND), self.command.clone()),
+                    Field::Arguments => (Value::str(ARGUMENTS), self.arguments.to_value()),
+                    Field::Other(key, item) => (key.clone(), item.clone()),
+                })
+                .collect(),
+        )
     }
 }
 
 impl Arguments {
     /// Entries in document order with their original keys.
-    pub fn entries(&self) -> &[(ArgumentValue, ArgumentValue)] {
+    pub fn entries(&self) -> &[(Value, Value)] {
         &self.0
     }
 
@@ -294,62 +373,31 @@ impl Arguments {
         self.0.is_empty()
     }
 
-    /// The value for a string key.
-    pub fn get(&self, name: &str) -> Option<&ArgumentValue> {
+    /// `arguments['name']` (a String key; Symbol keys do not match).
+    pub fn get(&self, name: &str) -> Option<&Value> {
+        let key = Value::str(name);
         self.0
             .iter()
-            .rev()
-            .find(|(key, _)| is_key(key, name))
-            .map(|(_, value)| value)
+            .find(|(k, _)| crate::types::value::eql(k, &key))
+            .map(|(_, item)| item)
+    }
+
+    /// The `arguments` Hash.
+    pub fn to_value(&self) -> Value {
+        Value::Hash(self.0.clone())
     }
 
     /// `BaseCommand#stringify_keys`: despite its name the Ruby method
-    /// converts every top-level key to a symbol (`transform_keys(&:to_sym)`)
-    /// and leaves nested values untouched. Keys that become the same symbol
-    /// keep the first key's position and the last key's value, as Ruby's hash
-    /// insertion does. The first key without `to_sym` fails as in Ruby.
-    pub fn stringify_keys(&self) -> Result<Vec<(String, ArgumentValue)>, KeyError> {
-        let mut result: Vec<(String, ArgumentValue)> = Vec::with_capacity(self.0.len());
-        for (key, value) in &self.0 {
-            let name = match key {
-                ArgumentValue::String(text) => text.clone(),
-                other => {
-                    return Err(KeyError {
-                        receiver: receiver(other),
-                    })
-                }
-            };
-            match result.iter_mut().find(|(existing, _)| *existing == name) {
-                Some(slot) => slot.1 = value.clone(),
-                None => result.push((name, value.clone())),
-            }
+    /// converts every top-level key to a Symbol (`transform_keys(&:to_sym)`)
+    /// and leaves nested values untouched. Keys that become the same Symbol
+    /// keep the first key's position and the last key's value. The first key
+    /// without `to_sym` raises `NoMethodError`, as in Ruby.
+    pub fn stringify_keys(&self) -> Result<Value, ModelError> {
+        let mut result = Value::Hash(Vec::with_capacity(self.0.len()));
+        for (key, item) in &self.0 {
+            result.insert(Value::Symbol(key.to_sym()?), item.clone());
         }
         Ok(result)
-    }
-}
-
-/// Ruby's `NoMethodError` receiver description for a non-symbolizable key.
-fn receiver(value: &ArgumentValue) -> &'static str {
-    use yeptris::Number;
-    match value {
-        ArgumentValue::Null => "nil",
-        ArgumentValue::Bool(true) => "true",
-        ArgumentValue::Bool(false) => "false",
-        ArgumentValue::Number(Number::F64(_)) => "an instance of Float",
-        ArgumentValue::Number(_) => "an instance of Integer",
-        ArgumentValue::Sequence(_) => "an instance of Array",
-        ArgumentValue::Mapping(_) => "an instance of Hash",
-        ArgumentValue::String(_) => unreachable!("string keys convert to symbols"),
-        // Ruby's class for a tagged node depends on Psych tag resolution,
-        // which belongs to the typed Ruby value model; do not guess it.
-        ArgumentValue::Tagged(_) => "a tagged YAML node (Ruby class unresolved)",
-    }
-}
-
-impl<'de> Deserialize<'de> for ExecutionRequest {
-    fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        let value = ArgumentValue::deserialize(deserializer)?;
-        Self::from_value(value).map_err(D::Error::custom)
     }
 }
 
