@@ -9,6 +9,10 @@ use super::json::Oj;
 pub struct RowError {
     pub class: String,
     pub message: String,
+    /// Structured facts beyond the corpus `{class, message}` shape (error
+    /// code, variant, failing stage). Only migrated expectations that
+    /// freeze a `detail` compare it, and then exactly.
+    pub detail: Option<Oj>,
 }
 
 impl RowError {
@@ -16,7 +20,13 @@ impl RowError {
         RowError {
             class: class.into(),
             message: message.into(),
+            detail: None,
         }
+    }
+
+    pub fn with_detail(mut self, detail: Oj) -> Self {
+        self.detail = Some(detail);
+        self
     }
 
     /// A consumer-side problem (malformed input, unsupported value). Its

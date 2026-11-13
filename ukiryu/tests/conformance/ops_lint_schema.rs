@@ -1,11 +1,12 @@
 //! `lint` and `schema` kinds: `lint.string` through
 //! `DefinitionLinter::lint_string`, `schema.validate_profile` through
 //! `schema::safe_load` + `schema::validate_profile`, and
-//! `schema.definition_validate`, which has no core entrypoint yet.
+//! `schema.definition_validate` through `definition_validator::validate_string`.
 use std::path::PathBuf;
 
+use ukiryu::definition::definition_validator;
 use ukiryu::definition::linter::{DefinitionLinter, LintError, LintResult};
-use ukiryu::definition::LintIssueHash;
+use ukiryu::definition::{LintIssueHash, ValidatorEnv};
 use ukiryu::schema::{self, safe_load, Permitted, SchemaError, ValidateOptions};
 
 use super::harness::{Ctx, Outcome, RowError};
@@ -116,16 +117,34 @@ pub fn validate_profile(input: &Oj, ctx: &Ctx) -> Outcome {
     Ok(Oj::Arr(messages.into_iter().map(Oj::Str).collect()))
 }
 
-/// `DefinitionValidator.validate_string(text, schema_path:).to_h`.
-///
-/// The core ports only the JSON Schema stage of `DefinitionValidator`
-/// (`schema::load_definition_schema` + `schema::definition_schema_report`);
-/// `validate_string`/`validate` (YAML rescue, `validate_structure`, result
-/// assembly) has no core API, so the row fails visibly.
-pub fn definition_validate(_input: &Oj, _ctx: &Ctx) -> Outcome {
-    Err(RowError::harness(
-        "no core API: Ukiryu::Definition::DefinitionValidator.validate_string \
-         (only schema::load_definition_schema/definition_schema_report are ported; \
-         validate_structure and result assembly are not)",
-    ))
+/// `DefinitionValidator.validate_string(text, schema_path:
+/// input_path(schema)).to_h` through the core
+/// `definition_validator::validate_string`, with `UKIRYU_SCHEMA_PATH`
+/// unset (the corpus sandbox).
+pub fn definition_validate(input: &Oj, ctx: &Ctx) -> Outcome {
+    let text = read_text(input, ctx)?;
+    let schema_path = match input.get("schema") {
+        None | Some(Oj::Null) => None,
+        Some(Oj::Str(rel)) => Some(ctx.input_path(rel)),
+        Some(other) => {
+            return Err(RowError::harness(format!(
+                "schema must be a string or null, got {other:?}"
+            )))
+        }
+    };
+    let result = definition_validator::validate_string(
+        &text,
+        schema_path.as_deref(),
+        &ValidatorEnv::default(),
+    )
+    .map_err(schema_error)?;
+    let strings = |v: &[String]| Oj::Arr(v.iter().map(|m| Oj::s(m.as_str())).collect());
+    Ok(sym_map(vec![
+        ("valid", Oj::Bool(result.is_valid())),
+        ("errors", strings(&result.errors)),
+        ("warnings", strings(&result.warnings)),
+        ("schema_path", opt_str(&result.schema_path)),
+        ("error_count", int(result.error_count())),
+        ("warning_count", int(result.warning_count())),
+    ]))
 }

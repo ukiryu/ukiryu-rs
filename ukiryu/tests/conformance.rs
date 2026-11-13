@@ -444,6 +444,9 @@ const MIGRATION_BASES: [&str; 4] = ["D1", "D2", "version", "emitter"];
 
 struct Migration {
     expect: Oj,
+    /// Frozen structured error facts (code, variant, stage), compared
+    /// exactly when present.
+    detail: Option<Oj>,
 }
 
 fn migrations(c: &Corpus) -> BTreeMap<String, Migration> {
@@ -457,6 +460,7 @@ fn migrations(c: &Corpus) -> BTreeMap<String, Migration> {
                 m.field_str("id").ok()?.to_string(),
                 Migration {
                     expect: m.get("expect")?.clone(),
+                    detail: m.get("detail").cloned(),
                 },
             ))
         })
@@ -505,6 +509,17 @@ fn migration_problems(c: &Corpus, rows: &[Row]) -> Vec<String> {
         match m.get("expect") {
             Some(Oj::Obj(p)) if p.len() == 1 && (p[0].0 == "ok" || p[0].0 == "error") => {}
             _ => problems.push(format!("migrated {id}: expect must be {{ok}} or {{error}}")),
+        }
+        // A decision-traced error must freeze its exact code, variant and
+        // stage, not only the class and message.
+        let is_error = m.get("expect").and_then(|e| e.get("error")).is_some();
+        if (basis == "D1" || basis == "D2") && is_error {
+            let detail = m.get("detail");
+            for key in ["code", "variant", "stage"] {
+                if detail.and_then(|d| d.get(key)).and_then(Oj::str).is_none() {
+                    problems.push(format!("migrated {id}: error must freeze detail.{key}"));
+                }
+            }
         }
         if m.get("expect")
             .is_some_and(|e| structural_eq(e, &row.expect))
@@ -563,7 +578,12 @@ fn execute(op: &str, input: &Oj, ctx: &Ctx, run: &Runner) -> Outcome {
 }
 
 /// None when the outcome satisfies the expectation, else the reason.
-fn mismatch(expect: &Oj, error_match: &str, outcome: &Outcome) -> Option<String> {
+fn mismatch(
+    expect: &Oj,
+    error_match: &str,
+    detail: Option<&Oj>,
+    outcome: &Outcome,
+) -> Option<String> {
     if let Some(want) = expect.get("ok") {
         return match outcome {
             Err(e) => Some(format!(
@@ -601,7 +621,17 @@ fn mismatch(expect: &Oj, error_match: &str, outcome: &Outcome) -> Option<String>
                 clip(&e.message, 200)
             ))
         }
-        Err(_) => None,
+        Err(e) => match detail {
+            None => None,
+            Some(want) => match &e.detail {
+                Some(got) if structural_eq(want, got) => None,
+                got => Some(format!(
+                    "error detail differs: expected {} got {}",
+                    canonical(want),
+                    got.as_ref().map(canonical).unwrap_or_else(|| "none".into())
+                )),
+            },
+        },
     }
 }
 
@@ -654,11 +684,12 @@ fn run_rows(
                         let i = next.fetch_add(1, Ordering::Relaxed);
                         let Some(row) = applicable.get(i) else { break };
                         let outcome = execute(&row.op, &row.input, ctx, run);
-                        let (expect, is_migrated) = match migrated.get(&row.id) {
-                            Some(m) => (&m.expect, true),
-                            None => (&row.expect, false),
+                        let (expect, detail, is_migrated) = match migrated.get(&row.id) {
+                            Some(m) => (&m.expect, m.detail.as_ref(), true),
+                            None => (&row.expect, None, false),
                         };
-                        out.push((i, mismatch(expect, &row.error_match, &outcome), is_migrated));
+                        let reason = mismatch(expect, &row.error_match, detail, &outcome);
+                        out.push((i, reason, is_migrated));
                     }
                     out
                 })
@@ -966,6 +997,33 @@ fn negative_controls_reject_broken_corpora() {
         "but the row's decision",
         "migration without a corpus decision",
     );
+
+    // A D2 error migration that freezes only class and message.
+    let mut c = base.clone();
+    c.migrated = Oj::obj(vec![(
+        "rows",
+        Oj::Arr(vec![Oj::obj(vec![
+            ("id", Oj::s("resolve.shell_detect.test-shell.nonsense")),
+            ("basis", Oj::s("D2")),
+            ("trace", Oj::s("#29")),
+            ("frozen_expect_sha256", Oj::s("0".repeat(64))),
+            (
+                "expect",
+                Oj::obj(vec![(
+                    "error",
+                    Oj::obj(vec![
+                        ("class", Oj::s("Ukiryu::Errors::UnknownShellError")),
+                        ("message", Oj::s("Unknown shell: nonsense")),
+                    ]),
+                )]),
+            ),
+        ])]),
+    )]);
+    expect_problem(
+        &c,
+        "must freeze detail.stage",
+        "D2 error without a frozen stage",
+    );
 }
 
 #[test]
@@ -989,12 +1047,12 @@ fn negative_controls_reject_wrong_outcomes() {
         ) {
             let other = Ok(b.expect.get("ok").unwrap().clone());
             assert!(
-                mismatch(&a.expect, &a.error_match, &other).is_some(),
+                mismatch(&a.expect, &a.error_match, None, &other).is_some(),
                 "{op}: wrong value accepted"
             );
             let err = Err(RowError::new("RuntimeError", "x"));
             assert!(
-                mismatch(&a.expect, &a.error_match, &err).is_some(),
+                mismatch(&a.expect, &a.error_match, None, &err).is_some(),
                 "{op}: error accepted"
             );
             ops_checked.insert(op);
@@ -1004,15 +1062,16 @@ fn negative_controls_reject_wrong_outcomes() {
             let class = want.field_str("class").unwrap().to_string();
             let message = want.field_str("message").unwrap().to_string();
             let wrong_class = Err(RowError::new(format!("{class}X"), message.clone()));
-            assert!(mismatch(&e.expect, &e.error_match, &wrong_class).is_some());
+            assert!(mismatch(&e.expect, &e.error_match, None, &wrong_class).is_some());
             if e.error_match == "class_and_message" {
                 let wrong_message = Err(RowError::new(class.clone(), format!("{message}.")));
-                assert!(mismatch(&e.expect, &e.error_match, &wrong_message).is_some());
+                assert!(mismatch(&e.expect, &e.error_match, None, &wrong_message).is_some());
             }
-            assert!(mismatch(&e.expect, &e.error_match, &Ok(Oj::Null)).is_some());
+            assert!(mismatch(&e.expect, &e.error_match, None, &Ok(Oj::Null)).is_some());
             assert!(mismatch(
                 &e.expect,
                 &e.error_match,
+                None,
                 &Err(RowError::new(class, message))
             )
             .is_none());
@@ -1022,6 +1081,43 @@ fn negative_controls_reject_wrong_outcomes() {
         ops_checked.len() >= 15,
         "only {ops_checked:?} had two distinct ok rows"
     );
+
+    // A migrated error that freezes its detail rejects the same class and
+    // message from another stage, another code, or without detail.
+    let expect = Oj::obj(vec![(
+        "error",
+        Oj::obj(vec![
+            ("class", Oj::s("Ukiryu::Errors::UnknownShellError")),
+            ("message", Oj::s("Unknown shell: x")),
+        ]),
+    )]);
+    let detail = |code: &str, stage: &str| {
+        Oj::obj(vec![
+            ("code", Oj::s(code)),
+            ("variant", Oj::s("Unknown")),
+            ("stage", Oj::s(stage)),
+        ])
+    };
+    let want = detail("UnknownShell", "TestOverride");
+    let got = |d: Option<Oj>| -> Outcome {
+        let e = RowError::new("Ukiryu::Errors::UnknownShellError", "Unknown shell: x");
+        Err(match d {
+            Some(d) => e.with_detail(d),
+            None => e,
+        })
+    };
+    let cm = "class_and_message";
+    assert!(mismatch(&expect, cm, Some(&want), &got(Some(want.clone()))).is_none());
+    for wrong in [
+        Some(detail("UnknownShell", "ShellVariable")),
+        Some(detail("Error", "TestOverride")),
+        None,
+    ] {
+        assert!(
+            mismatch(&expect, cm, Some(&want), &got(wrong.clone())).is_some(),
+            "wrong detail {wrong:?} accepted"
+        );
+    }
 
     // Structural comparison is type-strict and order-strict for arrays.
     assert!(!structural_eq(

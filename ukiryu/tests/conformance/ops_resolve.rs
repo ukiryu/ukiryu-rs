@@ -3,7 +3,7 @@
 //! (`ukiryu::runtime::detect_shell` over an explicit `Environment`).
 use ukiryu::environment::Environment;
 use ukiryu::errors::ErrorKind;
-use ukiryu::runtime::{detect_shell, Platform, ShellError, ShellName};
+use ukiryu::runtime::{detect_shell, Platform, ShellError, ShellName, ShellSource};
 use ukiryu::types::Value;
 use ukiryu::version_detection::{extract_version_from_pattern, PatternError};
 use ukiryu::version_ranges::{
@@ -159,7 +159,26 @@ pub fn shell_detect(input: &Oj, ctx: &Ctx) -> Outcome {
 }
 
 fn shell_error(e: ShellError) -> RowError {
-    RowError::new(ErrorKind::UnknownShell.ruby_class(), e.to_string())
+    let (variant, stage) = match &e {
+        ShellError::Unknown { source, .. } => ("Unknown", shell_source(*source)),
+        ShellError::PlatformGroup { source, .. } => ("PlatformGroup", shell_source(*source)),
+        ShellError::Missing { .. } => ("Missing", "Detection"),
+    };
+    RowError::new(ErrorKind::UnknownShell.ruby_class(), e.to_string()).with_detail(Oj::obj(vec![
+        ("code", Oj::s("UnknownShell")),
+        ("variant", Oj::s(variant)),
+        ("stage", Oj::s(stage)),
+    ]))
+}
+
+/// Where the rejected shell name came from (`runtime::ShellSource`).
+fn shell_source(source: ShellSource) -> &'static str {
+    match source {
+        ShellSource::Explicit => "Explicit",
+        ShellSource::Configured => "Configured",
+        ShellSource::TestOverride => "TestOverride",
+        ShellSource::ShellVariable => "ShellVariable",
+    }
 }
 
 /// The Ruby class `Shell.class_for` returns for a concrete shell.

@@ -1,3 +1,169 @@
 {
-  "rows": []
+  "note": "Explicitly traced expectations that replace frozen Ruby observations for this engine. The corpus rows stay unchanged; frozen_expect_sha256 pins the Ruby expectation each entry replaces (sha256 of its key-sorted JSON).",
+  "rows": [
+    {
+      "id": "resolve.shell_detect.shell-env.bin-dash",
+      "basis": "D2",
+      "trace": "D2 (planning DECISIONS.md, root 2026-11-12): exact registered identifier/basename, unknown or missing configured shell raises, no suffix guessing; ukiryu#19, ukiryu#29",
+      "frozen_expect_sha256": "f23ea182e2790d9b693a8447ea11434fbf7b28270bc796e0fbfe700ec436e1d1",
+      "expect": {
+        "ok": {
+          "detect": {
+            "$sym": "dash"
+          },
+          "shell_class": "Ukiryu::Shell::Dash"
+        }
+      }
+    },
+    {
+      "id": "resolve.shell_detect.shell-env.bin-tcsh",
+      "basis": "D2",
+      "trace": "D2 (planning DECISIONS.md, root 2026-11-12): exact registered identifier/basename, unknown or missing configured shell raises, no suffix guessing; ukiryu#19, ukiryu#29",
+      "frozen_expect_sha256": "f23ea182e2790d9b693a8447ea11434fbf7b28270bc796e0fbfe700ec436e1d1",
+      "expect": {
+        "ok": {
+          "detect": {
+            "$sym": "tcsh"
+          },
+          "shell_class": "Ukiryu::Shell::Tcsh"
+        }
+      }
+    },
+    {
+      "id": "resolve.shell_detect.shell-env.bin-csh",
+      "basis": "D2",
+      "trace": "D2 (planning DECISIONS.md, root 2026-11-12): exact registered identifier/basename, unknown or missing configured shell raises, no suffix guessing; ukiryu#19, ukiryu#29",
+      "frozen_expect_sha256": "f23ea182e2790d9b693a8447ea11434fbf7b28270bc796e0fbfe700ec436e1d1",
+      "expect": {
+        "error": {
+          "class": "Ukiryu::Errors::UnknownShellError",
+          "message": "Unknown shell in SHELL: /bin/csh"
+        }
+      },
+      "detail": {
+        "code": "UnknownShell",
+        "variant": "Unknown",
+        "stage": "ShellVariable"
+      }
+    },
+    {
+      "id": "resolve.shell_detect.shell-env.bin-ksh",
+      "basis": "D2",
+      "trace": "D2 (planning DECISIONS.md, root 2026-11-12): exact registered identifier/basename, unknown or missing configured shell raises, no suffix guessing; ukiryu#19, ukiryu#29",
+      "frozen_expect_sha256": "f23ea182e2790d9b693a8447ea11434fbf7b28270bc796e0fbfe700ec436e1d1",
+      "expect": {
+        "error": {
+          "class": "Ukiryu::Errors::UnknownShellError",
+          "message": "Unknown shell in SHELL: /bin/ksh"
+        }
+      },
+      "detail": {
+        "code": "UnknownShell",
+        "variant": "Unknown",
+        "stage": "ShellVariable"
+      }
+    },
+    {
+      "id": "resolve.shell_detect.shell-env.usr-bin-mksh",
+      "basis": "D2",
+      "trace": "D2 (planning DECISIONS.md, root 2026-11-12): exact registered identifier/basename, unknown or missing configured shell raises, no suffix guessing; ukiryu#19, ukiryu#29",
+      "frozen_expect_sha256": "f23ea182e2790d9b693a8447ea11434fbf7b28270bc796e0fbfe700ec436e1d1",
+      "expect": {
+        "error": {
+          "class": "Ukiryu::Errors::UnknownShellError",
+          "message": "Unknown shell in SHELL: /usr/bin/mksh"
+        }
+      },
+      "detail": {
+        "code": "UnknownShell",
+        "variant": "Unknown",
+        "stage": "ShellVariable"
+      }
+    },
+    {
+      "id": "resolve.shell_detect.shell-env.opt-fakezsh",
+      "basis": "D2",
+      "trace": "D2 (planning DECISIONS.md, root 2026-11-12): exact registered identifier/basename, unknown or missing configured shell raises, no suffix guessing; ukiryu#19, ukiryu#29",
+      "frozen_expect_sha256": "eb9db37fc8c44918a9e0ab6e20ab1c46ab5c70e6ed83412ce57c64e3a23d3f53",
+      "expect": {
+        "error": {
+          "class": "Ukiryu::Errors::UnknownShellError",
+          "message": "Unknown shell in SHELL: /opt/fakezsh"
+        }
+      },
+      "detail": {
+        "code": "UnknownShell",
+        "variant": "Unknown",
+        "stage": "ShellVariable"
+      }
+    },
+    {
+      "id": "resolve.shell_detect.shell-env.opt-notbash",
+      "basis": "D2",
+      "trace": "D2 (planning DECISIONS.md, root 2026-11-12): exact registered identifier/basename, unknown or missing configured shell raises, no suffix guessing; ukiryu#19, ukiryu#29",
+      "frozen_expect_sha256": "18d7d8ef6c2340a649ed9e450a71d3fd422d653f6b23bf2bac5aecbfe511f639",
+      "expect": {
+        "error": {
+          "class": "Ukiryu::Errors::UnknownShellError",
+          "message": "Unknown shell in SHELL: /opt/notbash"
+        }
+      },
+      "detail": {
+        "code": "UnknownShell",
+        "variant": "Unknown",
+        "stage": "ShellVariable"
+      }
+    },
+    {
+      "id": "resolve.shell_detect.shell-env.empty",
+      "basis": "D2",
+      "trace": "D2 (planning DECISIONS.md, root 2026-11-12): exact registered identifier/basename, unknown or missing configured shell raises, no suffix guessing; ukiryu#19, ukiryu#29",
+      "frozen_expect_sha256": "a27f6f815d683ff9a19c5e251d322afe941f53c5e3e724fc44b82610d800d8e4",
+      "expect": {
+        "error": {
+          "class": "Ukiryu::Errors::UnknownShellError",
+          "message": "Unknown shell in SHELL: "
+        }
+      },
+      "detail": {
+        "code": "UnknownShell",
+        "variant": "Unknown",
+        "stage": "ShellVariable"
+      }
+    },
+    {
+      "id": "resolve.shell_detect.shell-env.nonexistent-weird",
+      "basis": "D2",
+      "trace": "D2 (planning DECISIONS.md, root 2026-11-12): exact registered identifier/basename, unknown or missing configured shell raises, no suffix guessing; ukiryu#19, ukiryu#29",
+      "frozen_expect_sha256": "b8138866fb5a3e94cb7990301b66595205b716d399b47d2c89c277b6e52a2f46",
+      "expect": {
+        "error": {
+          "class": "Ukiryu::Errors::UnknownShellError",
+          "message": "Unknown shell in SHELL: /nonexistent/weird"
+        }
+      },
+      "detail": {
+        "code": "UnknownShell",
+        "variant": "Unknown",
+        "stage": "ShellVariable"
+      }
+    },
+    {
+      "id": "resolve.shell_detect.test-shell.nonsense",
+      "basis": "D2",
+      "trace": "D2 (planning DECISIONS.md, root 2026-11-12): exact registered identifier/basename, unknown or missing configured shell raises, no suffix guessing; ukiryu#19, ukiryu#29",
+      "frozen_expect_sha256": "18d7d8ef6c2340a649ed9e450a71d3fd422d653f6b23bf2bac5aecbfe511f639",
+      "expect": {
+        "error": {
+          "class": "Ukiryu::Errors::UnknownShellError",
+          "message": "Unknown shell: nonsense"
+        }
+      },
+      "detail": {
+        "code": "UnknownShell",
+        "variant": "Unknown",
+        "stage": "TestOverride"
+      }
+    }
+  ]
 }

@@ -1,20 +1,14 @@
-//! `build` kind (`build.args`) and `resolve.version_spec`: register documents
-//! loaded through the core's model entry points (`ImplementationIndex`,
-//! `Interface`, `ImplementationVersion` `::from_register_yaml`), argv built by
-//! `ukiryu::command_builder::build_args`, version specs selected by
-//! `ukiryu::version_ranges::find_matching_version_spec`.
+//! `build` kind (`build.args`) and `resolve.version_spec` through the core
+//! register loader (`ukiryu::tool_loader`), tool runtime (`ukiryu::tool`)
+//! and version-range selection (`ukiryu::version_ranges`).
 //!
-//! The register is `inputs/register` (the oracle's `UKIRYU_REGISTER`). The
-//! only glue here is the file lookup the Ruby `Register` does before parsing
-//! (`tools/<tool>/index.yaml`, `interfaces/<name>.yaml`,
-//! `tools/<tool>/<impl>/<file>`; a missing file is `nil`).
-use std::path::Path;
-
-use ukiryu::command_builder::{build_args as core_build_args, BuildContext, CommandSpec};
-use ukiryu::models::{
-    ImplementationIndex, ImplementationVersion, Interface, Model, ModelError, ToolDefinition,
-};
-use ukiryu::types::{StdHost, Value};
+//! The register is `inputs/register` (the oracle's `UKIRYU_REGISTER`).
+use ukiryu::executable::{DiscoveryContext, NoAliases, Platform, SystemCommandRunner};
+use ukiryu::register::{Register, Source};
+use ukiryu::runtime::ShellName;
+use ukiryu::tool::{Tool, ToolError, ToolOptions};
+use ukiryu::tool_loader::{self, LoadError};
+use ukiryu::types::Value;
 use ukiryu::version_ranges::{
     find_matching_version_spec, resolve, ErrorClass, RangeError, SpecValue,
 };
@@ -22,11 +16,6 @@ use ukiryu::version_ranges::{
 use super::codec;
 use super::harness::{input_str, Ctx, Outcome, RowError};
 use super::json::Oj;
-use super::ops_shell::shell;
-
-fn model_error(e: ModelError) -> RowError {
-    RowError::new(e.ruby_class(), e.message)
-}
 
 fn range_error(e: RangeError) -> RowError {
     match e.class {
@@ -35,75 +24,45 @@ fn range_error(e: RangeError) -> RowError {
     }
 }
 
-/// `File.read(file)` when `File.exist?(file)`, else `None` (the register
-/// returns nil for a missing document).
-fn register_file(ctx: &Ctx, rel: &str) -> Result<Option<String>, RowError> {
-    let path = ctx.input_path(&format!("register/{rel}"));
-    if !Path::new(&path).exists() {
-        return Ok(None);
-    }
-    std::fs::read_to_string(&path)
-        .map(Some)
-        .map_err(|e| RowError::harness(format!("read {path}: {e}")))
-}
+/// The oracle's `BuilderTool` overrides `find_executable` so pure argv rows
+/// never run host `where`/`which`. The core equivalent is a declared
+/// system-lookup answer: discovery reports `/declared/absent/executable` without
+/// touching the host (empty `PATH`, no aliases, no processes). Only argv is
+/// compared, never this path.
+struct DeclaredExecutable;
 
-/// `Register.load_implementation_index(tool)`.
-fn load_index(ctx: &Ctx, tool: &str) -> Result<Option<ImplementationIndex>, RowError> {
-    match register_file(ctx, &format!("tools/{tool}/index.yaml"))? {
-        Some(text) => ImplementationIndex::from_register_yaml(&text).map_err(model_error),
-        None => Ok(None),
+impl SystemCommandRunner for DeclaredExecutable {
+    fn run(&mut self, _executable: &str, _args: &[String]) -> Option<String> {
+        Some("/declared/absent/executable\n".to_owned())
     }
 }
 
-/// `Register.load_interface(name)`.
-fn load_interface(ctx: &Ctx, name: &str) -> Result<Option<Interface>, RowError> {
-    match register_file(ctx, &format!("interfaces/{name}.yaml"))? {
-        Some(text) => Interface::from_register_yaml(&text).map_err(model_error),
-        None => Ok(None),
+fn load_error(e: LoadError) -> RowError {
+    RowError::new(e.class_name(), e.message())
+}
+
+fn tool_error(e: ToolError) -> RowError {
+    match e {
+        ToolError::Build(b) => RowError::new(b.class.ruby_name(), b.message),
+        ToolError::Argument { message } => RowError::new("ArgumentError", message),
+        ToolError::Ruby { class, message } => RowError::new(class, message),
+        other => match other.kind() {
+            Some(kind) => RowError::new(kind.ruby_class(), other.to_string()),
+            None => RowError::harness(format!("tool error without a Ruby class: {other}")),
+        },
     }
 }
 
-/// `Register.load_implementation_version(tool, impl, file)`.
-fn load_version(
-    ctx: &Ctx,
-    tool: &str,
-    implementation: &str,
-    file: &str,
-) -> Result<Option<ImplementationVersion>, RowError> {
-    match register_file(ctx, &format!("tools/{tool}/{implementation}/{file}"))? {
-        Some(text) => ImplementationVersion::from_register_yaml(&text).map_err(model_error),
-        None => Ok(None),
-    }
-}
-
-/// `Tool::Loader.convert_to_tool_definition` after its profile selection.
-/// The core ports the typed constructors it calls
-/// (`ukiryu::model_loading::{command_definition_new, platform_profile_new,
-/// tool_definition_new}`) but not the Hash orchestration that produces their
-/// keywords (`extract_profile_data`, `convert_actions_to_array`,
-/// `flatten_signature`, `build_interface_commands_hash`,
-/// `build_command_definitions`/`deep_merge_hashes`); `model_loading.rs` says
-/// it stays with the register/loader owner.
-fn convert_to_tool_definition(
-    _tool: &str,
-    _interface: &Interface,
-    _version: &ImplementationVersion,
-    _implementation: &str,
-    _profile: &Value,
-) -> Result<ToolDefinition, RowError> {
-    Err(RowError::harness(
-        "no core API: Tool::Loader.convert_to_tool_definition (profile/interface Hash \
-         merge into CommandDefinition keywords is not ported)",
-    ))
-}
-
-/// `build.args`: the oracle's `load_tool` then `Tool#command_definition` and
-/// `Tool#build_args(command, params.transform_keys(&:to_sym))`.
+/// `build.args`: the oracle's `load_tool` (register index, interface,
+/// implementation version, `Tool::Loader.convert_to_tool_definition`,
+/// `Tool.new`) then `Tool#command_definition` and `Tool#build_args`, all
+/// through the core loader (`ukiryu::tool_loader`) and tool runtime
+/// (`ukiryu::tool`). A nil at any loading step is `ToolNotFoundError`.
 pub fn build_args(input: &Oj, ctx: &Ctx) -> Outcome {
     let tool_name = input_str(input, "tool")?;
     let implementation = input_str(input, "implementation")?;
     let file = input_str(input, "file")?;
-    let platform = input_str(input, "platform")?;
+    let platform_name = input_str(input, "platform")?;
     let shell_name = input_str(input, "shell")?;
     let command_name = input_str(input, "command")?;
     let not_found = || {
@@ -112,36 +71,53 @@ pub fn build_args(input: &Oj, ctx: &Ctx) -> Outcome {
             format!("Tool not found: {tool_name}"),
         )
     };
+    let platform = Platform::from_name(platform_name)
+        .ok_or_else(|| RowError::harness(format!("unknown platform {platform_name}")))?;
+    let shell = ShellName::lookup(shell_name)
+        .ok_or_else(|| RowError::harness(format!("unknown shell {shell_name}")))?;
 
-    let index = load_index(ctx, tool_name)?.ok_or_else(not_found)?;
-    let interface = load_interface(ctx, &index.interface.to_ruby_s())?.ok_or_else(not_found)?;
-    let version = load_version(ctx, tool_name, implementation, file)?.ok_or_else(not_found)?;
-    // `convert_to_tool_definition` returns nil when no profile is compatible.
-    let profile = version
-        .compatible_profile(platform, shell_name)
-        .map_err(model_error)?
+    let register = Register::new(ctx.input_path("register"), Source::Manual);
+    let index = tool_loader::load_implementation_index(&register, tool_name)
+        .map_err(load_error)?
         .ok_or_else(not_found)?;
-    let mut tool =
-        convert_to_tool_definition(tool_name, &interface, &version, implementation, &profile)?;
-    tool.resolve_inheritance();
+    let interface = tool_loader::load_interface(&register, &index.interface.to_ruby_s())
+        .map_err(load_error)?
+        .ok_or_else(not_found)?;
+    let version =
+        tool_loader::load_implementation_version(&register, tool_name, implementation, file)
+            .map_err(load_error)?
+            .ok_or_else(not_found)?;
+    let definition = tool_loader::convert_to_tool_definition(
+        tool_name,
+        &interface,
+        &version,
+        Some(implementation),
+        None,
+        platform_name,
+        shell_name,
+    )
+    .map_err(load_error)?
+    .ok_or_else(not_found)?;
 
-    // `Tool#initialize` -> `find_command_profile`: the converted definition
-    // has exactly one profile, which Ruby always takes.
-    let command_profile = match tool.profiles.as_deref() {
-        Some([only]) => only,
-        _ => {
-            return Err(RowError::harness(
-                "no core API: Tool#find_command_profile for a multi-profile definition",
-            ))
-        }
-    };
-    let command = command_profile.command(command_name).ok_or_else(|| {
-        RowError::new("ArgumentError", format!("Unknown command: {command_name}"))
-    })?;
-    // The builder's input boundary deserializes from the model's keys.
-    let json = command.to_json().map_err(model_error)?;
-    let spec: CommandSpec = serde_json::from_str(&json)
-        .map_err(|e| RowError::harness(format!("command spec from model json: {e}")))?;
+    let options = ToolOptions::new(platform, shell).discovery(DiscoveryContext::new(
+        platform,
+        shell_name,
+        Some(""),
+        None,
+    ));
+    let tool = Tool::with_discovery(
+        definition,
+        &options,
+        &mut NoAliases,
+        &mut DeclaredExecutable,
+    )
+    .map_err(tool_error)?;
+    if tool.command_definition(command_name).is_none() {
+        return Err(RowError::new(
+            "ArgumentError",
+            format!("Unknown command: {command_name}"),
+        ));
+    }
 
     let params = match input.get("params") {
         None | Some(Oj::Null) => Value::Hash(Vec::new()),
@@ -158,14 +134,10 @@ pub fn build_args(input: &Oj, ctx: &Ctx) -> Outcome {
             other => return Err(RowError::harness(format!("params not a Hash: {other:?}"))),
         },
     };
-    let ctx_build = BuildContext {
-        shell: shell(shell_name)?,
-        platform,
-        host: &StdHost,
-    };
-    core_build_args(&spec, &params, &ctx_build)
-        .map(|args| Oj::Arr(args.into_iter().map(Oj::Str).collect()))
-        .map_err(|e| RowError::new(e.class.ruby_name(), e.message))
+    let built = tool.build(command_name, &params).map_err(tool_error)?;
+    Ok(Oj::Arr(
+        built.invocation.args.into_iter().map(Oj::Str).collect(),
+    ))
 }
 
 /// A loaded register value as the range module's Ruby value shape.
@@ -202,7 +174,9 @@ pub fn version_spec(input: &Oj, ctx: &Ctx) -> Outcome {
     let implementation = input_str(input, "implementation")?;
     let version = input_str(input, "version")?;
 
-    let index = load_index(ctx, tool_name)?
+    let register = Register::new(ctx.input_path("register"), Source::Manual);
+    let index = tool_loader::load_implementation_index(&register, tool_name)
+        .map_err(load_error)?
         .ok_or_else(|| RowError::harness(format!("no index for {tool_name}")))?;
     let imp = index
         .implementations
