@@ -1,47 +1,19 @@
 # Rows the Rust port answers with Unsupported instead of reproducing Ruby.
 # Every id must exist; the oracle test fails if this list and the port disagree.
-# Time.parse outside the ported subset (Date._parse heuristics, current date, named zones, rollover, >9 fraction digits)
-type.datetime.007
-type.datetime.008
-type.datetime.009
-type.datetime.010
-type.datetime.011
-type.datetime.015
-type.datetime.016
-type.datetime.017
-type.datetime.018
-type.datetime.020
-type.datetime.022
-type.datetime.024
-type.datetime.026
-type.datetime.027
+# A fraction finer than a nanosecond: Ruby keeps an exact Rational sub-second
+# (Time#inspect prints it); types::Time holds nanoseconds.
 type.datetime.032
-type.datetime.033
-type.datetime.035
-type.datetime.042
-type.datetime.043
-type.datetime.048
-type.datetime.049
-type.datetime.050
-type.datetime.052
-type.datetime.054
-type.datetime.055
-type.datetime.056
-type.datetime.064
-type.datetime.065
-type.datetime.066
-type.datetime.069
-type.datetime.079
-type.datetime.081
-type.datetime.082
-# Float(Time) with a sub-second part (rational Time#to_f)
-type.float.091
-# Regexp pattern matching needs an Onigmo-compatible engine (Host::regexp_match)
-type.string.027
-type.string.028
-type.string.029
-type.string.030
-type.string.031
-type.string.033
-# Regexp pattern matching needs an Onigmo-compatible engine (Host::regexp_match)
-validator.019
+datetime.parse.025
+# /i with a character whose full case folding has several characters (U+FB06 "st"):
+# Onigmo folds it to ASCII, the portable engine uses simple folding.
+datetime.parse.130
+datetime.parse.131
+regexp.match.057
+regexp.match.058
+# Back-references (\1, \k<name>), \p{...} and non-ASCII pattern text under /i
+# are refused by the portable Onigmo translation (types/onig.rs).
+regexp.match.067
+regexp.match.068
+regexp.match.069
+regexp.match.075
+regexp.match.082

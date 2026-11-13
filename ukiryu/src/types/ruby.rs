@@ -362,8 +362,14 @@ fn time_parts(t: &Time) -> String {
     let local = t.seconds + t.utc_offset as i64;
     let (y, mo, d) = civil_from_days(local.div_euclid(86_400));
     let sod = local.rem_euclid(86_400);
+    // Ruby pads the year to four digits after the sign (`-0099`).
+    let y = if y < 0 {
+        format!("-{:04}", -y)
+    } else {
+        format!("{y:04}")
+    };
     format!(
-        "{y:04}-{mo:02}-{d:02} {:02}:{:02}:{:02}",
+        "{y}-{mo:02}-{d:02} {:02}:{:02}:{:02}",
         sod / 3600,
         sod % 3600 / 60,
         sod % 60
@@ -386,7 +392,8 @@ pub fn time_to_s(t: &Time) -> String {
     format!("{} {}", time_parts(t), time_zone(t))
 }
 
-/// `Time#inspect` (sub-second digits without trailing zeros).
+/// `Time#inspect` (sub-second digits without trailing zeros; an offset with
+/// seconds prints them, `+053015`).
 pub fn time_inspect(t: &Time) -> String {
     let mut s = time_parts(t);
     if t.nanos != 0 {
@@ -394,7 +401,11 @@ pub fn time_inspect(t: &Time) -> String {
         s.push('.');
         s.push_str(frac.trim_end_matches('0'));
     }
-    format!("{s} {}", time_zone(t))
+    let mut zone = time_zone(t);
+    if !t.utc && t.utc_offset % 60 != 0 {
+        zone.push_str(&format!("{:02}", t.utc_offset.abs() % 60));
+    }
+    format!("{s} {zone}")
 }
 
 /// Exact decimal BigInt for an integral finite f64.
