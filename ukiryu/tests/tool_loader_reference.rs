@@ -25,9 +25,12 @@ mod support;
 use serde_json::{json, Value as Json};
 use std::fs;
 use std::path::{Path, PathBuf};
+use ukiryu::executable::Platform;
 use ukiryu::models::{Model, ToolDefinition, Value};
 use ukiryu::register::Register;
-use ukiryu::tool_loader::{self, LoadError, LoadOptions};
+use ukiryu::runtime::ShellName;
+use ukiryu::tool::{self, DefinitionSource, ToolCache, ToolError, ToolOptions};
+use ukiryu::tool_loader::{self, LoadError, LoadOptions, RegisterSource};
 use ukiryu::version_detection::{CommandOutput, CommandRequest, CommandRunner, RunnerError};
 
 const SOURCE: &str = "ab6df353c6dc2d7faf7817a86aafcafa82579896";
@@ -406,4 +409,86 @@ fn loads_over_synthetic_registers() {
     assert_eq!(rows, 231);
     assert_eq!(counts, (61, 82, 88));
     c.finish("loads_over_synthetic_registers");
+}
+
+/// Detection that never finds anything: every command fails to spawn.
+struct NoCommands;
+
+impl CommandRunner for NoCommands {
+    fn run(&mut self, request: &CommandRequest) -> Result<CommandOutput, RunnerError> {
+        Err(RunnerError::new(format!(
+            "No such file or directory - {}",
+            request.executable
+        )))
+    }
+}
+
+fn shell_named(name: &str) -> ShellName {
+    ShellName::ALL
+        .iter()
+        .copied()
+        .find(|s| s.as_str() == name)
+        .unwrap_or_else(|| panic!("shell {name}"))
+}
+
+/// The register rows of the tool runtime's oracle
+/// (`tests/tool_runtime_data/oracle.json`, `Tool.get` on a Linux host with
+/// every detection command failing) through [`RegisterSource`]: tools Ruby
+/// could not load are `ToolNotFoundError` from `tool::get`, and every other
+/// row gets the definition Ruby built (`loaded.profile.to_yaml`).
+#[test]
+fn register_source_serves_the_tool_runtime() {
+    let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/tool_runtime_data/oracle.json");
+    let oracle: Json = serde_json::from_str(&fs::read_to_string(path).unwrap()).unwrap();
+    assert_eq!(oracle["oracle"].as_str(), Some(SOURCE));
+    let rows = oracle["register"].as_array().expect("register rows");
+    assert_eq!(rows.len(), 84);
+    let source = RegisterSource::new(fixture_register(), Platform::Linux, NoCommands);
+    let mut c = Check::new();
+    let (mut missing, mut built) = (0, 0);
+    for row in rows {
+        let name = row["tool"].as_str().unwrap();
+        let platform = row["platform"].as_str().unwrap();
+        let what = format!("{name} {platform}/{}", row["shell"].as_str().unwrap());
+        let options = ToolOptions::new(
+            Platform::from_name(platform).unwrap(),
+            shell_named(row["shell"].as_str().unwrap()),
+        );
+        if let Some(error) = row.get("load_error") {
+            missing += 1;
+            let cache = ToolCache::new();
+            match tool::get(&source, &cache, name, &options) {
+                Err(e @ ToolError::NotFound { .. }) => c.eq(
+                    &what,
+                    error["message"].as_str().unwrap().to_string(),
+                    e.to_string(),
+                ),
+                other => c.failures.push(format!(
+                    "{what}: expected ToolNotFoundError, got {:?}",
+                    other.map(|t| t.name())
+                )),
+            }
+            continue;
+        }
+        built += 1;
+        match source.load_definition(name, &options) {
+            Ok(Some(definition)) => {
+                let want = oracle["definitions"][row["definition_yaml"].as_str().unwrap()]
+                    .as_str()
+                    .unwrap();
+                let got = definition.to_yaml().expect("to_yaml");
+                if support::yaml_equiv(want, &got) {
+                    c.passed += 1;
+                } else {
+                    c.failures
+                        .push(format!("{what}\n  expected {want:?}\n  actual   {got:?}"));
+                }
+            }
+            other => c
+                .failures
+                .push(format!("{what}: expected a definition, got {other:?}")),
+        }
+    }
+    assert_eq!((missing, built), (18, 66));
+    c.finish("register_source_serves_the_tool_runtime");
 }

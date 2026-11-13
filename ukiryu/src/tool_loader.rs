@@ -5,8 +5,9 @@
 //! including) `Tool.new`: it loads the implementation index and the interface
 //! from a [`Register`], picks the implementation and version file, loads the
 //! implementation version and converts it into a typed [`ToolDefinition`].
-//! Building the runtime tool from that definition belongs to the tool runtime;
-//! a loader closure plugs straight into its definition source.
+//! Building the runtime tool from that definition belongs to the tool runtime
+//! ([`crate::tool`]); [`RegisterSource`] is the register-backed
+//! [`DefinitionSource`] that `tool::get` and `tool::find` take.
 //!
 //! Every stage reuses the module that owns it; nothing is reimplemented here:
 //!
@@ -44,6 +45,7 @@
 //! the loader code itself ([`LoadError::Source`]). Input shapes the source
 //! would hand to Ruby in ways this port does not reproduce are reported as
 //! [`LoadError::Unsupported`], never guessed.
+use crate::executable::Platform;
 use crate::model_loading::{command_definition_new, platform_profile_new, tool_definition_new};
 use crate::models::{
     CommandDefinition, ImplementationIndex, ImplementationVersion, Interface, ModelError,
@@ -54,11 +56,13 @@ use crate::routing::{
     self, Implementation, LoadedVersion, Probe, ProfileView, RoutingError, SelectionEnv,
     SelectionRequest, SourceFault, VersionEntry,
 };
+use crate::tool::{DefinitionSource, ToolError, ToolOptions};
 use crate::types::ruby::receiver_description;
 use crate::version_detection::{
     probe_index_detection, CommandRunner, IndexDetection, IndexProbe, PatternError,
 };
 use crate::version_ranges::{self, RangeError, Scheme, SpecValue};
+use std::cell::RefCell;
 use std::ffi::OsString;
 use std::fmt;
 use std::fs;
@@ -908,9 +912,8 @@ impl SelectionEnv for Selection<'_, '_> {
 /// profile is missing.
 ///
 /// Detection commands run through `runner` with the explicit shell and the
-/// source's five-second timeout. The tool runtime takes the result through
-/// its definition source, for example
-/// `|name, opts| load_definition(&register, name, &load_options, &mut runner)`.
+/// source's five-second timeout. [`RegisterSource`] wraps this for the tool
+/// runtime.
 pub fn load_definition(
     register: &Register,
     name: &str,
@@ -972,4 +975,76 @@ pub fn load_definition(
         options.platform.unwrap_or(options.current_platform),
         options.shell,
     )
+}
+
+/// The register as the tool runtime's [`DefinitionSource`]: `Tool.get`'s
+/// `load_with_implementation_index` step. `ToolOptions::platform` is the
+/// loader's `options[:platform]` and `ToolOptions::shell` its shell; the
+/// current platform (`Platform.detect`) and the detection runner are fixed
+/// when the source is built. A missing tool is `Ok(None)`, which `tool::get`
+/// reports as `ToolNotFoundError`; loader exceptions keep their Ruby class.
+pub struct RegisterSource<R> {
+    register: Register,
+    current_platform: Platform,
+    executable: Option<String>,
+    runner: RefCell<R>,
+}
+
+impl<R: CommandRunner> RegisterSource<R> {
+    pub fn new(register: Register, current_platform: Platform, runner: R) -> Self {
+        RegisterSource {
+            register,
+            current_platform,
+            executable: None,
+            runner: RefCell::new(runner),
+        }
+    }
+
+    /// `options[:executable]`, the detection executable fallback.
+    pub fn executable(mut self, executable: impl Into<String>) -> Self {
+        self.executable = Some(executable.into());
+        self
+    }
+
+    pub fn register(&self) -> &Register {
+        &self.register
+    }
+
+    /// The runner, for callers that inspect what detection ran.
+    pub fn into_runner(self) -> R {
+        self.runner.into_inner()
+    }
+}
+
+impl From<LoadError> for ToolError {
+    fn from(e: LoadError) -> Self {
+        match e {
+            LoadError::Unsupported(_) | LoadError::Pattern(PatternError::Unsupported { .. }) => {
+                ToolError::Source {
+                    message: e.to_string(),
+                }
+            }
+            other => ToolError::Ruby {
+                class: other.class_name(),
+                message: other.message(),
+            },
+        }
+    }
+}
+
+impl<R: CommandRunner> DefinitionSource for RegisterSource<R> {
+    fn load_definition(
+        &self,
+        name: &str,
+        options: &ToolOptions,
+    ) -> Result<Option<ToolDefinition>, ToolError> {
+        let load = LoadOptions {
+            current_platform: self.current_platform.as_str(),
+            platform: Some(options.platform.as_str()),
+            shell: options.shell.as_str(),
+            executable: self.executable.as_deref(),
+        };
+        let mut runner = self.runner.borrow_mut();
+        load_definition(&self.register, name, &load, &mut *runner).map_err(ToolError::from)
+    }
 }
