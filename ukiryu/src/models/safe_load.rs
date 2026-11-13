@@ -480,7 +480,7 @@ fn empty_omap_item() -> ModelError {
 }
 
 /// The node's tag as text.
-fn tag_of<'a>(node: Node<'a>) -> Result<Option<&'a str>, ModelError> {
+fn tag_of(node: Node<'_>) -> Result<Option<&str>, ModelError> {
     node.tag()
         .map(|t| std::str::from_utf8(t).map_err(|_| unsupported("a non-UTF-8 YAML tag")))
         .transpose()
