@@ -93,7 +93,7 @@ pub enum Source<'a> {
 
 /// The branch `RunCommand#run` takes for `options[:stdin]` (`--stdin`) and
 /// the parsed `stdin` argument.
-pub fn source<'a>(flag: bool, param: Param<'a>) -> Source<'a> {
+pub fn source(flag: bool, param: Param<'_>) -> Source<'_> {
     match param {
         _ if flag => Source::Reader,
         Param::Text("-") => Source::Reader,
