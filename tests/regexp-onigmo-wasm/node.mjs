@@ -13,7 +13,9 @@ for (const target of ['node', 'web']) {
 const data = parseData(
   await read('ukiryu/tests/regexp_onigmo_data/cases.jsonl'),
   await read('ukiryu/tests/types_corpus/regexp_match.jsonl'),
-  await read('tests/regexp-onigmo-wasm/date_parse.json'));
+  await read('tests/regexp-onigmo-wasm/date_parse.json'),
+  await read('ukiryu/tests/version_detection_bytes/cases.json'),
+  await read('corpus/conformance/cases/resolve.jsonl'));
 const module = require('../../regexp-wasm-node/ukiryu_regexp_onigmo_wasm.js');
 const count = check(module, data);
 assert.equal(check(module, data), count);

@@ -58,13 +58,31 @@ pub fn extract_version_from_pattern(
     output: Option<&str>,
     pattern: Option<&str>,
 ) -> Result<Option<String>, PatternError> {
-    let (Some(output), Some(pattern)) = (output, pattern) else {
-        return Ok(None);
-    };
-    let pattern = RubyPattern::new(pattern)?;
-    Ok(pattern
-        .captures(output)?
-        .and_then(|m| m.group1.map(str::to_string)))
+    use super::bytes::{extract_version_from_encoded, EncodedText};
+    use crate::types::onig::Encoding;
+    extract_version_from_encoded(
+        output.map(|text| EncodedText {
+            bytes: text.as_bytes(),
+            encoding: Encoding::Utf8,
+        }),
+        pattern,
+    )
+    .map(|value| {
+        value.map(|version| String::from_utf8(version.bytes).expect("UTF-8 regexp capture"))
+    })
+    .map_err(|error| {
+        if error.class == "RegexpError" {
+            PatternError::RubyInvalid {
+                pattern: pattern.unwrap_or("").to_owned(),
+                reason: error.message,
+            }
+        } else {
+            PatternError::Unsupported {
+                pattern: pattern.unwrap_or("").to_owned(),
+                construct: error.message,
+            }
+        }
+    })
 }
 
 /// `run_detection_command` + `try_implementation`'s extraction and presence check.

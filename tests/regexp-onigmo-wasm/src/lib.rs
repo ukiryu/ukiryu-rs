@@ -36,3 +36,13 @@ pub fn date_parse(input: &str) -> String {
         Err(e) => json!({"error": format!("{e:?}")}).to_string(),
     }
 }
+
+#[path = "../../../ukiryu/tests/version_detection_bytes/transport.rs"]
+mod version_bytes;
+
+/// Test-only adapter over the real byte-aware core extraction API.
+#[wasm_bindgen]
+pub fn extract_version(input: &str) -> String {
+    let input: Value = serde_json::from_str(input).expect("version fixture request");
+    version_bytes::request(&input).to_string()
+}
