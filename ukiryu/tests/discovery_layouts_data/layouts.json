@@ -1,0 +1,639 @@
+{
+  "provenance": {
+    "oracle": "ukiryu/ukiryu",
+    "sha": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+    "ruby": "4.0.1",
+    "host_os": "linux",
+    "files": [
+      "lib/ukiryu/executable_locator.rb",
+      "lib/ukiryu/platform.rb",
+      "lib/ukiryu/tool.rb"
+    ],
+    "script": "ukiryu/tests/discovery_layouts_data/capture/capture_layouts.rb",
+    "stubs": "Tool.load only (reads the file; \"invalid\" first line raises DefinitionLoadError; else returns the version: value); Platform.detect and HOME for the search-path cases"
+  },
+  "discovery_layout": [
+    {
+      "path": "Applications/Foo.app/Contents/MacOS/foo",
+      "kind": "file",
+      "mode": 493
+    },
+    {
+      "path": "Applications/Foo.app/Contents/Resources/readme.txt",
+      "kind": "file",
+      "mode": 420
+    },
+    {
+      "path": "Program Files/Tool/bin/tool.exe",
+      "kind": "file",
+      "mode": 493
+    },
+    {
+      "path": "Program Files (x86)/Legacy/bin/legacy.exe",
+      "kind": "file",
+      "mode": 493
+    },
+    {
+      "path": "Program Files (x86)/Tool/bin/tool.exe",
+      "kind": "file",
+      "mode": 493
+    },
+    {
+      "path": "My Programs/Sub Dir/Tool Home/tool.exe",
+      "kind": "file",
+      "mode": 493
+    },
+    {
+      "path": "shadow/tool.exe/inner.txt",
+      "kind": "file",
+      "mode": 420
+    },
+    {
+      "path": "real/tool.exe",
+      "kind": "file",
+      "mode": 493
+    },
+    {
+      "path": "noexec/tool.txt",
+      "kind": "file",
+      "mode": 420
+    },
+    {
+      "path": "both/tool.cmd",
+      "kind": "file",
+      "mode": 493
+    },
+    {
+      "path": "both/tool.exe",
+      "kind": "file",
+      "mode": 493
+    },
+    {
+      "path": "cmdonly/tool.cmd",
+      "kind": "file",
+      "mode": 493
+    },
+    {
+      "path": "empty",
+      "kind": "dir"
+    }
+  ],
+  "discovery": [
+    {
+      "name": "macos-bundle-dir-on-path",
+      "path": [
+        "<ROOT>/Applications/Foo.app/Contents/MacOS"
+      ],
+      "pathext": null,
+      "command": "foo",
+      "additional": [],
+      "unix_only": true,
+      "found": "<ROOT>/Applications/Foo.app/Contents/MacOS/foo"
+    },
+    {
+      "name": "macos-bundle-dir-in-additional-paths",
+      "path": [
+        "<ROOT>/empty"
+      ],
+      "pathext": null,
+      "command": "foo",
+      "additional": [
+        "<ROOT>/Applications/Foo.app/Contents/MacOS"
+      ],
+      "unix_only": true,
+      "found": "<ROOT>/Applications/Foo.app/Contents/MacOS/foo"
+    },
+    {
+      "name": "macos-applications-dir-on-path-not-probed",
+      "path": [
+        "<ROOT>/Applications"
+      ],
+      "pathext": null,
+      "command": "foo",
+      "additional": [],
+      "unix_only": false,
+      "found": null
+    },
+    {
+      "name": "macos-app-root-on-path-not-probed",
+      "path": [
+        "<ROOT>/Applications/Foo.app"
+      ],
+      "pathext": null,
+      "command": "foo",
+      "additional": [],
+      "unix_only": false,
+      "found": null
+    },
+    {
+      "name": "macos-contents-dir-on-path-not-probed",
+      "path": [
+        "<ROOT>/Applications/Foo.app/Contents"
+      ],
+      "pathext": null,
+      "command": "foo",
+      "additional": [],
+      "unix_only": false,
+      "found": null
+    },
+    {
+      "name": "macos-bundle-name-is-not-a-command",
+      "path": [
+        "<ROOT>/Applications"
+      ],
+      "pathext": null,
+      "command": "Foo",
+      "additional": [],
+      "unix_only": false,
+      "found": null
+    },
+    {
+      "name": "windows-program-files-on-path",
+      "path": [
+        "<ROOT>/Program Files/Tool/bin"
+      ],
+      "pathext": ".exe;.cmd",
+      "command": "tool",
+      "additional": [],
+      "unix_only": false,
+      "found": "<ROOT>/Program Files/Tool/bin/tool.exe"
+    },
+    {
+      "name": "windows-program-files-in-additional-paths",
+      "path": [
+        "<ROOT>/empty"
+      ],
+      "pathext": ".exe;.cmd",
+      "command": "tool",
+      "additional": [
+        "<ROOT>/Program Files/Tool/bin"
+      ],
+      "unix_only": false,
+      "found": "<ROOT>/Program Files/Tool/bin/tool.exe"
+    },
+    {
+      "name": "windows-program-files-x86-in-additional-paths",
+      "path": [
+        "<ROOT>/empty"
+      ],
+      "pathext": ".exe;.cmd",
+      "command": "legacy",
+      "additional": [
+        "<ROOT>/Program Files (x86)/Legacy/bin"
+      ],
+      "unix_only": false,
+      "found": "<ROOT>/Program Files (x86)/Legacy/bin/legacy.exe"
+    },
+    {
+      "name": "windows-program-files-first-on-path-wins",
+      "path": [
+        "<ROOT>/Program Files/Tool/bin",
+        "<ROOT>/Program Files (x86)/Tool/bin"
+      ],
+      "pathext": ".exe;.cmd",
+      "command": "tool",
+      "additional": [],
+      "unix_only": false,
+      "found": "<ROOT>/Program Files/Tool/bin/tool.exe"
+    },
+    {
+      "name": "windows-program-files-x86-first-on-path-wins",
+      "path": [
+        "<ROOT>/Program Files (x86)/Tool/bin",
+        "<ROOT>/Program Files/Tool/bin"
+      ],
+      "pathext": ".exe;.cmd",
+      "command": "tool",
+      "additional": [],
+      "unix_only": false,
+      "found": "<ROOT>/Program Files (x86)/Tool/bin/tool.exe"
+    },
+    {
+      "name": "windows-program-files-not-searched-unless-listed",
+      "path": [
+        "<ROOT>/empty"
+      ],
+      "pathext": ".exe;.cmd",
+      "command": "tool",
+      "additional": [],
+      "unix_only": false,
+      "found": null
+    },
+    {
+      "name": "windows-program-files-parent-not-probed",
+      "path": [
+        "<ROOT>/Program Files"
+      ],
+      "pathext": ".exe;.cmd",
+      "command": "tool",
+      "additional": [],
+      "unix_only": false,
+      "found": null
+    },
+    {
+      "name": "windows-program-files-bin-parent-not-probed",
+      "path": [
+        "<ROOT>/Program Files/Tool"
+      ],
+      "pathext": ".exe;.cmd",
+      "command": "tool",
+      "additional": [],
+      "unix_only": false,
+      "found": null
+    },
+    {
+      "name": "spaces-in-directory-names",
+      "path": [
+        "<ROOT>/My Programs/Sub Dir/Tool Home"
+      ],
+      "pathext": ".exe;.cmd",
+      "command": "tool",
+      "additional": [],
+      "unix_only": false,
+      "found": "<ROOT>/My Programs/Sub Dir/Tool Home/tool.exe"
+    },
+    {
+      "name": "spaces-with-trailing-slash",
+      "path": [
+        "<ROOT>/My Programs/Sub Dir/Tool Home/"
+      ],
+      "pathext": ".exe;.cmd",
+      "command": "tool",
+      "additional": [],
+      "unix_only": false,
+      "found": "<ROOT>/My Programs/Sub Dir/Tool Home/tool.exe"
+    },
+    {
+      "name": "directory-shadowing-exe-is-skipped",
+      "path": [
+        "<ROOT>/shadow",
+        "<ROOT>/real"
+      ],
+      "pathext": ".exe;.cmd",
+      "command": "tool",
+      "additional": [],
+      "unix_only": false,
+      "found": "<ROOT>/real/tool.exe"
+    },
+    {
+      "name": "directory-shadowing-exe-alone-is-absent",
+      "path": [
+        "<ROOT>/shadow"
+      ],
+      "pathext": ".exe;.cmd",
+      "command": "tool",
+      "additional": [],
+      "unix_only": false,
+      "found": null
+    },
+    {
+      "name": "non-executable-file-is-skipped",
+      "path": [
+        "<ROOT>/noexec",
+        "<ROOT>/real"
+      ],
+      "pathext": ".txt;.exe",
+      "command": "tool",
+      "additional": [],
+      "unix_only": false,
+      "found": "<ROOT>/real/tool.exe"
+    },
+    {
+      "name": "non-executable-file-alone-is-absent",
+      "path": [
+        "<ROOT>/noexec"
+      ],
+      "pathext": ".txt;.exe",
+      "command": "tool",
+      "additional": [],
+      "unix_only": false,
+      "found": null
+    },
+    {
+      "name": "pathext-exe-before-cmd",
+      "path": [
+        "<ROOT>/both"
+      ],
+      "pathext": ".exe;.cmd",
+      "command": "tool",
+      "additional": [],
+      "unix_only": false,
+      "found": "<ROOT>/both/tool.exe"
+    },
+    {
+      "name": "pathext-falls-to-cmd",
+      "path": [
+        "<ROOT>/cmdonly"
+      ],
+      "pathext": ".exe;.cmd",
+      "command": "tool",
+      "additional": [],
+      "unix_only": false,
+      "found": "<ROOT>/cmdonly/tool.cmd"
+    },
+    {
+      "name": "pathext-only-exe-ignores-cmd",
+      "path": [
+        "<ROOT>/cmdonly"
+      ],
+      "pathext": ".exe",
+      "command": "tool",
+      "additional": [],
+      "unix_only": false,
+      "found": null
+    },
+    {
+      "name": "pathext-dir-order-before-extension-order",
+      "path": [
+        "<ROOT>/cmdonly",
+        "<ROOT>/both"
+      ],
+      "pathext": ".exe;.cmd",
+      "command": "tool",
+      "additional": [],
+      "unix_only": false,
+      "found": "<ROOT>/cmdonly/tool.cmd"
+    }
+  ],
+  "search_paths": [
+    {
+      "platform": "linux",
+      "home": "/home/tester",
+      "host_expand_prefix": "<CWD>/",
+      "paths": [
+        "/usr/share/ukiryu",
+        "/usr/local/share/ukiryu",
+        "/opt/homebrew/share/ukiryu",
+        "/home/tester/.local/share/ukiryu"
+      ]
+    },
+    {
+      "platform": "macos",
+      "home": "/home/tester",
+      "host_expand_prefix": "<CWD>/",
+      "paths": [
+        "/usr/share/ukiryu",
+        "/usr/local/share/ukiryu",
+        "/opt/homebrew/share/ukiryu",
+        "/home/tester/.local/share/ukiryu"
+      ]
+    },
+    {
+      "platform": "windows",
+      "home": "/home/tester",
+      "host_expand_prefix": "<CWD>/",
+      "paths": [
+        "<CWD>/C:/Program Files/Ukiryu",
+        "<CWD>/C:/Program Files (x86)/Ukiryu",
+        "/home/tester/.local/share/ukiryu"
+      ]
+    }
+  ],
+  "bundled": [
+    {
+      "name": "first-directory-wins",
+      "tool": "foo",
+      "files": [
+        {
+          "path": "usr/share/ukiryu/foo/1.yaml",
+          "content": "name: foo\nversion: 'sys'\n"
+        },
+        {
+          "path": "usr/local/share/ukiryu/foo/1.yaml",
+          "content": "name: foo\nversion: 'local'\n"
+        }
+      ],
+      "version": "sys",
+      "tried": [
+        "usr/share/ukiryu/foo/1.yaml"
+      ]
+    },
+    {
+      "name": "falls-to-later-directory",
+      "tool": "foo",
+      "files": [
+        {
+          "path": "usr/local/share/ukiryu/foo/1.yaml",
+          "content": "name: foo\nversion: 'local'\n"
+        }
+      ],
+      "version": "local",
+      "tried": [
+        "usr/local/share/ukiryu/foo/1.yaml"
+      ]
+    },
+    {
+      "name": "homebrew-directory",
+      "tool": "foo",
+      "files": [
+        {
+          "path": "opt/homebrew/share/ukiryu/foo/1.yaml",
+          "content": "name: foo\nversion: 'brew'\n"
+        }
+      ],
+      "version": "brew",
+      "tried": [
+        "opt/homebrew/share/ukiryu/foo/1.yaml"
+      ]
+    },
+    {
+      "name": "user-local-directory-last",
+      "tool": "foo",
+      "files": [
+        {
+          "path": "home/tester/.local/share/ukiryu/foo/1.yaml",
+          "content": "name: foo\nversion: 'user'\n"
+        },
+        {
+          "path": "opt/homebrew/share/ukiryu/foo/1.yaml",
+          "content": "name: foo\nversion: 'brew'\n"
+        }
+      ],
+      "version": "brew",
+      "tried": [
+        "opt/homebrew/share/ukiryu/foo/1.yaml"
+      ]
+    },
+    {
+      "name": "user-local-directory-when-alone",
+      "tool": "foo",
+      "files": [
+        {
+          "path": "home/tester/.local/share/ukiryu/foo/1.yaml",
+          "content": "name: foo\nversion: 'user'\n"
+        }
+      ],
+      "version": "user",
+      "tried": [
+        "home/tester/.local/share/ukiryu/foo/1.yaml"
+      ]
+    },
+    {
+      "name": "files-in-sorted-order",
+      "tool": "foo",
+      "files": [
+        {
+          "path": "usr/share/ukiryu/foo/b.yaml",
+          "content": "name: foo\nversion: 'b'\n"
+        },
+        {
+          "path": "usr/share/ukiryu/foo/a.yaml",
+          "content": "name: foo\nversion: 'a'\n"
+        },
+        {
+          "path": "usr/share/ukiryu/foo/10.yaml",
+          "content": "name: foo\nversion: '10'\n"
+        },
+        {
+          "path": "usr/share/ukiryu/foo/2.yaml",
+          "content": "name: foo\nversion: '2'\n"
+        }
+      ],
+      "version": "10",
+      "tried": [
+        "usr/share/ukiryu/foo/10.yaml"
+      ]
+    },
+    {
+      "name": "invalid-file-skipped-same-directory",
+      "tool": "foo",
+      "files": [
+        {
+          "path": "usr/share/ukiryu/foo/a.yaml",
+          "content": "invalid: [\n"
+        },
+        {
+          "path": "usr/share/ukiryu/foo/b.yaml",
+          "content": "name: foo\nversion: 'b'\n"
+        }
+      ],
+      "version": "b",
+      "tried": [
+        "usr/share/ukiryu/foo/b.yaml"
+      ]
+    },
+    {
+      "name": "invalid-file-skipped-next-directory",
+      "tool": "foo",
+      "files": [
+        {
+          "path": "usr/share/ukiryu/foo/a.yaml",
+          "content": "invalid: [\n"
+        },
+        {
+          "path": "usr/local/share/ukiryu/foo/a.yaml",
+          "content": "name: foo\nversion: 'local'\n"
+        }
+      ],
+      "version": "local",
+      "tried": [
+        "usr/local/share/ukiryu/foo/a.yaml"
+      ]
+    },
+    {
+      "name": "all-invalid-is-nil",
+      "tool": "foo",
+      "files": [
+        {
+          "path": "usr/share/ukiryu/foo/a.yaml",
+          "content": "invalid: [\n"
+        },
+        {
+          "path": "usr/local/share/ukiryu/foo/a.yaml",
+          "content": "invalid: [\n"
+        }
+      ],
+      "version": null,
+      "tried": []
+    },
+    {
+      "name": "other-extensions-ignored",
+      "tool": "foo",
+      "files": [
+        {
+          "path": "usr/share/ukiryu/foo/1.yml",
+          "content": "name: foo\nversion: 'yml'\n"
+        },
+        {
+          "path": "usr/share/ukiryu/foo/1.yaml.bak",
+          "content": "name: foo\nversion: 'bak'\n"
+        },
+        {
+          "path": "usr/share/ukiryu/foo/YAML",
+          "content": "name: foo\nversion: 'x'\n"
+        }
+      ],
+      "version": null,
+      "tried": []
+    },
+    {
+      "name": "hidden-file-ignored",
+      "tool": "foo",
+      "files": [
+        {
+          "path": "usr/share/ukiryu/foo/.hidden.yaml",
+          "content": "name: foo\nversion: 'hidden'\n"
+        }
+      ],
+      "version": null,
+      "tried": []
+    },
+    {
+      "name": "nested-directory-not-searched",
+      "tool": "foo",
+      "files": [
+        {
+          "path": "usr/share/ukiryu/foo/sub/1.yaml",
+          "content": "name: foo\nversion: 'nested'\n"
+        }
+      ],
+      "version": null,
+      "tried": []
+    },
+    {
+      "name": "other-tool-directory-not-searched",
+      "tool": "foo",
+      "files": [
+        {
+          "path": "usr/share/ukiryu/bar/1.yaml",
+          "content": "name: foo\nversion: 'bar'\n"
+        }
+      ],
+      "version": null,
+      "tried": []
+    },
+    {
+      "name": "tool-name-is-a-directory-prefix-only",
+      "tool": "foo",
+      "files": [
+        {
+          "path": "usr/share/ukiryu/foobar/1.yaml",
+          "content": "name: foo\nversion: 'foobar'\n"
+        }
+      ],
+      "version": null,
+      "tried": []
+    },
+    {
+      "name": "spaces-in-tool-name",
+      "tool": "my tool",
+      "files": [
+        {
+          "path": "usr/share/ukiryu/my tool/1.yaml",
+          "content": "name: foo\nversion: 'spaced'\n"
+        }
+      ],
+      "version": "spaced",
+      "tried": [
+        "usr/share/ukiryu/my tool/1.yaml"
+      ]
+    },
+    {
+      "name": "no-directories-at-all",
+      "tool": "foo",
+      "files": [],
+      "version": null,
+      "tried": []
+    }
+  ]
+}

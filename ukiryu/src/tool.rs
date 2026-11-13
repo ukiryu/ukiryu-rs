@@ -41,10 +41,14 @@
 //!   (the default) this is what the source passes.
 //! - [`Tool::exit_code_meaning`] reads the tool's selected profile; the
 //!   source's response object looks the tool up again by name first.
+mod bundled;
 mod command;
 mod resolution;
 mod version;
 
+pub use bundled::{
+    bundled_definition_search_paths, from_bundled, host_home_dir, rooted_search_dir,
+};
 pub use command::{BuiltCommand, ExecuteSettings};
 pub use resolution::{profile_is_modern, ActionResolution};
 pub use version::{
