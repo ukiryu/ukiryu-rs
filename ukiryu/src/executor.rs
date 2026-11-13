@@ -40,9 +40,11 @@
 //! - stdin is written while output is read, so large inputs do not block.
 //! - The timeout must be a positive, finite number. The source treats `0` as
 //!   "no limit" and raises `ArgumentError` for a negative value.
-//! - Output is kept as bytes ([`Execution::stdout`]); the result's strings
-//!   are what Ruby reads from the pipe (on Windows, CR LF becomes LF),
-//!   decoded as UTF-8 with invalid sequences replaced.
+//! - Output is kept as bytes ([`Execution::stdout`]). The result's streams
+//!   are the bytes Ruby reads from the pipe (on Windows, CR LF becomes LF),
+//!   never decoded or replaced; invalid UTF-8 stays. As in the source, a
+//!   failed run whose output is not valid UTF-8 raises the `strip` error
+//!   ([`ExecuteError::InvalidByteSequence`]) instead of `ExecutionError`.
 
 mod clock;
 mod invocation;
@@ -57,7 +59,10 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use crate::environment::Environment;
 use crate::errors::{command_timed_out_message, execution_failed_message, Error, ErrorKind};
-use crate::execution::{CommandInfo, ExecutionMetadata, ExecutionResult, Output, Seconds};
+use crate::execution::results::bytes;
+use crate::execution::{
+    CommandInfo, ExecutionMetadata, ExecutionResult, InvalidByteSequence, Output, Seconds,
+};
 use crate::execution_context::RunSettings;
 use crate::runtime::{Clock, ShellName};
 
@@ -232,6 +237,14 @@ pub enum ExecuteError {
         error: Error,
         execution: Box<Execution>,
     },
+    /// A non-zero status whose stdout or stderr is not valid UTF-8: building
+    /// the `ExecutionError` message strips the streams, and `strip` raises
+    /// (`ArgumentError` or `Encoding::CompatibilityError`). The source keeps
+    /// no result; the run is kept here so its bytes are not lost.
+    InvalidByteSequence {
+        error: InvalidByteSequence,
+        execution: Box<Execution>,
+    },
 }
 
 impl ExecuteError {
@@ -263,6 +276,7 @@ impl fmt::Display for ExecuteError {
             ExecuteError::TimedOut(error) | ExecuteError::Failed { error, .. } => {
                 f.write_str(error.message())
             }
+            ExecuteError::InvalidByteSequence { error, .. } => f.write_str(error.message()),
         }
     }
 }
@@ -273,6 +287,7 @@ impl std::error::Error for ExecuteError {
             ExecuteError::Spawn { source, .. } => Some(source),
             ExecuteError::Stdin(err) | ExecuteError::Io(err) => Some(err),
             ExecuteError::TimedOut(error) | ExecuteError::Failed { error, .. } => Some(error),
+            ExecuteError::InvalidByteSequence { error, .. } => Some(error),
             _ => None,
         }
     }
@@ -352,15 +367,20 @@ pub fn execute(request: ExecuteRequest) -> Result<Execution, ExecuteError> {
     let status = extract_status(finished.status);
     let stdout_text = pipe_text(&finished.stdout, host.windows);
     let stderr_text = pipe_text(&finished.stderr, host.windows);
-    let failure = (status != 0 && !allow_failure).then(|| {
-        execution_failed_message(
-            &executable,
-            &command,
-            Some(stdout_text.as_str()),
-            Some(stderr_text.as_str()),
-            status,
-        )
-    });
+    // `format_error` strips stdout, then stderr; either raises for invalid
+    // UTF-8 before the message exists.
+    let failure =
+        (status != 0 && !allow_failure).then(|| -> Result<String, InvalidByteSequence> {
+            let stdout = bytes::strip(&stdout_text)?;
+            let stderr = bytes::strip(&stderr_text)?;
+            Ok(execution_failed_message(
+                &executable,
+                &command,
+                Some(stdout),
+                Some(stderr),
+                status,
+            ))
+        });
 
     let command_info = CommandInfo {
         executable,
@@ -381,20 +401,25 @@ pub fn execute(request: ExecuteRequest) -> Result<Execution, ExecuteError> {
     };
 
     match failure {
-        Some(message) => Err(ExecuteError::Failed {
+        Some(Ok(message)) => Err(ExecuteError::Failed {
             error: Error::new(ErrorKind::Execution, Some(message.as_str())),
+            execution: Box::new(execution),
+        }),
+        Some(Err(error)) => Err(ExecuteError::InvalidByteSequence {
+            error,
             execution: Box::new(execution),
         }),
         None => Ok(execution),
     }
 }
 
-/// The text Ruby reads from an `Open3` pipe. On Windows the pipe is in
-/// text mode, so every CR LF pair reads as LF (a lone CR stays). The raw
-/// bytes stay available in [`Execution::stdout`] and [`Execution::stderr`].
-fn pipe_text(bytes: &[u8], windows: bool) -> String {
+/// The String Ruby reads from an `Open3` pipe: the bytes, tagged UTF-8 and
+/// not validated. On Windows the pipe is in text mode, so every CR LF pair
+/// reads as LF (a lone CR stays). The bytes as written stay available in
+/// [`Execution::stdout`] and [`Execution::stderr`].
+fn pipe_text(bytes: &[u8], windows: bool) -> Vec<u8> {
     if !windows {
-        return String::from_utf8_lossy(bytes).into_owned();
+        return bytes.to_vec();
     }
     let mut text = Vec::with_capacity(bytes.len());
     let mut iter = bytes.iter().peekable();
@@ -404,7 +429,7 @@ fn pipe_text(bytes: &[u8], windows: bool) -> String {
         }
         text.push(byte);
     }
-    String::from_utf8_lossy(&text).into_owned()
+    text
 }
 
 /// The run limit for a timeout value.

@@ -1,0 +1,71 @@
+name: Stream values reference
+
+# Regenerates the Ruby stream-value observations (ukiryu/ukiryu@ab6df353,
+# locked through corpus/oracle-ruby) that ukiryu/tests/stream_values.rs
+# reads, and fails if any committed byte differs: the library stages
+# (capture_stream_values.rb) and the real `ukiryu exec` CLI runs
+# (cli/capture_cli.py).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ukiryu/tests/stream_values.rs'
+      - 'ukiryu/tests/stream_values_data/**'
+      - '.github/workflows/stream-values-reference.yml'
+  pull_request:
+    paths:
+      - 'ukiryu/tests/stream_values.rs'
+      - 'ukiryu/tests/stream_values_data/**'
+      - '.github/workflows/stream-values-reference.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  ruby-capture:
+    name: Ruby stream values capture
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      BUNDLE_FROZEN: 'true'
+      BUNDLE_GEMFILE: ${{ github.workspace }}/corpus/oracle-ruby/Gemfile
+      TZ: UTC
+      LANG: C.UTF-8
+      LC_ALL: C.UTF-8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '4.0.1'
+          bundler-cache: true
+          working-directory: corpus/oracle-ruby
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Capture the library stages
+        run: |
+          bundle exec ruby ukiryu/tests/stream_values_data/capture_stream_values.rb "$RUNNER_TEMP/observations.json"
+      - name: Capture the CLI runs
+        run: |
+          data="$GITHUB_WORKSPACE/ukiryu/tests/stream_values_data"
+          PATH="$data/cli/bin:$PATH" python "$data/cli/capture_cli.py" "$RUNNER_TEMP/cli.json" \
+            bundle exec ukiryu exec "--register=$data/cli/register" emit run
+      - name: Upload captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stream-values-ruby
+          path: |
+            ${{ runner.temp }}/observations.json
+            ${{ runner.temp }}/cli.json
+          if-no-files-found: error
+      - name: Compare with the committed golden files
+        run: |
+          data=ukiryu/tests/stream_values_data
+          python "$data/compare.py" "$RUNNER_TEMP/observations.json" "$data/observations.json"
+          python "$data/compare.py" "$RUNNER_TEMP/cli.json" "$data/cli.json"

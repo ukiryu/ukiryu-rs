@@ -1,6 +1,7 @@
 //! Source: lib/ukiryu/execution/result.rb (`Ukiryu::Execution::Result`).
 use serde::Serialize;
 
+use super::results::bytes::InvalidByteSequence;
 use super::results::command_info::{CommandInfo, CommandInfoHash};
 use super::results::metadata::{ExecutionMetadata, ExecutionMetadataHash};
 use super::results::output::{Output, OutputHash, Pattern};
@@ -55,13 +56,13 @@ impl ExecutionResult {
         self.command_info.executable_name()
     }
 
-    /// `#stdout`: raw stdout.
-    pub fn stdout(&self) -> &str {
+    /// `#stdout`: raw stdout, as Ruby read it from the pipe.
+    pub fn stdout(&self) -> &[u8] {
         &self.output.raw_stdout
     }
 
-    /// `#stderr`: raw stderr.
-    pub fn stderr(&self) -> &str {
+    /// `#stderr`: raw stderr, as Ruby read it from the pipe.
+    pub fn stderr(&self) -> &[u8] {
         &self.output.raw_stderr
     }
 
@@ -104,57 +105,63 @@ impl ExecutionResult {
     }
 
     /// `#output`: stripped stdout.
-    pub fn output(&self) -> &str {
+    pub fn output(&self) -> Result<&str, InvalidByteSequence> {
         self.output.stdout()
     }
 
     /// `#error_output`: stripped stderr.
-    pub fn error_output(&self) -> &str {
+    pub fn error_output(&self) -> Result<&str, InvalidByteSequence> {
         self.output.stderr()
     }
 
-    pub fn stdout_lines(&self) -> Vec<String> {
+    pub fn stdout_lines(&self) -> Result<Vec<String>, InvalidByteSequence> {
         self.output.stdout_lines()
     }
 
-    pub fn stderr_lines(&self) -> Vec<String> {
+    pub fn stderr_lines(&self) -> Result<Vec<String>, InvalidByteSequence> {
         self.output.stderr_lines()
     }
 
-    pub fn stdout_contains<'p>(&self, pattern: impl Into<Pattern<'p>>) -> bool {
+    pub fn stdout_contains<'p>(
+        &self,
+        pattern: impl Into<Pattern<'p>>,
+    ) -> Result<bool, InvalidByteSequence> {
         self.output.stdout_contains(pattern)
     }
 
-    pub fn stderr_contains<'p>(&self, pattern: impl Into<Pattern<'p>>) -> bool {
+    pub fn stderr_contains<'p>(
+        &self,
+        pattern: impl Into<Pattern<'p>>,
+    ) -> Result<bool, InvalidByteSequence> {
         self.output.stderr_contains(pattern)
     }
 
-    /// `#to_h`.
-    pub fn to_h(&self) -> ExecutionResultHash {
+    /// `#to_h`. Raises (`ArgumentError`) when a stream is not valid UTF-8.
+    pub fn to_h(&self) -> Result<ExecutionResultHash, InvalidByteSequence> {
         self.to_h_with(PathStyle::host())
     }
 
-    pub fn to_h_with(&self, style: PathStyle) -> ExecutionResultHash {
-        ExecutionResultHash {
+    pub fn to_h_with(&self, style: PathStyle) -> Result<ExecutionResultHash, InvalidByteSequence> {
+        Ok(ExecutionResultHash {
             command: self.command_info.to_h_with(style),
-            output: self.output.to_h(),
+            output: self.output.to_h()?,
             metadata: self.metadata.to_h(),
             success: self.is_success(),
             status: self.status(),
-        }
+        })
     }
 
-    /// `#to_json`: compact JSON as the json gem writes it. A NaN or Infinity
-    /// (only possible through a Float timeout) fails like
-    /// `JSON::GeneratorError`.
-    pub fn to_json(&self) -> Result<String, JsonGeneratorError> {
+    /// `#to_json`: compact JSON as the json gem writes it. `to_h` raises
+    /// first for a stream that is not valid UTF-8; a NaN or Infinity (only
+    /// possible through a Float timeout) fails like `JSON::GeneratorError`.
+    pub fn to_json(&self) -> Result<String, ResultJsonError> {
         self.to_json_with(PathStyle::host())
     }
 
-    pub fn to_json_with(&self, style: PathStyle) -> Result<String, JsonGeneratorError> {
-        let h = self.to_h_with(style);
+    pub fn to_json_with(&self, style: PathStyle) -> Result<String, ResultJsonError> {
+        let h = self.to_h_with(style)?;
         let floats = h.metadata.floats();
-        to_ruby_json(&h, &floats)
+        Ok(to_ruby_json(&h, &floats)?)
     }
 
     /// `#inspect`.
@@ -162,6 +169,85 @@ impl ExecutionResult {
         format!("#<Ukiryu::Execution::Result {self}>")
     }
 }
+
+/// Why `Result#to_json` raised.
+#[derive(Debug, Clone, PartialEq)]
+pub enum ResultJsonError {
+    /// `to_h` raised for a stream that is not valid UTF-8.
+    InvalidByteSequence(InvalidByteSequence),
+    /// `JSON::GeneratorError`.
+    Generator(JsonGeneratorError),
+}
+
+impl ResultJsonError {
+    pub fn ruby_class(&self) -> &'static str {
+        match self {
+            ResultJsonError::InvalidByteSequence(e) => e.ruby_class(),
+            ResultJsonError::Generator(e) => e.ruby_class(),
+        }
+    }
+
+    pub fn message(&self) -> &str {
+        match self {
+            ResultJsonError::InvalidByteSequence(e) => e.message(),
+            ResultJsonError::Generator(e) => &e.message,
+        }
+    }
+}
+
+impl From<InvalidByteSequence> for ResultJsonError {
+    fn from(e: InvalidByteSequence) -> Self {
+        ResultJsonError::InvalidByteSequence(e)
+    }
+}
+
+impl From<JsonGeneratorError> for ResultJsonError {
+    fn from(e: JsonGeneratorError) -> Self {
+        ResultJsonError::Generator(e)
+    }
+}
+
+impl std::fmt::Display for ResultJsonError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.message())
+    }
+}
+
+impl std::error::Error for ResultJsonError {}
+
+/// Why `SuccessResponse.from_result` raised while reading a result.
+#[derive(Debug, Clone, PartialEq)]
+pub enum ResultPartsError {
+    /// `result.error_output` (`strip`) raised for a stderr that is not
+    /// valid UTF-8.
+    InvalidByteSequence(InvalidByteSequence),
+    /// A missing start or finish time (`nil.iso8601`).
+    Model(ModelError),
+}
+
+impl ResultPartsError {
+    pub fn ruby_class(&self) -> &'static str {
+        match self {
+            ResultPartsError::InvalidByteSequence(e) => e.ruby_class(),
+            ResultPartsError::Model(e) => e.kind.ruby_class(),
+        }
+    }
+
+    pub fn message(&self) -> &str {
+        match self {
+            ResultPartsError::InvalidByteSequence(e) => e.message(),
+            ResultPartsError::Model(e) => &e.message,
+        }
+    }
+}
+
+impl std::fmt::Display for ResultPartsError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.message())
+    }
+}
+
+impl std::error::Error for ResultPartsError {}
 
 /// `#to_s`.
 impl std::fmt::Display for ExecutionResult {
@@ -185,13 +271,19 @@ impl std::fmt::Display for ExecutionResult {
     }
 }
 
-/// The fields `SuccessResponse.from_result` reads from a result. A missing
-/// start or finish time fails as Ruby's `nil.iso8601` does (`NoMethodError`).
+/// The fields `SuccessResponse.from_result` reads from a result, in the
+/// order it reads them: `result.error_output` (stripped stderr) raises for a
+/// stderr that is not valid UTF-8, then a missing start or finish time fails
+/// as Ruby's `nil.iso8601` does (`NoMethodError`). stdout is read raw.
 impl TryFrom<&ExecutionResult> for ExecutionResultParts {
-    type Error = ModelError;
+    type Error = ResultPartsError;
 
     fn try_from(r: &ExecutionResult) -> Result<Self, Self::Error> {
-        let nil_iso8601 = || ModelError::no_method("iso8601", &Value::Nil);
+        let error_output = r
+            .error_output()
+            .map_err(ResultPartsError::InvalidByteSequence)?
+            .to_owned();
+        let nil_iso8601 = || ResultPartsError::Model(ModelError::no_method("iso8601", &Value::Nil));
         let started = r.started_at().map(time_iso8601).ok_or_else(nil_iso8601)?;
         let finished = r.finished_at().map(time_iso8601).ok_or_else(nil_iso8601)?;
         Ok(ExecutionResultParts {
@@ -201,7 +293,7 @@ impl TryFrom<&ExecutionResult> for ExecutionResultParts {
             // `command_info.shell.to_s`: nil reads as "".
             shell: r.command_info.shell.clone().unwrap_or_default(),
             stdout: r.stdout().to_owned(),
-            error_output: r.error_output().to_owned(),
+            error_output,
             started_at_iso8601: started,
             finished_at_iso8601: finished,
             duration: r.duration().ok_or_else(nil_iso8601)?,

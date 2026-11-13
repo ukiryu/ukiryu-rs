@@ -1,0 +1,17 @@
+---
+ukiryu_schema: '1.0'
+name: emit
+version: '1.0'
+display_name: Emit Interface
+actions:
+- name: run
+  description: Write bytes to stdout and stderr
+  signature:
+    inputs:
+      inputs:
+      - name: out
+        type: string
+      - name: err
+        type: string
+      - name: code
+        type: string

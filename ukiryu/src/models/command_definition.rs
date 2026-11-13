@@ -6,6 +6,8 @@ use super::exit_codes::ExitCodes;
 use super::flag_definition::FlagDefinition;
 use super::option_definition::OptionDefinition;
 use super::value::Text;
+use crate::command_builder::ruby_sort_by;
+use num_bigint::BigInt;
 use serde::{Deserialize, Serialize};
 
 fn default_false() -> Attr<bool> {
@@ -163,16 +165,17 @@ impl CommandDefinition {
         self.arguments.as_ref()?.iter().find(|a| a.is_last())
     }
 
-    /// `#regular_arguments`: non-`last` arguments ordered by `numeric_position`.
+    /// `#regular_arguments`: non-`last` arguments ordered by
+    /// `sort_by(&:numeric_position)`. MRI's `sort_by` is not stable, so
+    /// arguments that share a position keep MRI's order, not source order.
     pub fn regular_arguments(&self) -> Vec<&ArgumentDefinition> {
-        let mut args: Vec<&ArgumentDefinition> = self
+        let args: Vec<&ArgumentDefinition> = self
             .arguments
             .iter()
             .flatten()
             .filter(|a| !a.is_last())
             .collect();
-        args.sort_by_key(|a| a.numeric_position());
-        args
+        ruby_sort_by(args, |a| BigInt::from(a.numeric_position()))
     }
 
     /// `#has_subcommand?`

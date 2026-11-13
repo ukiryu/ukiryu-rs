@@ -166,6 +166,9 @@ fn host_error(error: ExecuteError) -> HostError {
         ExecuteError::Failed { error, .. } => {
             raised(error.ruby_class(), error.message().to_owned())
         }
+        ExecuteError::InvalidByteSequence { error, .. } => {
+            raised(error.ruby_class(), error.message().to_owned())
+        }
     }
 }
 

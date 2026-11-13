@@ -8,6 +8,7 @@ use super::execution_metadata::ExecutionMetadata;
 use super::execution_report::ExecutionReport;
 use super::output_info::OutputInfo;
 use super::value::{Text, Value};
+use crate::execution::results::bytes::ensure_utf8;
 use serde::{Deserialize, Serialize};
 
 fn default_status() -> Attr<Text> {
@@ -72,13 +73,16 @@ impl Default for SuccessResponse {
 /// `result.command_info.shell.to_s`, `result.stdout`, `result.error_output`,
 /// `started_at.iso8601`, `finished_at.iso8601`, `result.duration` and
 /// `result.metadata.formatted_duration`).
+///
+/// `stdout` is the raw stream, which may hold invalid UTF-8; `error_output`
+/// is the stripped stderr, which `strip` only returns for valid UTF-8.
 #[derive(Clone, Debug, PartialEq)]
 pub struct ExecutionResultParts {
     pub status: i64,
     pub executable: String,
     pub full_command: String,
     pub shell: String,
-    pub stdout: String,
+    pub stdout: Vec<u8>,
     pub error_output: String,
     pub started_at_iso8601: String,
     pub finished_at_iso8601: String,
@@ -88,6 +92,10 @@ pub struct ExecutionResultParts {
 
 impl SuccessResponse {
     /// `SuccessResponse.from_result(result, params, command_definition, execution_report:)`.
+    ///
+    /// `OutputInfo.new` casts both streams through lutaml's `ensure_utf8`:
+    /// every invalid UTF-8 sequence of stdout is removed (NUL and every
+    /// valid character stay).
     pub fn from_result(
         result: &ExecutionResultParts,
         params: &[(String, Value)],
@@ -107,8 +115,8 @@ impl SuccessResponse {
             })),
             request: Some(Box::new(request)),
             output: Some(Box::new(OutputInfo {
-                stdout: Attr::Set(Text::new(result.stdout.clone())),
-                stderr: Attr::Set(Text::new(result.error_output.clone())),
+                stdout: Attr::Set(Text::new(ensure_utf8(&result.stdout))),
+                stderr: Attr::Set(Text::new(ensure_utf8(result.error_output.as_bytes()))),
             })),
             metadata: Some(Box::new(ExecutionMetadata {
                 started_at: Some(Text::new(result.started_at_iso8601.clone())),

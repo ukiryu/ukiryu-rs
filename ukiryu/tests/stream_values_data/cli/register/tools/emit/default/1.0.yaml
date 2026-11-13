@@ -1,0 +1,29 @@
+---
+ukiryu_schema: '1.0'
+name: emit
+display_name: Emit bytes
+version: '1.0'
+version_detection:
+  command: "--version"
+  pattern: "emit (\\d+\\.\\d+)"
+implements: emit/1.0
+execution_profiles:
+- name: default
+  platforms:
+  - macos
+  - linux
+  shells:
+  - bash
+  executable_name: emit
+  commands:
+  - name: run
+    arguments:
+    - name: out
+      type: string
+      position: 1
+    - name: err
+      type: string
+      position: 2
+    - name: code
+      type: string
+      position: 3

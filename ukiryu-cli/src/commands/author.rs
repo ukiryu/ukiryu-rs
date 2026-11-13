@@ -29,9 +29,10 @@
 //! Not here (gated on APIs that are not merged yet): `validate --executable`
 //! and `validate --all` smoke tests (Tool + executor) and `describe` (Tool).
 //! The validate paths return [`AuthorError::Gated`].
-//! The remote schema download of `DefinitionValidator` is not performed: with
-//! no `--schema` and no usable `UKIRYU_SCHEMA_PATH`, only the structural
-//! checks run (the Ruby behaviour when the download is unavailable).
+//! `DefinitionValidator` is the core `ukiryu::definition::definition_validator`
+//! module; its remote schema download is not performed: with no `--schema`
+//! and no usable `UKIRYU_SCHEMA_PATH`, only the structural checks run (the
+//! Ruby behaviour when the download is unavailable).
 use super::CommandOutcome;
 use std::cmp::Ordering;
 use std::path::{Component, Path, PathBuf};
@@ -39,15 +40,16 @@ use ukiryu::definition::documentation::{DocumentationErrorKind, DocumentationGen
 use ukiryu::definition::linter::{DefinitionLinter, LintError, LintResult};
 use ukiryu::definition::sources::file::ruby_time_to_s;
 use ukiryu::definition::{
-    DefinitionDocument, DefinitionError, DefinitionErrorKind, DefinitionMetadata, Discovery,
-    DiscoveryEnv, DocumentParseError, Loader, Severity, ValidationMode, ValidationResult,
+    definition_validator, DefinitionDocument, DefinitionError, DefinitionErrorKind,
+    DefinitionMetadata, Discovery, DiscoveryEnv, DocumentParseError, Loader, Severity,
+    ValidationMode, ValidationResult, ValidatorEnv,
 };
 use ukiryu::extractors::help::{self as extractors, CommandHost, ExtractionMethod};
 use ukiryu::models::attr::Model;
 use ukiryu::models::error::ModelErrorKind;
 use ukiryu::models::tool_definition::ToolDefinition;
 use ukiryu::render::OutputWrite;
-use ukiryu::schema::{self, Data, Permitted, SchemaError};
+use ukiryu::schema::SchemaError;
 
 /// Ruby defects of the oracle commands that the port does not reproduce,
 /// as `(command path, Ruby observation, port behaviour)`. Each is captured in
@@ -599,20 +601,16 @@ fn ljust(text: &str, width: usize) -> String {
     }
 }
 
+/// `ENV['UKIRYU_SCHEMA_PATH']` as the core validator reads it.
+fn validator_env(ctx: &AuthorContext) -> ValidatorEnv {
+    ValidatorEnv {
+        schema_path: ctx.schema_path_env.clone(),
+    }
+}
+
 /// `DefinitionValidator.validate_file(path, schema_path:)`.
 fn validate_file(path: &str, schema: Option<&str>, ctx: &AuthorContext) -> Step<ValidationResult> {
-    let bytes = match std::fs::read(path) {
-        Ok(b) => b,
-        Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
-            return Ok(ValidationResult::failure(
-                vec![format!("File not found: {path}")],
-                Vec::new(),
-            ))
-        }
-        Err(e) => return Err(read_error(&e, path)),
-    };
-    let text = String::from_utf8(bytes).map_err(|_| unsupported(format!("{path} is not UTF-8")))?;
-    validate_string(&text, schema, ctx)
+    definition_validator::validate_file(path, schema, &validator_env(ctx)).map_err(schema_stop)
 }
 
 /// `DefinitionValidator.validate_string(yaml, schema_path:)`.
@@ -621,145 +619,12 @@ fn validate_string(
     schema: Option<&str>,
     ctx: &AuthorContext,
 ) -> Step<ValidationResult> {
-    let definition = match schema::safe_load(yaml, Permitted::DOCUMENT) {
-        Ok(d) => d,
-        Err(SchemaError::YamlSyntax { message }) => {
-            return Ok(ValidationResult::failure(
-                vec![format!("Invalid YAML: {message}")],
-                Vec::new(),
-            ))
-        }
-        Err(e) => return Err(schema_stop(e)),
-    };
-    validate_definition(&definition, schema, ctx)
-}
-
-/// `DefinitionValidator.validate(definition, schema_path:)`.
-fn validate_definition(
-    definition: &Data,
-    schema_path: Option<&str>,
-    ctx: &AuthorContext,
-) -> Step<ValidationResult> {
-    let (mut errors, mut warnings) = validate_structure(definition)?;
-    let schema = match schema_path {
-        Some(path) => schema::load_definition_schema(Path::new(path)).map_err(schema_stop)?,
-        // find_schema: UKIRYU_SCHEMA_PATH when that file exists. The remote
-        // fallback (download_and_load_schema) is not performed.
-        None => match ctx.schema_path_env.as_deref() {
-            Some(env) if Path::new(env).exists() => {
-                schema::load_definition_schema(Path::new(env)).map_err(schema_stop)?
-            }
-            _ => None,
-        },
-    };
-    if let Some(schema) = schema.filter(Data::truthy) {
-        let report = schema::definition_schema_report(definition, &schema).map_err(schema_stop)?;
-        errors.extend(report.errors);
-        warnings.extend(report.warnings);
-    }
-    Ok(if errors.is_empty() {
-        if warnings.is_empty() {
-            ValidationResult::success()
-        } else {
-            ValidationResult::with_warnings(warnings)
-        }
-    } else {
-        ValidationResult::failure(errors, warnings)
-    })
-}
-
-/// `definition[:key] || definition['key']` (a truthy value or `None`).
-fn hash_get<'a>(pairs: &'a [(Data, Data)], key: &str) -> Option<&'a Data> {
-    fn last<'a>(pairs: &'a [(Data, Data)], key: &str, symbol: bool) -> Option<&'a Data> {
-        pairs
-            .iter()
-            .rev()
-            .find(|(k, _)| match k {
-                Data::Symbol(s) => symbol && s == key,
-                Data::String(s) => !symbol && s == key,
-                _ => false,
-            })
-            .map(|(_, v)| v)
-            .filter(|v| v.truthy())
-    }
-    last(pairs, key, true).or_else(|| last(pairs, key, false))
-}
-
-fn has_key(pairs: &[(Data, Data)], key: &str) -> bool {
-    pairs
-        .iter()
-        .any(|(k, _)| matches!(k, Data::Symbol(s) | Data::String(s) if s == key))
+    definition_validator::validate_string(yaml, schema, &validator_env(ctx)).map_err(schema_stop)
 }
 
 /// Ruby regexp `\s`.
 fn is_ruby_space(c: char) -> bool {
     matches!(c, ' ' | '\t' | '\n' | '\x0b' | '\x0c' | '\r')
-}
-
-/// Ruby `^...$` (multi-line anchors): whether any line satisfies `line_ok`.
-fn any_line(s: &str, line_ok: impl Fn(&str) -> bool) -> bool {
-    s.split('\n').any(line_ok)
-}
-
-/// `DefinitionValidator.validate_structure(definition)`.
-fn validate_structure(definition: &Data) -> Step<(Vec<String>, Vec<String>)> {
-    let mut errors = Vec::new();
-    let mut warnings = Vec::new();
-    let Data::Hash(pairs) = definition else {
-        return Ok((
-            vec!["Definition must be a hash/object".to_owned()],
-            Vec::new(),
-        ));
-    };
-    if let Some(name) = hash_get(pairs, "name") {
-        let name = name.ruby_to_s().map_err(schema_stop)?;
-        if name.chars().any(is_ruby_space) {
-            errors.push("Tool name must not contain whitespace".to_owned());
-        }
-        if any_line(&name, |l| l.starts_with(|c: char| c.is_ascii_digit())) {
-            warnings.push("Tool name starting with number may cause issues".to_owned());
-        }
-        let lower_ok = |l: &str| {
-            !l.is_empty()
-                && l.chars()
-                    .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '_' || c == '-')
-        };
-        if !any_line(&name, lower_ok) {
-            warnings.push(
-                "Tool name should contain only lowercase letters, numbers, hyphens, and underscores"
-                    .to_owned(),
-            );
-        }
-    }
-    if has_key(pairs, "ukiryu_schema") {
-        let value = hash_get(pairs, "ukiryu_schema")
-            .cloned()
-            .unwrap_or_else(|| {
-                // `nil || definition['ukiryu_schema']` keeps a falsy String-key value.
-                pairs
-                    .iter()
-                    .rev()
-                    .find(|(k, _)| matches!(k, Data::String(s) if s == "ukiryu_schema"))
-                    .map(|(_, v)| v.clone())
-                    .unwrap_or(Data::Null)
-            });
-        let text = value.ruby_to_s().map_err(schema_stop)?;
-        let format_ok = |l: &str| {
-            let mut parts = l.splitn(2, '.');
-            let a = parts.next().unwrap_or("");
-            let b = parts.next().unwrap_or("");
-            !a.is_empty()
-                && !b.is_empty()
-                && a.bytes().all(|c| c.is_ascii_digit())
-                && b.bytes().all(|c| c.is_ascii_digit())
-        };
-        if !any_line(&text, format_ok) {
-            warnings.push(format!(
-                "Invalid schema version format: {text} (expected format: '1.0')"
-            ));
-        }
-    }
-    Ok((errors, warnings))
 }
 
 // ------------------------------------------------------------------ lint

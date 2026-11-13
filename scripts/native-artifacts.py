@@ -9,6 +9,7 @@ import re
 import shutil
 import subprocess
 import sys
+import artifact_licenses
 
 
 def output(*args):
@@ -27,6 +28,7 @@ def stage(folder):
     shutil.copy2(Path('target/release') / name, folder / name)
     shutil.copy2('ukiryu-ffi/include/ukiryu.h', folder / 'ukiryu.h')
     shutil.copy2('LICENSE', folder / 'LICENSE')
+    artifact_licenses.stage(folder)
     metadata = json.loads(output('cargo', 'metadata', '--locked', '--format-version', '1'))
     packages = metadata['packages']
     core = next(p for p in packages if p['name'] == 'ukiryu')
@@ -78,6 +80,7 @@ def verify(folder):
     assert re.fullmatch(r'[0-9a-f]{64}', marker['lock_sha256']), 'invalid lock hash'
     assert marker['abi_version'] == 1 and marker['profile'] == 'release'
     required = {marker['library'], 'ukiryu.h', 'LICENSE', 'licenses/yeptris-engine-LICENSE.md'}
+    required |= artifact_licenses.REQUIRED
     assert required <= marker['files'].keys(), 'required artifact file missing from manifest'
     actual = {str(p.relative_to(folder)).replace('\\', '/') for p in folder.rglob('*') if p.is_file()}
     assert actual == set(marker['files']) | {'BUILT_FROM'}, 'artifact file set differs from manifest'
@@ -85,6 +88,7 @@ def verify(folder):
         path = folder / name
         assert path.resolve().is_relative_to(folder.resolve()), 'unsafe manifest path'
         assert digest(path) == expected, f'hash mismatch: {name}'
+    artifact_licenses.verify(folder)
     print(f'{folder}: {len(marker["files"])} files verified at {marker["core_commit"]}')
 
 

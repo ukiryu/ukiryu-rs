@@ -549,7 +549,7 @@ fn evaluate(group: &str, i: &Json) -> Json {
                 executable: "x".into(),
                 full_command: "x".into(),
                 shell: "sh".into(),
-                stdout: String::new(),
+                stdout: Vec::new(),
                 error_output: "err\n".into(),
                 started_at_iso8601: "2024-01-02T00:00:00Z".into(),
                 finished_at_iso8601: "2024-01-02T00:00:00Z".into(),

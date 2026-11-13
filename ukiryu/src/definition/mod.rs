@@ -10,6 +10,7 @@
 //! their own owners (additive `pub mod` lines only).
 pub mod cache;
 pub mod composer;
+pub mod definition_validator;
 pub mod discovery;
 pub mod documentation;
 pub mod lint_issue;
@@ -25,6 +26,7 @@ pub use cache::{CacheStats, CachedDefinition, DefinitionCache, RefreshStrategy};
 pub use composer::{
     ComposableCommand, ComposableDefinition, ComposableProfile, DefinitionComposer, MergeStrategy,
 };
+pub use definition_validator::{SchemaStage, StageIssues, ValidationReport, ValidatorEnv};
 pub use discovery::{Discovery, DiscoveryEnv};
 pub use lint_issue::{LintIssue, LintIssueHash, Severity};
 pub use loader::{DefinitionDocument, DocumentParseError, Loader, ValidationMode};

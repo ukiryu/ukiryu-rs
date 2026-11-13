@@ -1,0 +1,5 @@
+#!/bin/bash
+# emit XOUT XERR STATUS: writes OUT and ERR (printf escapes after a leading
+# X, so an empty stream is still a non-empty argument) to stdout and stderr.
+if [ "$1" = "--version" ]; then echo "emit 1.0"; exit 0; fi
+printf "${1#X}"; printf "${2#X}" >&2; exit "$3"

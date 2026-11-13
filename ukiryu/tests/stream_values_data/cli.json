@@ -1,0 +1,940 @@
+{
+  "rows": [
+    {
+      "id": "stdout_empty",
+      "stdout_payload_hex": "",
+      "stderr_payload_hex": "",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": ""
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "",
+        "file_hex": ""
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "success"
+        }
+      }
+    },
+    {
+      "id": "stderr_empty",
+      "stdout_payload_hex": "",
+      "stderr_payload_hex": "",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": ""
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "",
+        "file_hex": ""
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "success"
+        }
+      }
+    },
+    {
+      "id": "stdout_newline",
+      "stdout_payload_hex": "0a",
+      "stderr_payload_hex": "",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "0a",
+        "stderr_hex": ""
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "0a",
+        "stderr_hex": "",
+        "file_hex": "0a"
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "success",
+          "output": {
+            "stdout": "0a"
+          }
+        }
+      }
+    },
+    {
+      "id": "stderr_newline",
+      "stdout_payload_hex": "",
+      "stderr_payload_hex": "0a",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": ""
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "",
+        "file_hex": ""
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "success"
+        }
+      }
+    },
+    {
+      "id": "stdout_crlf_lines",
+      "stdout_payload_hex": "610d0a620d0a",
+      "stderr_payload_hex": "",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "610d0a620d0a",
+        "stderr_hex": ""
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "610d0a620d0a",
+        "stderr_hex": "",
+        "file_hex": "610d0a620d0a"
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "success",
+          "output": {
+            "stdout": "610d0a620d0a"
+          }
+        }
+      }
+    },
+    {
+      "id": "stderr_crlf_lines",
+      "stdout_payload_hex": "",
+      "stderr_payload_hex": "610d0a620d0a",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "610d0a62"
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "610d0a62",
+        "file_hex": ""
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "success",
+          "output": {
+            "stderr": "610d0a62"
+          }
+        }
+      }
+    },
+    {
+      "id": "stdout_whitespace_only",
+      "stdout_payload_hex": "20090a",
+      "stderr_payload_hex": "",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "20090a",
+        "stderr_hex": ""
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "20090a",
+        "stderr_hex": "",
+        "file_hex": "20090a"
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "success",
+          "output": {
+            "stdout": "20090a"
+          }
+        }
+      }
+    },
+    {
+      "id": "stderr_whitespace_only",
+      "stdout_payload_hex": "",
+      "stderr_payload_hex": "20090a",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": ""
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "",
+        "file_hex": ""
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "success"
+        }
+      }
+    },
+    {
+      "id": "stdout_nul_middle",
+      "stdout_payload_hex": "610062",
+      "stderr_payload_hex": "",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "610062",
+        "stderr_hex": ""
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "610062",
+        "stderr_hex": "",
+        "file_hex": "610062"
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "success",
+          "output": {
+            "stdout": "610062"
+          }
+        }
+      }
+    },
+    {
+      "id": "stderr_nul_middle",
+      "stdout_payload_hex": "",
+      "stderr_payload_hex": "610062",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "610062"
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "610062",
+        "file_hex": ""
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "success",
+          "output": {
+            "stderr": "610062"
+          }
+        }
+      }
+    },
+    {
+      "id": "stdout_nul_edges",
+      "stdout_payload_hex": "0020612000",
+      "stderr_payload_hex": "",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "0020612000",
+        "stderr_hex": ""
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "0020612000",
+        "stderr_hex": "",
+        "file_hex": "0020612000"
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "success",
+          "output": {
+            "stdout": "0020612000"
+          }
+        }
+      }
+    },
+    {
+      "id": "stderr_nul_edges",
+      "stdout_payload_hex": "",
+      "stderr_payload_hex": "0020612000",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "61"
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "61",
+        "file_hex": ""
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "success",
+          "output": {
+            "stderr": "61"
+          }
+        }
+      }
+    },
+    {
+      "id": "stdout_utf8_text",
+      "stdout_payload_hex": "68c3a96c6c6f20e29c9320f09d849e0a",
+      "stderr_payload_hex": "",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "68c3a96c6c6f20e29c9320f09d849e0a",
+        "stderr_hex": ""
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "68c3a96c6c6f20e29c9320f09d849e0a",
+        "stderr_hex": "",
+        "file_hex": "68c3a96c6c6f20e29c9320f09d849e0a"
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "success",
+          "output": {
+            "stdout": "68c3a96c6c6f20e29c9320f09d849e0a"
+          }
+        }
+      }
+    },
+    {
+      "id": "stderr_utf8_text",
+      "stdout_payload_hex": "",
+      "stderr_payload_hex": "68c3a96c6c6f20e29c9320f09d849e0a",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "68c3a96c6c6f20e29c9320f09d849e"
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "68c3a96c6c6f20e29c9320f09d849e",
+        "file_hex": ""
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "success",
+          "output": {
+            "stderr": "68c3a96c6c6f20e29c9320f09d849e"
+          }
+        }
+      }
+    },
+    {
+      "id": "stdout_utf8_edges",
+      "stdout_payload_hex": "20c3a9200a",
+      "stderr_payload_hex": "",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "20c3a9200a",
+        "stderr_hex": ""
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "20c3a9200a",
+        "stderr_hex": "",
+        "file_hex": "20c3a9200a"
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "success",
+          "output": {
+            "stdout": "20c3a9200a"
+          }
+        }
+      }
+    },
+    {
+      "id": "stderr_utf8_edges",
+      "stdout_payload_hex": "",
+      "stderr_payload_hex": "20c3a9200a",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "c3a9"
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "c3a9",
+        "file_hex": ""
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "success",
+          "output": {
+            "stderr": "c3a9"
+          }
+        }
+      }
+    },
+    {
+      "id": "stdout_all_bytes",
+      "stdout_payload_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9fa0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4e5e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfeff",
+      "stderr_payload_hex": "",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f",
+        "stderr_hex": ""
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f",
+        "stderr_hex": "",
+        "file_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f"
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "success",
+          "output": {
+            "stdout": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f"
+          }
+        }
+      }
+    },
+    {
+      "id": "stderr_all_bytes",
+      "stdout_payload_hex": "",
+      "stderr_payload_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9fa0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4e5e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfeff",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "556e6578706563746564206572726f723a20456e636f64696e673a3a436f6d7061746962696c6974794572726f723a20696e76616c696420627974652073657175656e636520696e205554462d380a"
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "556e6578706563746564206572726f723a20456e636f64696e673a3a436f6d7061746962696c6974794572726f723a20696e76616c696420627974652073657175656e636520696e205554462d380a",
+        "file_hex": null
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "error",
+          "error": "Unexpected error: Encoding::CompatibilityError: invalid byte sequence in UTF-8"
+        }
+      }
+    },
+    {
+      "id": "stdout_invalid_middle",
+      "stdout_payload_hex": "61ff62",
+      "stderr_payload_hex": "",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "6162",
+        "stderr_hex": ""
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "6162",
+        "stderr_hex": "",
+        "file_hex": "6162"
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "success",
+          "output": {
+            "stdout": "6162"
+          }
+        }
+      }
+    },
+    {
+      "id": "stderr_invalid_middle",
+      "stdout_payload_hex": "",
+      "stderr_payload_hex": "61ff62",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "556e6578706563746564206572726f723a20456e636f64696e673a3a436f6d7061746962696c6974794572726f723a20696e76616c696420627974652073657175656e636520696e205554462d380a"
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "556e6578706563746564206572726f723a20456e636f64696e673a3a436f6d7061746962696c6974794572726f723a20696e76616c696420627974652073657175656e636520696e205554462d380a",
+        "file_hex": null
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "error",
+          "error": "Unexpected error: Encoding::CompatibilityError: invalid byte sequence in UTF-8"
+        }
+      }
+    },
+    {
+      "id": "stdout_invalid_after_space",
+      "stdout_payload_hex": "20ff61",
+      "stderr_payload_hex": "",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "2061",
+        "stderr_hex": ""
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "2061",
+        "stderr_hex": "",
+        "file_hex": "2061"
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "success",
+          "output": {
+            "stdout": "2061"
+          }
+        }
+      }
+    },
+    {
+      "id": "stderr_invalid_after_space",
+      "stdout_payload_hex": "",
+      "stderr_payload_hex": "20ff61",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "496e76616c696420617267756d656e74733a20696e76616c696420627974652073657175656e636520696e205554462d380a"
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "496e76616c696420617267756d656e74733a20696e76616c696420627974652073657175656e636520696e205554462d380a",
+        "file_hex": null
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "error",
+          "error": "Invalid arguments: invalid byte sequence in UTF-8"
+        }
+      }
+    },
+    {
+      "id": "stdout_invalid_truncated_end",
+      "stdout_payload_hex": "6f6be282",
+      "stderr_payload_hex": "",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "6f6b",
+        "stderr_hex": ""
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "6f6b",
+        "stderr_hex": "",
+        "file_hex": "6f6b"
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "success",
+          "output": {
+            "stdout": "6f6b"
+          }
+        }
+      }
+    },
+    {
+      "id": "stderr_invalid_truncated_end",
+      "stdout_payload_hex": "",
+      "stderr_payload_hex": "6f6be282",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "556e6578706563746564206572726f723a20456e636f64696e673a3a436f6d7061746962696c6974794572726f723a20696e76616c696420627974652073657175656e636520696e205554462d380a"
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "556e6578706563746564206572726f723a20456e636f64696e673a3a436f6d7061746962696c6974794572726f723a20696e76616c696420627974652073657175656e636520696e205554462d380a",
+        "file_hex": null
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "error",
+          "error": "Unexpected error: Encoding::CompatibilityError: invalid byte sequence in UTF-8"
+        }
+      }
+    },
+    {
+      "id": "stdout_invalid_before_space",
+      "stdout_payload_hex": "6f6bff200a",
+      "stderr_payload_hex": "",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "6f6b200a",
+        "stderr_hex": ""
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "6f6b200a",
+        "stderr_hex": "",
+        "file_hex": "6f6b200a"
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "success",
+          "output": {
+            "stdout": "6f6b200a"
+          }
+        }
+      }
+    },
+    {
+      "id": "stderr_invalid_before_space",
+      "stdout_payload_hex": "",
+      "stderr_payload_hex": "6f6bff200a",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "556e6578706563746564206572726f723a20456e636f64696e673a3a436f6d7061746962696c6974794572726f723a20696e76616c696420627974652073657175656e636520696e205554462d380a"
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "556e6578706563746564206572726f723a20456e636f64696e673a3a436f6d7061746962696c6974794572726f723a20696e76616c696420627974652073657175656e636520696e205554462d380a",
+        "file_hex": null
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "error",
+          "error": "Unexpected error: Encoding::CompatibilityError: invalid byte sequence in UTF-8"
+        }
+      }
+    },
+    {
+      "id": "stdout_invalid_mixed",
+      "stdout_payload_hex": "e28241c080eda080f4908080f09f984280fec3a9",
+      "stderr_payload_hex": "",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "4142c3a9",
+        "stderr_hex": ""
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "4142c3a9",
+        "stderr_hex": "",
+        "file_hex": "4142c3a9"
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "success",
+          "output": {
+            "stdout": "4142c3a9"
+          }
+        }
+      }
+    },
+    {
+      "id": "stderr_invalid_mixed",
+      "stdout_payload_hex": "",
+      "stderr_payload_hex": "e28241c080eda080f4908080f09f984280fec3a9",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "496e76616c696420617267756d656e74733a20696e76616c696420627974652073657175656e636520696e205554462d380a"
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "496e76616c696420617267756d656e74733a20696e76616c696420627974652073657175656e636520696e205554462d380a",
+        "file_hex": null
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "error",
+          "error": "Invalid arguments: invalid byte sequence in UTF-8"
+        }
+      }
+    },
+    {
+      "id": "stdout_invalid_lines",
+      "stdout_payload_hex": "78ff0a790d0a7a",
+      "stderr_payload_hex": "",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "780a790d0a7a",
+        "stderr_hex": ""
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "780a790d0a7a",
+        "stderr_hex": "",
+        "file_hex": "780a790d0a7a"
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "success",
+          "output": {
+            "stdout": "780a790d0a7a"
+          }
+        }
+      }
+    },
+    {
+      "id": "stderr_invalid_lines",
+      "stdout_payload_hex": "",
+      "stderr_payload_hex": "78ff0a790d0a7a",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "556e6578706563746564206572726f723a20456e636f64696e673a3a436f6d7061746962696c6974794572726f723a20696e76616c696420627974652073657175656e636520696e205554462d380a"
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "556e6578706563746564206572726f723a20456e636f64696e673a3a436f6d7061746962696c6974794572726f723a20696e76616c696420627974652073657175656e636520696e205554462d380a",
+        "file_hex": null
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "error",
+          "error": "Unexpected error: Encoding::CompatibilityError: invalid byte sequence in UTF-8"
+        }
+      }
+    },
+    {
+      "id": "stdout_invalid_after_newline",
+      "stdout_payload_hex": "0a80",
+      "stderr_payload_hex": "",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "0a",
+        "stderr_hex": ""
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "0a",
+        "stderr_hex": "",
+        "file_hex": "0a"
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "success",
+          "output": {
+            "stdout": "0a"
+          }
+        }
+      }
+    },
+    {
+      "id": "stderr_invalid_after_newline",
+      "stdout_payload_hex": "",
+      "stderr_payload_hex": "0a80",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "496e76616c696420617267756d656e74733a20696e76616c696420627974652073657175656e636520696e205554462d380a"
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "496e76616c696420617267756d656e74733a20696e76616c696420627974652073657175656e636520696e205554462d380a",
+        "file_hex": null
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "error",
+          "error": "Invalid arguments: invalid byte sequence in UTF-8"
+        }
+      }
+    },
+    {
+      "id": "both_source_fixture",
+      "stdout_payload_hex": "4100ff8042",
+      "stderr_payload_hex": "43fe44",
+      "status": 0,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "556e6578706563746564206572726f723a20456e636f64696e673a3a436f6d7061746962696c6974794572726f723a20696e76616c696420627974652073657175656e636520696e205554462d380a"
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "556e6578706563746564206572726f723a20456e636f64696e673a3a436f6d7061746962696c6974794572726f723a20696e76616c696420627974652073657175656e636520696e205554462d380a",
+        "file_hex": null
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "error",
+          "error": "Unexpected error: Encoding::CompatibilityError: invalid byte sequence in UTF-8"
+        }
+      }
+    },
+    {
+      "id": "failed_valid",
+      "stdout_payload_hex": "6f006b0a",
+      "stderr_payload_hex": "6261640a",
+      "status": 3,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "436f6d6d616e64206661696c65643a203c434c493e2f62696e2f656d69740a0a436f6d6d616e643a20273c434c493e2f62696e2f656d6974272027585c7836665c7830305c7836625c783061272027585c7836325c7836315c7836345c78306127202733270a45786974207374617475733a20330a0a5354444f55543a0a6f006b0a0a5354444552523a0a6261640a"
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "436f6d6d616e64206661696c65643a203c434c493e2f62696e2f656d69740a0a436f6d6d616e643a20273c434c493e2f62696e2f656d6974272027585c7836665c7830305c7836625c783061272027585c7836325c7836315c7836345c78306127202733270a45786974207374617475733a20330a0a5354444f55543a0a6f006b0a0a5354444552523a0a6261640a",
+        "file_hex": null
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "error",
+          "error": "Command failed: <CLI>/bin/emit\n\nCommand: '<CLI>/bin/emit' 'X\\x6f\\x00\\x6b\\x0a' 'X\\x62\\x61\\x64\\x0a' '3'\nExit status: 3\n\nSTDOUT:\no\u0000k\n\nSTDERR:\nbad"
+        }
+      }
+    },
+    {
+      "id": "failed_stdout_invalid",
+      "stdout_payload_hex": "61ff62",
+      "stderr_payload_hex": "6261640a",
+      "status": 3,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "556e6578706563746564206572726f723a20456e636f64696e673a3a436f6d7061746962696c6974794572726f723a20696e76616c696420627974652073657175656e636520696e205554462d380a"
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "556e6578706563746564206572726f723a20456e636f64696e673a3a436f6d7061746962696c6974794572726f723a20696e76616c696420627974652073657175656e636520696e205554462d380a",
+        "file_hex": null
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "error",
+          "error": "Unexpected error: Encoding::CompatibilityError: invalid byte sequence in UTF-8"
+        }
+      }
+    },
+    {
+      "id": "failed_stdout_invalid_after_space",
+      "stdout_payload_hex": "20ff61",
+      "stderr_payload_hex": "",
+      "status": 3,
+      "raw": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "496e76616c696420617267756d656e74733a20696e76616c696420627974652073657175656e636520696e205554462d380a"
+      },
+      "raw_file": {
+        "exit": 0,
+        "stdout_hex": "",
+        "stderr_hex": "496e76616c696420617267756d656e74733a20696e76616c696420627974652073657175656e636520696e205554462d380a",
+        "file_hex": null
+      },
+      "json": {
+        "exit": 0,
+        "stderr_hex": "",
+        "response": {
+          "status": "error",
+          "error": "Invalid arguments: invalid byte sequence in UTF-8"
+        }
+      }
+    }
+  ]
+}
