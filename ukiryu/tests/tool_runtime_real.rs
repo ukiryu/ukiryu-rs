@@ -104,7 +104,7 @@ fn jq_reads_stdin_and_filters() {
         )
         .expect("jq runs");
     assert_eq!(String::from_utf8_lossy(&run.stdout).trim(), "\"bar\"");
-    assert_eq!(run.result.status, 0);
+    assert_eq!(run.result.status(), 0);
 }
 
 #[test]
@@ -134,7 +134,7 @@ fn jq_failure_maps_through_the_exit_code_table() {
         },
         other => panic!("expected a failed execution, got {other:?}"),
     };
-    let status = execution.result.status;
+    let status = execution.result.status();
     assert_ne!(status, 0);
     if status == 3 {
         assert_eq!(
