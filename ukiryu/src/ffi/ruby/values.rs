@@ -10,7 +10,7 @@
 //! Anything the core value cannot hold exactly raises instead of being
 //! coerced: other classes (including subclasses of the classes above, whose
 //! class would be lost), binary or other non-UTF-8 strings, invalid UTF-8,
-//! sub-nanosecond `Time` precision, Regexp option bits other than the three
+//! sub-nanosecond `Time` precision (in either direction), Regexp option bits other than the three
 //! above, `compare_by_identity` hashes, recursive structures and nesting
 //! deeper than [`MAX_DEPTH`].
 //!
@@ -197,12 +197,7 @@ fn time_in(ruby: &Ruby, time: magnus::Time) -> Result<Value, Error> {
         .map_err(|_| arg_error(ruby, "Time UTC offset out of range"))?;
     let nanos = u32::try_from(spec.tv_nsec)
         .map_err(|_| arg_error(ruby, "Time nanoseconds out of range"))?;
-    Ok(Value::Time(Time {
-        seconds: spec.tv_sec,
-        nanos,
-        utc_offset: offset,
-        utc,
-    }))
+    Ok(Value::Time(Time::new(spec.tv_sec, nanos, offset, utc)))
 }
 
 fn regexp_in(ruby: &Ruby, regexp: RRegexp) -> Result<Value, Error> {
@@ -243,6 +238,12 @@ fn convert_out(ruby: &Ruby, value: &Value, depth: usize) -> Result<RValue, Error
         Value::String(s) => ruby.str_new(s).as_value(),
         Value::Symbol(s) => ruby.to_symbol(s).as_value(),
         Value::Time(t) => {
+            if !t.is_integral_nanos() {
+                return Err(arg_error(
+                    ruby,
+                    "a Time with sub-nanosecond precision is not converted",
+                ));
+            }
             let spec = Timespec {
                 tv_sec: t.seconds,
                 tv_nsec: i64::from(t.nanos),
