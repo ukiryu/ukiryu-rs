@@ -89,7 +89,7 @@ jobs:
         run: |
           powershell -NoLogo -NoProfile -Command "(Get-Command cmd).Source; & 'cmd' /c echo hello; 'LASTEXITCODE=' + \$LASTEXITCODE" || true
           powershell -NoLogo -Command "& 'cmd' /c echo hello2; exit \$LASTEXITCODE" | od -c | head -3 || true
-          env | sort | cut -c1-160 > "$RUNNER_TEMP/env-before.txt"
+          { env | cut -d= -f1 | sort; echo "PATH=$PATH"; } > "$RUNNER_TEMP/env-before.txt"
       # A Ruby child hex-dumps its stdin for child_stdin_bytes_match_ruby.
       - uses: ruby/setup-ruby@v1
         with:
@@ -100,7 +100,7 @@ jobs:
         run: |
           powershell -NoLogo -NoProfile -Command "(Get-Command cmd).Source; & 'cmd' /c echo hello; 'LASTEXITCODE=' + \$LASTEXITCODE" || true
           powershell -NoLogo -Command "& 'cmd' /c echo hello2; exit \$LASTEXITCODE" | od -c | head -3 || true
-          env | sort | cut -c1-160 > "$RUNNER_TEMP/env-after.txt"
+          { env | cut -d= -f1 | sort; echo "PATH=$PATH"; } > "$RUNNER_TEMP/env-after.txt"
       - name: Run the executor tests verbosely
         shell: bash
         run: |
