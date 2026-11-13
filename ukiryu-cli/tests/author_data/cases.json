@@ -2881,7 +2881,7 @@
    },
    "stdin": null,
    "pty": false,
-   "mode": "exact",
+   "mode": "yaml_data",
    "expect": {
     "stdout": "---\nukiryu_schema: '1.0'\n\"$self\": https://www.ukiryu.com/register/1.0/ukx-help/2.3.4\nname: ukx-help\nversion: 2.3.4\ndisplay_name: Ukx-help\nprofiles:\n- name: default\n  platforms:\n  - macos\n  - linux\n  - windows\n  shells:\n  - bash\n  - zsh\n  - fish\n  - powershell\n  - cmd\n  commands:\n  - name: default\n    description: Default ukx-help command\n    options:\n    - name: output\n      description: \"-o, [--output FILE]    Write output to FILE\"\n      cli: \"-o\"\n      type: file\n    - name: level\n      cli: \"--level\"\n      description: \"[--level=NUM]          Compression level\"\n      type: integer\n    - name: quiet\n      description: \"-q, [--quiet]          Suppress messages\"\n      cli: \"-q\"\n      type: boolean\n",
     "stderr": "",
@@ -2903,7 +2903,7 @@
    },
    "stdin": null,
    "pty": false,
-   "mode": "exact",
+   "mode": "yaml_data",
    "expect": {
     "stdout": "---\nukiryu_schema: '1.0'\n\"$self\": https://www.ukiryu.com/register/1.0/ukx-help/2.3.4\nname: ukx-help\nversion: 2.3.4\ndisplay_name: Ukx-help\nprofiles:\n- name: default\n  platforms:\n  - macos\n  - linux\n  - windows\n  shells:\n  - bash\n  - zsh\n  - fish\n  - powershell\n  - cmd\n  commands:\n  - name: default\n    description: Default ukx-help command\n    options:\n    - name: output\n      description: \"-o, [--output FILE]    Write output to FILE\"\n      cli: \"-o\"\n      type: file\n    - name: level\n      cli: \"--level\"\n      description: \"[--level=NUM]          Compression level\"\n      type: integer\n    - name: quiet\n      description: \"-q, [--quiet]          Suppress messages\"\n      cli: \"-q\"\n      type: boolean\n\u001b[36m\n# Extracted using: help\u001b[0m\n",
     "stderr": "",
@@ -2943,7 +2943,7 @@
    },
    "stdin": null,
    "pty": false,
-   "mode": "exact",
+   "mode": "yaml_data",
    "expect": {
     "stdout": "---\nukiryu_schema: '1.0'\n\"$self\": https://www.ukiryu.com/register/1.0/ukx-native-broken/1.0\nname: ukx-native-broken\nversion: '1.0'\ndisplay_name: Ukx-native-broken\nprofiles:\n- name: default\n  platforms:\n  - macos\n  - linux\n  - windows\n  shells:\n  - bash\n  - zsh\n  - fish\n  - powershell\n  - cmd\n  commands:\n  - name: default\n    description: Default ukx-native-broken command\n    options: []\n",
     "stderr": "",
@@ -2962,7 +2962,7 @@
    },
    "stdin": null,
    "pty": false,
-   "mode": "exact",
+   "mode": "yaml_data",
    "expect": {
     "stdout": "---\nukiryu_schema: '1.0'\n\"$self\": https://www.ukiryu.com/register/1.0/ukx-native-blank/1.0\nname: ukx-native-blank\nversion: '1.0'\ndisplay_name: Ukx-native-blank\nprofiles:\n- name: default\n  platforms:\n  - macos\n  - linux\n  - windows\n  shells:\n  - bash\n  - zsh\n  - fish\n  - powershell\n  - cmd\n  commands:\n  - name: default\n    description: Default ukx-native-blank command\n    options: []\n",
     "stderr": "",

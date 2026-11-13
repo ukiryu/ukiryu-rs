@@ -335,6 +335,17 @@ fn context(case: &Value, root: &str) -> AuthorContext {
     }
 }
 
+/// The YAML part (before the first ESC) as data, the coloured trailer as bytes.
+fn same_yaml_data(actual: &str, expected: &str) -> bool {
+    let split = |t: &str| {
+        let i = t.find('\x1b').unwrap_or(t.len());
+        (t[..i].to_owned(), t[i..].to_owned())
+    };
+    let ((ay, at), (ey, et)) = (split(actual), split(expected));
+    let parse = |t: &str| ukiryu::from_yaml::<Value>(t).ok();
+    at == et && parse(&ay).is_some() && parse(&ay) == parse(&ey)
+}
+
 fn sorted_lines(s: &str) -> Vec<&str> {
     let mut v: Vec<&str> = s.lines().collect();
     v.sort();
@@ -432,6 +443,7 @@ fn authoring_handlers_match_the_oracle_captures() {
                     let ok_out = match mode {
                         "lines" => sorted_lines(&stdout) == sorted_lines(&es),
                         "prefix" => same_prefix(&stdout, &es, case["prefix"].as_str().unwrap()),
+                        "yaml_data" => same_yaml_data(&stdout, &es),
                         _ => stdout == es,
                     };
                     let ok_err = match mode {
