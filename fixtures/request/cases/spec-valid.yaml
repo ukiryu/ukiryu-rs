@@ -1,0 +1,6 @@
+tool: imagemagick
+command: convert
+arguments:
+  inputs:
+    - spec/fixtures/input.png
+  output: spec/fixtures/output.jpg

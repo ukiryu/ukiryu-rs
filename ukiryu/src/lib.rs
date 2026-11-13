@@ -15,6 +15,7 @@ pub mod model_loading;
 pub mod models;
 pub mod options;
 pub mod render;
+pub mod request;
 pub mod routing;
 pub mod runtime;
 pub mod schema;

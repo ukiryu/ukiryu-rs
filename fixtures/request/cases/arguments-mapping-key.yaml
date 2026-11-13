@@ -1,0 +1,5 @@
+tool: a
+command: b
+arguments:
+  ? {a: 1}
+  : map-key

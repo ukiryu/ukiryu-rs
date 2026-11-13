@@ -1,0 +1,163 @@
+{
+  "oracle": {
+    "repo": "ukiryu/ukiryu",
+    "sha": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+    "gem_path": "/home/runner/work/ukiryu-rs/ukiryu-rs/corpus/oracle-ruby/vendor/bundle/ruby/4.0.0/bundler/gems/ukiryu-ab6df353c6dc",
+    "files": [
+      "lib/ukiryu/executor.rb",
+      "lib/ukiryu/shell/powershell.rb",
+      "lib/ukiryu/shell/cmd.rb"
+    ],
+    "ruby": "ruby 4.0.1 (2026-01-13 revision e04267a14b) +PRISM [x86_64-linux]",
+    "host_os": "linux",
+    "powershell_program": "pwsh",
+    "powershell_version": "7.6.10"
+  },
+  "rows": [
+    {
+      "id": "powershell_stdin_ascii",
+      "shell": "powershell",
+      "executable": "cat",
+      "arguments": [],
+      "stdin_hex": "746573742064617461",
+      "outcome": "result",
+      "stdout_hex": "7465737420646174610a",
+      "stderr_hex": "",
+      "stdout_encoding": "UTF-8",
+      "exit_status": 0,
+      "full_command": "cat"
+    },
+    {
+      "id": "powershell_stdin_multiline",
+      "shell": "powershell",
+      "executable": "cat",
+      "arguments": [],
+      "stdin_hex": "6c696e65310a6c696e65320a",
+      "outcome": "result",
+      "stdout_hex": "6c696e65310a6c696e65320a",
+      "stderr_hex": "",
+      "stdout_encoding": "UTF-8",
+      "exit_status": 0,
+      "full_command": "cat"
+    },
+    {
+      "id": "powershell_stdin_unicode",
+      "shell": "powershell",
+      "executable": "cat",
+      "arguments": [],
+      "stdin_hex": "68c3a96c6c6f20e4b896e7958c",
+      "outcome": "result",
+      "stdout_hex": "68c3a96c6c6f20e4b896e7958c0a",
+      "stderr_hex": "",
+      "stdout_encoding": "UTF-8",
+      "exit_status": 0,
+      "full_command": "cat"
+    },
+    {
+      "id": "powershell_stdin_empty",
+      "shell": "powershell",
+      "executable": "cat",
+      "arguments": [],
+      "stdin_hex": "",
+      "outcome": "result",
+      "stdout_hex": "",
+      "stderr_hex": "",
+      "stdout_encoding": "UTF-8",
+      "exit_status": 0,
+      "full_command": "cat"
+    },
+    {
+      "id": "powershell_echo",
+      "shell": "powershell",
+      "executable": "echo",
+      "arguments": [
+        "hello"
+      ],
+      "stdin_hex": null,
+      "outcome": "result",
+      "stdout_hex": "68656c6c6f0a",
+      "stderr_hex": "",
+      "stdout_encoding": "UTF-8",
+      "exit_status": 0,
+      "full_command": "echo hello"
+    },
+    {
+      "id": "powershell_stderr_exit",
+      "shell": "powershell",
+      "executable": "sh",
+      "arguments": [
+        "-c",
+        "echo oops >&2; exit 3"
+      ],
+      "stdin_hex": null,
+      "outcome": "result",
+      "stdout_hex": "",
+      "stderr_hex": "6f6f70730a",
+      "stdout_encoding": "UTF-8",
+      "exit_status": 3,
+      "full_command": "sh \"-c\" \"echo oops >&2; exit 3\""
+    }
+  ],
+  "child_rows": [
+    {
+      "id": "child_stdin_bytes",
+      "shell": "bash",
+      "executable": "/opt/hostedtoolcache/Ruby/4.0.1/x64/bin/ruby",
+      "arguments": [
+        "/tmp/ukiryu_stdin_probe.rb"
+      ],
+      "stdin_hex": "610a620d0a6300",
+      "outcome": "result",
+      "stdout_hex": "36313061363230643061363330300d0a",
+      "stderr_hex": "",
+      "stdout_encoding": "UTF-8",
+      "exit_status": 0,
+      "full_command": "'/opt/hostedtoolcache/Ruby/4.0.1/x64/bin/ruby' '/tmp/ukiryu_stdin_probe.rb'"
+    },
+    {
+      "id": "child_stdin_bytes_powershell",
+      "shell": "powershell",
+      "executable": "/opt/hostedtoolcache/Ruby/4.0.1/x64/bin/ruby",
+      "arguments": [
+        "/tmp/ukiryu_stdin_probe.rb"
+      ],
+      "stdin_hex": "610a620d0a6300",
+      "outcome": "result",
+      "stdout_hex": "36313061363230613633303030610d0a",
+      "stderr_hex": "",
+      "stdout_encoding": "UTF-8",
+      "exit_status": 0,
+      "full_command": "/opt/hostedtoolcache/Ruby/4.0.1/x64/bin/ruby /tmp/ukiryu_stdin_probe.rb"
+    }
+  ],
+  "probes": [
+    {
+      "tempfile_write_hex": "610a620d0a63"
+    },
+    {
+      "executable": "echo",
+      "arguments": [
+        "hello"
+      ],
+      "debug": "[UKIRYU DEBUG PowerShell#execute_command] executable: \"echo\"\n[UKIRYU DEBUG PowerShell#execute_command] args: [\"hello\"]\n[UKIRYU DEBUG PowerShell#execute_command] args.class: Array\n[UKIRYU DEBUG PowerShell#execute_command] args[0]: \"hello\" (String)\n[UKIRYU DEBUG PowerShell#execute_command] full_command: \"'echo' hello\"\n[UKIRYU DEBUG PowerShell#execute_command] ps_command:\n& 'echo' hello; exit $LASTEXITCODE\n",
+      "script": "& 'echo' hello; exit $LASTEXITCODE",
+      "probe_stdout_hex": "2f6f70742f6d6963726f736f66742f706f7765727368656c6c2f372f707773682e646c6c202d4e6f4c6f676f202d436f6d6d616e6420225b456e7669726f6e6d656e745d3a3a436f6d6d616e644c696e653b202620276563686f272068656c6c6f3b206578697420244c41535445584954434f4445220a68656c6c6f0a",
+      "probe_stdout": "/opt/microsoft/powershell/7/pwsh.dll -NoLogo -Command \"[Environment]::CommandLine; & 'echo' hello; exit $LASTEXITCODE\"\nhello\n",
+      "probe_stderr": "",
+      "probe_status": 0
+    },
+    {
+      "executable": "sh",
+      "arguments": [
+        "-c",
+        "echo oops >&2; exit 3"
+      ],
+      "debug": "[UKIRYU DEBUG PowerShell#execute_command] executable: \"sh\"\n[UKIRYU DEBUG PowerShell#execute_command] args: [\"-c\", \"echo oops >&2; exit 3\"]\n[UKIRYU DEBUG PowerShell#execute_command] args.class: Array\n[UKIRYU DEBUG PowerShell#execute_command] args[0]: \"-c\" (String)\n[UKIRYU DEBUG PowerShell#execute_command] args[1]: \"echo oops >&2; exit 3\" (String)\n[UKIRYU DEBUG PowerShell#execute_command] full_command: \"'sh' '-c' 'echo oops >&2; exit 3'\"\n[UKIRYU DEBUG PowerShell#execute_command] ps_command:\n& 'sh' '-c' 'echo oops >&2; exit 3'; exit $LASTEXITCODE\n",
+      "script": "& 'sh' '-c' 'echo oops >&2; exit 3'; exit $LASTEXITCODE",
+      "probe_stdout_hex": "2f6f70742f6d6963726f736f66742f706f7765727368656c6c2f372f707773682e646c6c202d4e6f4c6f676f202d436f6d6d616e6420225b456e7669726f6e6d656e745d3a3a436f6d6d616e644c696e653b2026202773682720272d632720276563686f206f6f7073203e26323b20657869742033273b206578697420244c41535445584954434f4445220a",
+      "probe_stdout": "/opt/microsoft/powershell/7/pwsh.dll -NoLogo -Command \"[Environment]::CommandLine; & 'sh' '-c' 'echo oops >&2; exit 3'; exit $LASTEXITCODE\"\n",
+      "probe_stderr": "oops\n",
+      "probe_status": 3
+    }
+  ]
+}
