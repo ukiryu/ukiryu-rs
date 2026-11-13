@@ -740,7 +740,7 @@ pub trait Model: Serialize + DeserializeOwned + Sized {
     /// `#to_hash`, as Ruby data.
     fn to_hash(&self) -> Result<Value, ModelError> {
         let v = yeptris::to_value(self).map_err(ser_error)?;
-        Ok(Value::from_yaml_value(&v))
+        Value::from_yaml_value(&v)
     }
 
     /// `#to_yaml` content, emitted by the Yeptris engine.

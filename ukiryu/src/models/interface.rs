@@ -34,7 +34,7 @@ pub(crate) fn load_yaml_file(path: &Path) -> Result<Value, ModelError> {
     }
     let value: yeptris::Value = yeptris::from_str(&text)
         .map_err(|e| ModelError::new(ModelErrorKind::Syntax, e.to_string()))?;
-    Ok(Value::from_yaml_value(&value))
+    Value::from_yaml_value(&value)
 }
 
 /// The register's effective load path (`Register#load_interface`,
@@ -47,7 +47,7 @@ pub fn register_hash(yaml: &str) -> Result<Option<Value>, ModelError> {
     }
     let value: yeptris::Value = yeptris::from_str(yaml)
         .map_err(|e| ModelError::new(ModelErrorKind::Syntax, e.to_string()))?;
-    let data = Value::from_yaml_value(&value);
+    let data = Value::from_yaml_value(&value)?;
     if !data.truthy() {
         return Ok(None);
     }

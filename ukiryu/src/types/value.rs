@@ -14,7 +14,7 @@
 use std::fmt;
 
 use num_bigint::BigInt;
-use serde::de::{Deserializer, MapAccess, SeqAccess, Visitor};
+use serde::de::{self, Deserializer, EnumAccess, MapAccess, SeqAccess, VariantAccess, Visitor};
 use serde::ser::{SerializeMap, SerializeSeq, Serializer};
 use serde::{Deserialize, Serialize};
 
@@ -310,6 +310,80 @@ impl<'de> Visitor<'de> for ValueVisitor {
         }
         Ok(out)
     }
+    /// A YAML-tagged node (Yeptris visits tags as enums: variant = tag,
+    /// payload = the tag-stripped node). The tag is applied the way Psych
+    /// applies it ([`apply_yaml_tag`]); it is never kept as a one-entry Hash.
+    fn visit_enum<A: EnumAccess<'de>>(self, data: A) -> Result<Value, A::Error> {
+        let (tag, variant): (String, _) = data.variant()?;
+        let payload: Value = variant.newtype_variant()?;
+        // The marker classifies the failure as `ModelErrorKind::Unsupported`
+        // when a model loader reports it.
+        apply_yaml_tag(&tag, payload)
+            .map_err(|m| de::Error::custom(format!("[ukiryu:unsupported]{m}")))
+    }
+}
+
+/// Psych's (`YAML.safe_load`) application of a YAML tag to the value the
+/// tag-stripped node resolved to. Ruby objects carry no tags: a tag either
+/// converts the value or is dropped.
+///
+/// Applied exactly: local tags (`!name`, other than `!ruby/...`) are dropped;
+/// the core `!!str`, `!!int`, `!!float`, `!!bool`, `!!null`, `!!seq` and
+/// `!!map` tags when the result does not depend on the scalar's source text.
+/// Everything else (for example `!!str` on a plain `123`, whose Psych result
+/// needs the original text, `!!binary`, `!!timestamp`, `!!set`, `!!omap`,
+/// `!ruby/...` objects, foreign global tags) is reported as unsupported
+/// rather than guessed.
+pub fn apply_yaml_tag(tag: &str, payload: Value) -> Result<Value, String> {
+    const CORE: &str = "tag:yaml.org,2002:";
+    let unsupported = |payload: &Value| -> Result<Value, String> {
+        Err(format!(
+            "YAML tag {tag} on {} is not reproduced",
+            payload.class_name()
+        ))
+    };
+    if let Some(name) = tag.strip_prefix(CORE) {
+        let unchanged = matches!(
+            (name, &payload),
+            ("str", Value::String(_))
+                | ("seq", Value::Array(_))
+                | ("map", Value::Hash(_))
+                | ("bool", Value::Bool(_))
+                | ("null", Value::Nil)
+                | ("int", Value::Integer(_))
+                | ("float", Value::Float(_))
+        );
+        if unchanged {
+            return Ok(payload);
+        }
+        return match (name, &payload) {
+            ("null", Value::String(s)) if s.is_empty() => Ok(Value::Nil),
+            ("bool", Value::String(s)) if s == "true" => Ok(Value::Bool(true)),
+            ("bool", Value::String(s)) if s == "false" => Ok(Value::Bool(false)),
+            ("int", Value::String(s)) if is_plain_decimal(s) => {
+                let digits = s.strip_prefix('+').unwrap_or(s);
+                Ok(Value::Integer(digits.parse().expect("decimal digits")))
+            }
+            ("float", Value::Integer(i)) => match i64::try_from(i) {
+                Ok(n) if n.unsigned_abs() <= 1u64 << 53 => Ok(Value::Float(n as f64)),
+                _ => unsupported(&payload),
+            },
+            _ => unsupported(&payload),
+        };
+    }
+    if tag.starts_with('!') && !tag.starts_with("!ruby/") {
+        return Ok(payload);
+    }
+    unsupported(&payload)
+}
+
+/// `-?` / `+?` then `0` or a decimal without leading zeros (Psych reads a
+/// leading-zero `!!int` string as octal).
+fn is_plain_decimal(s: &str) -> bool {
+    let digits = s.strip_prefix(['-', '+']).unwrap_or(s);
+    !digits.is_empty()
+        && digits.bytes().all(|b| b.is_ascii_digit())
+        && (digits == "0" || !digits.starts_with('0'))
 }
 
 impl<'de> Deserialize<'de> for Value {

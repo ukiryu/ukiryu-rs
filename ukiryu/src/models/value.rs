@@ -36,28 +36,37 @@ impl Value {
         }
     }
 
-    /// Converts a YAML document value (string keys, as Psych.safe_load yields).
-    pub fn from_yaml_value(value: &yeptris::Value) -> Value {
+    /// Converts a YAML document value (string keys, as Psych.safe_load
+    /// yields). Tags are applied as Psych applies them
+    /// ([`crate::types::value::apply_yaml_tag`]); a tag that conversion does not
+    /// reproduce is an `Unsupported` error, never a silently dropped tag.
+    pub fn from_yaml_value(value: &yeptris::Value) -> Result<Value, ModelError> {
         use yeptris::Number;
-        match value {
+        Ok(match value {
             yeptris::Value::Null => Value::Nil,
             yeptris::Value::Bool(b) => Value::Bool(*b),
             yeptris::Value::Number(Number::I64(i)) => Value::Integer(BigInt::from(*i)),
             yeptris::Value::Number(Number::U64(u)) => Value::Integer(BigInt::from(*u)),
             yeptris::Value::Number(Number::F64(f)) => Value::Float(*f),
             yeptris::Value::String(s) => Value::String(s.clone()),
-            yeptris::Value::Sequence(items) => {
-                Value::Array(items.iter().map(Value::from_yaml_value).collect())
-            }
+            yeptris::Value::Sequence(items) => Value::Array(
+                items
+                    .iter()
+                    .map(Value::from_yaml_value)
+                    .collect::<Result<_, _>>()?,
+            ),
             yeptris::Value::Mapping(m) => {
                 let mut out = Value::Hash(Vec::new());
                 for (k, v) in &m.0 {
-                    out.insert(Value::from_yaml_value(k), Value::from_yaml_value(v));
+                    out.insert(Value::from_yaml_value(k)?, Value::from_yaml_value(v)?);
                 }
                 out
             }
-            yeptris::Value::Tagged(t) => Value::from_yaml_value(&t.value),
-        }
+            yeptris::Value::Tagged(t) => {
+                crate::types::value::apply_yaml_tag(&t.tag, Value::from_yaml_value(&t.value)?)
+                    .map_err(|m| ModelError::new(ModelErrorKind::Unsupported, m))?
+            }
+        })
     }
 
     /// Converts to a YAML value for serde-driven model loading
