@@ -83,7 +83,7 @@ fn display_rows(golden: &Value) {
             .unwrap_or_else(|e| panic!("{id}: {e}"));
         assert_eq!(
             execution.result.stdout(),
-            row["stdout"].as_str().unwrap(),
+            row["stdout"].as_str().unwrap().as_bytes(),
             "{id}"
         );
         assert_eq!(
@@ -93,7 +93,7 @@ fn display_rows(golden: &Value) {
         );
         println!(
             "EVIDENCE display {id}: parent={parent:?} stdout={:?}",
-            execution.result.stdout()
+            std::str::from_utf8(execution.result.stdout())
         );
     }
     std::env::remove_var("DISPLAY");
@@ -130,7 +130,7 @@ fn time_zone_rows(golden: &Value) {
         assert_eq!(shape.replace('-', "+"), row_shape.replace('-', "+"), "{id}");
         if id != "tz_st_johns" {
             assert!(text.ends_with(row["to_s_zone"].as_str().unwrap()), "{id}");
-            let hash = execution.result.to_h();
+            let hash = execution.result.to_h().expect("valid UTF-8 streams");
             let started_at = hash.metadata.started_at.expect("started_at");
             assert!(
                 started_at.ends_with(row["to_h_started_at_zone"].as_str().unwrap()),
@@ -206,7 +206,7 @@ fn explicit_clock_offset() {
     assert_eq!(started.utc_offset, -12_600);
     let text = time_to_s(&started);
     assert!(text.ends_with(" -0330"), "{text}");
-    let hash = execution.result.to_h();
+    let hash = execution.result.to_h().expect("valid UTF-8 streams");
     assert!(hash.metadata.started_at.unwrap().ends_with(" -0330"));
     println!("EVIDENCE explicit clock: started_at={text}");
 }

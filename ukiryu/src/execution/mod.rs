@@ -9,7 +9,8 @@
 pub mod result;
 pub mod results;
 
-pub use result::{ExecutionResult, ExecutionResultHash};
+pub use result::{ExecutionResult, ExecutionResultHash, ResultJsonError, ResultPartsError};
+pub use results::bytes::{InvalidByteSequence, InvalidByteSequenceClass};
 pub use results::command_info::{CommandInfo, CommandInfoHash};
 pub use results::exit_codes::{exit_code_meaning, format_meaning, ExitCodeTable};
 pub use results::metadata::{format_duration, ExecutionMetadata, ExecutionMetadataHash, Seconds};

@@ -266,7 +266,7 @@ fn parts(p: &Json) -> ExecutionResultParts {
         executable: s(&p["executable"]).to_owned(),
         full_command: s(&p["full_command"]).to_owned(),
         shell: s(&p["shell"]).to_owned(),
-        stdout: s(&p["stdout"]).to_owned(),
+        stdout: s(&p["stdout"]).as_bytes().to_vec(),
         error_output: s(&p["error_output"]).to_owned(),
         started_at_iso8601: s(&p["started_at"]).to_owned(),
         finished_at_iso8601: s(&p["finished_at"]).to_owned(),
