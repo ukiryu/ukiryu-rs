@@ -1,0 +1,4 @@
+base: &b {type: string}
+type: object
+properties:
+  a: *b

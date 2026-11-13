@@ -15,7 +15,10 @@ repository = "https://github.com/ukiryu/ukiryu-rs"
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", features = ["arbitrary_precision"] }
 num-bigint = "0.4"
-yeptris = { version = "=0.6.63", features = ["vendored"] }
+# Development pin: explicit `!!str` scalar text in leptris/yeptris-rs#65, on
+# top of the qualified float/emitter/MSRV + browser prerequisites in #57 and
+# #55. Registry publication remains owner-gated.
+yeptris = { git = "https://github.com/leptris/yeptris-rs", rev = "936b4a0b435d538cad1e4777c3f076e5de3c812c", features = ["vendored"] }
 
 [profile.release]
 opt-level = 3

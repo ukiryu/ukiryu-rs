@@ -1,0 +1,8 @@
+{
+  "oracle": "ukiryu/ukiryu",
+  "sha": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+  "ruby": "ruby 4.0.1 (2026-01-13 revision e04267a14b) +PRISM [x86_64-linux]",
+  "json_gem": "3.1.0",
+  "platform": "x86_64-linux",
+  "script": "ukiryu/tests/execution_result_golden/capture.rb"
+}

@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ukiryu/ukiryu-rs/corpus/conformance/case.schema.json",
+  "title": "Ukiryu conformance case (one line of cases/<kind>.jsonl)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "kind", "op", "api", "input", "expect", "compare", "error_match", "applicability", "sources"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^(resolve|build|escape|validate|lint|schema|cli-output|yaml)\\.[A-Za-z0-9_.-]+$",
+      "description": "Stable case identifier; starts with the kind. Never reused for a different behaviour."
+    },
+    "kind": { "enum": ["resolve", "build", "escape", "validate", "lint", "schema", "cli-output", "yaml"] },
+    "op": {
+      "enum": [
+        "shell.escape", "shell.quote", "shell.needs_quoting", "shell.join", "shell.env_var", "shell.format_path",
+        "type.validate", "build.args",
+        "resolve.extract_version", "resolve.version_spec", "resolve.range", "resolve.shell_detect",
+        "lint.string", "schema.validate_profile", "schema.definition_validate",
+        "yaml.load", "yaml.model_load", "yaml.lutaml_roundtrip", "cli.run"
+      ],
+      "description": "Operation every engine implements; see README for the per-op input/output contract."
+    },
+    "api": { "type": "string", "description": "The Ruby oracle entrypoint the expectation was captured from." },
+    "input": { "description": "Op input in the typed JSON encoding (README: Value encoding)." },
+    "expect": {
+      "oneOf": [
+        { "type": "object", "additionalProperties": false, "required": ["ok"], "properties": { "ok": {} } },
+        {
+          "type": "object", "additionalProperties": false, "required": ["error"],
+          "properties": {
+            "error": {
+              "type": "object", "additionalProperties": false, "required": ["class", "message"],
+              "properties": { "class": { "type": "string" }, "message": { "type": "string" } }
+            }
+          }
+        }
+      ]
+    },
+    "compare": { "const": "structural" },
+    "error_match": { "enum": ["class", "class_and_message"] },
+    "applicability": {
+      "type": "object", "additionalProperties": false, "required": ["platforms", "requires"],
+      "properties": {
+        "platforms": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": { "enum": ["linux", "macos", "windows"] }
+        },
+        "requires": {
+          "type": "array", "uniqueItems": true,
+          "items": { "enum": ["fs", "process", "cli"] }
+        }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["path", "sha256"],
+        "properties": {
+          "path": { "type": "string", "description": "Path under inputs/." },
+          "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+        }
+      }
+    },
+    "decision": {
+      "type": "string",
+      "description": "Owner decision this row waits on. The expectation records current Ruby behaviour, not an approved contract."
+    },
+    "note": { "type": "string" }
+  }
+}

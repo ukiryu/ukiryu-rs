@@ -1,0 +1,482 @@
+{
+  "corpus": "ukiryu-conformance",
+  "format_version": 1,
+  "oracle": {
+    "implementation": "ukiryu (Ruby)",
+    "repository": "https://github.com/ukiryu/ukiryu",
+    "commit": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+    "ruby": "4.0.1",
+    "psych": "5.3.1",
+    "libyaml": "0.2.5",
+    "captured_on": "linux",
+    "gemfile_lock_sha256": "fc3b12f2ede259028b638d2f26c65ddf9506d142c20a8bf0c1b151741078b65e",
+    "gems": {
+      "ukiryu": "0.3.1",
+      "versionian": "0.1.0",
+      "lutaml-model": "0.8.175",
+      "lutaml-xsd": "1.1.13",
+      "json-schema": "6.2.1",
+      "thor": "1.5.0",
+      "psych": null,
+      "paint": "2.3.0"
+    }
+  },
+  "cases": {
+    "total": 14177,
+    "by_kind": {
+      "build": 485,
+      "cli-output": 21,
+      "escape": 12616,
+      "lint": 70,
+      "resolve": 587,
+      "schema": 193,
+      "validate": 60,
+      "yaml": 145
+    },
+    "expect_error": 138,
+    "decision_pending": 17,
+    "ids_sha256": "80dd3593a329ab75b6291374121703c60d9b4fa1b06e7df984c07ffcde5bc34b",
+    "files": {
+      "cases/build.jsonl": "3e1d05bcffa4cc8411a60c9d4b461b9e915ec7374d0793f5f0a246aaa9373112",
+      "cases/cli-output.jsonl": "ae8e27cd686497192ad06de48648ebf41b7e0e62b5f0db9e93e35dec3632bb14",
+      "cases/escape.jsonl": "f673881132c7eb1638e8a0973b93aa146327e5c3bc1f3f0ba62a5e4cc5620754",
+      "cases/lint.jsonl": "c60cd99cfcc5f78ff3c0971d1e9e6483246a028afb800c867d2ab486a80bdd4b",
+      "cases/resolve.jsonl": "c8bae384e964e3125e844f20a6cf608d43b63a69efdba9d1c8a2c73ddf2ee331",
+      "cases/schema.jsonl": "c0e5b3c13ee43a661a145c2e6124dd8fc91c304b206261a6809b380a2f5e042e",
+      "cases/validate.jsonl": "8a300851af13fa2693fa2f66dcc0538fc5b2deb653c5d6d8c2ffce5a5e43d825",
+      "cases/yaml.jsonl": "444c3e2fe21ed093ead4b9a85936b0cd49e03e44a53064a3a69510a40e255cf8"
+    }
+  },
+  "applicable": {
+    "linux": 14177,
+    "macos": 14156,
+    "windows": 14139
+  },
+  "inputs": [
+    {
+      "path": "external-schema/tool.schema.yaml",
+      "source_path": "https://github.com/ukiryu/schemas/blob/744630fc341681fae75cf2629a533717f1ff3ede/v1/tool.schema.yaml",
+      "sha256": "a269b860f7f6ce28e7c70ac02c1e80c3e843be466ebf40bfc090b7330ca43285"
+    },
+    {
+      "path": "fixture-schema/tool.schema.yaml",
+      "source_path": "spec/fixtures/tool.schema.yaml",
+      "sha256": "57d21bcf51e01d72ae9b49d8de4d7080e746b0dd464b5d0ba7ed5d217951a2fa"
+    },
+    {
+      "path": "profiles/ghostscript_10.0.yaml",
+      "source_path": "spec/fixtures/profiles/ghostscript_10.0.yaml",
+      "sha256": "1035f0b78dcd242813088b58b7e187808002907e75cc4353bdc76dd34eb23717"
+    },
+    {
+      "path": "profiles/inkscape_1.0.yaml",
+      "source_path": "spec/fixtures/profiles/inkscape_1.0.yaml",
+      "sha256": "9cf9f46ba6e6e694643e3d04e624b8aa23aae9bbd7df37673a3862366b71cff7"
+    },
+    {
+      "path": "register/interfaces/bzip2.yaml",
+      "source_path": "spec/fixtures/register/interfaces/bzip2.yaml",
+      "sha256": "484a365c3801b20c5a2a77f2e1988b9340f787119926b3870376cfed9cd025b3"
+    },
+    {
+      "path": "register/interfaces/exiftool.yaml",
+      "source_path": "spec/fixtures/register/interfaces/exiftool.yaml",
+      "sha256": "c255b991f415a5bb19857a2566b7af3858e56680c43d2bd187fc451e061b5a56"
+    },
+    {
+      "path": "register/interfaces/ffmpeg.yaml",
+      "source_path": "spec/fixtures/register/interfaces/ffmpeg.yaml",
+      "sha256": "ddfc32e3ecea49e554763368ee752fdffc0dde38cfc6432e595beb61c640e81d"
+    },
+    {
+      "path": "register/interfaces/gs.yaml",
+      "source_path": "spec/fixtures/register/interfaces/gs.yaml",
+      "sha256": "4400eca3fa60a945757d8b598359fb7adb0a4a5bcd6eb7ca0aba10ae390718dc"
+    },
+    {
+      "path": "register/interfaces/gzip.yaml",
+      "source_path": "spec/fixtures/register/interfaces/gzip.yaml",
+      "sha256": "b5f443a3755bde2040ef9bf020a58c5d9cd0bf483a7fe9781d22d1bc67a4f782"
+    },
+    {
+      "path": "register/interfaces/imagemagick.yaml",
+      "source_path": "spec/fixtures/register/interfaces/imagemagick.yaml",
+      "sha256": "28e2a4165a7ef7c97b94b7137697259292b2e8062c276b19cdbe4cc28542f944"
+    },
+    {
+      "path": "register/interfaces/inkscape.yaml",
+      "source_path": "spec/fixtures/register/interfaces/inkscape.yaml",
+      "sha256": "1e167f38a77cbf8686b9dd4e944e3a0f838a6a81384ae961f8d96c8056912e3e"
+    },
+    {
+      "path": "register/interfaces/jq.yaml",
+      "source_path": "spec/fixtures/register/interfaces/jq.yaml",
+      "sha256": "b6bd41792ee3855c34ca26c6136437b3f011140dbb0b072ce7866dea1e42dbdb"
+    },
+    {
+      "path": "register/interfaces/pdf2ps.yaml",
+      "source_path": "spec/fixtures/register/interfaces/pdf2ps.yaml",
+      "sha256": "a929fea8e03b172277e7bd1f4ed94207646ad1a9aa37c7cf5757ce8ed15ee964"
+    },
+    {
+      "path": "register/interfaces/ping.yaml",
+      "source_path": "spec/fixtures/register/interfaces/ping.yaml",
+      "sha256": "3a55b98bcf7259543ed0b9c2f99fe45121634fae93c05d78c34b938450d3158a"
+    },
+    {
+      "path": "register/interfaces/sort.yaml",
+      "source_path": "spec/fixtures/register/interfaces/sort.yaml",
+      "sha256": "b624958bc32bcbae09655da5c54b835504a548cd7a986e16e44296ccf896472e"
+    },
+    {
+      "path": "register/interfaces/tar.yaml",
+      "source_path": "spec/fixtures/register/interfaces/tar.yaml",
+      "sha256": "5c0d0189136347b240f0357c3e73a6d911861926d908f8b39c571d246aa2f50f"
+    },
+    {
+      "path": "register/interfaces/unzip.yaml",
+      "source_path": "spec/fixtures/register/interfaces/unzip.yaml",
+      "sha256": "0c65bada9eb25563997052e88342e58b5fd6d294323f214d6d15aceb3105686e"
+    },
+    {
+      "path": "register/interfaces/yq.yaml",
+      "source_path": "spec/fixtures/register/interfaces/yq.yaml",
+      "sha256": "6e520763561ddf2907f09a32a88dd94d989ad4a3091becb005065c0063bf4924"
+    },
+    {
+      "path": "register/tools/bzip2/default/1.0.yaml",
+      "source_path": "spec/fixtures/register/tools/bzip2/default/1.0.yaml",
+      "sha256": "9c7d78d3198be767825befb4f1e81e9fdde526231c58b24e29beba132e98f209"
+    },
+    {
+      "path": "register/tools/bzip2/index.yaml",
+      "source_path": "spec/fixtures/register/tools/bzip2/index.yaml",
+      "sha256": "5f0893af93b198540a581a2ac7d9909c288ea00b413799f8717e470e374cd409"
+    },
+    {
+      "path": "register/tools/bzip2_busybox/default/1.0.yaml",
+      "source_path": "spec/fixtures/register/tools/bzip2_busybox/default/1.0.yaml",
+      "sha256": "01fccb47763a99f879d472837e295555e85463b0aa9178bccb026da9383f5758"
+    },
+    {
+      "path": "register/tools/bzip2_busybox/index.yaml",
+      "source_path": "spec/fixtures/register/tools/bzip2_busybox/index.yaml",
+      "sha256": "ec214a5213124c5f3a78a2080b6b527436429165fa6e04a8d15dfbf9250a36cd"
+    },
+    {
+      "path": "register/tools/bzip2_gnu/default/1.0.yaml",
+      "source_path": "spec/fixtures/register/tools/bzip2_gnu/default/1.0.yaml",
+      "sha256": "39a3ce53ee0479988bfd3be4fab5ade3da91adc0e95826a0e2d8677c13b03ab3"
+    },
+    {
+      "path": "register/tools/bzip2_gnu/index.yaml",
+      "source_path": "spec/fixtures/register/tools/bzip2_gnu/index.yaml",
+      "sha256": "3ef06f2fde0dc5d950e38757f3f14a47608335a54513a076f3f3847c55bf99c4"
+    },
+    {
+      "path": "register/tools/exiftool/default/1.0.yaml",
+      "source_path": "spec/fixtures/register/tools/exiftool/default/1.0.yaml",
+      "sha256": "6ac7df38142555bc389d816fb89ac1e12a2d025a3a912fbe889fb5f5d25f5ad0"
+    },
+    {
+      "path": "register/tools/exiftool/index.yaml",
+      "source_path": "spec/fixtures/register/tools/exiftool/index.yaml",
+      "sha256": "5644c470633287014b257e27f691ef7e5fa890b0ead31957d840f6491fb1113d"
+    },
+    {
+      "path": "register/tools/ffmpeg/default/1.0.yaml",
+      "source_path": "spec/fixtures/register/tools/ffmpeg/default/1.0.yaml",
+      "sha256": "dee0b0a7f4d0432a5bb6cbd084e1efb354d8b92c286802e6ab5f46298d1796ce"
+    },
+    {
+      "path": "register/tools/ffmpeg/index.yaml",
+      "source_path": "spec/fixtures/register/tools/ffmpeg/index.yaml",
+      "sha256": "9a1905edfab5cc61fee712dc4ec4018089a04ddfb1be66f2c436ab863f4e508d"
+    },
+    {
+      "path": "register/tools/ghostscript/default/10.0.yaml",
+      "source_path": "spec/fixtures/register/tools/ghostscript/default/10.0.yaml",
+      "sha256": "4fefb72eee419b1cef03745658df74443fd7a5deecfc17b22c8c2b319f09d6e3"
+    },
+    {
+      "path": "register/tools/ghostscript/index.yaml",
+      "source_path": "spec/fixtures/register/tools/ghostscript/index.yaml",
+      "sha256": "76cc40e821ce93687a790c0ad12ce83dfa9de73115c7da1d7c5ef5a47976ab44"
+    },
+    {
+      "path": "register/tools/gzip/default/1.0.yaml",
+      "source_path": "spec/fixtures/register/tools/gzip/default/1.0.yaml",
+      "sha256": "a26632788e545c25bfa810859fbe0a91584604df2c377a4f41e14cfae436746f"
+    },
+    {
+      "path": "register/tools/gzip/index.yaml",
+      "source_path": "spec/fixtures/register/tools/gzip/index.yaml",
+      "sha256": "fd52cba50e1a0f0712d5559d83ad2df045a042ba3dffff7b5dd56c05352ed2e3"
+    },
+    {
+      "path": "register/tools/gzip_busybox/default/1.0.yaml",
+      "source_path": "spec/fixtures/register/tools/gzip_busybox/default/1.0.yaml",
+      "sha256": "6993178f306737a911dbb9726babcc1628ddbf27492c40867be2101154f3f751"
+    },
+    {
+      "path": "register/tools/gzip_busybox/index.yaml",
+      "source_path": "spec/fixtures/register/tools/gzip_busybox/index.yaml",
+      "sha256": "fb1e2f903700c3b7bf7b969badbc164b5b8c2b9f4d83f7587d4e5bc1aea360b0"
+    },
+    {
+      "path": "register/tools/gzip_gnu/default/1.0.yaml",
+      "source_path": "spec/fixtures/register/tools/gzip_gnu/default/1.0.yaml",
+      "sha256": "4a924ab36eb2c9a1f592310348fc9381687703c028c423d5c282db4ba22c9abb"
+    },
+    {
+      "path": "register/tools/gzip_gnu/index.yaml",
+      "source_path": "spec/fixtures/register/tools/gzip_gnu/index.yaml",
+      "sha256": "0569b99a5020c80a1bd43019ce78ef627acbc0faaa6f7f8d0710a26511a526d7"
+    },
+    {
+      "path": "register/tools/imagemagick/default/6.0.yaml",
+      "source_path": "spec/fixtures/register/tools/imagemagick/default/6.0.yaml",
+      "sha256": "55e064bfabbda302549db5a89c814ccc01572f824650572297aa4c89807445ba"
+    },
+    {
+      "path": "register/tools/imagemagick/default/6.9.yaml",
+      "source_path": "spec/fixtures/register/tools/imagemagick/default/6.9.yaml",
+      "sha256": "89d8adadc13b462a0da7385f09950cade3f1c8738e7fb3e48b8a43391082bd30"
+    },
+    {
+      "path": "register/tools/imagemagick/default/7.1.yaml",
+      "source_path": "spec/fixtures/register/tools/imagemagick/default/7.1.yaml",
+      "sha256": "61463cc3283f994329724a8624e1883ea1090fc6990d59bbb9a977ce33771d02"
+    },
+    {
+      "path": "register/tools/imagemagick/index.yaml",
+      "source_path": "spec/fixtures/register/tools/imagemagick/index.yaml",
+      "sha256": "28be6a32845c866d642baa77e1ab653bbad6cc327a07ecaa3eb8730f7d338b71"
+    },
+    {
+      "path": "register/tools/inkscape/default/0.92.yaml",
+      "source_path": "spec/fixtures/register/tools/inkscape/default/0.92.yaml",
+      "sha256": "32df8d0513ab5ba77eb119ea8713bf2ed15991191a62ea33545801b5e7302b18"
+    },
+    {
+      "path": "register/tools/inkscape/default/1.0.yaml",
+      "source_path": "spec/fixtures/register/tools/inkscape/default/1.0.yaml",
+      "sha256": "eaf3a503e3fcbb05a88d7001f0e57d432404ce691167f0c37a7d7e5b727d5d68"
+    },
+    {
+      "path": "register/tools/inkscape/index.yaml",
+      "source_path": "spec/fixtures/register/tools/inkscape/index.yaml",
+      "sha256": "85393bf13c53cf3a320a573a4f15b073cd24474de8f45e891c1f8e590b3436a4"
+    },
+    {
+      "path": "register/tools/jq/default/1.0.yaml",
+      "source_path": "spec/fixtures/register/tools/jq/default/1.0.yaml",
+      "sha256": "48099e3f6ddc9523a347fd457eada0708ea8ce12031c6f078ce341fc81845b90"
+    },
+    {
+      "path": "register/tools/jq/index.yaml",
+      "source_path": "spec/fixtures/register/tools/jq/index.yaml",
+      "sha256": "d46b6381d4770213b980d2334e3c68c79555760365089230c4411de458d48d77"
+    },
+    {
+      "path": "register/tools/pdf2ps/default/1.0.yaml",
+      "source_path": "spec/fixtures/register/tools/pdf2ps/default/1.0.yaml",
+      "sha256": "49da37f96d06146bb18b2255309bdeeb27fcbc64632cff6df5a92551f990a4e7"
+    },
+    {
+      "path": "register/tools/pdf2ps/index.yaml",
+      "source_path": "spec/fixtures/register/tools/pdf2ps/index.yaml",
+      "sha256": "4a3d59c1106cdbbee84a6d64526438b183dc2a4cf95a00a18db2f33f69ad113f"
+    },
+    {
+      "path": "register/tools/ping/bsd/1.0.yaml",
+      "source_path": "spec/fixtures/register/tools/ping/bsd/1.0.yaml",
+      "sha256": "714df9672a469e8b4d3f175deef6a224026980d853aad852c32524e2088caf28"
+    },
+    {
+      "path": "register/tools/ping/gnu/2024.01.17.yaml",
+      "source_path": "spec/fixtures/register/tools/ping/gnu/2024.01.17.yaml",
+      "sha256": "e8e9ccf601c5416947f8dd37863aa0aa9da563403d3bdef7dff60ccea88bc6cc"
+    },
+    {
+      "path": "register/tools/ping/index.yaml",
+      "source_path": "spec/fixtures/register/tools/ping/index.yaml",
+      "sha256": "4e38245625e9d7fc1da4765910eddd09fa8baa31d28d49a2b24feef5dc6d6290"
+    },
+    {
+      "path": "register/tools/ping/windows/1.0.yaml",
+      "source_path": "spec/fixtures/register/tools/ping/windows/1.0.yaml",
+      "sha256": "debe6e47eb03a6fa96b050d5e6dbb86f1d69b91f5495ea30a5a80623c686f77f"
+    },
+    {
+      "path": "register/tools/ping_bsd/default/1.0.yaml",
+      "source_path": "spec/fixtures/register/tools/ping_bsd/default/1.0.yaml",
+      "sha256": "3e09d249cf7e8344a883bb859e2d656c4a40fc0b31b32a83f18e600d8efa3a45"
+    },
+    {
+      "path": "register/tools/ping_bsd/index.yaml",
+      "source_path": "spec/fixtures/register/tools/ping_bsd/index.yaml",
+      "sha256": "6738286651efc15f209f92592a313b2b9f971fce6faade00ec63c9b3e220913c"
+    },
+    {
+      "path": "register/tools/ping_gnu/default/1.0.yaml",
+      "source_path": "spec/fixtures/register/tools/ping_gnu/default/1.0.yaml",
+      "sha256": "fc8d22a0b6d0fcb7a1351ca499fb61c96ae647f93c604377dccfb1255848baab"
+    },
+    {
+      "path": "register/tools/ping_gnu/index.yaml",
+      "source_path": "spec/fixtures/register/tools/ping_gnu/index.yaml",
+      "sha256": "0885b43894c1ae8490f37ab2580c3728783d217d47996700855bd6aa01cc2d71"
+    },
+    {
+      "path": "register/tools/ping_windows/default/1.0.yaml",
+      "source_path": "spec/fixtures/register/tools/ping_windows/default/1.0.yaml",
+      "sha256": "fdd36b076a0163805bcee688997967c2ea4cc449583b1c8b8b4d9ca6586d6757"
+    },
+    {
+      "path": "register/tools/ping_windows/index.yaml",
+      "source_path": "spec/fixtures/register/tools/ping_windows/index.yaml",
+      "sha256": "fbf2c94b8c6d342b2c407bbb63ed6fac80017d1079c01060a8953596f57734ab"
+    },
+    {
+      "path": "register/tools/sort/default/1.0.yaml",
+      "source_path": "spec/fixtures/register/tools/sort/default/1.0.yaml",
+      "sha256": "7c4bc09fd79f5fe4cdfded5823b67594afac7659f0ae22d2ebd575dd37e950aa"
+    },
+    {
+      "path": "register/tools/sort/index.yaml",
+      "source_path": "spec/fixtures/register/tools/sort/index.yaml",
+      "sha256": "2e7d8625eab1923203b32b1b6488847407fc85de37fed31152fcc7cf6f505f98"
+    },
+    {
+      "path": "register/tools/tar/default/1.0.yaml",
+      "source_path": "spec/fixtures/register/tools/tar/default/1.0.yaml",
+      "sha256": "5fcd3c1c91a6cc112179ff8d0b6745103b0c8fcefa81bb3e0ac74549187e9a6d"
+    },
+    {
+      "path": "register/tools/tar/index.yaml",
+      "source_path": "spec/fixtures/register/tools/tar/index.yaml",
+      "sha256": "30e7868ae93ce0a1d951eeb14d8ee5e923ec5afdf4dba2e930ae339957ff72bf"
+    },
+    {
+      "path": "register/tools/unzip/default/1.0.yaml",
+      "source_path": "spec/fixtures/register/tools/unzip/default/1.0.yaml",
+      "sha256": "2bf115446ba77e9134a832cf75a4d2ffdc617f8045908593d4f7f94225c2ea24"
+    },
+    {
+      "path": "register/tools/unzip/default/6.0.yaml",
+      "source_path": "spec/fixtures/register/tools/unzip/default/6.0.yaml",
+      "sha256": "119e1db89f672a94cbffc1679c3680b764eb5235dc7366c565ccc0f31ca18422"
+    },
+    {
+      "path": "register/tools/unzip/index.yaml",
+      "source_path": "spec/fixtures/register/tools/unzip/index.yaml",
+      "sha256": "b8e9fbc7c36879dba86ceb78be11a747cc53ee69b2fed93806be68baf9326fa5"
+    },
+    {
+      "path": "register/tools/yq/default/1.0.yaml",
+      "source_path": "spec/fixtures/register/tools/yq/default/1.0.yaml",
+      "sha256": "873ca394ba590794dfcb426570305fc214858c6e8c93a2f42acd7d90dc533d98"
+    },
+    {
+      "path": "register/tools/yq/index.yaml",
+      "source_path": "spec/fixtures/register/tools/yq/index.yaml",
+      "sha256": "e4cce129c894d9b0b942d6f1b373eb2cf122b34d938bd4eced74527a49671fd6"
+    },
+    {
+      "path": "repo-yaml/docs/_config.yml",
+      "source_path": "docs/_config.yml",
+      "sha256": "1a566c383da557db0414ac625af732619c326419ea0598c140945ed1a4c7b99b"
+    },
+    {
+      "path": "repo-yaml/github-workflows/docs.yml",
+      "source_path": ".github/workflows/docs.yml",
+      "sha256": "2738fd252c3b113b3f82051de8110150db66e9c9042dfd660e03d666ce15c3ae"
+    },
+    {
+      "path": "repo-yaml/github-workflows/links.yml",
+      "source_path": ".github/workflows/links.yml",
+      "sha256": "37b7c01190b1726184918715a53e8cf8212e251268476b0131b7342f4c3708a6"
+    },
+    {
+      "path": "repo-yaml/github-workflows/release.yml",
+      "source_path": ".github/workflows/release.yml",
+      "sha256": "e4c309f53a2bb3e41fe9f871a00f8c64dfa7cc8b6725d1332db296c71343b322"
+    },
+    {
+      "path": "repo-yaml/github-workflows/test-linux-alpine.yml",
+      "source_path": ".github/workflows/test-linux-alpine.yml",
+      "sha256": "0d1036d06af83c5891a6f89af1ba71e75983d4885a8febed7bee059e6fd54eab"
+    },
+    {
+      "path": "repo-yaml/github-workflows/test-linux-ubuntu.yml",
+      "source_path": ".github/workflows/test-linux-ubuntu.yml",
+      "sha256": "3c56d3134ca24986a827e6e0723834dba447486a9545a650ddb0612819af5254"
+    },
+    {
+      "path": "repo-yaml/github-workflows/test-macos-homebrew.yml",
+      "source_path": ".github/workflows/test-macos-homebrew.yml",
+      "sha256": "7fc8a2687b11df4717a7f46ccbe04f143cd994e8427b5abd1c3033d230eb4537"
+    },
+    {
+      "path": "repo-yaml/github-workflows/test-macos-macports.yml",
+      "source_path": ".github/workflows/test-macos-macports.yml",
+      "sha256": "1c92c6efed58cefbd80e8243791ac5aadd9b3edf475c68d83b56f9bc2fc750bb"
+    },
+    {
+      "path": "repo-yaml/github-workflows/test-windows-chocolatey.yml",
+      "source_path": ".github/workflows/test-windows-chocolatey.yml",
+      "sha256": "4bd84bd64b8797c768c0220fc56cdab81363cda66151b09172e9b326617d900f"
+    },
+    {
+      "path": "repo-yaml/github-workflows/test-windows-winget.yml",
+      "source_path": ".github/workflows/test-windows-winget.yml",
+      "sha256": "79a3e9b55cd9b407616e2f944dbadd7f5b10a73519f88252cd2fbf0fe621f5d9"
+    },
+    {
+      "path": "repo-yaml/rubocop.yml",
+      "source_path": ".rubocop.yml",
+      "sha256": "64b26da329b7a3bdb398ad51e5bc77df910819caeb72eae8c8dc734ff59981cf"
+    },
+    {
+      "path": "repo-yaml/rubocop_todo.yml",
+      "source_path": ".rubocop_todo.yml",
+      "sha256": "63fd35900b8890bfa38d94d348cc46146880086489c54db08410a4f004512393"
+    },
+    {
+      "path": "schemas/v1/implementation_index.schema.yaml",
+      "source_path": "lib/ukiryu/schemas/v1/implementation_index.schema.yaml",
+      "sha256": "673bfa2851726d3cc36dbfc523c5f85a21a65c36778310d412f78b1569648b6a"
+    },
+    {
+      "path": "schemas/v1/implementation_version.schema.yaml",
+      "source_path": "lib/ukiryu/schemas/v1/implementation_version.schema.yaml",
+      "sha256": "f2aafa9734fb88a91b75138fd4a4faf3bae4608d3bea27c9888ceb1f4bc8322a"
+    },
+    {
+      "path": "schemas/v1/interface.schema.yaml",
+      "source_path": "lib/ukiryu/schemas/v1/interface.schema.yaml",
+      "sha256": "cb18625be33456b4ec9c946a6d1c1af20f001ebd7710767b22b1ad6a441ca3ac"
+    },
+    {
+      "path": "schemas/v1/tool.schema.yaml",
+      "source_path": "lib/ukiryu/schemas/v1/tool.schema.yaml",
+      "sha256": "a5c580dc38a87af2e589663e172fe332d43ccc170d76b8593319f53788aa6789"
+    },
+    {
+      "path": "synthetic-register/interfaces/absenttool.yaml",
+      "source_path": "authored: corpus/oracle-ruby/capture.rb",
+      "sha256": "e82623571c38c4b903a5b13fb288b8e7cdbfea26c39bc0e16a924ade6236c2d4"
+    },
+    {
+      "path": "synthetic-register/tools/absenttool/default/1.0.yaml",
+      "source_path": "authored: corpus/oracle-ruby/capture.rb",
+      "sha256": "65d9f38bcdbd9c840576b3c627db9da04d28cdfb5999886a37ebc2d473599f90"
+    },
+    {
+      "path": "synthetic-register/tools/absenttool/index.yaml",
+      "source_path": "authored: corpus/oracle-ruby/capture.rb",
+      "sha256": "8d98575c1466b3a9f8ed71e5ee7e052bd07482d7f5c9c91723e66ba53acf3440"
+    }
+  ]
+}

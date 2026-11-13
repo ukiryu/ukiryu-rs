@@ -1,5 +1,10 @@
 //! Pure shell formatting. Detection and process execution have separate contracts.
 //! Implementations must reproduce the pinned Ruby shell byte behavior.
+pub mod base;
+pub mod cmd;
+pub mod posix;
+pub mod unix_special;
+
 pub trait ShellFormatting {
     fn name(&self) -> &'static str;
     fn escape(&self, value: &str) -> String;
@@ -9,3 +14,5 @@ pub trait ShellFormatting {
     fn env_var(&self, name: &str) -> String;
     fn join(&self, executable: &str, arguments: &[String]) -> String;
 }
+
+pub mod powershell;

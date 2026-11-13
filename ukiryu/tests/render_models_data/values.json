@@ -1,0 +1,5457 @@
+{
+  "provenance": {
+    "oracle": "ukiryu/ukiryu",
+    "oracle_sha": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+    "sources": [
+      "lib/ukiryu/models/success_response.rb (from_result, to_json, to_yaml)",
+      "lib/ukiryu/models/arguments.rb (from_params, stringify_value)",
+      "lib/ukiryu/cli_commands/response_formatter.rb (output_response :table/:raw, say_dry_run)",
+      "lib/ukiryu/cli_commands/run_command.rb (RunCommand#say_dry_run)",
+      "lib/ukiryu/utils.rb (symbolize_keys)"
+    ],
+    "ruby": "4.0.1",
+    "psych": "5.3.1",
+    "libyaml": "0.2.2",
+    "json": "3.1.0",
+    "lutaml_model": "0.8.175",
+    "result": {
+      "status": 0,
+      "executable": "/usr/bin/jq",
+      "full_command": "jq '.a' in.json",
+      "shell": "bash",
+      "stdout": "out\n",
+      "error_output": "",
+      "started_at": "2024-01-17T10:20:30Z",
+      "finished_at": "2024-01-17T10:20:31Z",
+      "duration": 1.25,
+      "formatted_duration": "1.25s"
+    },
+    "script": "handoffs/batch-04/F6-RENDER-ADAPTERS/capture/values.rb"
+  },
+  "values": [
+    {
+      "id": "symbol",
+      "params": [
+        [
+          "value",
+          {
+            "$sym": "sym_value"
+          }
+        ]
+      ],
+      "json": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"value\",\n        \"value\": \"sym_value\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/jq\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"value\",\n          \"value\": \"sym_value\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"jq '.a' in.json\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"out\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2024-01-17T10:20:30Z\",\n    \"finished_at\": \"2024-01-17T10:20:31Z\",\n    \"duration_seconds\": 1.25,\n    \"formatted_duration\": \"1.25s\"\n  }\n}",
+      "psych_yaml": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: value\n    value: sym_value\n    type: option\ncommand:\n  executable: \"/usr/bin/jq\"\n  arguments:\n    options:\n    - name: value\n      value: sym_value\n      type: option\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: 'out\n\n    '\nmetadata:\n  started_at: '2024-01-17T10:20:30Z'\n  finished_at: '2024-01-17T10:20:31Z'\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+      "psych_load": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "value"
+                        ],
+                        [
+                          "value",
+                          "sym_value"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "value"
+                              ],
+                              [
+                                "value",
+                                "sym_value"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "out\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "renders": {
+        "table": {
+          "stdout": "✓ Command completed successfully\nExit code: 0\nDuration: 1.25s\n\nRequest: value=sym_value\n\nCommand: jq '.a' in.json\n",
+          "stderr": ""
+        },
+        "raw": {
+          "stdout": "out\n",
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "id": "symbol-quoted",
+      "params": [
+        [
+          "value",
+          {
+            "$sym": "needs quote"
+          }
+        ]
+      ],
+      "json": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"value\",\n        \"value\": \"needs quote\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/jq\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"value\",\n          \"value\": \"needs quote\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"jq '.a' in.json\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"out\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2024-01-17T10:20:30Z\",\n    \"finished_at\": \"2024-01-17T10:20:31Z\",\n    \"duration_seconds\": 1.25,\n    \"formatted_duration\": \"1.25s\"\n  }\n}",
+      "psych_yaml": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: value\n    value: needs quote\n    type: option\ncommand:\n  executable: \"/usr/bin/jq\"\n  arguments:\n    options:\n    - name: value\n      value: needs quote\n      type: option\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: 'out\n\n    '\nmetadata:\n  started_at: '2024-01-17T10:20:30Z'\n  finished_at: '2024-01-17T10:20:31Z'\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+      "psych_load": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "value"
+                        ],
+                        [
+                          "value",
+                          "needs quote"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "value"
+                              ],
+                              [
+                                "value",
+                                "needs quote"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "out\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "renders": {
+        "table": {
+          "stdout": "✓ Command completed successfully\nExit code: 0\nDuration: 1.25s\n\nRequest: value=needs quote\n\nCommand: jq '.a' in.json\n",
+          "stderr": ""
+        },
+        "raw": {
+          "stdout": "out\n",
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "id": "time-utc",
+      "params": [
+        [
+          "value",
+          {
+            "$time": {
+              "seconds": 1705486830,
+              "nanos": 0,
+              "utc_offset": 0,
+              "utc": true
+            }
+          }
+        ]
+      ],
+      "json": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"value\",\n        \"value\": \"2024-01-17 10:20:30 UTC\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/jq\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"value\",\n          \"value\": \"2024-01-17 10:20:30 UTC\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"jq '.a' in.json\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"out\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2024-01-17T10:20:30Z\",\n    \"finished_at\": \"2024-01-17T10:20:31Z\",\n    \"duration_seconds\": 1.25,\n    \"formatted_duration\": \"1.25s\"\n  }\n}",
+      "psych_yaml": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: value\n    value: 2024-01-17 10:20:30 UTC\n    type: option\ncommand:\n  executable: \"/usr/bin/jq\"\n  arguments:\n    options:\n    - name: value\n      value: 2024-01-17 10:20:30 UTC\n      type: option\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: 'out\n\n    '\nmetadata:\n  started_at: '2024-01-17T10:20:30Z'\n  finished_at: '2024-01-17T10:20:31Z'\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+      "psych_load": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "value"
+                        ],
+                        [
+                          "value",
+                          "2024-01-17 10:20:30 UTC"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "value"
+                              ],
+                              [
+                                "value",
+                                "2024-01-17 10:20:30 UTC"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "out\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "renders": {
+        "table": {
+          "stdout": "✓ Command completed successfully\nExit code: 0\nDuration: 1.25s\n\nRequest: value=2024-01-17 10:20:30 UTC\n\nCommand: jq '.a' in.json\n",
+          "stderr": ""
+        },
+        "raw": {
+          "stdout": "out\n",
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "id": "time-utc-frac",
+      "params": [
+        [
+          "value",
+          {
+            "$time": {
+              "seconds": 1705486830,
+              "nanos": 500000000,
+              "utc_offset": 0,
+              "utc": true
+            }
+          }
+        ]
+      ],
+      "json": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"value\",\n        \"value\": \"2024-01-17 10:20:30 UTC\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/jq\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"value\",\n          \"value\": \"2024-01-17 10:20:30 UTC\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"jq '.a' in.json\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"out\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2024-01-17T10:20:30Z\",\n    \"finished_at\": \"2024-01-17T10:20:31Z\",\n    \"duration_seconds\": 1.25,\n    \"formatted_duration\": \"1.25s\"\n  }\n}",
+      "psych_yaml": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: value\n    value: 2024-01-17 10:20:30 UTC\n    type: option\ncommand:\n  executable: \"/usr/bin/jq\"\n  arguments:\n    options:\n    - name: value\n      value: 2024-01-17 10:20:30 UTC\n      type: option\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: 'out\n\n    '\nmetadata:\n  started_at: '2024-01-17T10:20:30Z'\n  finished_at: '2024-01-17T10:20:31Z'\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+      "psych_load": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "value"
+                        ],
+                        [
+                          "value",
+                          "2024-01-17 10:20:30 UTC"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "value"
+                              ],
+                              [
+                                "value",
+                                "2024-01-17 10:20:30 UTC"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "out\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "renders": {
+        "table": {
+          "stdout": "✓ Command completed successfully\nExit code: 0\nDuration: 1.25s\n\nRequest: value=2024-01-17 10:20:30 UTC\n\nCommand: jq '.a' in.json\n",
+          "stderr": ""
+        },
+        "raw": {
+          "stdout": "out\n",
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "id": "time-offset",
+      "params": [
+        [
+          "value",
+          {
+            "$time": {
+              "seconds": 1705486830,
+              "nanos": 0,
+              "utc_offset": 18000,
+              "utc": false
+            }
+          }
+        ]
+      ],
+      "json": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"value\",\n        \"value\": \"2024-01-17 15:20:30 +0500\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/jq\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"value\",\n          \"value\": \"2024-01-17 15:20:30 +0500\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"jq '.a' in.json\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"out\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2024-01-17T10:20:30Z\",\n    \"finished_at\": \"2024-01-17T10:20:31Z\",\n    \"duration_seconds\": 1.25,\n    \"formatted_duration\": \"1.25s\"\n  }\n}",
+      "psych_yaml": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: value\n    value: '2024-01-17 15:20:30 +0500'\n    type: option\ncommand:\n  executable: \"/usr/bin/jq\"\n  arguments:\n    options:\n    - name: value\n      value: '2024-01-17 15:20:30 +0500'\n      type: option\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: 'out\n\n    '\nmetadata:\n  started_at: '2024-01-17T10:20:30Z'\n  finished_at: '2024-01-17T10:20:31Z'\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+      "psych_load": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "value"
+                        ],
+                        [
+                          "value",
+                          "2024-01-17 15:20:30 +0500"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "value"
+                              ],
+                              [
+                                "value",
+                                "2024-01-17 15:20:30 +0500"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "out\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "renders": {
+        "table": {
+          "stdout": "✓ Command completed successfully\nExit code: 0\nDuration: 1.25s\n\nRequest: value=2024-01-17 15:20:30 +0500\n\nCommand: jq '.a' in.json\n",
+          "stderr": ""
+        },
+        "raw": {
+          "stdout": "out\n",
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "id": "time-zero-offset-local",
+      "params": [
+        [
+          "value",
+          {
+            "$time": {
+              "seconds": 1705486830,
+              "nanos": 0,
+              "utc_offset": 0,
+              "utc": false
+            }
+          }
+        ]
+      ],
+      "json": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"value\",\n        \"value\": \"2024-01-17 10:20:30 +0000\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/jq\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"value\",\n          \"value\": \"2024-01-17 10:20:30 +0000\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"jq '.a' in.json\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"out\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2024-01-17T10:20:30Z\",\n    \"finished_at\": \"2024-01-17T10:20:31Z\",\n    \"duration_seconds\": 1.25,\n    \"formatted_duration\": \"1.25s\"\n  }\n}",
+      "psych_yaml": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: value\n    value: '2024-01-17 10:20:30 +0000'\n    type: option\ncommand:\n  executable: \"/usr/bin/jq\"\n  arguments:\n    options:\n    - name: value\n      value: '2024-01-17 10:20:30 +0000'\n      type: option\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: 'out\n\n    '\nmetadata:\n  started_at: '2024-01-17T10:20:30Z'\n  finished_at: '2024-01-17T10:20:31Z'\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+      "psych_load": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "value"
+                        ],
+                        [
+                          "value",
+                          "2024-01-17 10:20:30 +0000"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "value"
+                              ],
+                              [
+                                "value",
+                                "2024-01-17 10:20:30 +0000"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "out\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "renders": {
+        "table": {
+          "stdout": "✓ Command completed successfully\nExit code: 0\nDuration: 1.25s\n\nRequest: value=2024-01-17 10:20:30 +0000\n\nCommand: jq '.a' in.json\n",
+          "stderr": ""
+        },
+        "raw": {
+          "stdout": "out\n",
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "id": "int-i64-max",
+      "params": [
+        [
+          "value",
+          {
+            "$int": "9223372036854775807"
+          }
+        ]
+      ],
+      "json": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"value\",\n        \"value\": \"9223372036854775807\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/jq\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"value\",\n          \"value\": \"9223372036854775807\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"jq '.a' in.json\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"out\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2024-01-17T10:20:30Z\",\n    \"finished_at\": \"2024-01-17T10:20:31Z\",\n    \"duration_seconds\": 1.25,\n    \"formatted_duration\": \"1.25s\"\n  }\n}",
+      "psych_yaml": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: value\n    value: '9223372036854775807'\n    type: option\ncommand:\n  executable: \"/usr/bin/jq\"\n  arguments:\n    options:\n    - name: value\n      value: '9223372036854775807'\n      type: option\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: 'out\n\n    '\nmetadata:\n  started_at: '2024-01-17T10:20:30Z'\n  finished_at: '2024-01-17T10:20:31Z'\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+      "psych_load": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "value"
+                        ],
+                        [
+                          "value",
+                          "9223372036854775807"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "value"
+                              ],
+                              [
+                                "value",
+                                "9223372036854775807"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "out\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "renders": {
+        "table": {
+          "stdout": "✓ Command completed successfully\nExit code: 0\nDuration: 1.25s\n\nRequest: value=9223372036854775807\n\nCommand: jq '.a' in.json\n",
+          "stderr": ""
+        },
+        "raw": {
+          "stdout": "out\n",
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "id": "int-u64-over",
+      "params": [
+        [
+          "value",
+          {
+            "$int": "18446744073709551617"
+          }
+        ]
+      ],
+      "json": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"value\",\n        \"value\": \"18446744073709551617\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/jq\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"value\",\n          \"value\": \"18446744073709551617\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"jq '.a' in.json\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"out\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2024-01-17T10:20:30Z\",\n    \"finished_at\": \"2024-01-17T10:20:31Z\",\n    \"duration_seconds\": 1.25,\n    \"formatted_duration\": \"1.25s\"\n  }\n}",
+      "psych_yaml": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: value\n    value: '18446744073709551617'\n    type: option\ncommand:\n  executable: \"/usr/bin/jq\"\n  arguments:\n    options:\n    - name: value\n      value: '18446744073709551617'\n      type: option\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: 'out\n\n    '\nmetadata:\n  started_at: '2024-01-17T10:20:30Z'\n  finished_at: '2024-01-17T10:20:31Z'\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+      "psych_load": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "value"
+                        ],
+                        [
+                          "value",
+                          "18446744073709551617"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "value"
+                              ],
+                              [
+                                "value",
+                                "18446744073709551617"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "out\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "renders": {
+        "table": {
+          "stdout": "✓ Command completed successfully\nExit code: 0\nDuration: 1.25s\n\nRequest: value=18446744073709551617\n\nCommand: jq '.a' in.json\n",
+          "stderr": ""
+        },
+        "raw": {
+          "stdout": "out\n",
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "id": "int-i128-over",
+      "params": [
+        [
+          "value",
+          {
+            "$int": "1361129467683753853853498429727072845824"
+          }
+        ]
+      ],
+      "json": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"value\",\n        \"value\": \"1361129467683753853853498429727072845824\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/jq\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"value\",\n          \"value\": \"1361129467683753853853498429727072845824\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"jq '.a' in.json\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"out\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2024-01-17T10:20:30Z\",\n    \"finished_at\": \"2024-01-17T10:20:31Z\",\n    \"duration_seconds\": 1.25,\n    \"formatted_duration\": \"1.25s\"\n  }\n}",
+      "psych_yaml": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: value\n    value: '1361129467683753853853498429727072845824'\n    type: option\ncommand:\n  executable: \"/usr/bin/jq\"\n  arguments:\n    options:\n    - name: value\n      value: '1361129467683753853853498429727072845824'\n      type: option\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: 'out\n\n    '\nmetadata:\n  started_at: '2024-01-17T10:20:30Z'\n  finished_at: '2024-01-17T10:20:31Z'\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+      "psych_load": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "value"
+                        ],
+                        [
+                          "value",
+                          "1361129467683753853853498429727072845824"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "value"
+                              ],
+                              [
+                                "value",
+                                "1361129467683753853853498429727072845824"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "out\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "renders": {
+        "table": {
+          "stdout": "✓ Command completed successfully\nExit code: 0\nDuration: 1.25s\n\nRequest: value=1361129467683753853853498429727072845824\n\nCommand: jq '.a' in.json\n",
+          "stderr": ""
+        },
+        "raw": {
+          "stdout": "out\n",
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "id": "int-negative-big",
+      "params": [
+        [
+          "value",
+          {
+            "$int": "-1180591620717411303424"
+          }
+        ]
+      ],
+      "json": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"value\",\n        \"value\": \"-1180591620717411303424\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/jq\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"value\",\n          \"value\": \"-1180591620717411303424\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"jq '.a' in.json\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"out\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2024-01-17T10:20:30Z\",\n    \"finished_at\": \"2024-01-17T10:20:31Z\",\n    \"duration_seconds\": 1.25,\n    \"formatted_duration\": \"1.25s\"\n  }\n}",
+      "psych_yaml": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: value\n    value: \"-1180591620717411303424\"\n    type: option\ncommand:\n  executable: \"/usr/bin/jq\"\n  arguments:\n    options:\n    - name: value\n      value: \"-1180591620717411303424\"\n      type: option\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: 'out\n\n    '\nmetadata:\n  started_at: '2024-01-17T10:20:30Z'\n  finished_at: '2024-01-17T10:20:31Z'\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+      "psych_load": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "value"
+                        ],
+                        [
+                          "value",
+                          "-1180591620717411303424"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "value"
+                              ],
+                              [
+                                "value",
+                                "-1180591620717411303424"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "out\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "renders": {
+        "table": {
+          "stdout": "✓ Command completed successfully\nExit code: 0\nDuration: 1.25s\n\nRequest: value=-1180591620717411303424\n\nCommand: jq '.a' in.json\n",
+          "stderr": ""
+        },
+        "raw": {
+          "stdout": "out\n",
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "id": "float-small",
+      "params": [
+        [
+          "value",
+          {
+            "$float": "3ef4f8b588e368f1"
+          }
+        ]
+      ],
+      "json": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"value\",\n        \"value\": \"2.0e-05\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/jq\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"value\",\n          \"value\": \"2.0e-05\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"jq '.a' in.json\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"out\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2024-01-17T10:20:30Z\",\n    \"finished_at\": \"2024-01-17T10:20:31Z\",\n    \"duration_seconds\": 1.25,\n    \"formatted_duration\": \"1.25s\"\n  }\n}",
+      "psych_yaml": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: value\n    value: '2.0e-05'\n    type: option\ncommand:\n  executable: \"/usr/bin/jq\"\n  arguments:\n    options:\n    - name: value\n      value: '2.0e-05'\n      type: option\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: 'out\n\n    '\nmetadata:\n  started_at: '2024-01-17T10:20:30Z'\n  finished_at: '2024-01-17T10:20:31Z'\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+      "psych_load": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "value"
+                        ],
+                        [
+                          "value",
+                          "2.0e-05"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "value"
+                              ],
+                              [
+                                "value",
+                                "2.0e-05"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "out\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "renders": {
+        "table": {
+          "stdout": "✓ Command completed successfully\nExit code: 0\nDuration: 1.25s\n\nRequest: value=2.0e-05\n\nCommand: jq '.a' in.json\n",
+          "stderr": ""
+        },
+        "raw": {
+          "stdout": "out\n",
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "id": "float-big",
+      "params": [
+        [
+          "value",
+          {
+            "$float": "4415af1d78b58c40"
+          }
+        ]
+      ],
+      "json": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"value\",\n        \"value\": \"1.0e+20\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/jq\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"value\",\n          \"value\": \"1.0e+20\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"jq '.a' in.json\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"out\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2024-01-17T10:20:30Z\",\n    \"finished_at\": \"2024-01-17T10:20:31Z\",\n    \"duration_seconds\": 1.25,\n    \"formatted_duration\": \"1.25s\"\n  }\n}",
+      "psych_yaml": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: value\n    value: '1.0e+20'\n    type: option\ncommand:\n  executable: \"/usr/bin/jq\"\n  arguments:\n    options:\n    - name: value\n      value: '1.0e+20'\n      type: option\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: 'out\n\n    '\nmetadata:\n  started_at: '2024-01-17T10:20:30Z'\n  finished_at: '2024-01-17T10:20:31Z'\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+      "psych_load": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "value"
+                        ],
+                        [
+                          "value",
+                          "1.0e+20"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "value"
+                              ],
+                              [
+                                "value",
+                                "1.0e+20"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "out\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "renders": {
+        "table": {
+          "stdout": "✓ Command completed successfully\nExit code: 0\nDuration: 1.25s\n\nRequest: value=1.0e+20\n\nCommand: jq '.a' in.json\n",
+          "stderr": ""
+        },
+        "raw": {
+          "stdout": "out\n",
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "id": "float-neg-zero",
+      "params": [
+        [
+          "value",
+          {
+            "$float": "8000000000000000"
+          }
+        ]
+      ],
+      "json": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"value\",\n        \"value\": \"-0.0\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/jq\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"value\",\n          \"value\": \"-0.0\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"jq '.a' in.json\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"out\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2024-01-17T10:20:30Z\",\n    \"finished_at\": \"2024-01-17T10:20:31Z\",\n    \"duration_seconds\": 1.25,\n    \"formatted_duration\": \"1.25s\"\n  }\n}",
+      "psych_yaml": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: value\n    value: \"-0.0\"\n    type: option\ncommand:\n  executable: \"/usr/bin/jq\"\n  arguments:\n    options:\n    - name: value\n      value: \"-0.0\"\n      type: option\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: 'out\n\n    '\nmetadata:\n  started_at: '2024-01-17T10:20:30Z'\n  finished_at: '2024-01-17T10:20:31Z'\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+      "psych_load": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "value"
+                        ],
+                        [
+                          "value",
+                          "-0.0"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "value"
+                              ],
+                              [
+                                "value",
+                                "-0.0"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "out\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "renders": {
+        "table": {
+          "stdout": "✓ Command completed successfully\nExit code: 0\nDuration: 1.25s\n\nRequest: value=-0.0\n\nCommand: jq '.a' in.json\n",
+          "stderr": ""
+        },
+        "raw": {
+          "stdout": "out\n",
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "id": "hash-ordered",
+      "params": [
+        [
+          "value",
+          {
+            "$map": [
+              [
+                "z",
+                {
+                  "$int": "1"
+                }
+              ],
+              [
+                {
+                  "$sym": "a"
+                },
+                {
+                  "$sym": "b"
+                }
+              ],
+              [
+                "m",
+                [
+                  {
+                    "$int": "1"
+                  },
+                  {
+                    "$float": "4004000000000000"
+                  },
+                  null
+                ]
+              ]
+            ]
+          }
+        ]
+      ],
+      "json": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"value\",\n        \"value\": \"{\\\"z\\\" => 1, a: :b, \\\"m\\\" => [1, 2.5, nil]}\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/jq\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"value\",\n          \"value\": \"{\\\"z\\\" => 1, a: :b, \\\"m\\\" => [1, 2.5, nil]}\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"jq '.a' in.json\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"out\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2024-01-17T10:20:30Z\",\n    \"finished_at\": \"2024-01-17T10:20:31Z\",\n    \"duration_seconds\": 1.25,\n    \"formatted_duration\": \"1.25s\"\n  }\n}",
+      "psych_yaml": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: value\n    value: '{\"z\" => 1, a: :b, \"m\" => [1, 2.5, nil]}'\n    type: option\ncommand:\n  executable: \"/usr/bin/jq\"\n  arguments:\n    options:\n    - name: value\n      value: '{\"z\" => 1, a: :b, \"m\" => [1, 2.5, nil]}'\n      type: option\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: 'out\n\n    '\nmetadata:\n  started_at: '2024-01-17T10:20:30Z'\n  finished_at: '2024-01-17T10:20:31Z'\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+      "psych_load": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "value"
+                        ],
+                        [
+                          "value",
+                          "{\"z\" => 1, a: :b, \"m\" => [1, 2.5, nil]}"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "value"
+                              ],
+                              [
+                                "value",
+                                "{\"z\" => 1, a: :b, \"m\" => [1, 2.5, nil]}"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "out\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "renders": {
+        "table": {
+          "stdout": "✓ Command completed successfully\nExit code: 0\nDuration: 1.25s\n\nRequest: value={\"z\" => 1, a: :b, \"m\" => [1, 2.5, nil]}\n\nCommand: jq '.a' in.json\n",
+          "stderr": ""
+        },
+        "raw": {
+          "stdout": "out\n",
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "id": "array-mixed",
+      "params": [
+        [
+          "value",
+          [
+            {
+              "$sym": "s"
+            },
+            {
+              "$time": {
+                "seconds": 1705449600,
+                "nanos": 0,
+                "utc_offset": 0,
+                "utc": true
+              }
+            },
+            {
+              "$int": "36893488147419103232"
+            },
+            {
+              "$float": "3ff8000000000000"
+            },
+            null,
+            true,
+            {
+              "$map": [
+                [
+                  "k",
+                  "v"
+                ]
+              ]
+            }
+          ]
+        ]
+      ],
+      "json": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"value\",\n        \"value\": \"s, 2024-01-17 00:00:00 UTC, 36893488147419103232, 1.5, , true, {\\\"k\\\" => \\\"v\\\"}\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/jq\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"value\",\n          \"value\": \"s, 2024-01-17 00:00:00 UTC, 36893488147419103232, 1.5, , true, {\\\"k\\\" => \\\"v\\\"}\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"jq '.a' in.json\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"out\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2024-01-17T10:20:30Z\",\n    \"finished_at\": \"2024-01-17T10:20:31Z\",\n    \"duration_seconds\": 1.25,\n    \"formatted_duration\": \"1.25s\"\n  }\n}",
+      "psych_yaml": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: value\n    value: s, 2024-01-17 00:00:00 UTC, 36893488147419103232, 1.5, , true, {\"k\" =>\n      \"v\"}\n    type: option\ncommand:\n  executable: \"/usr/bin/jq\"\n  arguments:\n    options:\n    - name: value\n      value: s, 2024-01-17 00:00:00 UTC, 36893488147419103232, 1.5, , true, {\"k\" =>\n        \"v\"}\n      type: option\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: 'out\n\n    '\nmetadata:\n  started_at: '2024-01-17T10:20:30Z'\n  finished_at: '2024-01-17T10:20:31Z'\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+      "psych_load": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "value"
+                        ],
+                        [
+                          "value",
+                          "s, 2024-01-17 00:00:00 UTC, 36893488147419103232, 1.5, , true, {\"k\" => \"v\"}"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "value"
+                              ],
+                              [
+                                "value",
+                                "s, 2024-01-17 00:00:00 UTC, 36893488147419103232, 1.5, , true, {\"k\" => \"v\"}"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "out\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "renders": {
+        "table": {
+          "stdout": "✓ Command completed successfully\nExit code: 0\nDuration: 1.25s\n\nRequest: value=s, 2024-01-17 00:00:00 UTC, 36893488147419103232, 1.5, , true, {\"k\" => \"v\"}\n\nCommand: jq '.a' in.json\n",
+          "stderr": ""
+        },
+        "raw": {
+          "stdout": "out\n",
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "id": "nil",
+      "params": [
+        [
+          "value",
+          null
+        ]
+      ],
+      "json": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"value\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/jq\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"value\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"jq '.a' in.json\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"out\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2024-01-17T10:20:30Z\",\n    \"finished_at\": \"2024-01-17T10:20:31Z\",\n    \"duration_seconds\": 1.25,\n    \"formatted_duration\": \"1.25s\"\n  }\n}",
+      "psych_yaml": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: value\n    type: option\ncommand:\n  executable: \"/usr/bin/jq\"\n  arguments:\n    options:\n    - name: value\n      type: option\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: 'out\n\n    '\nmetadata:\n  started_at: '2024-01-17T10:20:30Z'\n  finished_at: '2024-01-17T10:20:31Z'\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+      "psych_load": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "value"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "value"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "out\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "renders": {
+        "table": {
+          "stdout": "✓ Command completed successfully\nExit code: 0\nDuration: 1.25s\n\nRequest: value=\n\nCommand: jq '.a' in.json\n",
+          "stderr": ""
+        },
+        "raw": {
+          "stdout": "out\n",
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "id": "true-flag",
+      "params": [
+        [
+          "value",
+          true
+        ]
+      ],
+      "json": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"flags\": [\n      \"value\"\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/jq\",\n    \"arguments\": {\n      \"flags\": [\n        \"value\"\n      ]\n    },\n    \"full_command\": \"jq '.a' in.json\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"out\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2024-01-17T10:20:30Z\",\n    \"finished_at\": \"2024-01-17T10:20:31Z\",\n    \"duration_seconds\": 1.25,\n    \"formatted_duration\": \"1.25s\"\n  }\n}",
+      "psych_yaml": "---\nstatus: success\nexit_code: 0\nrequest:\n  flags:\n  - value\ncommand:\n  executable: \"/usr/bin/jq\"\n  arguments:\n    flags:\n    - value\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: 'out\n\n    '\nmetadata:\n  started_at: '2024-01-17T10:20:30Z'\n  finished_at: '2024-01-17T10:20:31Z'\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+      "psych_load": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "flags",
+                  [
+                    "value"
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "flags",
+                        [
+                          "value"
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "out\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "renders": {
+        "table": {
+          "stdout": "✓ Command completed successfully\nExit code: 0\nDuration: 1.25s\n\nRequest: --value\n\nCommand: jq '.a' in.json\n",
+          "stderr": ""
+        },
+        "raw": {
+          "stdout": "out\n",
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "id": "false-flag",
+      "params": [
+        [
+          "value",
+          false
+        ]
+      ],
+      "json": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"command\": {\n    \"executable\": \"/usr/bin/jq\",\n    \"full_command\": \"jq '.a' in.json\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"out\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2024-01-17T10:20:30Z\",\n    \"finished_at\": \"2024-01-17T10:20:31Z\",\n    \"duration_seconds\": 1.25,\n    \"formatted_duration\": \"1.25s\"\n  }\n}",
+      "psych_yaml": "---\nstatus: success\nexit_code: 0\ncommand:\n  executable: \"/usr/bin/jq\"\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: 'out\n\n    '\nmetadata:\n  started_at: '2024-01-17T10:20:30Z'\n  finished_at: '2024-01-17T10:20:31Z'\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+      "psych_load": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "out\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "renders": {
+        "table": {
+          "stdout": "✓ Command completed successfully\nExit code: 0\nDuration: 1.25s\n\nRequest: \n\nCommand: jq '.a' in.json\n",
+          "stderr": ""
+        },
+        "raw": {
+          "stdout": "out\n",
+          "stderr": ""
+        }
+      }
+    },
+    {
+      "id": "all-values",
+      "params": [
+        [
+          "symbol",
+          {
+            "$sym": "sym_value"
+          }
+        ],
+        [
+          "symbol_quoted",
+          {
+            "$sym": "needs quote"
+          }
+        ],
+        [
+          "time_utc",
+          {
+            "$time": {
+              "seconds": 1705486830,
+              "nanos": 0,
+              "utc_offset": 0,
+              "utc": true
+            }
+          }
+        ],
+        [
+          "time_utc_frac",
+          {
+            "$time": {
+              "seconds": 1705486830,
+              "nanos": 500000000,
+              "utc_offset": 0,
+              "utc": true
+            }
+          }
+        ],
+        [
+          "time_offset",
+          {
+            "$time": {
+              "seconds": 1705486830,
+              "nanos": 0,
+              "utc_offset": 18000,
+              "utc": false
+            }
+          }
+        ],
+        [
+          "time_zero_offset_local",
+          {
+            "$time": {
+              "seconds": 1705486830,
+              "nanos": 0,
+              "utc_offset": 0,
+              "utc": false
+            }
+          }
+        ],
+        [
+          "int_i64_max",
+          {
+            "$int": "9223372036854775807"
+          }
+        ],
+        [
+          "int_u64_over",
+          {
+            "$int": "18446744073709551617"
+          }
+        ],
+        [
+          "int_i128_over",
+          {
+            "$int": "1361129467683753853853498429727072845824"
+          }
+        ],
+        [
+          "int_negative_big",
+          {
+            "$int": "-1180591620717411303424"
+          }
+        ],
+        [
+          "float_small",
+          {
+            "$float": "3ef4f8b588e368f1"
+          }
+        ],
+        [
+          "float_big",
+          {
+            "$float": "4415af1d78b58c40"
+          }
+        ],
+        [
+          "float_neg_zero",
+          {
+            "$float": "8000000000000000"
+          }
+        ],
+        [
+          "hash_ordered",
+          {
+            "$map": [
+              [
+                "z",
+                {
+                  "$int": "1"
+                }
+              ],
+              [
+                {
+                  "$sym": "a"
+                },
+                {
+                  "$sym": "b"
+                }
+              ],
+              [
+                "m",
+                [
+                  {
+                    "$int": "1"
+                  },
+                  {
+                    "$float": "4004000000000000"
+                  },
+                  null
+                ]
+              ]
+            ]
+          }
+        ],
+        [
+          "array_mixed",
+          [
+            {
+              "$sym": "s"
+            },
+            {
+              "$time": {
+                "seconds": 1705449600,
+                "nanos": 0,
+                "utc_offset": 0,
+                "utc": true
+              }
+            },
+            {
+              "$int": "36893488147419103232"
+            },
+            {
+              "$float": "3ff8000000000000"
+            },
+            null,
+            true,
+            {
+              "$map": [
+                [
+                  "k",
+                  "v"
+                ]
+              ]
+            }
+          ]
+        ],
+        [
+          "nil",
+          null
+        ],
+        [
+          "true_flag",
+          true
+        ],
+        [
+          "false_flag",
+          false
+        ]
+      ],
+      "json": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"symbol\",\n        \"value\": \"sym_value\",\n        \"type\": \"option\"\n      },\n      {\n        \"name\": \"symbol_quoted\",\n        \"value\": \"needs quote\",\n        \"type\": \"option\"\n      },\n      {\n        \"name\": \"time_utc\",\n        \"value\": \"2024-01-17 10:20:30 UTC\",\n        \"type\": \"option\"\n      },\n      {\n        \"name\": \"time_utc_frac\",\n        \"value\": \"2024-01-17 10:20:30 UTC\",\n        \"type\": \"option\"\n      },\n      {\n        \"name\": \"time_offset\",\n        \"value\": \"2024-01-17 15:20:30 +0500\",\n        \"type\": \"option\"\n      },\n      {\n        \"name\": \"time_zero_offset_local\",\n        \"value\": \"2024-01-17 10:20:30 +0000\",\n        \"type\": \"option\"\n      },\n      {\n        \"name\": \"int_i64_max\",\n        \"value\": \"9223372036854775807\",\n        \"type\": \"option\"\n      },\n      {\n        \"name\": \"int_u64_over\",\n        \"value\": \"18446744073709551617\",\n        \"type\": \"option\"\n      },\n      {\n        \"name\": \"int_i128_over\",\n        \"value\": \"1361129467683753853853498429727072845824\",\n        \"type\": \"option\"\n      },\n      {\n        \"name\": \"int_negative_big\",\n        \"value\": \"-1180591620717411303424\",\n        \"type\": \"option\"\n      },\n      {\n        \"name\": \"float_small\",\n        \"value\": \"2.0e-05\",\n        \"type\": \"option\"\n      },\n      {\n        \"name\": \"float_big\",\n        \"value\": \"1.0e+20\",\n        \"type\": \"option\"\n      },\n      {\n        \"name\": \"float_neg_zero\",\n        \"value\": \"-0.0\",\n        \"type\": \"option\"\n      },\n      {\n        \"name\": \"hash_ordered\",\n        \"value\": \"{\\\"z\\\" => 1, a: :b, \\\"m\\\" => [1, 2.5, nil]}\",\n        \"type\": \"option\"\n      },\n      {\n        \"name\": \"array_mixed\",\n        \"value\": \"s, 2024-01-17 00:00:00 UTC, 36893488147419103232, 1.5, , true, {\\\"k\\\" => \\\"v\\\"}\",\n        \"type\": \"option\"\n      },\n      {\n        \"name\": \"nil\",\n        \"type\": \"option\"\n      }\n    ],\n    \"flags\": [\n      \"true_flag\"\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/jq\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"symbol\",\n          \"value\": \"sym_value\",\n          \"type\": \"option\"\n        },\n        {\n          \"name\": \"symbol_quoted\",\n          \"value\": \"needs quote\",\n          \"type\": \"option\"\n        },\n        {\n          \"name\": \"time_utc\",\n          \"value\": \"2024-01-17 10:20:30 UTC\",\n          \"type\": \"option\"\n        },\n        {\n          \"name\": \"time_utc_frac\",\n          \"value\": \"2024-01-17 10:20:30 UTC\",\n          \"type\": \"option\"\n        },\n        {\n          \"name\": \"time_offset\",\n          \"value\": \"2024-01-17 15:20:30 +0500\",\n          \"type\": \"option\"\n        },\n        {\n          \"name\": \"time_zero_offset_local\",\n          \"value\": \"2024-01-17 10:20:30 +0000\",\n          \"type\": \"option\"\n        },\n        {\n          \"name\": \"int_i64_max\",\n          \"value\": \"9223372036854775807\",\n          \"type\": \"option\"\n        },\n        {\n          \"name\": \"int_u64_over\",\n          \"value\": \"18446744073709551617\",\n          \"type\": \"option\"\n        },\n        {\n          \"name\": \"int_i128_over\",\n          \"value\": \"1361129467683753853853498429727072845824\",\n          \"type\": \"option\"\n        },\n        {\n          \"name\": \"int_negative_big\",\n          \"value\": \"-1180591620717411303424\",\n          \"type\": \"option\"\n        },\n        {\n          \"name\": \"float_small\",\n          \"value\": \"2.0e-05\",\n          \"type\": \"option\"\n        },\n        {\n          \"name\": \"float_big\",\n          \"value\": \"1.0e+20\",\n          \"type\": \"option\"\n        },\n        {\n          \"name\": \"float_neg_zero\",\n          \"value\": \"-0.0\",\n          \"type\": \"option\"\n        },\n        {\n          \"name\": \"hash_ordered\",\n          \"value\": \"{\\\"z\\\" => 1, a: :b, \\\"m\\\" => [1, 2.5, nil]}\",\n          \"type\": \"option\"\n        },\n        {\n          \"name\": \"array_mixed\",\n          \"value\": \"s, 2024-01-17 00:00:00 UTC, 36893488147419103232, 1.5, , true, {\\\"k\\\" => \\\"v\\\"}\",\n          \"type\": \"option\"\n        },\n        {\n          \"name\": \"nil\",\n          \"type\": \"option\"\n        }\n      ],\n      \"flags\": [\n        \"true_flag\"\n      ]\n    },\n    \"full_command\": \"jq '.a' in.json\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"out\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2024-01-17T10:20:30Z\",\n    \"finished_at\": \"2024-01-17T10:20:31Z\",\n    \"duration_seconds\": 1.25,\n    \"formatted_duration\": \"1.25s\"\n  }\n}",
+      "psych_yaml": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: symbol\n    value: sym_value\n    type: option\n  - name: symbol_quoted\n    value: needs quote\n    type: option\n  - name: time_utc\n    value: 2024-01-17 10:20:30 UTC\n    type: option\n  - name: time_utc_frac\n    value: 2024-01-17 10:20:30 UTC\n    type: option\n  - name: time_offset\n    value: '2024-01-17 15:20:30 +0500'\n    type: option\n  - name: time_zero_offset_local\n    value: '2024-01-17 10:20:30 +0000'\n    type: option\n  - name: int_i64_max\n    value: '9223372036854775807'\n    type: option\n  - name: int_u64_over\n    value: '18446744073709551617'\n    type: option\n  - name: int_i128_over\n    value: '1361129467683753853853498429727072845824'\n    type: option\n  - name: int_negative_big\n    value: \"-1180591620717411303424\"\n    type: option\n  - name: float_small\n    value: '2.0e-05'\n    type: option\n  - name: float_big\n    value: '1.0e+20'\n    type: option\n  - name: float_neg_zero\n    value: \"-0.0\"\n    type: option\n  - name: hash_ordered\n    value: '{\"z\" => 1, a: :b, \"m\" => [1, 2.5, nil]}'\n    type: option\n  - name: array_mixed\n    value: s, 2024-01-17 00:00:00 UTC, 36893488147419103232, 1.5, , true, {\"k\" =>\n      \"v\"}\n    type: option\n  - name: nil\n    type: option\n  flags:\n  - true_flag\ncommand:\n  executable: \"/usr/bin/jq\"\n  arguments:\n    options:\n    - name: symbol\n      value: sym_value\n      type: option\n    - name: symbol_quoted\n      value: needs quote\n      type: option\n    - name: time_utc\n      value: 2024-01-17 10:20:30 UTC\n      type: option\n    - name: time_utc_frac\n      value: 2024-01-17 10:20:30 UTC\n      type: option\n    - name: time_offset\n      value: '2024-01-17 15:20:30 +0500'\n      type: option\n    - name: time_zero_offset_local\n      value: '2024-01-17 10:20:30 +0000'\n      type: option\n    - name: int_i64_max\n      value: '9223372036854775807'\n      type: option\n    - name: int_u64_over\n      value: '18446744073709551617'\n      type: option\n    - name: int_i128_over\n      value: '1361129467683753853853498429727072845824'\n      type: option\n    - name: int_negative_big\n      value: \"-1180591620717411303424\"\n      type: option\n    - name: float_small\n      value: '2.0e-05'\n      type: option\n    - name: float_big\n      value: '1.0e+20'\n      type: option\n    - name: float_neg_zero\n      value: \"-0.0\"\n      type: option\n    - name: hash_ordered\n      value: '{\"z\" => 1, a: :b, \"m\" => [1, 2.5, nil]}'\n      type: option\n    - name: array_mixed\n      value: s, 2024-01-17 00:00:00 UTC, 36893488147419103232, 1.5, , true, {\"k\" =>\n        \"v\"}\n      type: option\n    - name: nil\n      type: option\n    flags:\n    - true_flag\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: 'out\n\n    '\nmetadata:\n  started_at: '2024-01-17T10:20:30Z'\n  finished_at: '2024-01-17T10:20:31Z'\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+      "psych_load": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "symbol"
+                        ],
+                        [
+                          "value",
+                          "sym_value"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    },
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "symbol_quoted"
+                        ],
+                        [
+                          "value",
+                          "needs quote"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    },
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "time_utc"
+                        ],
+                        [
+                          "value",
+                          "2024-01-17 10:20:30 UTC"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    },
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "time_utc_frac"
+                        ],
+                        [
+                          "value",
+                          "2024-01-17 10:20:30 UTC"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    },
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "time_offset"
+                        ],
+                        [
+                          "value",
+                          "2024-01-17 15:20:30 +0500"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    },
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "time_zero_offset_local"
+                        ],
+                        [
+                          "value",
+                          "2024-01-17 10:20:30 +0000"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    },
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "int_i64_max"
+                        ],
+                        [
+                          "value",
+                          "9223372036854775807"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    },
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "int_u64_over"
+                        ],
+                        [
+                          "value",
+                          "18446744073709551617"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    },
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "int_i128_over"
+                        ],
+                        [
+                          "value",
+                          "1361129467683753853853498429727072845824"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    },
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "int_negative_big"
+                        ],
+                        [
+                          "value",
+                          "-1180591620717411303424"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    },
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "float_small"
+                        ],
+                        [
+                          "value",
+                          "2.0e-05"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    },
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "float_big"
+                        ],
+                        [
+                          "value",
+                          "1.0e+20"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    },
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "float_neg_zero"
+                        ],
+                        [
+                          "value",
+                          "-0.0"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    },
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "hash_ordered"
+                        ],
+                        [
+                          "value",
+                          "{\"z\" => 1, a: :b, \"m\" => [1, 2.5, nil]}"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    },
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "array_mixed"
+                        ],
+                        [
+                          "value",
+                          "s, 2024-01-17 00:00:00 UTC, 36893488147419103232, 1.5, , true, {\"k\" => \"v\"}"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    },
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "nil"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ],
+                [
+                  "flags",
+                  [
+                    "true_flag"
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "symbol"
+                              ],
+                              [
+                                "value",
+                                "sym_value"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          },
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "symbol_quoted"
+                              ],
+                              [
+                                "value",
+                                "needs quote"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          },
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "time_utc"
+                              ],
+                              [
+                                "value",
+                                "2024-01-17 10:20:30 UTC"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          },
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "time_utc_frac"
+                              ],
+                              [
+                                "value",
+                                "2024-01-17 10:20:30 UTC"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          },
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "time_offset"
+                              ],
+                              [
+                                "value",
+                                "2024-01-17 15:20:30 +0500"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          },
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "time_zero_offset_local"
+                              ],
+                              [
+                                "value",
+                                "2024-01-17 10:20:30 +0000"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          },
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "int_i64_max"
+                              ],
+                              [
+                                "value",
+                                "9223372036854775807"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          },
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "int_u64_over"
+                              ],
+                              [
+                                "value",
+                                "18446744073709551617"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          },
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "int_i128_over"
+                              ],
+                              [
+                                "value",
+                                "1361129467683753853853498429727072845824"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          },
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "int_negative_big"
+                              ],
+                              [
+                                "value",
+                                "-1180591620717411303424"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          },
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "float_small"
+                              ],
+                              [
+                                "value",
+                                "2.0e-05"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          },
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "float_big"
+                              ],
+                              [
+                                "value",
+                                "1.0e+20"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          },
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "float_neg_zero"
+                              ],
+                              [
+                                "value",
+                                "-0.0"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          },
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "hash_ordered"
+                              ],
+                              [
+                                "value",
+                                "{\"z\" => 1, a: :b, \"m\" => [1, 2.5, nil]}"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          },
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "array_mixed"
+                              ],
+                              [
+                                "value",
+                                "s, 2024-01-17 00:00:00 UTC, 36893488147419103232, 1.5, , true, {\"k\" => \"v\"}"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          },
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "nil"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ],
+                      [
+                        "flags",
+                        [
+                          "true_flag"
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "out\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "renders": {
+        "table": {
+          "stdout": "✓ Command completed successfully\nExit code: 0\nDuration: 1.25s\n\nRequest: symbol=sym_value symbol_quoted=needs quote time_utc=2024-01-17 10:20:30 UTC time_utc_frac=2024-01-17 10:20:30 UTC time_offset=2024-01-17 15:20:30 +0500 time_zero_offset_local=2024-01-17 10:20:30 +0000 int_i64_max=9223372036854775807 int_u64_over=18446744073709551617 int_i128_over=1361129467683753853853498429727072845824 int_negative_big=-1180591620717411303424 float_small=2.0e-05 float_big=1.0e+20 float_neg_zero=-0.0 hash_ordered={\"z\" => 1, a: :b, \"m\" => [1, 2.5, nil]} array_mixed=s, 2024-01-17 00:00:00 UTC, 36893488147419103232, 1.5, , true, {\"k\" => \"v\"} nil= --true_flag\n\nCommand: jq '.a' in.json\n",
+          "stderr": ""
+        },
+        "raw": {
+          "stdout": "out\n",
+          "stderr": ""
+        }
+      }
+    }
+  ],
+  "tagged": [
+    {
+      "id": "tagged-local",
+      "params": [
+        [
+          "value",
+          "x"
+        ]
+      ],
+      "json": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"value\",\n        \"value\": \"x\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/jq\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"value\",\n          \"value\": \"x\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"jq '.a' in.json\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"out\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2024-01-17T10:20:30Z\",\n    \"finished_at\": \"2024-01-17T10:20:31Z\",\n    \"duration_seconds\": 1.25,\n    \"formatted_duration\": \"1.25s\"\n  }\n}",
+      "psych_yaml": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: value\n    value: x\n    type: option\ncommand:\n  executable: \"/usr/bin/jq\"\n  arguments:\n    options:\n    - name: value\n      value: x\n      type: option\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: 'out\n\n    '\nmetadata:\n  started_at: '2024-01-17T10:20:30Z'\n  finished_at: '2024-01-17T10:20:31Z'\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+      "psych_load": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "value"
+                        ],
+                        [
+                          "value",
+                          "x"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "value"
+                              ],
+                              [
+                                "value",
+                                "x"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "out\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "renders": {
+        "table": {
+          "stdout": "✓ Command completed successfully\nExit code: 0\nDuration: 1.25s\n\nRequest: value=x\n\nCommand: jq '.a' in.json\n",
+          "stderr": ""
+        },
+        "raw": {
+          "stdout": "out\n",
+          "stderr": ""
+        }
+      },
+      "yaml_input": "value: !custom x\n",
+      "loaded": {
+        "$map": [
+          [
+            "value",
+            "x"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "tagged-str",
+      "params": [
+        [
+          "value",
+          "123"
+        ]
+      ],
+      "json": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"value\",\n        \"value\": \"123\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/jq\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"value\",\n          \"value\": \"123\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"jq '.a' in.json\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"out\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2024-01-17T10:20:30Z\",\n    \"finished_at\": \"2024-01-17T10:20:31Z\",\n    \"duration_seconds\": 1.25,\n    \"formatted_duration\": \"1.25s\"\n  }\n}",
+      "psych_yaml": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: value\n    value: '123'\n    type: option\ncommand:\n  executable: \"/usr/bin/jq\"\n  arguments:\n    options:\n    - name: value\n      value: '123'\n      type: option\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: 'out\n\n    '\nmetadata:\n  started_at: '2024-01-17T10:20:30Z'\n  finished_at: '2024-01-17T10:20:31Z'\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+      "psych_load": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "value"
+                        ],
+                        [
+                          "value",
+                          "123"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "value"
+                              ],
+                              [
+                                "value",
+                                "123"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "out\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "renders": {
+        "table": {
+          "stdout": "✓ Command completed successfully\nExit code: 0\nDuration: 1.25s\n\nRequest: value=123\n\nCommand: jq '.a' in.json\n",
+          "stderr": ""
+        },
+        "raw": {
+          "stdout": "out\n",
+          "stderr": ""
+        }
+      },
+      "yaml_input": "value: !!str \"123\"\n",
+      "loaded": {
+        "$map": [
+          [
+            "value",
+            "123"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "tagged-int",
+      "params": [
+        [
+          "value",
+          {
+            "$int": "42"
+          }
+        ]
+      ],
+      "json": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"value\",\n        \"value\": \"42\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/jq\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"value\",\n          \"value\": \"42\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"jq '.a' in.json\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"out\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2024-01-17T10:20:30Z\",\n    \"finished_at\": \"2024-01-17T10:20:31Z\",\n    \"duration_seconds\": 1.25,\n    \"formatted_duration\": \"1.25s\"\n  }\n}",
+      "psych_yaml": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: value\n    value: '42'\n    type: option\ncommand:\n  executable: \"/usr/bin/jq\"\n  arguments:\n    options:\n    - name: value\n      value: '42'\n      type: option\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: 'out\n\n    '\nmetadata:\n  started_at: '2024-01-17T10:20:30Z'\n  finished_at: '2024-01-17T10:20:31Z'\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+      "psych_load": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "value"
+                        ],
+                        [
+                          "value",
+                          "42"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "value"
+                              ],
+                              [
+                                "value",
+                                "42"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "out\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "renders": {
+        "table": {
+          "stdout": "✓ Command completed successfully\nExit code: 0\nDuration: 1.25s\n\nRequest: value=42\n\nCommand: jq '.a' in.json\n",
+          "stderr": ""
+        },
+        "raw": {
+          "stdout": "out\n",
+          "stderr": ""
+        }
+      },
+      "yaml_input": "value: !!int \"42\"\n",
+      "loaded": {
+        "$map": [
+          [
+            "value",
+            {
+              "$int": "42"
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "tagged-float",
+      "params": [
+        [
+          "value",
+          {
+            "$float": "3ff0000000000000"
+          }
+        ]
+      ],
+      "json": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"value\",\n        \"value\": \"1.0\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/jq\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"value\",\n          \"value\": \"1.0\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"jq '.a' in.json\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"out\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2024-01-17T10:20:30Z\",\n    \"finished_at\": \"2024-01-17T10:20:31Z\",\n    \"duration_seconds\": 1.25,\n    \"formatted_duration\": \"1.25s\"\n  }\n}",
+      "psych_yaml": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: value\n    value: '1.0'\n    type: option\ncommand:\n  executable: \"/usr/bin/jq\"\n  arguments:\n    options:\n    - name: value\n      value: '1.0'\n      type: option\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: 'out\n\n    '\nmetadata:\n  started_at: '2024-01-17T10:20:30Z'\n  finished_at: '2024-01-17T10:20:31Z'\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+      "psych_load": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "value"
+                        ],
+                        [
+                          "value",
+                          "1.0"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "value"
+                              ],
+                              [
+                                "value",
+                                "1.0"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "out\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "renders": {
+        "table": {
+          "stdout": "✓ Command completed successfully\nExit code: 0\nDuration: 1.25s\n\nRequest: value=1.0\n\nCommand: jq '.a' in.json\n",
+          "stderr": ""
+        },
+        "raw": {
+          "stdout": "out\n",
+          "stderr": ""
+        }
+      },
+      "yaml_input": "value: !!float 1\n",
+      "loaded": {
+        "$map": [
+          [
+            "value",
+            {
+              "$float": "3ff0000000000000"
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "tagged-bool",
+      "params": [
+        [
+          "value",
+          true
+        ]
+      ],
+      "json": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"flags\": [\n      \"value\"\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/jq\",\n    \"arguments\": {\n      \"flags\": [\n        \"value\"\n      ]\n    },\n    \"full_command\": \"jq '.a' in.json\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"out\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2024-01-17T10:20:30Z\",\n    \"finished_at\": \"2024-01-17T10:20:31Z\",\n    \"duration_seconds\": 1.25,\n    \"formatted_duration\": \"1.25s\"\n  }\n}",
+      "psych_yaml": "---\nstatus: success\nexit_code: 0\nrequest:\n  flags:\n  - value\ncommand:\n  executable: \"/usr/bin/jq\"\n  arguments:\n    flags:\n    - value\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: 'out\n\n    '\nmetadata:\n  started_at: '2024-01-17T10:20:30Z'\n  finished_at: '2024-01-17T10:20:31Z'\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+      "psych_load": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "flags",
+                  [
+                    "value"
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "flags",
+                        [
+                          "value"
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "out\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "renders": {
+        "table": {
+          "stdout": "✓ Command completed successfully\nExit code: 0\nDuration: 1.25s\n\nRequest: --value\n\nCommand: jq '.a' in.json\n",
+          "stderr": ""
+        },
+        "raw": {
+          "stdout": "out\n",
+          "stderr": ""
+        }
+      },
+      "yaml_input": "value: !!bool \"true\"\n",
+      "loaded": {
+        "$map": [
+          [
+            "value",
+            true
+          ]
+        ]
+      }
+    },
+    {
+      "id": "tagged-null",
+      "params": [
+        [
+          "value",
+          null
+        ]
+      ],
+      "json": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"value\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/jq\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"value\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"jq '.a' in.json\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"out\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2024-01-17T10:20:30Z\",\n    \"finished_at\": \"2024-01-17T10:20:31Z\",\n    \"duration_seconds\": 1.25,\n    \"formatted_duration\": \"1.25s\"\n  }\n}",
+      "psych_yaml": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: value\n    type: option\ncommand:\n  executable: \"/usr/bin/jq\"\n  arguments:\n    options:\n    - name: value\n      type: option\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: 'out\n\n    '\nmetadata:\n  started_at: '2024-01-17T10:20:30Z'\n  finished_at: '2024-01-17T10:20:31Z'\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+      "psych_load": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "value"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "value"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "out\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "renders": {
+        "table": {
+          "stdout": "✓ Command completed successfully\nExit code: 0\nDuration: 1.25s\n\nRequest: value=\n\nCommand: jq '.a' in.json\n",
+          "stderr": ""
+        },
+        "raw": {
+          "stdout": "out\n",
+          "stderr": ""
+        }
+      },
+      "yaml_input": "value: !!null \"\"\n",
+      "loaded": {
+        "$map": [
+          [
+            "value",
+            null
+          ]
+        ]
+      }
+    },
+    {
+      "id": "tagged-local-map",
+      "params": [
+        [
+          "value",
+          {
+            "$map": [
+              [
+                {
+                  "$sym": "x"
+                },
+                {
+                  "$int": "1"
+                }
+              ],
+              [
+                {
+                  "$sym": "y"
+                },
+                {
+                  "$int": "2"
+                }
+              ]
+            ]
+          }
+        ]
+      ],
+      "json": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"value\",\n        \"value\": \"{x: 1, y: 2}\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/jq\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"value\",\n          \"value\": \"{x: 1, y: 2}\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"jq '.a' in.json\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"out\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2024-01-17T10:20:30Z\",\n    \"finished_at\": \"2024-01-17T10:20:31Z\",\n    \"duration_seconds\": 1.25,\n    \"formatted_duration\": \"1.25s\"\n  }\n}",
+      "psych_yaml": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: value\n    value: \"{x: 1, y: 2}\"\n    type: option\ncommand:\n  executable: \"/usr/bin/jq\"\n  arguments:\n    options:\n    - name: value\n      value: \"{x: 1, y: 2}\"\n      type: option\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: 'out\n\n    '\nmetadata:\n  started_at: '2024-01-17T10:20:30Z'\n  finished_at: '2024-01-17T10:20:31Z'\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+      "psych_load": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "value"
+                        ],
+                        [
+                          "value",
+                          "{x: 1, y: 2}"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "value"
+                              ],
+                              [
+                                "value",
+                                "{x: 1, y: 2}"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "out\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "renders": {
+        "table": {
+          "stdout": "✓ Command completed successfully\nExit code: 0\nDuration: 1.25s\n\nRequest: value={x: 1, y: 2}\n\nCommand: jq '.a' in.json\n",
+          "stderr": ""
+        },
+        "raw": {
+          "stdout": "out\n",
+          "stderr": ""
+        }
+      },
+      "yaml_input": "value: !point {x: 1, y: 2}\n",
+      "loaded": {
+        "$map": [
+          [
+            "value",
+            {
+              "$map": [
+                [
+                  "x",
+                  {
+                    "$int": "1"
+                  }
+                ],
+                [
+                  "y",
+                  {
+                    "$int": "2"
+                  }
+                ]
+              ]
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "id": "tagged-local-seq",
+      "params": [
+        [
+          "value",
+          [
+            "a",
+            "1"
+          ]
+        ]
+      ],
+      "json": "{\n  \"status\": \"success\",\n  \"exit_code\": 0,\n  \"request\": {\n    \"options\": [\n      {\n        \"name\": \"value\",\n        \"value\": \"a, 1\",\n        \"type\": \"option\"\n      }\n    ]\n  },\n  \"command\": {\n    \"executable\": \"/usr/bin/jq\",\n    \"arguments\": {\n      \"options\": [\n        {\n          \"name\": \"value\",\n          \"value\": \"a, 1\",\n          \"type\": \"option\"\n        }\n      ]\n    },\n    \"full_command\": \"jq '.a' in.json\",\n    \"shell\": \"bash\"\n  },\n  \"output\": {\n    \"stdout\": \"out\\n\"\n  },\n  \"metadata\": {\n    \"started_at\": \"2024-01-17T10:20:30Z\",\n    \"finished_at\": \"2024-01-17T10:20:31Z\",\n    \"duration_seconds\": 1.25,\n    \"formatted_duration\": \"1.25s\"\n  }\n}",
+      "psych_yaml": "---\nstatus: success\nexit_code: 0\nrequest:\n  options:\n  - name: value\n    value: a, 1\n    type: option\ncommand:\n  executable: \"/usr/bin/jq\"\n  arguments:\n    options:\n    - name: value\n      value: a, 1\n      type: option\n  full_command: jq '.a' in.json\n  shell: bash\noutput:\n  stdout: 'out\n\n    '\nmetadata:\n  started_at: '2024-01-17T10:20:30Z'\n  finished_at: '2024-01-17T10:20:31Z'\n  duration_seconds: 1.25\n  formatted_duration: 1.25s\n",
+      "psych_load": {
+        "$map": [
+          [
+            "status",
+            "success"
+          ],
+          [
+            "exit_code",
+            {
+              "$int": "0"
+            }
+          ],
+          [
+            "request",
+            {
+              "$map": [
+                [
+                  "options",
+                  [
+                    {
+                      "$map": [
+                        [
+                          "name",
+                          "value"
+                        ],
+                        [
+                          "value",
+                          "a, 1"
+                        ],
+                        [
+                          "type",
+                          "option"
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ],
+          [
+            "command",
+            {
+              "$map": [
+                [
+                  "executable",
+                  "/usr/bin/jq"
+                ],
+                [
+                  "arguments",
+                  {
+                    "$map": [
+                      [
+                        "options",
+                        [
+                          {
+                            "$map": [
+                              [
+                                "name",
+                                "value"
+                              ],
+                              [
+                                "value",
+                                "a, 1"
+                              ],
+                              [
+                                "type",
+                                "option"
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    ]
+                  }
+                ],
+                [
+                  "full_command",
+                  "jq '.a' in.json"
+                ],
+                [
+                  "shell",
+                  "bash"
+                ]
+              ]
+            }
+          ],
+          [
+            "output",
+            {
+              "$map": [
+                [
+                  "stdout",
+                  "out\n"
+                ]
+              ]
+            }
+          ],
+          [
+            "metadata",
+            {
+              "$map": [
+                [
+                  "started_at",
+                  "2024-01-17T10:20:30Z"
+                ],
+                [
+                  "finished_at",
+                  "2024-01-17T10:20:31Z"
+                ],
+                [
+                  "duration_seconds",
+                  {
+                    "$float": "3ff4000000000000"
+                  }
+                ],
+                [
+                  "formatted_duration",
+                  "1.25s"
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "renders": {
+        "table": {
+          "stdout": "✓ Command completed successfully\nExit code: 0\nDuration: 1.25s\n\nRequest: value=a, 1\n\nCommand: jq '.a' in.json\n",
+          "stderr": ""
+        },
+        "raw": {
+          "stdout": "out\n",
+          "stderr": ""
+        }
+      },
+      "yaml_input": "value: !list [a, !!str \"1\"]\n",
+      "loaded": {
+        "$map": [
+          [
+            "value",
+            [
+              "a",
+              "1"
+            ]
+          ]
+        ]
+      }
+    }
+  ],
+  "dry_runs": [
+    {
+      "style": "run_command",
+      "use_color": null,
+      "arguments": [
+        [
+          "symbol",
+          {
+            "$sym": "sym_value"
+          }
+        ],
+        [
+          "symbol_quoted",
+          {
+            "$sym": "needs quote"
+          }
+        ],
+        [
+          "time_utc",
+          {
+            "$time": {
+              "seconds": 1705486830,
+              "nanos": 0,
+              "utc_offset": 0,
+              "utc": true
+            }
+          }
+        ],
+        [
+          "time_utc_frac",
+          {
+            "$time": {
+              "seconds": 1705486830,
+              "nanos": 500000000,
+              "utc_offset": 0,
+              "utc": true
+            }
+          }
+        ],
+        [
+          "time_offset",
+          {
+            "$time": {
+              "seconds": 1705486830,
+              "nanos": 0,
+              "utc_offset": 18000,
+              "utc": false
+            }
+          }
+        ],
+        [
+          "time_zero_offset_local",
+          {
+            "$time": {
+              "seconds": 1705486830,
+              "nanos": 0,
+              "utc_offset": 0,
+              "utc": false
+            }
+          }
+        ],
+        [
+          "int_i64_max",
+          {
+            "$int": "9223372036854775807"
+          }
+        ],
+        [
+          "int_u64_over",
+          {
+            "$int": "18446744073709551617"
+          }
+        ],
+        [
+          "int_i128_over",
+          {
+            "$int": "1361129467683753853853498429727072845824"
+          }
+        ],
+        [
+          "int_negative_big",
+          {
+            "$int": "-1180591620717411303424"
+          }
+        ],
+        [
+          "float_small",
+          {
+            "$float": "3ef4f8b588e368f1"
+          }
+        ],
+        [
+          "float_big",
+          {
+            "$float": "4415af1d78b58c40"
+          }
+        ],
+        [
+          "float_neg_zero",
+          {
+            "$float": "8000000000000000"
+          }
+        ],
+        [
+          "hash_ordered",
+          {
+            "$map": [
+              [
+                "z",
+                {
+                  "$int": "1"
+                }
+              ],
+              [
+                {
+                  "$sym": "a"
+                },
+                {
+                  "$sym": "b"
+                }
+              ],
+              [
+                "m",
+                [
+                  {
+                    "$int": "1"
+                  },
+                  {
+                    "$float": "4004000000000000"
+                  },
+                  null
+                ]
+              ]
+            ]
+          }
+        ],
+        [
+          "array_mixed",
+          [
+            {
+              "$sym": "s"
+            },
+            {
+              "$time": {
+                "seconds": 1705449600,
+                "nanos": 0,
+                "utc_offset": 0,
+                "utc": true
+              }
+            },
+            {
+              "$int": "36893488147419103232"
+            },
+            {
+              "$float": "3ff8000000000000"
+            },
+            null,
+            true,
+            {
+              "$map": [
+                [
+                  "k",
+                  "v"
+                ]
+              ]
+            }
+          ]
+        ],
+        [
+          "nil",
+          null
+        ],
+        [
+          "true_flag",
+          true
+        ],
+        [
+          "false_flag",
+          false
+        ]
+      ],
+      "stdout": "\u001b[33mDRY RUN - Ukiryu Structured Execution Request:\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mUkiryu::Tool: jq\u001b[0m\n\u001b[36mCommand: process\u001b[0m\n\u001b[36mArguments:\u001b[0m\n\u001b[37m  symbol: :sym_value\u001b[0m\n\u001b[37m  symbol_quoted: :\"needs quote\"\u001b[0m\n\u001b[37m  time_utc: 2024-01-17 10:20:30 UTC\u001b[0m\n\u001b[37m  time_utc_frac: 2024-01-17 10:20:30.5 UTC\u001b[0m\n\u001b[37m  time_offset: 2024-01-17 15:20:30 +0500\u001b[0m\n\u001b[37m  time_zero_offset_local: 2024-01-17 10:20:30 +0000\u001b[0m\n\u001b[37m  int_i64_max: 9223372036854775807\u001b[0m\n\u001b[37m  int_u64_over: 18446744073709551617\u001b[0m\n\u001b[37m  int_i128_over: 1361129467683753853853498429727072845824\u001b[0m\n\u001b[37m  int_negative_big: -1180591620717411303424\u001b[0m\n\u001b[37m  float_small: 2.0e-05\u001b[0m\n\u001b[37m  float_big: 1.0e+20\u001b[0m\n\u001b[37m  float_neg_zero: -0.0\u001b[0m\n\u001b[37m  hash_ordered: {\"z\" => 1, a: :b, \"m\" => [1, 2.5, nil]}\u001b[0m\n\u001b[37m  array_mixed: [:s, 2024-01-17 00:00:00 UTC, 36893488147419103232, 1.5, nil, true, {\"k\" => \"v\"}]\u001b[0m\n\u001b[37m  nil: nil\u001b[0m\n\u001b[37m  true_flag: true\u001b[0m\n\u001b[37m  false_flag: false\u001b[0m\n",
+      "stderr": ""
+    },
+    {
+      "style": "response_formatter",
+      "use_color": null,
+      "arguments": [
+        [
+          "symbol",
+          {
+            "$sym": "sym_value"
+          }
+        ],
+        [
+          "symbol_quoted",
+          {
+            "$sym": "needs quote"
+          }
+        ],
+        [
+          "time_utc",
+          {
+            "$time": {
+              "seconds": 1705486830,
+              "nanos": 0,
+              "utc_offset": 0,
+              "utc": true
+            }
+          }
+        ],
+        [
+          "time_utc_frac",
+          {
+            "$time": {
+              "seconds": 1705486830,
+              "nanos": 500000000,
+              "utc_offset": 0,
+              "utc": true
+            }
+          }
+        ],
+        [
+          "time_offset",
+          {
+            "$time": {
+              "seconds": 1705486830,
+              "nanos": 0,
+              "utc_offset": 18000,
+              "utc": false
+            }
+          }
+        ],
+        [
+          "time_zero_offset_local",
+          {
+            "$time": {
+              "seconds": 1705486830,
+              "nanos": 0,
+              "utc_offset": 0,
+              "utc": false
+            }
+          }
+        ],
+        [
+          "int_i64_max",
+          {
+            "$int": "9223372036854775807"
+          }
+        ],
+        [
+          "int_u64_over",
+          {
+            "$int": "18446744073709551617"
+          }
+        ],
+        [
+          "int_i128_over",
+          {
+            "$int": "1361129467683753853853498429727072845824"
+          }
+        ],
+        [
+          "int_negative_big",
+          {
+            "$int": "-1180591620717411303424"
+          }
+        ],
+        [
+          "float_small",
+          {
+            "$float": "3ef4f8b588e368f1"
+          }
+        ],
+        [
+          "float_big",
+          {
+            "$float": "4415af1d78b58c40"
+          }
+        ],
+        [
+          "float_neg_zero",
+          {
+            "$float": "8000000000000000"
+          }
+        ],
+        [
+          "hash_ordered",
+          {
+            "$map": [
+              [
+                "z",
+                {
+                  "$int": "1"
+                }
+              ],
+              [
+                {
+                  "$sym": "a"
+                },
+                {
+                  "$sym": "b"
+                }
+              ],
+              [
+                "m",
+                [
+                  {
+                    "$int": "1"
+                  },
+                  {
+                    "$float": "4004000000000000"
+                  },
+                  null
+                ]
+              ]
+            ]
+          }
+        ],
+        [
+          "array_mixed",
+          [
+            {
+              "$sym": "s"
+            },
+            {
+              "$time": {
+                "seconds": 1705449600,
+                "nanos": 0,
+                "utc_offset": 0,
+                "utc": true
+              }
+            },
+            {
+              "$int": "36893488147419103232"
+            },
+            {
+              "$float": "3ff8000000000000"
+            },
+            null,
+            true,
+            {
+              "$map": [
+                [
+                  "k",
+                  "v"
+                ]
+              ]
+            }
+          ]
+        ],
+        [
+          "nil",
+          null
+        ],
+        [
+          "true_flag",
+          true
+        ],
+        [
+          "false_flag",
+          false
+        ]
+      ],
+      "stdout": "\u001b[33mDRY RUN - Ukiryu Structured Execution Request:\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mTool: jq\u001b[0m\n\u001b[36mCommand: process\u001b[0m\n\u001b[36mArguments:\u001b[0m\n\u001b[37m  symbol: :sym_value\u001b[0m\n\u001b[37m  symbol_quoted: :\"needs quote\"\u001b[0m\n\u001b[37m  time_utc: 2024-01-17 10:20:30 UTC\u001b[0m\n\u001b[37m  time_utc_frac: 2024-01-17 10:20:30.5 UTC\u001b[0m\n\u001b[37m  time_offset: 2024-01-17 15:20:30 +0500\u001b[0m\n\u001b[37m  time_zero_offset_local: 2024-01-17 10:20:30 +0000\u001b[0m\n\u001b[37m  int_i64_max: 9223372036854775807\u001b[0m\n\u001b[37m  int_u64_over: 18446744073709551617\u001b[0m\n\u001b[37m  int_i128_over: 1361129467683753853853498429727072845824\u001b[0m\n\u001b[37m  int_negative_big: -1180591620717411303424\u001b[0m\n\u001b[37m  float_small: 2.0e-05\u001b[0m\n\u001b[37m  float_big: 1.0e+20\u001b[0m\n\u001b[37m  float_neg_zero: -0.0\u001b[0m\n\u001b[37m  hash_ordered: {\"z\" => 1, a: :b, \"m\" => [1, 2.5, nil]}\u001b[0m\n\u001b[37m  array_mixed: [:s, 2024-01-17 00:00:00 UTC, 36893488147419103232, 1.5, nil, true, {\"k\" => \"v\"}]\u001b[0m\n\u001b[37m  nil: nil\u001b[0m\n\u001b[37m  true_flag: true\u001b[0m\n\u001b[37m  false_flag: false\u001b[0m\n",
+      "stderr": ""
+    },
+    {
+      "style": "run_command",
+      "use_color": false,
+      "arguments": [
+        [
+          "symbol",
+          {
+            "$sym": "sym_value"
+          }
+        ],
+        [
+          "symbol_quoted",
+          {
+            "$sym": "needs quote"
+          }
+        ],
+        [
+          "time_utc",
+          {
+            "$time": {
+              "seconds": 1705486830,
+              "nanos": 0,
+              "utc_offset": 0,
+              "utc": true
+            }
+          }
+        ],
+        [
+          "time_utc_frac",
+          {
+            "$time": {
+              "seconds": 1705486830,
+              "nanos": 500000000,
+              "utc_offset": 0,
+              "utc": true
+            }
+          }
+        ],
+        [
+          "time_offset",
+          {
+            "$time": {
+              "seconds": 1705486830,
+              "nanos": 0,
+              "utc_offset": 18000,
+              "utc": false
+            }
+          }
+        ],
+        [
+          "time_zero_offset_local",
+          {
+            "$time": {
+              "seconds": 1705486830,
+              "nanos": 0,
+              "utc_offset": 0,
+              "utc": false
+            }
+          }
+        ],
+        [
+          "int_i64_max",
+          {
+            "$int": "9223372036854775807"
+          }
+        ],
+        [
+          "int_u64_over",
+          {
+            "$int": "18446744073709551617"
+          }
+        ],
+        [
+          "int_i128_over",
+          {
+            "$int": "1361129467683753853853498429727072845824"
+          }
+        ],
+        [
+          "int_negative_big",
+          {
+            "$int": "-1180591620717411303424"
+          }
+        ],
+        [
+          "float_small",
+          {
+            "$float": "3ef4f8b588e368f1"
+          }
+        ],
+        [
+          "float_big",
+          {
+            "$float": "4415af1d78b58c40"
+          }
+        ],
+        [
+          "float_neg_zero",
+          {
+            "$float": "8000000000000000"
+          }
+        ],
+        [
+          "hash_ordered",
+          {
+            "$map": [
+              [
+                "z",
+                {
+                  "$int": "1"
+                }
+              ],
+              [
+                {
+                  "$sym": "a"
+                },
+                {
+                  "$sym": "b"
+                }
+              ],
+              [
+                "m",
+                [
+                  {
+                    "$int": "1"
+                  },
+                  {
+                    "$float": "4004000000000000"
+                  },
+                  null
+                ]
+              ]
+            ]
+          }
+        ],
+        [
+          "array_mixed",
+          [
+            {
+              "$sym": "s"
+            },
+            {
+              "$time": {
+                "seconds": 1705449600,
+                "nanos": 0,
+                "utc_offset": 0,
+                "utc": true
+              }
+            },
+            {
+              "$int": "36893488147419103232"
+            },
+            {
+              "$float": "3ff8000000000000"
+            },
+            null,
+            true,
+            {
+              "$map": [
+                [
+                  "k",
+                  "v"
+                ]
+              ]
+            }
+          ]
+        ],
+        [
+          "nil",
+          null
+        ],
+        [
+          "true_flag",
+          true
+        ],
+        [
+          "false_flag",
+          false
+        ]
+      ],
+      "stdout": "DRY RUN - Ukiryu Structured Execution Request:\n\nUkiryu::Tool: jq\nCommand: process\nArguments:\n  symbol: :sym_value\n  symbol_quoted: :\"needs quote\"\n  time_utc: 2024-01-17 10:20:30 UTC\n  time_utc_frac: 2024-01-17 10:20:30.5 UTC\n  time_offset: 2024-01-17 15:20:30 +0500\n  time_zero_offset_local: 2024-01-17 10:20:30 +0000\n  int_i64_max: 9223372036854775807\n  int_u64_over: 18446744073709551617\n  int_i128_over: 1361129467683753853853498429727072845824\n  int_negative_big: -1180591620717411303424\n  float_small: 2.0e-05\n  float_big: 1.0e+20\n  float_neg_zero: -0.0\n  hash_ordered: {\"z\" => 1, a: :b, \"m\" => [1, 2.5, nil]}\n  array_mixed: [:s, 2024-01-17 00:00:00 UTC, 36893488147419103232, 1.5, nil, true, {\"k\" => \"v\"}]\n  nil: nil\n  true_flag: true\n  false_flag: false\n",
+      "stderr": ""
+    },
+    {
+      "style": "response_formatter",
+      "use_color": false,
+      "arguments": [
+        [
+          "symbol",
+          {
+            "$sym": "sym_value"
+          }
+        ],
+        [
+          "symbol_quoted",
+          {
+            "$sym": "needs quote"
+          }
+        ],
+        [
+          "time_utc",
+          {
+            "$time": {
+              "seconds": 1705486830,
+              "nanos": 0,
+              "utc_offset": 0,
+              "utc": true
+            }
+          }
+        ],
+        [
+          "time_utc_frac",
+          {
+            "$time": {
+              "seconds": 1705486830,
+              "nanos": 500000000,
+              "utc_offset": 0,
+              "utc": true
+            }
+          }
+        ],
+        [
+          "time_offset",
+          {
+            "$time": {
+              "seconds": 1705486830,
+              "nanos": 0,
+              "utc_offset": 18000,
+              "utc": false
+            }
+          }
+        ],
+        [
+          "time_zero_offset_local",
+          {
+            "$time": {
+              "seconds": 1705486830,
+              "nanos": 0,
+              "utc_offset": 0,
+              "utc": false
+            }
+          }
+        ],
+        [
+          "int_i64_max",
+          {
+            "$int": "9223372036854775807"
+          }
+        ],
+        [
+          "int_u64_over",
+          {
+            "$int": "18446744073709551617"
+          }
+        ],
+        [
+          "int_i128_over",
+          {
+            "$int": "1361129467683753853853498429727072845824"
+          }
+        ],
+        [
+          "int_negative_big",
+          {
+            "$int": "-1180591620717411303424"
+          }
+        ],
+        [
+          "float_small",
+          {
+            "$float": "3ef4f8b588e368f1"
+          }
+        ],
+        [
+          "float_big",
+          {
+            "$float": "4415af1d78b58c40"
+          }
+        ],
+        [
+          "float_neg_zero",
+          {
+            "$float": "8000000000000000"
+          }
+        ],
+        [
+          "hash_ordered",
+          {
+            "$map": [
+              [
+                "z",
+                {
+                  "$int": "1"
+                }
+              ],
+              [
+                {
+                  "$sym": "a"
+                },
+                {
+                  "$sym": "b"
+                }
+              ],
+              [
+                "m",
+                [
+                  {
+                    "$int": "1"
+                  },
+                  {
+                    "$float": "4004000000000000"
+                  },
+                  null
+                ]
+              ]
+            ]
+          }
+        ],
+        [
+          "array_mixed",
+          [
+            {
+              "$sym": "s"
+            },
+            {
+              "$time": {
+                "seconds": 1705449600,
+                "nanos": 0,
+                "utc_offset": 0,
+                "utc": true
+              }
+            },
+            {
+              "$int": "36893488147419103232"
+            },
+            {
+              "$float": "3ff8000000000000"
+            },
+            null,
+            true,
+            {
+              "$map": [
+                [
+                  "k",
+                  "v"
+                ]
+              ]
+            }
+          ]
+        ],
+        [
+          "nil",
+          null
+        ],
+        [
+          "true_flag",
+          true
+        ],
+        [
+          "false_flag",
+          false
+        ]
+      ],
+      "stdout": "DRY RUN - Ukiryu Structured Execution Request:\n\nTool: jq\nCommand: process\nArguments:\n  symbol: :sym_value\n  symbol_quoted: :\"needs quote\"\n  time_utc: 2024-01-17 10:20:30 UTC\n  time_utc_frac: 2024-01-17 10:20:30.5 UTC\n  time_offset: 2024-01-17 15:20:30 +0500\n  time_zero_offset_local: 2024-01-17 10:20:30 +0000\n  int_i64_max: 9223372036854775807\n  int_u64_over: 18446744073709551617\n  int_i128_over: 1361129467683753853853498429727072845824\n  int_negative_big: -1180591620717411303424\n  float_small: 2.0e-05\n  float_big: 1.0e+20\n  float_neg_zero: -0.0\n  hash_ordered: {\"z\" => 1, a: :b, \"m\" => [1, 2.5, nil]}\n  array_mixed: [:s, 2024-01-17 00:00:00 UTC, 36893488147419103232, 1.5, nil, true, {\"k\" => \"v\"}]\n  nil: nil\n  true_flag: true\n  false_flag: false\n",
+      "stderr": ""
+    }
+  ]
+}
