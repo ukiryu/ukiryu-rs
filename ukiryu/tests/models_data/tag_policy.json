@@ -1,0 +1,5461 @@
+{
+  "source": {
+    "oracle": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+    "ruby": "4.0.1",
+    "psych": "5.3.1",
+    "policies": {
+      "register": "YAML.safe_load(text, permitted_classes: [Symbol], aliases: true) + Ukiryu::Utils.symbolize_keys (lib/ukiryu/register.rb)",
+      "register_raw": "YAML.safe_load(text, permitted_classes: [Symbol], aliases: true) (tool_index.rb, definition/discovery.rb)",
+      "model_file": "Psych.safe_load_file(path, permitted_classes: [Symbol, String, Integer, Array, Hash, TrueClass, FalseClass]) (models/interface.rb, implementation_index.rb, implementation_version.rb)"
+    },
+    "producer": "Ruby capture: for each row, value[\"v\"] (value[:v] after symbolize) of each policy below, typed (class, String encoding/bytes, Float bits, Hash class and order) or the raised exception class and message"
+  },
+  "rows": [
+    {
+      "id": "tag-local",
+      "yaml": "v: !custom x\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "str",
+            "v": "x",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"x\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "str",
+            "v": "x",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"x\""
+        },
+        "model_file": {
+          "value": {
+            "t": "str",
+            "v": "x",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"x\""
+        }
+      }
+    },
+    {
+      "id": "tag-local-map",
+      "yaml": "v: !custom {a: 1}\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "sym",
+                  "v": "a",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{a: 1}"
+        },
+        "register_raw": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "a",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"a\" => 1}"
+        },
+        "model_file": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "a",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"a\" => 1}"
+        }
+      }
+    },
+    {
+      "id": "tag-local-seq",
+      "yaml": "v: !custom [1, b]\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "arr",
+            "class": "Array",
+            "v": [
+              {
+                "t": "int",
+                "v": "1"
+              },
+              {
+                "t": "str",
+                "v": "b",
+                "enc": "UTF-8"
+              }
+            ]
+          },
+          "inspect": "[1, \"b\"]"
+        },
+        "register_raw": {
+          "value": {
+            "t": "arr",
+            "class": "Array",
+            "v": [
+              {
+                "t": "int",
+                "v": "1"
+              },
+              {
+                "t": "str",
+                "v": "b",
+                "enc": "UTF-8"
+              }
+            ]
+          },
+          "inspect": "[1, \"b\"]"
+        },
+        "model_file": {
+          "value": {
+            "t": "arr",
+            "class": "Array",
+            "v": [
+              {
+                "t": "int",
+                "v": "1"
+              },
+              {
+                "t": "str",
+                "v": "b",
+                "enc": "UTF-8"
+              }
+            ]
+          },
+          "inspect": "[1, \"b\"]"
+        }
+      }
+    },
+    {
+      "id": "tag-str-quoted",
+      "yaml": "v: !!str \"abc\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "str",
+            "v": "abc",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"abc\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "str",
+            "v": "abc",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"abc\""
+        },
+        "model_file": {
+          "value": {
+            "t": "str",
+            "v": "abc",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"abc\""
+        }
+      }
+    },
+    {
+      "id": "tag-str-plain-int",
+      "yaml": "v: !!str 123\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "str",
+            "v": "123",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"123\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "str",
+            "v": "123",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"123\""
+        },
+        "model_file": {
+          "value": {
+            "t": "str",
+            "v": "123",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"123\""
+        }
+      }
+    },
+    {
+      "id": "tag-str-leading-zero",
+      "yaml": "v: !!str 0123\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "str",
+            "v": "0123",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"0123\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "str",
+            "v": "0123",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"0123\""
+        },
+        "model_file": {
+          "value": {
+            "t": "str",
+            "v": "0123",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"0123\""
+        }
+      }
+    },
+    {
+      "id": "tag-float-int",
+      "yaml": "v: !!float 1\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "float",
+            "bits": "3ff0000000000000",
+            "inspect": "1.0"
+          },
+          "inspect": "1.0"
+        },
+        "register_raw": {
+          "value": {
+            "t": "float",
+            "bits": "3ff0000000000000",
+            "inspect": "1.0"
+          },
+          "inspect": "1.0"
+        },
+        "model_file": {
+          "value": {
+            "t": "float",
+            "bits": "3ff0000000000000",
+            "inspect": "1.0"
+          },
+          "inspect": "1.0"
+        }
+      }
+    },
+    {
+      "id": "tag-float-float",
+      "yaml": "v: !!float 2.5\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "float",
+            "bits": "4004000000000000",
+            "inspect": "2.5"
+          },
+          "inspect": "2.5"
+        },
+        "register_raw": {
+          "value": {
+            "t": "float",
+            "bits": "4004000000000000",
+            "inspect": "2.5"
+          },
+          "inspect": "2.5"
+        },
+        "model_file": {
+          "value": {
+            "t": "float",
+            "bits": "4004000000000000",
+            "inspect": "2.5"
+          },
+          "inspect": "2.5"
+        }
+      }
+    },
+    {
+      "id": "tag-int-quoted",
+      "yaml": "v: !!int \"7\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "int",
+            "v": "7"
+          },
+          "inspect": "7"
+        },
+        "register_raw": {
+          "value": {
+            "t": "int",
+            "v": "7"
+          },
+          "inspect": "7"
+        },
+        "model_file": {
+          "value": {
+            "t": "int",
+            "v": "7"
+          },
+          "inspect": "7"
+        }
+      }
+    },
+    {
+      "id": "tag-int-signed",
+      "yaml": "v: !!int \"-12\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "int",
+            "v": "-12"
+          },
+          "inspect": "-12"
+        },
+        "register_raw": {
+          "value": {
+            "t": "int",
+            "v": "-12"
+          },
+          "inspect": "-12"
+        },
+        "model_file": {
+          "value": {
+            "t": "int",
+            "v": "-12"
+          },
+          "inspect": "-12"
+        }
+      }
+    },
+    {
+      "id": "tag-int-octal-string",
+      "yaml": "v: !!int \"010\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "int",
+            "v": "8"
+          },
+          "inspect": "8"
+        },
+        "register_raw": {
+          "value": {
+            "t": "int",
+            "v": "8"
+          },
+          "inspect": "8"
+        },
+        "model_file": {
+          "value": {
+            "t": "int",
+            "v": "8"
+          },
+          "inspect": "8"
+        }
+      }
+    },
+    {
+      "id": "tag-int-plain",
+      "yaml": "v: !!int 42\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "int",
+            "v": "42"
+          },
+          "inspect": "42"
+        },
+        "register_raw": {
+          "value": {
+            "t": "int",
+            "v": "42"
+          },
+          "inspect": "42"
+        },
+        "model_file": {
+          "value": {
+            "t": "int",
+            "v": "42"
+          },
+          "inspect": "42"
+        }
+      }
+    },
+    {
+      "id": "tag-bool-quoted",
+      "yaml": "v: !!bool \"true\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "bool",
+            "v": true
+          },
+          "inspect": "true"
+        },
+        "register_raw": {
+          "value": {
+            "t": "bool",
+            "v": true
+          },
+          "inspect": "true"
+        },
+        "model_file": {
+          "value": {
+            "t": "bool",
+            "v": true
+          },
+          "inspect": "true"
+        }
+      }
+    },
+    {
+      "id": "tag-null-empty",
+      "yaml": "v: !!null \"\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "nil"
+          },
+          "inspect": "nil"
+        },
+        "register_raw": {
+          "value": {
+            "t": "nil"
+          },
+          "inspect": "nil"
+        },
+        "model_file": {
+          "value": {
+            "t": "nil"
+          },
+          "inspect": "nil"
+        }
+      }
+    },
+    {
+      "id": "tag-seq",
+      "yaml": "v: !!seq [1]\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "arr",
+            "class": "Array",
+            "v": [
+              {
+                "t": "int",
+                "v": "1"
+              }
+            ]
+          },
+          "inspect": "[1]"
+        },
+        "register_raw": {
+          "value": {
+            "t": "arr",
+            "class": "Array",
+            "v": [
+              {
+                "t": "int",
+                "v": "1"
+              }
+            ]
+          },
+          "inspect": "[1]"
+        },
+        "model_file": {
+          "value": {
+            "t": "arr",
+            "class": "Array",
+            "v": [
+              {
+                "t": "int",
+                "v": "1"
+              }
+            ]
+          },
+          "inspect": "[1]"
+        }
+      }
+    },
+    {
+      "id": "tag-map",
+      "yaml": "v: !!map {a: 1}\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "sym",
+                  "v": "a",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{a: 1}"
+        },
+        "register_raw": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "a",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"a\" => 1}"
+        },
+        "model_file": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "a",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"a\" => 1}"
+        }
+      }
+    },
+    {
+      "id": "tag-binary",
+      "yaml": "v: !!binary aGk=\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "bin",
+            "hex": "6869"
+          },
+          "inspect": "\"hi\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "bin",
+            "hex": "6869"
+          },
+          "inspect": "\"hi\""
+        },
+        "model_file": {
+          "value": {
+            "t": "bin",
+            "hex": "6869"
+          },
+          "inspect": "\"hi\""
+        }
+      }
+    },
+    {
+      "id": "tag-timestamp",
+      "yaml": "v: !!timestamp 2024-01-17 10:20:30 Z\n",
+      "expect": {
+        "register": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Time"
+        },
+        "register_raw": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Time"
+        },
+        "model_file": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Time"
+        }
+      }
+    },
+    {
+      "id": "tag-set",
+      "yaml": "v: !!set {a: null}\n",
+      "expect": {
+        "register": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Psych::Set"
+        },
+        "register_raw": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Psych::Set"
+        },
+        "model_file": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Psych::Set"
+        }
+      }
+    },
+    {
+      "id": "tag-omap",
+      "yaml": "v: !!omap [a: 1]\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "sym",
+                  "v": "a",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{a: 1}"
+        },
+        "register_raw": {
+          "value": {
+            "t": "hash",
+            "class": "Psych::Omap",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "a",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"a\" => 1}"
+        },
+        "model_file": {
+          "value": {
+            "t": "hash",
+            "class": "Psych::Omap",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "a",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"a\" => 1}"
+        }
+      }
+    },
+    {
+      "id": "tag-ruby-symbol",
+      "yaml": "v: !ruby/symbol abc\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "sym",
+            "v": "abc",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":abc"
+        },
+        "register_raw": {
+          "value": {
+            "t": "sym",
+            "v": "abc",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":abc"
+        },
+        "model_file": {
+          "value": {
+            "t": "sym",
+            "v": "abc",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":abc"
+        }
+      }
+    },
+    {
+      "id": "tag-nested-key",
+      "yaml": "v: {!custom k: 1}\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "sym",
+                  "v": "k",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{k: 1}"
+        },
+        "register_raw": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "k",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"k\" => 1}"
+        },
+        "model_file": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "k",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"k\" => 1}"
+        }
+      }
+    },
+    {
+      "id": "int-octal-plain",
+      "yaml": "v: !!int 010\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "int",
+            "v": "8"
+          },
+          "inspect": "8"
+        },
+        "register_raw": {
+          "value": {
+            "t": "int",
+            "v": "8"
+          },
+          "inspect": "8"
+        },
+        "model_file": {
+          "value": {
+            "t": "int",
+            "v": "8"
+          },
+          "inspect": "8"
+        }
+      }
+    },
+    {
+      "id": "int-octal-neg",
+      "yaml": "v: !!int \"-010\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "int",
+            "v": "-8"
+          },
+          "inspect": "-8"
+        },
+        "register_raw": {
+          "value": {
+            "t": "int",
+            "v": "-8"
+          },
+          "inspect": "-8"
+        },
+        "model_file": {
+          "value": {
+            "t": "int",
+            "v": "-8"
+          },
+          "inspect": "-8"
+        }
+      }
+    },
+    {
+      "id": "int-octal-plus",
+      "yaml": "v: !!int \"+010\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "int",
+            "v": "8"
+          },
+          "inspect": "8"
+        },
+        "register_raw": {
+          "value": {
+            "t": "int",
+            "v": "8"
+          },
+          "inspect": "8"
+        },
+        "model_file": {
+          "value": {
+            "t": "int",
+            "v": "8"
+          },
+          "inspect": "8"
+        }
+      }
+    },
+    {
+      "id": "int-0o",
+      "yaml": "v: !!int 0o17\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "str",
+            "v": "0o17",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"0o17\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "str",
+            "v": "0o17",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"0o17\""
+        },
+        "model_file": {
+          "value": {
+            "t": "str",
+            "v": "0o17",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"0o17\""
+        }
+      }
+    },
+    {
+      "id": "int-hex-quoted",
+      "yaml": "v: !!int \"0x1F\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "int",
+            "v": "31"
+          },
+          "inspect": "31"
+        },
+        "register_raw": {
+          "value": {
+            "t": "int",
+            "v": "31"
+          },
+          "inspect": "31"
+        },
+        "model_file": {
+          "value": {
+            "t": "int",
+            "v": "31"
+          },
+          "inspect": "31"
+        }
+      }
+    },
+    {
+      "id": "int-hex-plain",
+      "yaml": "v: !!int 0x1f\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "int",
+            "v": "31"
+          },
+          "inspect": "31"
+        },
+        "register_raw": {
+          "value": {
+            "t": "int",
+            "v": "31"
+          },
+          "inspect": "31"
+        },
+        "model_file": {
+          "value": {
+            "t": "int",
+            "v": "31"
+          },
+          "inspect": "31"
+        }
+      }
+    },
+    {
+      "id": "int-bin",
+      "yaml": "v: !!int 0b101\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "int",
+            "v": "5"
+          },
+          "inspect": "5"
+        },
+        "register_raw": {
+          "value": {
+            "t": "int",
+            "v": "5"
+          },
+          "inspect": "5"
+        },
+        "model_file": {
+          "value": {
+            "t": "int",
+            "v": "5"
+          },
+          "inspect": "5"
+        }
+      }
+    },
+    {
+      "id": "int-underscore",
+      "yaml": "v: !!int \"1_000\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "int",
+            "v": "1000"
+          },
+          "inspect": "1000"
+        },
+        "register_raw": {
+          "value": {
+            "t": "int",
+            "v": "1000"
+          },
+          "inspect": "1000"
+        },
+        "model_file": {
+          "value": {
+            "t": "int",
+            "v": "1000"
+          },
+          "inspect": "1000"
+        }
+      }
+    },
+    {
+      "id": "int-comma",
+      "yaml": "v: !!int \"1,000\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "int",
+            "v": "1000"
+          },
+          "inspect": "1000"
+        },
+        "register_raw": {
+          "value": {
+            "t": "int",
+            "v": "1000"
+          },
+          "inspect": "1000"
+        },
+        "model_file": {
+          "value": {
+            "t": "int",
+            "v": "1000"
+          },
+          "inspect": "1000"
+        }
+      }
+    },
+    {
+      "id": "int-octal-invalid",
+      "yaml": "v: !!int \"09\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "str",
+            "v": "09",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"09\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "str",
+            "v": "09",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"09\""
+        },
+        "model_file": {
+          "value": {
+            "t": "str",
+            "v": "09",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"09\""
+        }
+      }
+    },
+    {
+      "id": "int-octal-invalid-plain",
+      "yaml": "v: !!int 09\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "str",
+            "v": "09",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"09\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "str",
+            "v": "09",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"09\""
+        },
+        "model_file": {
+          "value": {
+            "t": "str",
+            "v": "09",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"09\""
+        }
+      }
+    },
+    {
+      "id": "int-word",
+      "yaml": "v: !!int \"abc\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "str",
+            "v": "abc",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"abc\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "str",
+            "v": "abc",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"abc\""
+        },
+        "model_file": {
+          "value": {
+            "t": "str",
+            "v": "abc",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"abc\""
+        }
+      }
+    },
+    {
+      "id": "int-float-text",
+      "yaml": "v: !!int \"1.5\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "float",
+            "bits": "3ff8000000000000",
+            "inspect": "1.5"
+          },
+          "inspect": "1.5"
+        },
+        "register_raw": {
+          "value": {
+            "t": "float",
+            "bits": "3ff8000000000000",
+            "inspect": "1.5"
+          },
+          "inspect": "1.5"
+        },
+        "model_file": {
+          "value": {
+            "t": "float",
+            "bits": "3ff8000000000000",
+            "inspect": "1.5"
+          },
+          "inspect": "1.5"
+        }
+      }
+    },
+    {
+      "id": "int-empty",
+      "yaml": "v: !!int \"\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "nil"
+          },
+          "inspect": "nil"
+        },
+        "register_raw": {
+          "value": {
+            "t": "nil"
+          },
+          "inspect": "nil"
+        },
+        "model_file": {
+          "value": {
+            "t": "nil"
+          },
+          "inspect": "nil"
+        }
+      }
+    },
+    {
+      "id": "int-plus",
+      "yaml": "v: !!int \"+7\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "int",
+            "v": "7"
+          },
+          "inspect": "7"
+        },
+        "register_raw": {
+          "value": {
+            "t": "int",
+            "v": "7"
+          },
+          "inspect": "7"
+        },
+        "model_file": {
+          "value": {
+            "t": "int",
+            "v": "7"
+          },
+          "inspect": "7"
+        }
+      }
+    },
+    {
+      "id": "int-zero",
+      "yaml": "v: !!int \"0\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "int",
+            "v": "0"
+          },
+          "inspect": "0"
+        },
+        "register_raw": {
+          "value": {
+            "t": "int",
+            "v": "0"
+          },
+          "inspect": "0"
+        },
+        "model_file": {
+          "value": {
+            "t": "int",
+            "v": "0"
+          },
+          "inspect": "0"
+        }
+      }
+    },
+    {
+      "id": "int-00",
+      "yaml": "v: !!int \"00\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "int",
+            "v": "0"
+          },
+          "inspect": "0"
+        },
+        "register_raw": {
+          "value": {
+            "t": "int",
+            "v": "0"
+          },
+          "inspect": "0"
+        },
+        "model_file": {
+          "value": {
+            "t": "int",
+            "v": "0"
+          },
+          "inspect": "0"
+        }
+      }
+    },
+    {
+      "id": "int-big-octal",
+      "yaml": "v: !!int \"0777777777777777777777777\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "int",
+            "v": "4722366482869645213695"
+          },
+          "inspect": "4722366482869645213695"
+        },
+        "register_raw": {
+          "value": {
+            "t": "int",
+            "v": "4722366482869645213695"
+          },
+          "inspect": "4722366482869645213695"
+        },
+        "model_file": {
+          "value": {
+            "t": "int",
+            "v": "4722366482869645213695"
+          },
+          "inspect": "4722366482869645213695"
+        }
+      }
+    },
+    {
+      "id": "int-sexagesimal",
+      "yaml": "v: !!int \"1:30\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "int",
+            "v": "5400"
+          },
+          "inspect": "5400"
+        },
+        "register_raw": {
+          "value": {
+            "t": "int",
+            "v": "5400"
+          },
+          "inspect": "5400"
+        },
+        "model_file": {
+          "value": {
+            "t": "int",
+            "v": "5400"
+          },
+          "inspect": "5400"
+        }
+      }
+    },
+    {
+      "id": "int-yes",
+      "yaml": "v: !!int yes\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "bool",
+            "v": true
+          },
+          "inspect": "true"
+        },
+        "register_raw": {
+          "value": {
+            "t": "bool",
+            "v": true
+          },
+          "inspect": "true"
+        },
+        "model_file": {
+          "value": {
+            "t": "bool",
+            "v": true
+          },
+          "inspect": "true"
+        }
+      }
+    },
+    {
+      "id": "float-exp",
+      "yaml": "v: !!float 1e5\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "float",
+            "bits": "40f86a0000000000",
+            "inspect": "100000.0"
+          },
+          "inspect": "100000.0"
+        },
+        "register_raw": {
+          "value": {
+            "t": "float",
+            "bits": "40f86a0000000000",
+            "inspect": "100000.0"
+          },
+          "inspect": "100000.0"
+        },
+        "model_file": {
+          "value": {
+            "t": "float",
+            "bits": "40f86a0000000000",
+            "inspect": "100000.0"
+          },
+          "inspect": "100000.0"
+        }
+      }
+    },
+    {
+      "id": "float-underscore",
+      "yaml": "v: !!float \"1_000.5\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "float",
+            "bits": "408f440000000000",
+            "inspect": "1000.5"
+          },
+          "inspect": "1000.5"
+        },
+        "register_raw": {
+          "value": {
+            "t": "float",
+            "bits": "408f440000000000",
+            "inspect": "1000.5"
+          },
+          "inspect": "1000.5"
+        },
+        "model_file": {
+          "value": {
+            "t": "float",
+            "bits": "408f440000000000",
+            "inspect": "1000.5"
+          },
+          "inspect": "1000.5"
+        }
+      }
+    },
+    {
+      "id": "float-word",
+      "yaml": "v: !!float abc\n",
+      "expect": {
+        "register": {
+          "error": "ArgumentError",
+          "message": "invalid value for Float(): \"abc\""
+        },
+        "register_raw": {
+          "error": "ArgumentError",
+          "message": "invalid value for Float(): \"abc\""
+        },
+        "model_file": {
+          "error": "ArgumentError",
+          "message": "invalid value for Float(): \"abc\""
+        }
+      }
+    },
+    {
+      "id": "float-empty",
+      "yaml": "v: !!float \"\"\n",
+      "expect": {
+        "register": {
+          "error": "TypeError",
+          "message": "can't convert nil into Float"
+        },
+        "register_raw": {
+          "error": "TypeError",
+          "message": "can't convert nil into Float"
+        },
+        "model_file": {
+          "error": "TypeError",
+          "message": "can't convert nil into Float"
+        }
+      }
+    },
+    {
+      "id": "float-inf",
+      "yaml": "v: !!float .inf\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "float",
+            "bits": "7ff0000000000000",
+            "inspect": "Infinity"
+          },
+          "inspect": "Infinity"
+        },
+        "register_raw": {
+          "value": {
+            "t": "float",
+            "bits": "7ff0000000000000",
+            "inspect": "Infinity"
+          },
+          "inspect": "Infinity"
+        },
+        "model_file": {
+          "value": {
+            "t": "float",
+            "bits": "7ff0000000000000",
+            "inspect": "Infinity"
+          },
+          "inspect": "Infinity"
+        }
+      }
+    },
+    {
+      "id": "float-nan",
+      "yaml": "v: !!float .nan\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "float",
+            "bits": "7ff8000000000000",
+            "inspect": "NaN"
+          },
+          "inspect": "NaN"
+        },
+        "register_raw": {
+          "value": {
+            "t": "float",
+            "bits": "7ff8000000000000",
+            "inspect": "NaN"
+          },
+          "inspect": "NaN"
+        },
+        "model_file": {
+          "value": {
+            "t": "float",
+            "bits": "7ff8000000000000",
+            "inspect": "NaN"
+          },
+          "inspect": "NaN"
+        }
+      }
+    },
+    {
+      "id": "float-octal",
+      "yaml": "v: !!float \"010\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "float",
+            "bits": "4020000000000000",
+            "inspect": "8.0"
+          },
+          "inspect": "8.0"
+        },
+        "register_raw": {
+          "value": {
+            "t": "float",
+            "bits": "4020000000000000",
+            "inspect": "8.0"
+          },
+          "inspect": "8.0"
+        },
+        "model_file": {
+          "value": {
+            "t": "float",
+            "bits": "4020000000000000",
+            "inspect": "8.0"
+          },
+          "inspect": "8.0"
+        }
+      }
+    },
+    {
+      "id": "float-quoted",
+      "yaml": "v: !!float \"2.5\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "float",
+            "bits": "4004000000000000",
+            "inspect": "2.5"
+          },
+          "inspect": "2.5"
+        },
+        "register_raw": {
+          "value": {
+            "t": "float",
+            "bits": "4004000000000000",
+            "inspect": "2.5"
+          },
+          "inspect": "2.5"
+        },
+        "model_file": {
+          "value": {
+            "t": "float",
+            "bits": "4004000000000000",
+            "inspect": "2.5"
+          },
+          "inspect": "2.5"
+        }
+      }
+    },
+    {
+      "id": "float-bare-tag",
+      "yaml": "v: !float 3\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "float",
+            "bits": "4008000000000000",
+            "inspect": "3.0"
+          },
+          "inspect": "3.0"
+        },
+        "register_raw": {
+          "value": {
+            "t": "float",
+            "bits": "4008000000000000",
+            "inspect": "3.0"
+          },
+          "inspect": "3.0"
+        },
+        "model_file": {
+          "value": {
+            "t": "float",
+            "bits": "4008000000000000",
+            "inspect": "3.0"
+          },
+          "inspect": "3.0"
+        }
+      }
+    },
+    {
+      "id": "float-dot5",
+      "yaml": "v: !!float .5\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "float",
+            "bits": "3fe0000000000000",
+            "inspect": "0.5"
+          },
+          "inspect": "0.5"
+        },
+        "register_raw": {
+          "value": {
+            "t": "float",
+            "bits": "3fe0000000000000",
+            "inspect": "0.5"
+          },
+          "inspect": "0.5"
+        },
+        "model_file": {
+          "value": {
+            "t": "float",
+            "bits": "3fe0000000000000",
+            "inspect": "0.5"
+          },
+          "inspect": "0.5"
+        }
+      }
+    },
+    {
+      "id": "float-exp-sign",
+      "yaml": "v: !!float \"1.0e+3\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "float",
+            "bits": "408f400000000000",
+            "inspect": "1000.0"
+          },
+          "inspect": "1000.0"
+        },
+        "register_raw": {
+          "value": {
+            "t": "float",
+            "bits": "408f400000000000",
+            "inspect": "1000.0"
+          },
+          "inspect": "1000.0"
+        },
+        "model_file": {
+          "value": {
+            "t": "float",
+            "bits": "408f400000000000",
+            "inspect": "1000.0"
+          },
+          "inspect": "1000.0"
+        }
+      }
+    },
+    {
+      "id": "float-hex",
+      "yaml": "v: !!float \"0x1A\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "float",
+            "bits": "403a000000000000",
+            "inspect": "26.0"
+          },
+          "inspect": "26.0"
+        },
+        "register_raw": {
+          "value": {
+            "t": "float",
+            "bits": "403a000000000000",
+            "inspect": "26.0"
+          },
+          "inspect": "26.0"
+        },
+        "model_file": {
+          "value": {
+            "t": "float",
+            "bits": "403a000000000000",
+            "inspect": "26.0"
+          },
+          "inspect": "26.0"
+        }
+      }
+    },
+    {
+      "id": "float-big-int",
+      "yaml": "v: !!float 9007199254740993\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "float",
+            "bits": "4340000000000000",
+            "inspect": "9.007199254740992e+15"
+          },
+          "inspect": "9.007199254740992e+15"
+        },
+        "register_raw": {
+          "value": {
+            "t": "float",
+            "bits": "4340000000000000",
+            "inspect": "9.007199254740992e+15"
+          },
+          "inspect": "9.007199254740992e+15"
+        },
+        "model_file": {
+          "value": {
+            "t": "float",
+            "bits": "4340000000000000",
+            "inspect": "9.007199254740992e+15"
+          },
+          "inspect": "9.007199254740992e+15"
+        }
+      }
+    },
+    {
+      "id": "binary-quoted-nopad",
+      "yaml": "v: !!binary \"aGk\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "bin",
+            "hex": "6869"
+          },
+          "inspect": "\"hi\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "bin",
+            "hex": "6869"
+          },
+          "inspect": "\"hi\""
+        },
+        "model_file": {
+          "value": {
+            "t": "bin",
+            "hex": "6869"
+          },
+          "inspect": "\"hi\""
+        }
+      }
+    },
+    {
+      "id": "binary-literal",
+      "yaml": "v: !!binary |\n  aGVsbG8g\n  d29ybGQ=\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "bin",
+            "hex": "68656c6c6f20776f726c64"
+          },
+          "inspect": "\"hello world\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "bin",
+            "hex": "68656c6c6f20776f726c64"
+          },
+          "inspect": "\"hello world\""
+        },
+        "model_file": {
+          "value": {
+            "t": "bin",
+            "hex": "68656c6c6f20776f726c64"
+          },
+          "inspect": "\"hello world\""
+        }
+      }
+    },
+    {
+      "id": "binary-ff",
+      "yaml": "v: !!binary /w==\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "bin",
+            "hex": "ff"
+          },
+          "inspect": "\"\\xFF\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "bin",
+            "hex": "ff"
+          },
+          "inspect": "\"\\xFF\""
+        },
+        "model_file": {
+          "value": {
+            "t": "bin",
+            "hex": "ff"
+          },
+          "inspect": "\"\\xFF\""
+        }
+      }
+    },
+    {
+      "id": "binary-utf8-bytes",
+      "yaml": "v: !!binary w6k=\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "bin",
+            "hex": "c3a9"
+          },
+          "inspect": "\"\\xC3\\xA9\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "bin",
+            "hex": "c3a9"
+          },
+          "inspect": "\"\\xC3\\xA9\""
+        },
+        "model_file": {
+          "value": {
+            "t": "bin",
+            "hex": "c3a9"
+          },
+          "inspect": "\"\\xC3\\xA9\""
+        }
+      }
+    },
+    {
+      "id": "binary-empty",
+      "yaml": "v: !!binary \"\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "bin",
+            "hex": ""
+          },
+          "inspect": "\"\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "bin",
+            "hex": ""
+          },
+          "inspect": "\"\""
+        },
+        "model_file": {
+          "value": {
+            "t": "bin",
+            "hex": ""
+          },
+          "inspect": "\"\""
+        }
+      }
+    },
+    {
+      "id": "binary-one-char",
+      "yaml": "v: !!binary a\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "bin",
+            "hex": ""
+          },
+          "inspect": "\"\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "bin",
+            "hex": ""
+          },
+          "inspect": "\"\""
+        },
+        "model_file": {
+          "value": {
+            "t": "bin",
+            "hex": ""
+          },
+          "inspect": "\"\""
+        }
+      }
+    },
+    {
+      "id": "binary-junk",
+      "yaml": "v: !!binary \"a*G=k=\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "bin",
+            "hex": "68"
+          },
+          "inspect": "\"h\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "bin",
+            "hex": "68"
+          },
+          "inspect": "\"h\""
+        },
+        "model_file": {
+          "value": {
+            "t": "bin",
+            "hex": "68"
+          },
+          "inspect": "\"h\""
+        }
+      }
+    },
+    {
+      "id": "binary-local-tag",
+      "yaml": "v: !binary aGk=\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "bin",
+            "hex": "6869"
+          },
+          "inspect": "\"hi\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "bin",
+            "hex": "6869"
+          },
+          "inspect": "\"hi\""
+        },
+        "model_file": {
+          "value": {
+            "t": "bin",
+            "hex": "6869"
+          },
+          "inspect": "\"hi\""
+        }
+      }
+    },
+    {
+      "id": "binary-number",
+      "yaml": "v: !!binary 1234\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "bin",
+            "hex": "d76df8"
+          },
+          "inspect": "\"\\xD7m\\xF8\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "bin",
+            "hex": "d76df8"
+          },
+          "inspect": "\"\\xD7m\\xF8\""
+        },
+        "model_file": {
+          "value": {
+            "t": "bin",
+            "hex": "d76df8"
+          },
+          "inspect": "\"\\xD7m\\xF8\""
+        }
+      }
+    },
+    {
+      "id": "binary-seq",
+      "yaml": "v: !!binary [a]\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "arr",
+            "class": "Array",
+            "v": [
+              {
+                "t": "str",
+                "v": "a",
+                "enc": "UTF-8"
+              }
+            ]
+          },
+          "inspect": "[\"a\"]"
+        },
+        "register_raw": {
+          "value": {
+            "t": "arr",
+            "class": "Array",
+            "v": [
+              {
+                "t": "str",
+                "v": "a",
+                "enc": "UTF-8"
+              }
+            ]
+          },
+          "inspect": "[\"a\"]"
+        },
+        "model_file": {
+          "value": {
+            "t": "arr",
+            "class": "Array",
+            "v": [
+              {
+                "t": "str",
+                "v": "a",
+                "enc": "UTF-8"
+              }
+            ]
+          },
+          "inspect": "[\"a\"]"
+        }
+      }
+    },
+    {
+      "id": "binary-map",
+      "yaml": "v: !!binary {a: 1}\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "sym",
+                  "v": "a",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{a: 1}"
+        },
+        "register_raw": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "a",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"a\" => 1}"
+        },
+        "model_file": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "a",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"a\" => 1}"
+        }
+      }
+    },
+    {
+      "id": "binary-nul",
+      "yaml": "v: !!binary AAE=\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "bin",
+            "hex": "0001"
+          },
+          "inspect": "\"\\x00\\x01\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "bin",
+            "hex": "0001"
+          },
+          "inspect": "\"\\x00\\x01\""
+        },
+        "model_file": {
+          "value": {
+            "t": "bin",
+            "hex": "0001"
+          },
+          "inspect": "\"\\x00\\x01\""
+        }
+      }
+    },
+    {
+      "id": "binary-ctrl",
+      "yaml": "v: !!binary G38J\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "bin",
+            "hex": "1b7f09"
+          },
+          "inspect": "\"\\e\\x7F\\t\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "bin",
+            "hex": "1b7f09"
+          },
+          "inspect": "\"\\e\\x7F\\t\""
+        },
+        "model_file": {
+          "value": {
+            "t": "bin",
+            "hex": "1b7f09"
+          },
+          "inspect": "\"\\e\\x7F\\t\""
+        }
+      }
+    },
+    {
+      "id": "binary-quote",
+      "yaml": "v: !!binary IlwjeyN9\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "bin",
+            "hex": "225c237b237d"
+          },
+          "inspect": "\"\\\"\\\\\\#{#}\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "bin",
+            "hex": "225c237b237d"
+          },
+          "inspect": "\"\\\"\\\\\\#{#}\""
+        },
+        "model_file": {
+          "value": {
+            "t": "bin",
+            "hex": "225c237b237d"
+          },
+          "inspect": "\"\\\"\\\\\\#{#}\""
+        }
+      }
+    },
+    {
+      "id": "binary-key",
+      "yaml": "v: {!!binary aGk=: 1}\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "sym",
+                  "v": "hi",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{hi: 1}"
+        },
+        "register_raw": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "bin",
+                  "hex": "6869"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"hi\" => 1}"
+        },
+        "model_file": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "bin",
+                  "hex": "6869"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"hi\" => 1}"
+        }
+      }
+    },
+    {
+      "id": "binary-key-nonascii",
+      "yaml": "v: {!!binary /w==: 1}\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "sym",
+                  "hex": "ff",
+                  "enc": "ASCII-8BIT"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"\\xFF\": 1}"
+        },
+        "register_raw": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "bin",
+                  "hex": "ff"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"\\xFF\" => 1}"
+        },
+        "model_file": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "bin",
+                  "hex": "ff"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"\\xFF\" => 1}"
+        }
+      }
+    },
+    {
+      "id": "timestamp-date",
+      "yaml": "v: !!timestamp 2024-01-17\n",
+      "expect": {
+        "register": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Date"
+        },
+        "register_raw": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Date"
+        },
+        "model_file": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Date"
+        }
+      }
+    },
+    {
+      "id": "timestamp-word",
+      "yaml": "v: !!timestamp abc\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "str",
+            "v": "abc",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"abc\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "str",
+            "v": "abc",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"abc\""
+        },
+        "model_file": {
+          "value": {
+            "t": "str",
+            "v": "abc",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"abc\""
+        }
+      }
+    },
+    {
+      "id": "timestamp-iso",
+      "yaml": "v: !!timestamp \"2024-01-17T10:20:30Z\"\n",
+      "expect": {
+        "register": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Time"
+        },
+        "register_raw": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Time"
+        },
+        "model_file": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Time"
+        }
+      }
+    },
+    {
+      "id": "timestamp-seq",
+      "yaml": "v: !!timestamp [1]\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "arr",
+            "class": "Array",
+            "v": [
+              {
+                "t": "int",
+                "v": "1"
+              }
+            ]
+          },
+          "inspect": "[1]"
+        },
+        "register_raw": {
+          "value": {
+            "t": "arr",
+            "class": "Array",
+            "v": [
+              {
+                "t": "int",
+                "v": "1"
+              }
+            ]
+          },
+          "inspect": "[1]"
+        },
+        "model_file": {
+          "value": {
+            "t": "arr",
+            "class": "Array",
+            "v": [
+              {
+                "t": "int",
+                "v": "1"
+              }
+            ]
+          },
+          "inspect": "[1]"
+        }
+      }
+    },
+    {
+      "id": "set-seq",
+      "yaml": "v: !!set [a]\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "arr",
+            "class": "Array",
+            "v": [
+              {
+                "t": "str",
+                "v": "a",
+                "enc": "UTF-8"
+              }
+            ]
+          },
+          "inspect": "[\"a\"]"
+        },
+        "register_raw": {
+          "value": {
+            "t": "arr",
+            "class": "Array",
+            "v": [
+              {
+                "t": "str",
+                "v": "a",
+                "enc": "UTF-8"
+              }
+            ]
+          },
+          "inspect": "[\"a\"]"
+        },
+        "model_file": {
+          "value": {
+            "t": "arr",
+            "class": "Array",
+            "v": [
+              {
+                "t": "str",
+                "v": "a",
+                "enc": "UTF-8"
+              }
+            ]
+          },
+          "inspect": "[\"a\"]"
+        }
+      }
+    },
+    {
+      "id": "set-local",
+      "yaml": "v: !set {a: null}\n",
+      "expect": {
+        "register": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Psych::Set"
+        },
+        "register_raw": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Psych::Set"
+        },
+        "model_file": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Psych::Set"
+        }
+      }
+    },
+    {
+      "id": "set-empty",
+      "yaml": "v: !!set {}\n",
+      "expect": {
+        "register": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Psych::Set"
+        },
+        "register_raw": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Psych::Set"
+        },
+        "model_file": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Psych::Set"
+        }
+      }
+    },
+    {
+      "id": "set-scalar",
+      "yaml": "v: !!set a\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "str",
+            "v": "a",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"a\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "str",
+            "v": "a",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"a\""
+        },
+        "model_file": {
+          "value": {
+            "t": "str",
+            "v": "a",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"a\""
+        }
+      }
+    },
+    {
+      "id": "omap-two",
+      "yaml": "v: !!omap [a: 1, b: 2]\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "sym",
+                  "v": "a",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ],
+              [
+                {
+                  "t": "sym",
+                  "v": "b",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "2"
+                }
+              ]
+            ]
+          },
+          "inspect": "{a: 1, b: 2}"
+        },
+        "register_raw": {
+          "value": {
+            "t": "hash",
+            "class": "Psych::Omap",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "a",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ],
+              [
+                {
+                  "t": "str",
+                  "v": "b",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "2"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"a\" => 1, \"b\" => 2}"
+        },
+        "model_file": {
+          "value": {
+            "t": "hash",
+            "class": "Psych::Omap",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "a",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ],
+              [
+                {
+                  "t": "str",
+                  "v": "b",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "2"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"a\" => 1, \"b\" => 2}"
+        }
+      }
+    },
+    {
+      "id": "omap-order",
+      "yaml": "v: !!omap [b: 1, a: 2]\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "sym",
+                  "v": "b",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ],
+              [
+                {
+                  "t": "sym",
+                  "v": "a",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "2"
+                }
+              ]
+            ]
+          },
+          "inspect": "{b: 1, a: 2}"
+        },
+        "register_raw": {
+          "value": {
+            "t": "hash",
+            "class": "Psych::Omap",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "b",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ],
+              [
+                {
+                  "t": "str",
+                  "v": "a",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "2"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"b\" => 1, \"a\" => 2}"
+        },
+        "model_file": {
+          "value": {
+            "t": "hash",
+            "class": "Psych::Omap",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "b",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ],
+              [
+                {
+                  "t": "str",
+                  "v": "a",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "2"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"b\" => 1, \"a\" => 2}"
+        }
+      }
+    },
+    {
+      "id": "omap-flow-maps",
+      "yaml": "v: !!omap [{a: 1}, {b: 2}]\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "sym",
+                  "v": "a",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ],
+              [
+                {
+                  "t": "sym",
+                  "v": "b",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "2"
+                }
+              ]
+            ]
+          },
+          "inspect": "{a: 1, b: 2}"
+        },
+        "register_raw": {
+          "value": {
+            "t": "hash",
+            "class": "Psych::Omap",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "a",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ],
+              [
+                {
+                  "t": "str",
+                  "v": "b",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "2"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"a\" => 1, \"b\" => 2}"
+        },
+        "model_file": {
+          "value": {
+            "t": "hash",
+            "class": "Psych::Omap",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "a",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ],
+              [
+                {
+                  "t": "str",
+                  "v": "b",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "2"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"a\" => 1, \"b\" => 2}"
+        }
+      }
+    },
+    {
+      "id": "omap-multi-pair",
+      "yaml": "v: !!omap [{a: 1, b: 2}]\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "sym",
+                  "v": "a",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "2"
+                }
+              ]
+            ]
+          },
+          "inspect": "{a: 2}"
+        },
+        "register_raw": {
+          "value": {
+            "t": "hash",
+            "class": "Psych::Omap",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "a",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "2"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"a\" => 2}"
+        },
+        "model_file": {
+          "value": {
+            "t": "hash",
+            "class": "Psych::Omap",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "a",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "2"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"a\" => 2}"
+        }
+      }
+    },
+    {
+      "id": "omap-dup",
+      "yaml": "v: !!omap [a: 1, a: 2]\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "sym",
+                  "v": "a",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "2"
+                }
+              ]
+            ]
+          },
+          "inspect": "{a: 2}"
+        },
+        "register_raw": {
+          "value": {
+            "t": "hash",
+            "class": "Psych::Omap",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "a",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "2"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"a\" => 2}"
+        },
+        "model_file": {
+          "value": {
+            "t": "hash",
+            "class": "Psych::Omap",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "a",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "2"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"a\" => 2}"
+        }
+      }
+    },
+    {
+      "id": "omap-mapping",
+      "yaml": "v: !!omap {a: 1}\n",
+      "expect": {
+        "register": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Psych::Omap"
+        },
+        "register_raw": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Psych::Omap"
+        },
+        "model_file": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Psych::Omap"
+        }
+      }
+    },
+    {
+      "id": "omap-empty",
+      "yaml": "v: !!omap []\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": []
+          },
+          "inspect": "{}"
+        },
+        "register_raw": {
+          "value": {
+            "t": "hash",
+            "class": "Psych::Omap",
+            "v": []
+          },
+          "inspect": "{}"
+        },
+        "model_file": {
+          "value": {
+            "t": "hash",
+            "class": "Psych::Omap",
+            "v": []
+          },
+          "inspect": "{}"
+        }
+      }
+    },
+    {
+      "id": "omap-scalar-item",
+      "yaml": "v: !!omap [x]\n",
+      "expect": {
+        "register": {
+          "error": "NoMethodError",
+          "message": "undefined method 'first' for nil"
+        },
+        "register_raw": {
+          "error": "NoMethodError",
+          "message": "undefined method 'first' for nil"
+        },
+        "model_file": {
+          "error": "NoMethodError",
+          "message": "undefined method 'first' for nil"
+        }
+      }
+    },
+    {
+      "id": "omap-seq-item",
+      "yaml": "v: !!omap [[k, v]]\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "sym",
+                  "v": "k",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "str",
+                  "v": "v",
+                  "enc": "UTF-8"
+                }
+              ]
+            ]
+          },
+          "inspect": "{k: \"v\"}"
+        },
+        "register_raw": {
+          "value": {
+            "t": "hash",
+            "class": "Psych::Omap",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "k",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "str",
+                  "v": "v",
+                  "enc": "UTF-8"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"k\" => \"v\"}"
+        },
+        "model_file": {
+          "value": {
+            "t": "hash",
+            "class": "Psych::Omap",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "k",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "str",
+                  "v": "v",
+                  "enc": "UTF-8"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"k\" => \"v\"}"
+        }
+      }
+    },
+    {
+      "id": "omap-single-seq-item",
+      "yaml": "v: !!omap [[k]]\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "sym",
+                  "v": "k",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "str",
+                  "v": "k",
+                  "enc": "UTF-8"
+                }
+              ]
+            ]
+          },
+          "inspect": "{k: \"k\"}"
+        },
+        "register_raw": {
+          "value": {
+            "t": "hash",
+            "class": "Psych::Omap",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "k",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "str",
+                  "v": "k",
+                  "enc": "UTF-8"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"k\" => \"k\"}"
+        },
+        "model_file": {
+          "value": {
+            "t": "hash",
+            "class": "Psych::Omap",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "k",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "str",
+                  "v": "k",
+                  "enc": "UTF-8"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"k\" => \"k\"}"
+        }
+      }
+    },
+    {
+      "id": "omap-empty-map-item",
+      "yaml": "v: !!omap [{}]\n",
+      "expect": {
+        "register": {
+          "error": "NoMethodError",
+          "message": "undefined method 'visit_NilClass' for an instance of Psych::Visitors::ToRuby"
+        },
+        "register_raw": {
+          "error": "NoMethodError",
+          "message": "undefined method 'visit_NilClass' for an instance of Psych::Visitors::ToRuby"
+        },
+        "model_file": {
+          "error": "NoMethodError",
+          "message": "undefined method 'visit_NilClass' for an instance of Psych::Visitors::NoAliasRuby"
+        }
+      }
+    },
+    {
+      "id": "omap-local",
+      "yaml": "v: !omap [a: 1]\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "sym",
+                  "v": "a",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{a: 1}"
+        },
+        "register_raw": {
+          "value": {
+            "t": "hash",
+            "class": "Psych::Omap",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "a",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"a\" => 1}"
+        },
+        "model_file": {
+          "value": {
+            "t": "hash",
+            "class": "Psych::Omap",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "a",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"a\" => 1}"
+        }
+      }
+    },
+    {
+      "id": "omap-scalar",
+      "yaml": "v: !!omap a\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "str",
+            "v": "a",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"a\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "str",
+            "v": "a",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"a\""
+        },
+        "model_file": {
+          "value": {
+            "t": "str",
+            "v": "a",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"a\""
+        }
+      }
+    },
+    {
+      "id": "omap-block",
+      "yaml": "v: !!omap\n  - b: 1\n  - a: 2\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "sym",
+                  "v": "b",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ],
+              [
+                {
+                  "t": "sym",
+                  "v": "a",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "2"
+                }
+              ]
+            ]
+          },
+          "inspect": "{b: 1, a: 2}"
+        },
+        "register_raw": {
+          "value": {
+            "t": "hash",
+            "class": "Psych::Omap",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "b",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ],
+              [
+                {
+                  "t": "str",
+                  "v": "a",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "2"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"b\" => 1, \"a\" => 2}"
+        },
+        "model_file": {
+          "value": {
+            "t": "hash",
+            "class": "Psych::Omap",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "b",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ],
+              [
+                {
+                  "t": "str",
+                  "v": "a",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "2"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"b\" => 1, \"a\" => 2}"
+        }
+      }
+    },
+    {
+      "id": "omap-int-key",
+      "yaml": "v: !!omap [1: x]\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "sym",
+                  "v": "1",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "str",
+                  "v": "x",
+                  "enc": "UTF-8"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"1\": \"x\"}"
+        },
+        "register_raw": {
+          "value": {
+            "t": "hash",
+            "class": "Psych::Omap",
+            "v": [
+              [
+                {
+                  "t": "int",
+                  "v": "1"
+                },
+                {
+                  "t": "str",
+                  "v": "x",
+                  "enc": "UTF-8"
+                }
+              ]
+            ]
+          },
+          "inspect": "{1 => \"x\"}"
+        },
+        "model_file": {
+          "value": {
+            "t": "hash",
+            "class": "Psych::Omap",
+            "v": [
+              [
+                {
+                  "t": "int",
+                  "v": "1"
+                },
+                {
+                  "t": "str",
+                  "v": "x",
+                  "enc": "UTF-8"
+                }
+              ]
+            ]
+          },
+          "inspect": "{1 => \"x\"}"
+        }
+      }
+    },
+    {
+      "id": "sym-sym",
+      "yaml": "v: !ruby/sym abc\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "sym",
+            "v": "abc",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":abc"
+        },
+        "register_raw": {
+          "value": {
+            "t": "sym",
+            "v": "abc",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":abc"
+        },
+        "model_file": {
+          "value": {
+            "t": "sym",
+            "v": "abc",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":abc"
+        }
+      }
+    },
+    {
+      "id": "sym-quoted",
+      "yaml": "v: !ruby/symbol \"a b\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "sym",
+            "v": "a b",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":\"a b\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "sym",
+            "v": "a b",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":\"a b\""
+        },
+        "model_file": {
+          "value": {
+            "t": "sym",
+            "v": "a b",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":\"a b\""
+        }
+      }
+    },
+    {
+      "id": "sym-number",
+      "yaml": "v: !ruby/symbol 123\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "sym",
+            "v": "123",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":\"123\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "sym",
+            "v": "123",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":\"123\""
+        },
+        "model_file": {
+          "value": {
+            "t": "sym",
+            "v": "123",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":\"123\""
+        }
+      }
+    },
+    {
+      "id": "sym-suffix",
+      "yaml": "v: !ruby/symbol:x abc\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "sym",
+            "v": "abc",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":abc"
+        },
+        "register_raw": {
+          "value": {
+            "t": "sym",
+            "v": "abc",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":abc"
+        },
+        "model_file": {
+          "value": {
+            "t": "sym",
+            "v": "abc",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":abc"
+        }
+      }
+    },
+    {
+      "id": "sym-empty",
+      "yaml": "v: !ruby/symbol \"\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "sym",
+            "v": "",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":\"\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "sym",
+            "v": "",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":\"\""
+        },
+        "model_file": {
+          "value": {
+            "t": "sym",
+            "v": "",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":\"\""
+        }
+      }
+    },
+    {
+      "id": "sym-map",
+      "yaml": "v: !ruby/symbol {a: 1}\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "sym",
+                  "v": "a",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{a: 1}"
+        },
+        "register_raw": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "a",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"a\" => 1}"
+        },
+        "model_file": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "a",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"a\" => 1}"
+        }
+      }
+    },
+    {
+      "id": "sym-seq",
+      "yaml": "v: !ruby/symbol [a]\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "arr",
+            "class": "Array",
+            "v": [
+              {
+                "t": "str",
+                "v": "a",
+                "enc": "UTF-8"
+              }
+            ]
+          },
+          "inspect": "[\"a\"]"
+        },
+        "register_raw": {
+          "value": {
+            "t": "arr",
+            "class": "Array",
+            "v": [
+              {
+                "t": "str",
+                "v": "a",
+                "enc": "UTF-8"
+              }
+            ]
+          },
+          "inspect": "[\"a\"]"
+        },
+        "model_file": {
+          "value": {
+            "t": "arr",
+            "class": "Array",
+            "v": [
+              {
+                "t": "str",
+                "v": "a",
+                "enc": "UTF-8"
+              }
+            ]
+          },
+          "inspect": "[\"a\"]"
+        }
+      }
+    },
+    {
+      "id": "sym-key",
+      "yaml": "v: {!ruby/symbol k: 1}\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "sym",
+                  "v": "k",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{k: 1}"
+        },
+        "register_raw": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "sym",
+                  "v": "k",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{k: 1}"
+        },
+        "model_file": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "sym",
+                  "v": "k",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{k: 1}"
+        }
+      }
+    },
+    {
+      "id": "sym-colon-text",
+      "yaml": "v: !ruby/symbol :abc\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "sym",
+            "v": ":abc",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":\":abc\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "sym",
+            "v": ":abc",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":\":abc\""
+        },
+        "model_file": {
+          "value": {
+            "t": "sym",
+            "v": ":abc",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":\":abc\""
+        }
+      }
+    },
+    {
+      "id": "sym-symx",
+      "yaml": "v: !ruby/symx abc\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "sym",
+            "v": "abc",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":abc"
+        },
+        "register_raw": {
+          "value": {
+            "t": "sym",
+            "v": "abc",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":abc"
+        },
+        "model_file": {
+          "value": {
+            "t": "sym",
+            "v": "abc",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":abc"
+        }
+      }
+    },
+    {
+      "id": "untagged-colon",
+      "yaml": "v: :abc\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "sym",
+            "v": "abc",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":abc"
+        },
+        "register_raw": {
+          "value": {
+            "t": "sym",
+            "v": "abc",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":abc"
+        },
+        "model_file": {
+          "value": {
+            "t": "sym",
+            "v": "abc",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":abc"
+        }
+      }
+    },
+    {
+      "id": "local-int",
+      "yaml": "v: !custom 123\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "int",
+            "v": "123"
+          },
+          "inspect": "123"
+        },
+        "register_raw": {
+          "value": {
+            "t": "int",
+            "v": "123"
+          },
+          "inspect": "123"
+        },
+        "model_file": {
+          "value": {
+            "t": "int",
+            "v": "123"
+          },
+          "inspect": "123"
+        }
+      }
+    },
+    {
+      "id": "local-int-quoted",
+      "yaml": "v: !custom \"123\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "int",
+            "v": "123"
+          },
+          "inspect": "123"
+        },
+        "register_raw": {
+          "value": {
+            "t": "int",
+            "v": "123"
+          },
+          "inspect": "123"
+        },
+        "model_file": {
+          "value": {
+            "t": "int",
+            "v": "123"
+          },
+          "inspect": "123"
+        }
+      }
+    },
+    {
+      "id": "local-yes",
+      "yaml": "v: !custom yes\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "bool",
+            "v": true
+          },
+          "inspect": "true"
+        },
+        "register_raw": {
+          "value": {
+            "t": "bool",
+            "v": true
+          },
+          "inspect": "true"
+        },
+        "model_file": {
+          "value": {
+            "t": "bool",
+            "v": true
+          },
+          "inspect": "true"
+        }
+      }
+    },
+    {
+      "id": "local-octal",
+      "yaml": "v: !custom 010\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "int",
+            "v": "8"
+          },
+          "inspect": "8"
+        },
+        "register_raw": {
+          "value": {
+            "t": "int",
+            "v": "8"
+          },
+          "inspect": "8"
+        },
+        "model_file": {
+          "value": {
+            "t": "int",
+            "v": "8"
+          },
+          "inspect": "8"
+        }
+      }
+    },
+    {
+      "id": "local-empty",
+      "yaml": "v: !custom \"\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "nil"
+          },
+          "inspect": "nil"
+        },
+        "register_raw": {
+          "value": {
+            "t": "nil"
+          },
+          "inspect": "nil"
+        },
+        "model_file": {
+          "value": {
+            "t": "nil"
+          },
+          "inspect": "nil"
+        }
+      }
+    },
+    {
+      "id": "local-colon",
+      "yaml": "v: !custom :a\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "sym",
+            "v": "a",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":a"
+        },
+        "register_raw": {
+          "value": {
+            "t": "sym",
+            "v": "a",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":a"
+        },
+        "model_file": {
+          "value": {
+            "t": "sym",
+            "v": "a",
+            "enc": "US-ASCII"
+          },
+          "inspect": ":a"
+        }
+      }
+    },
+    {
+      "id": "local-timestamp",
+      "yaml": "v: !custom 2024-01-17\n",
+      "expect": {
+        "register": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Date"
+        },
+        "register_raw": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Date"
+        },
+        "model_file": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Date"
+        }
+      }
+    },
+    {
+      "id": "nonspecific",
+      "yaml": "v: ! x\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "str",
+            "v": "x",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"x\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "str",
+            "v": "x",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"x\""
+        },
+        "model_file": {
+          "value": {
+            "t": "str",
+            "v": "x",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"x\""
+        }
+      }
+    },
+    {
+      "id": "nonspecific-int",
+      "yaml": "v: ! 123\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "int",
+            "v": "123"
+          },
+          "inspect": "123"
+        },
+        "register_raw": {
+          "value": {
+            "t": "int",
+            "v": "123"
+          },
+          "inspect": "123"
+        },
+        "model_file": {
+          "value": {
+            "t": "int",
+            "v": "123"
+          },
+          "inspect": "123"
+        }
+      }
+    },
+    {
+      "id": "null-word",
+      "yaml": "v: !!null x\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "str",
+            "v": "x",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"x\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "str",
+            "v": "x",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"x\""
+        },
+        "model_file": {
+          "value": {
+            "t": "str",
+            "v": "x",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"x\""
+        }
+      }
+    },
+    {
+      "id": "bool-yes",
+      "yaml": "v: !!bool yes\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "bool",
+            "v": true
+          },
+          "inspect": "true"
+        },
+        "register_raw": {
+          "value": {
+            "t": "bool",
+            "v": true
+          },
+          "inspect": "true"
+        },
+        "model_file": {
+          "value": {
+            "t": "bool",
+            "v": true
+          },
+          "inspect": "true"
+        }
+      }
+    },
+    {
+      "id": "bool-no-quoted",
+      "yaml": "v: !!bool \"no\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "bool",
+            "v": false
+          },
+          "inspect": "false"
+        },
+        "register_raw": {
+          "value": {
+            "t": "bool",
+            "v": false
+          },
+          "inspect": "false"
+        },
+        "model_file": {
+          "value": {
+            "t": "bool",
+            "v": false
+          },
+          "inspect": "false"
+        }
+      }
+    },
+    {
+      "id": "str-ruby-string",
+      "yaml": "v: !ruby/string x\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "str",
+            "v": "x",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"x\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "str",
+            "v": "x",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"x\""
+        },
+        "model_file": {
+          "value": {
+            "t": "str",
+            "v": "x",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"x\""
+        }
+      }
+    },
+    {
+      "id": "str-ruby-string-class",
+      "yaml": "v: !ruby/string:String x\n",
+      "expect": {
+        "register": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: String"
+        },
+        "register_raw": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: String"
+        },
+        "model_file": {
+          "value": {
+            "t": "str",
+            "v": "x",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"x\""
+        }
+      }
+    },
+    {
+      "id": "str-ruby-string-foo",
+      "yaml": "v: !ruby/string:Foo x\n",
+      "expect": {
+        "register": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Foo"
+        },
+        "register_raw": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Foo"
+        },
+        "model_file": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Foo"
+        }
+      }
+    },
+    {
+      "id": "str-bang",
+      "yaml": "v: !str 123\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "str",
+            "v": "123",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"123\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "str",
+            "v": "123",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"123\""
+        },
+        "model_file": {
+          "value": {
+            "t": "str",
+            "v": "123",
+            "enc": "UTF-8"
+          },
+          "inspect": "\"123\""
+        }
+      }
+    },
+    {
+      "id": "regexp",
+      "yaml": "v: !ruby/regexp /a/\n",
+      "expect": {
+        "register": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Regexp"
+        },
+        "register_raw": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Regexp"
+        },
+        "model_file": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Regexp"
+        }
+      }
+    },
+    {
+      "id": "range",
+      "yaml": "v: !ruby/range 1..2\n",
+      "expect": {
+        "register": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Range"
+        },
+        "register_raw": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Range"
+        },
+        "model_file": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Range"
+        }
+      }
+    },
+    {
+      "id": "object-foo",
+      "yaml": "v: !ruby/object:Foo {}\n",
+      "expect": {
+        "register": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Foo"
+        },
+        "register_raw": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Foo"
+        },
+        "model_file": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Foo"
+        }
+      }
+    },
+    {
+      "id": "object-bigdecimal",
+      "yaml": "v: !ruby/object:BigDecimal 1.5\n",
+      "expect": {
+        "register": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: BigDecimal"
+        },
+        "register_raw": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: BigDecimal"
+        },
+        "model_file": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: BigDecimal"
+        }
+      }
+    },
+    {
+      "id": "ruby-hash",
+      "yaml": "v: !ruby/hash:Hash {a: 1}\n",
+      "expect": {
+        "register": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Hash"
+        },
+        "register_raw": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Hash"
+        },
+        "model_file": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "a",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"a\" => 1}"
+        }
+      }
+    },
+    {
+      "id": "ruby-hash-foo",
+      "yaml": "v: !ruby/hash:Foo {a: 1}\n",
+      "expect": {
+        "register": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Foo"
+        },
+        "register_raw": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Foo"
+        },
+        "model_file": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Foo"
+        }
+      }
+    },
+    {
+      "id": "ruby-array",
+      "yaml": "v: !ruby/array:Array [1]\n",
+      "expect": {
+        "register": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Array"
+        },
+        "register_raw": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Array"
+        },
+        "model_file": {
+          "value": {
+            "t": "arr",
+            "class": "Array",
+            "v": [
+              {
+                "t": "int",
+                "v": "1"
+              }
+            ]
+          },
+          "inspect": "[1]"
+        }
+      }
+    },
+    {
+      "id": "ruby-array-foo",
+      "yaml": "v: !ruby/array:Foo [1]\n",
+      "expect": {
+        "register": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Foo"
+        },
+        "register_raw": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Foo"
+        },
+        "model_file": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Foo"
+        }
+      }
+    },
+    {
+      "id": "ruby-class",
+      "yaml": "v: !ruby/class String\n",
+      "expect": {
+        "register": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: String"
+        },
+        "register_raw": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: String"
+        },
+        "model_file": {
+          "value": {
+            "t": "other",
+            "class": "Class",
+            "inspect": "String"
+          },
+          "inspect": "String"
+        }
+      }
+    },
+    {
+      "id": "ruby-struct",
+      "yaml": "v: !ruby/struct:Foo {a: 1}\n",
+      "expect": {
+        "register": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Foo"
+        },
+        "register_raw": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Foo"
+        },
+        "model_file": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Foo"
+        }
+      }
+    },
+    {
+      "id": "ruby-exception",
+      "yaml": "v: !ruby/exception {message: x}\n",
+      "expect": {
+        "register": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Exception"
+        },
+        "register_raw": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Exception"
+        },
+        "model_file": {
+          "error": "Psych::DisallowedClass",
+          "message": "Tried to load unspecified class: Exception"
+        }
+      }
+    },
+    {
+      "id": "foreign-tag",
+      "yaml": "v: !<tag:example.com,2000:x> 5\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "int",
+            "v": "5"
+          },
+          "inspect": "5"
+        },
+        "register_raw": {
+          "value": {
+            "t": "int",
+            "v": "5"
+          },
+          "inspect": "5"
+        },
+        "model_file": {
+          "value": {
+            "t": "int",
+            "v": "5"
+          },
+          "inspect": "5"
+        }
+      }
+    },
+    {
+      "id": "alias-scalar",
+      "yaml": "a: &x 1\nv: *x\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "int",
+            "v": "1"
+          },
+          "inspect": "1"
+        },
+        "register_raw": {
+          "value": {
+            "t": "int",
+            "v": "1"
+          },
+          "inspect": "1"
+        },
+        "model_file": {
+          "error": "Psych::AliasesNotEnabled",
+          "message": "Alias parsing was not enabled. To enable it, pass `aliases: true` to `Psych::load` or `Psych::safe_load`."
+        }
+      }
+    },
+    {
+      "id": "alias-binary",
+      "yaml": "a: &x !!binary aGk=\nv: *x\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "bin",
+            "hex": "6869"
+          },
+          "inspect": "\"hi\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "bin",
+            "hex": "6869"
+          },
+          "inspect": "\"hi\""
+        },
+        "model_file": {
+          "error": "Psych::AliasesNotEnabled",
+          "message": "Alias parsing was not enabled. To enable it, pass `aliases: true` to `Psych::load` or `Psych::safe_load`."
+        }
+      }
+    },
+    {
+      "id": "alias-omap",
+      "yaml": "a: &x !!omap [k: 1]\nv: *x\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "sym",
+                  "v": "k",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{k: 1}"
+        },
+        "register_raw": {
+          "value": {
+            "t": "hash",
+            "class": "Psych::Omap",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "k",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"k\" => 1}"
+        },
+        "model_file": {
+          "error": "Psych::AliasesNotEnabled",
+          "message": "Alias parsing was not enabled. To enable it, pass `aliases: true` to `Psych::load` or `Psych::safe_load`."
+        }
+      }
+    },
+    {
+      "id": "merge-alias",
+      "yaml": "b: &x {k: 1}\nv: {<<: *x, j: 2}\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "sym",
+                  "v": "k",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ],
+              [
+                {
+                  "t": "sym",
+                  "v": "j",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "2"
+                }
+              ]
+            ]
+          },
+          "inspect": "{k: 1, j: 2}"
+        },
+        "register_raw": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "k",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ],
+              [
+                {
+                  "t": "str",
+                  "v": "j",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "2"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"k\" => 1, \"j\" => 2}"
+        },
+        "model_file": {
+          "error": "Psych::AliasesNotEnabled",
+          "message": "Alias parsing was not enabled. To enable it, pass `aliases: true` to `Psych::load` or `Psych::safe_load`."
+        }
+      }
+    },
+    {
+      "id": "merge-quoted-key",
+      "yaml": "v: {\"<<\": 1}\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "sym",
+                  "v": "<<",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"<<\": 1}"
+        },
+        "register_raw": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "<<",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"<<\" => 1}"
+        },
+        "model_file": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "<<",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"<<\" => 1}"
+        }
+      }
+    },
+    {
+      "id": "merge-str-tag",
+      "yaml": "v: {!!str \"<<\": {k: 1}}\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "sym",
+                  "v": "<<",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "hash",
+                  "class": "Hash",
+                  "v": [
+                    [
+                      {
+                        "t": "sym",
+                        "v": "k",
+                        "enc": "US-ASCII"
+                      },
+                      {
+                        "t": "int",
+                        "v": "1"
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"<<\": {k: 1}}"
+        },
+        "register_raw": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "<<",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "hash",
+                  "class": "Hash",
+                  "v": [
+                    [
+                      {
+                        "t": "str",
+                        "v": "k",
+                        "enc": "UTF-8"
+                      },
+                      {
+                        "t": "int",
+                        "v": "1"
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"<<\" => {\"k\" => 1}}"
+        },
+        "model_file": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "<<",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "hash",
+                  "class": "Hash",
+                  "v": [
+                    [
+                      {
+                        "t": "str",
+                        "v": "k",
+                        "enc": "UTF-8"
+                      },
+                      {
+                        "t": "int",
+                        "v": "1"
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"<<\" => {\"k\" => 1}}"
+        }
+      }
+    },
+    {
+      "id": "merge-map",
+      "yaml": "v: {<<: {k: 1}}\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "sym",
+                  "v": "k",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{k: 1}"
+        },
+        "register_raw": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "k",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"k\" => 1}"
+        },
+        "model_file": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "k",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"k\" => 1}"
+        }
+      }
+    },
+    {
+      "id": "float-true",
+      "yaml": "v: !!float true\n",
+      "expect": {
+        "register": {
+          "error": "TypeError",
+          "message": "can't convert true into Float"
+        },
+        "register_raw": {
+          "error": "TypeError",
+          "message": "can't convert true into Float"
+        },
+        "model_file": {
+          "error": "TypeError",
+          "message": "can't convert true into Float"
+        }
+      }
+    },
+    {
+      "id": "float-symbol",
+      "yaml": "v: !!float :a\n",
+      "expect": {
+        "register": {
+          "error": "TypeError",
+          "message": "can't convert Symbol into Float"
+        },
+        "register_raw": {
+          "error": "TypeError",
+          "message": "can't convert Symbol into Float"
+        },
+        "model_file": {
+          "error": "TypeError",
+          "message": "can't convert Symbol into Float"
+        }
+      }
+    },
+    {
+      "id": "float-space",
+      "yaml": "v: !!float \" 1.5\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "float",
+            "bits": "3ff8000000000000",
+            "inspect": "1.5"
+          },
+          "inspect": "1.5"
+        },
+        "register_raw": {
+          "value": {
+            "t": "float",
+            "bits": "3ff8000000000000",
+            "inspect": "1.5"
+          },
+          "inspect": "1.5"
+        },
+        "model_file": {
+          "value": {
+            "t": "float",
+            "bits": "3ff8000000000000",
+            "inspect": "1.5"
+          },
+          "inspect": "1.5"
+        }
+      }
+    },
+    {
+      "id": "float-exp-underscore",
+      "yaml": "v: !!float \"1_0e1_0\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "float",
+            "bits": "42374876e8000000",
+            "inspect": "100000000000.0"
+          },
+          "inspect": "100000000000.0"
+        },
+        "register_raw": {
+          "value": {
+            "t": "float",
+            "bits": "42374876e8000000",
+            "inspect": "100000000000.0"
+          },
+          "inspect": "100000000000.0"
+        },
+        "model_file": {
+          "value": {
+            "t": "float",
+            "bits": "42374876e8000000",
+            "inspect": "100000000000.0"
+          },
+          "inspect": "100000000000.0"
+        }
+      }
+    },
+    {
+      "id": "float-exp-bare",
+      "yaml": "v: !!float 1e\n",
+      "expect": {
+        "register": {
+          "error": "ArgumentError",
+          "message": "invalid value for Float(): \"1e\""
+        },
+        "register_raw": {
+          "error": "ArgumentError",
+          "message": "invalid value for Float(): \"1e\""
+        },
+        "model_file": {
+          "error": "ArgumentError",
+          "message": "invalid value for Float(): \"1e\""
+        }
+      }
+    },
+    {
+      "id": "float-infinity-word",
+      "yaml": "v: !!float Infinity\n",
+      "expect": {
+        "register": {
+          "error": "ArgumentError",
+          "message": "invalid value for Float(): \"Infinity\""
+        },
+        "register_raw": {
+          "error": "ArgumentError",
+          "message": "invalid value for Float(): \"Infinity\""
+        },
+        "model_file": {
+          "error": "ArgumentError",
+          "message": "invalid value for Float(): \"Infinity\""
+        }
+      }
+    },
+    {
+      "id": "float-trailing-dot",
+      "yaml": "v: !!float \"1.\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "float",
+            "bits": "3ff0000000000000",
+            "inspect": "1.0"
+          },
+          "inspect": "1.0"
+        },
+        "register_raw": {
+          "value": {
+            "t": "float",
+            "bits": "3ff0000000000000",
+            "inspect": "1.0"
+          },
+          "inspect": "1.0"
+        },
+        "model_file": {
+          "value": {
+            "t": "float",
+            "bits": "3ff0000000000000",
+            "inspect": "1.0"
+          },
+          "inspect": "1.0"
+        }
+      }
+    },
+    {
+      "id": "float-neg-exp",
+      "yaml": "v: !!float -2E-3\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "float",
+            "bits": "bf60624dd2f1a9fc",
+            "inspect": "-0.002"
+          },
+          "inspect": "-0.002"
+        },
+        "register_raw": {
+          "value": {
+            "t": "float",
+            "bits": "bf60624dd2f1a9fc",
+            "inspect": "-0.002"
+          },
+          "inspect": "-0.002"
+        },
+        "model_file": {
+          "value": {
+            "t": "float",
+            "bits": "bf60624dd2f1a9fc",
+            "inspect": "-0.002"
+          },
+          "inspect": "-0.002"
+        }
+      }
+    },
+    {
+      "id": "float-big-bignum",
+      "yaml": "v: !!float \"123456789012345678901234567890\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "float",
+            "bits": "45f8ee90ff6c373e",
+            "inspect": "1.2345678901234568e+29"
+          },
+          "inspect": "1.2345678901234568e+29"
+        },
+        "register_raw": {
+          "value": {
+            "t": "float",
+            "bits": "45f8ee90ff6c373e",
+            "inspect": "1.2345678901234568e+29"
+          },
+          "inspect": "1.2345678901234568e+29"
+        },
+        "model_file": {
+          "value": {
+            "t": "float",
+            "bits": "45f8ee90ff6c373e",
+            "inspect": "1.2345678901234568e+29"
+          },
+          "inspect": "1.2345678901234568e+29"
+        }
+      }
+    },
+    {
+      "id": "binary-space",
+      "yaml": "v: !!binary \"aG k=\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "bin",
+            "hex": "6869"
+          },
+          "inspect": "\"hi\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "bin",
+            "hex": "6869"
+          },
+          "inspect": "\"hi\""
+        },
+        "model_file": {
+          "value": {
+            "t": "bin",
+            "hex": "6869"
+          },
+          "inspect": "\"hi\""
+        }
+      }
+    },
+    {
+      "id": "binary-pad-mid",
+      "yaml": "v: !!binary \"aG==aGk=\"\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "bin",
+            "hex": "68"
+          },
+          "inspect": "\"h\""
+        },
+        "register_raw": {
+          "value": {
+            "t": "bin",
+            "hex": "68"
+          },
+          "inspect": "\"h\""
+        },
+        "model_file": {
+          "value": {
+            "t": "bin",
+            "hex": "68"
+          },
+          "inspect": "\"h\""
+        }
+      }
+    },
+    {
+      "id": "alias-recursive",
+      "yaml": "a: &x [*x]\nv: 1\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "int",
+            "v": "1"
+          },
+          "inspect": "1"
+        },
+        "register_raw": {
+          "value": {
+            "t": "int",
+            "v": "1"
+          },
+          "inspect": "1"
+        },
+        "model_file": {
+          "error": "Psych::AliasesNotEnabled",
+          "message": "Alias parsing was not enabled. To enable it, pass `aliases: true` to `Psych::load` or `Psych::safe_load`."
+        }
+      }
+    },
+    {
+      "id": "merge-seq",
+      "yaml": "a: &x {k: 1}\nb: &y {k: 2, j: 3}\nv: {<<: [*x, *y], z: 0}\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "sym",
+                  "v": "k",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ],
+              [
+                {
+                  "t": "sym",
+                  "v": "j",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "3"
+                }
+              ],
+              [
+                {
+                  "t": "sym",
+                  "v": "z",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "0"
+                }
+              ]
+            ]
+          },
+          "inspect": "{k: 1, j: 3, z: 0}"
+        },
+        "register_raw": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "k",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ],
+              [
+                {
+                  "t": "str",
+                  "v": "j",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "3"
+                }
+              ],
+              [
+                {
+                  "t": "str",
+                  "v": "z",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "0"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"k\" => 1, \"j\" => 3, \"z\" => 0}"
+        },
+        "model_file": {
+          "error": "Psych::AliasesNotEnabled",
+          "message": "Alias parsing was not enabled. To enable it, pass `aliases: true` to `Psych::load` or `Psych::safe_load`."
+        }
+      }
+    },
+    {
+      "id": "merge-scalar-alias",
+      "yaml": "a: &x 5\nv: {<<: *x}\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "sym",
+                  "v": "<<",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "5"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"<<\": 5}"
+        },
+        "register_raw": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "<<",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "5"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"<<\" => 5}"
+        },
+        "model_file": {
+          "error": "Psych::AliasesNotEnabled",
+          "message": "Alias parsing was not enabled. To enable it, pass `aliases: true` to `Psych::load` or `Psych::safe_load`."
+        }
+      }
+    },
+    {
+      "id": "merge-override",
+      "yaml": "a: &x {k: 1}\nv: {k: 0, <<: *x}\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "sym",
+                  "v": "k",
+                  "enc": "US-ASCII"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{k: 1}"
+        },
+        "register_raw": {
+          "value": {
+            "t": "hash",
+            "class": "Hash",
+            "v": [
+              [
+                {
+                  "t": "str",
+                  "v": "k",
+                  "enc": "UTF-8"
+                },
+                {
+                  "t": "int",
+                  "v": "1"
+                }
+              ]
+            ]
+          },
+          "inspect": "{\"k\" => 1}"
+        },
+        "model_file": {
+          "error": "Psych::AliasesNotEnabled",
+          "message": "Alias parsing was not enabled. To enable it, pass `aliases: true` to `Psych::load` or `Psych::safe_load`."
+        }
+      }
+    },
+    {
+      "id": "multi-doc",
+      "yaml": "v: 1\n---\nv: 2\n",
+      "expect": {
+        "register": {
+          "value": {
+            "t": "int",
+            "v": "1"
+          },
+          "inspect": "1"
+        },
+        "register_raw": {
+          "value": {
+            "t": "int",
+            "v": "1"
+          },
+          "inspect": "1"
+        },
+        "model_file": {
+          "value": {
+            "t": "int",
+            "v": "1"
+          },
+          "inspect": "1"
+        }
+      }
+    }
+  ]
+}

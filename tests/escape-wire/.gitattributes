@@ -1,0 +1,2 @@
+# The supplemental byte digest is shared by native and browser consumers.
+*.jsonl -text
