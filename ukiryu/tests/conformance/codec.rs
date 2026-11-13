@@ -132,12 +132,12 @@ fn parse_time(iso: &str) -> Result<Time, String> {
     }
     let n = |r: std::ops::Range<usize>| iso[r].parse::<i64>().map_err(|_| bad());
     let days = days_from_civil(n(0..4)?, n(5..7)?, n(8..10)?);
-    Ok(Time {
-        seconds: days * 86_400 + n(11..13)? * 3600 + n(14..16)? * 60 + n(17..19)?,
-        nanos: n(20..29)? as u32,
-        utc_offset: 0,
-        utc: true,
-    })
+    Ok(Time::new(
+        days * 86_400 + n(11..13)? * 3600 + n(14..16)? * 60 + n(17..19)?,
+        n(20..29)? as u32,
+        0,
+        true,
+    ))
 }
 
 /// Ruby `Time#utc.iso8601(9)`.
