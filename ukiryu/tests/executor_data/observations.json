@@ -1,0 +1,910 @@
+{
+  "oracle": {
+    "repo": "ukiryu/ukiryu",
+    "sha": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+    "files": [
+      "lib/ukiryu/executor.rb",
+      "lib/ukiryu/shell/unix_base.rb",
+      "lib/ukiryu/shell/tcsh.rb",
+      "lib/ukiryu/errors.rb"
+    ],
+    "ruby": "ruby 4.0.1 (2026-01-13 revision e04267a14b) +PRISM [x86_64-linux]",
+    "host": "x86_64-linux",
+    "bash": "GNU bash, version 5.1.16(1)-release (x86_64-pc-linux-gnu)",
+    "capture_script": "capture_executor.rb (planning evidence, K20-EXECUTOR)"
+  },
+  "rows": [
+    {
+      "id": "missing_shell",
+      "outcome": "raise",
+      "class": "ArgumentError",
+      "message": "shell is required - specify :shell option (e.g., shell: :bash)",
+      "timeout_attr": "no_method",
+      "responds_to_result": false,
+      "elapsed_lt_2s": true,
+      "contract": "migrated",
+      "trace": "D1 (DECISIONS.md); ukiryu/ukiryu#20, #29",
+      "target": "ExecuteRequest::new requires the shell; ExecutionContext::run_settings returns MissingSetting::Shell with the same text"
+    },
+    {
+      "id": "missing_timeout",
+      "outcome": "raise",
+      "class": "ArgumentError",
+      "message": "timeout is required - specify :timeout option (e.g., timeout: 90)",
+      "timeout_attr": "no_method",
+      "responds_to_result": false,
+      "elapsed_lt_2s": true,
+      "contract": "migrated",
+      "trace": "D1 (DECISIONS.md); ukiryu/ukiryu#20, #29",
+      "target": "ExecuteRequest::new requires the timeout; ExecutionContext::run_settings returns MissingSetting::Timeout with the same text"
+    },
+    {
+      "id": "missing_env_defaults",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": "x\n",
+      "stdout_bytes": {
+        "hex": "780a",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 0,
+      "success": true,
+      "executable": "echo",
+      "arguments": [
+        "x"
+      ],
+      "full_command": "'echo' 'x'",
+      "shell": ":bash",
+      "timeout": 30,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "migrated",
+      "trace": "D1 (DECISIONS.md); ukiryu/ukiryu#20, #29",
+      "target": "ExecuteRequest::new requires an Environment; an empty one gives this result"
+    },
+    {
+      "id": "timeout_zero_runs_unbounded",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": "done\n",
+      "stdout_bytes": {
+        "hex": "646f6e650a",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 0,
+      "success": true,
+      "executable": "sh",
+      "arguments": [
+        "-c",
+        "sleep 0.2; echo done"
+      ],
+      "full_command": "'sh' '-c' 'sleep 0.2; echo done'",
+      "shell": ":bash",
+      "timeout": 0,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "migrated",
+      "trace": "D1 (DECISIONS.md); ukiryu/ukiryu#20, #29",
+      "target": "ExecuteError::InvalidTimeout (0 would disable the required timeout)"
+    },
+    {
+      "id": "timeout_negative",
+      "outcome": "raise",
+      "class": "ArgumentError",
+      "message": "Timeout sec must be a non-negative number",
+      "timeout_attr": "no_method",
+      "responds_to_result": false,
+      "elapsed_lt_2s": true,
+      "contract": "migrated",
+      "trace": "D1 (DECISIONS.md); ukiryu/ukiryu#20, #29",
+      "target": "ExecuteError::InvalidTimeout"
+    },
+    {
+      "id": "echo_test",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": "test\n",
+      "stdout_bytes": {
+        "hex": "746573740a",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 0,
+      "success": true,
+      "executable": "echo",
+      "arguments": [
+        "test"
+      ],
+      "full_command": "'echo' 'test'",
+      "shell": ":bash",
+      "timeout": 30,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "parity"
+    },
+    {
+      "id": "echo_hello_world",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": "hello world\n",
+      "stdout_bytes": {
+        "hex": "68656c6c6f20776f726c640a",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 0,
+      "success": true,
+      "executable": "echo",
+      "arguments": [
+        "hello world"
+      ],
+      "full_command": "'echo' 'hello world'",
+      "shell": ":bash",
+      "timeout": 30,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "parity"
+    },
+    {
+      "id": "special_chars",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": "hello \"quoted\" test's\n",
+      "stdout_bytes": {
+        "hex": "68656c6c6f202271756f74656422207465737427730a",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 0,
+      "success": true,
+      "executable": "echo",
+      "arguments": [
+        "hello \"quoted\" test's"
+      ],
+      "full_command": "'echo' 'hello \"quoted\" test'\\''s'",
+      "shell": ":bash",
+      "timeout": 90,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "parity"
+    },
+    {
+      "id": "timeout_float_success",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": "",
+      "stdout_bytes": {
+        "hex": "",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 0,
+      "success": true,
+      "executable": "sleep",
+      "arguments": [
+        "0.01"
+      ],
+      "full_command": "'sleep' '0.01'",
+      "shell": ":bash",
+      "timeout": 5,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "parity"
+    },
+    {
+      "id": "exit_42_allow_failure",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": "",
+      "stdout_bytes": {
+        "hex": "",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 42,
+      "success": false,
+      "executable": "sh",
+      "arguments": [
+        "-c",
+        "exit 42"
+      ],
+      "full_command": "'sh' '-c' 'exit 42'",
+      "shell": ":bash",
+      "timeout": 30,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "parity"
+    },
+    {
+      "id": "exit_1_raises",
+      "outcome": "raise",
+      "class": "Ukiryu::Errors::ExecutionError",
+      "message": "Command failed: sh\n\nCommand: 'sh' '-c' 'exit 1'\nExit status: 1\n\nSTDOUT:\n\n\nSTDERR:\n",
+      "timeout_attr": "no_method",
+      "responds_to_result": false,
+      "elapsed_lt_2s": true,
+      "contract": "parity"
+    },
+    {
+      "id": "stderr_in_error",
+      "outcome": "raise",
+      "class": "Ukiryu::Errors::ExecutionError",
+      "message": "Command failed: sh\n\nCommand: 'sh' '-c' 'echo error >&2; exit 1'\nExit status: 1\n\nSTDOUT:\n\n\nSTDERR:\nerror",
+      "timeout_attr": "no_method",
+      "responds_to_result": false,
+      "elapsed_lt_2s": true,
+      "contract": "parity"
+    },
+    {
+      "id": "false_raises",
+      "outcome": "raise",
+      "class": "Ukiryu::Errors::ExecutionError",
+      "message": "Command failed: false\n\nCommand: 'false'\nExit status: 1\n\nSTDOUT:\n\n\nSTDERR:\n",
+      "timeout_attr": "no_method",
+      "responds_to_result": false,
+      "elapsed_lt_2s": true,
+      "contract": "parity"
+    },
+    {
+      "id": "exit_42_raises",
+      "outcome": "raise",
+      "class": "Ukiryu::Errors::ExecutionError",
+      "message": "Command failed: sh\n\nCommand: 'sh' '-c' 'exit 42'\nExit status: 42\n\nSTDOUT:\n\n\nSTDERR:\n",
+      "timeout_attr": "no_method",
+      "responds_to_result": false,
+      "elapsed_lt_2s": true,
+      "contract": "parity"
+    },
+    {
+      "id": "stdout_and_stderr_stripped",
+      "outcome": "raise",
+      "class": "Ukiryu::Errors::ExecutionError",
+      "message": "Command failed: sh\n\nCommand: 'sh' '-c' 'printf \"  out \\n\"; printf \"\\n err  \\n\" >&2; exit 3'\nExit status: 3\n\nSTDOUT:\nout\n\nSTDERR:\nerr",
+      "timeout_attr": "no_method",
+      "responds_to_result": false,
+      "elapsed_lt_2s": true,
+      "contract": "parity"
+    },
+    {
+      "id": "signal_term",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": "",
+      "stdout_bytes": {
+        "hex": "",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 143,
+      "success": false,
+      "executable": "sh",
+      "arguments": [
+        "-c",
+        "kill -TERM $$"
+      ],
+      "full_command": "'sh' '-c' 'kill -TERM $$'",
+      "shell": ":bash",
+      "timeout": 30,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "parity",
+      "note": "Unix only"
+    },
+    {
+      "id": "missing_executable",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": "",
+      "stdout_bytes": {
+        "hex": "",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "/usr/bin/bash: line 1: ukiryu_no_such_exe_xyz: command not found\n",
+      "exit_status": 127,
+      "success": false,
+      "executable": "ukiryu_no_such_exe_xyz",
+      "arguments": [],
+      "full_command": "'ukiryu_no_such_exe_xyz'",
+      "shell": ":bash",
+      "timeout": 30,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "parity",
+      "note": "stderr text depends on the host bash; status 127 and the command-not-found text are compared"
+    },
+    {
+      "id": "timeout_sleep_10",
+      "outcome": "raise",
+      "class": "Ukiryu::Errors::TimeoutError",
+      "message": "Command timed out after 0.01 seconds: sleep",
+      "timeout_attr": null,
+      "responds_to_result": false,
+      "elapsed_lt_2s": false,
+      "child_alive_after_timeout": false,
+      "contract": "migrated",
+      "trace": "ukiryu/ukiryu#20 (timeout kill semantics)",
+      "target": "same class and message; timeout attribute is set; the child is killed at the deadline (source waits ~10 s for natural exit)"
+    },
+    {
+      "id": "timeout_int_message",
+      "outcome": "raise",
+      "class": "Ukiryu::Errors::TimeoutError",
+      "message": "Command timed out after 1 seconds: sleep",
+      "timeout_attr": null,
+      "responds_to_result": false,
+      "elapsed_lt_2s": false,
+      "contract": "migrated",
+      "trace": "ukiryu/ukiryu#20 (timeout kill semantics)",
+      "target": "same class and message; timeout attribute is set; killed at the deadline"
+    },
+    {
+      "id": "env_hash_var",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": "test_value\n",
+      "stdout_bytes": {
+        "hex": "746573745f76616c75650a",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 0,
+      "success": true,
+      "executable": "sh",
+      "arguments": [
+        "-c",
+        "echo \"$TEST_VAR\""
+      ],
+      "full_command": "'sh' '-c' 'echo \"$TEST_VAR\"'",
+      "shell": ":bash",
+      "timeout": 30,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "parity"
+    },
+    {
+      "id": "env_hash_spaces",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": "value with spaces\n",
+      "stdout_bytes": {
+        "hex": "76616c75652077697468207370616365730a",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 0,
+      "success": true,
+      "executable": "sh",
+      "arguments": [
+        "-c",
+        "echo \"$TEST_VAR\""
+      ],
+      "full_command": "'sh' '-c' 'echo \"$TEST_VAR\"'",
+      "shell": ":bash",
+      "timeout": 30,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "parity"
+    },
+    {
+      "id": "env_empty_hash_inherits_home",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": "home-set\n",
+      "stdout_bytes": {
+        "hex": "686f6d652d7365740a",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 0,
+      "success": true,
+      "executable": "sh",
+      "arguments": [
+        "-c",
+        "echo \"${HOME:+home-set}\""
+      ],
+      "full_command": "'sh' '-c' 'echo \"${HOME:+home-set}\"'",
+      "shell": ":bash",
+      "timeout": 30,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "parity"
+    },
+    {
+      "id": "env_object_without_home_still_inherits",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": "home-set|1\n",
+      "stdout_bytes": {
+        "hex": "686f6d652d7365747c310a",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 0,
+      "success": true,
+      "executable": "sh",
+      "arguments": [
+        "-c",
+        "echo \"${HOME:+home-set}|$ONLY\""
+      ],
+      "full_command": "'sh' '-c' 'echo \"${HOME:+home-set}|$ONLY\"'",
+      "shell": ":bash",
+      "timeout": 30,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "parity"
+    },
+    {
+      "id": "display_parent_set",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": ":99\n",
+      "stdout_bytes": {
+        "hex": "3a39390a",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 0,
+      "success": true,
+      "executable": "sh",
+      "arguments": [
+        "-c",
+        "echo \"${DISPLAY-unset}\""
+      ],
+      "full_command": "'sh' '-c' 'echo \"${DISPLAY-unset}\"'",
+      "shell": ":bash",
+      "timeout": 30,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "migrated",
+      "trace": "D1 (DECISIONS.md); ukiryu/ukiryu#20, #29",
+      "target": "DISPLAY removed from the child: prints unset (source passes the inherited value); not executed by tests (needs a parent DISPLAY)"
+    },
+    {
+      "id": "display_user_set",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": ":99\n",
+      "stdout_bytes": {
+        "hex": "3a39390a",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 0,
+      "success": true,
+      "executable": "sh",
+      "arguments": [
+        "-c",
+        "echo \"${DISPLAY-unset}\""
+      ],
+      "full_command": "'sh' '-c' 'echo \"${DISPLAY-unset}\"'",
+      "shell": ":bash",
+      "timeout": 30,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "migrated",
+      "trace": "D1 (DECISIONS.md); ukiryu/ukiryu#20, #29",
+      "target": "DISPLAY removed from the child: prints unset; not executed by tests (needs a parent DISPLAY)"
+    },
+    {
+      "id": "display_user_set_parent_unset",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": "unset\n",
+      "stdout_bytes": {
+        "hex": "756e7365740a",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 0,
+      "success": true,
+      "executable": "sh",
+      "arguments": [
+        "-c",
+        "echo \"${DISPLAY-unset}\""
+      ],
+      "full_command": "'sh' '-c' 'echo \"${DISPLAY-unset}\"'",
+      "shell": ":bash",
+      "timeout": 30,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "parity"
+    },
+    {
+      "id": "cwd_cat",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": "test content",
+      "stdout_bytes": {
+        "hex": "7465737420636f6e74656e74",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 0,
+      "success": true,
+      "executable": "cat",
+      "arguments": [
+        "test.txt"
+      ],
+      "full_command": "'cat' 'test.txt'",
+      "shell": ":bash",
+      "timeout": 30,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "parity"
+    },
+    {
+      "id": "stdin_string",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": "test data",
+      "stdout_bytes": {
+        "hex": "746573742064617461",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 0,
+      "success": true,
+      "executable": "/bin/cat",
+      "arguments": [],
+      "full_command": "'/bin/cat'",
+      "shell": ":bash",
+      "timeout": 90,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "parity"
+    },
+    {
+      "id": "stdin_multiline",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": "line1\nline2\nline3",
+      "stdout_bytes": {
+        "hex": "6c696e65310a6c696e65320a6c696e6533",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 0,
+      "success": true,
+      "executable": "/bin/cat",
+      "arguments": [],
+      "full_command": "'/bin/cat'",
+      "shell": ":bash",
+      "timeout": 90,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "parity"
+    },
+    {
+      "id": "stdin_binary",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": "\u0000\u0001\u0002\u0003",
+      "stdout_bytes": {
+        "hex": "00010203",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 0,
+      "success": true,
+      "executable": "/bin/cat",
+      "arguments": [],
+      "full_command": "'/bin/cat'",
+      "shell": ":bash",
+      "timeout": 90,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "parity"
+    },
+    {
+      "id": "stdin_empty_string",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": "",
+      "stdout_bytes": {
+        "hex": "",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 0,
+      "success": true,
+      "executable": "/bin/cat",
+      "arguments": [],
+      "full_command": "'/bin/cat'",
+      "shell": ":bash",
+      "timeout": 30,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "parity"
+    },
+    {
+      "id": "stdin_absent_is_closed",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": "",
+      "stdout_bytes": {
+        "hex": "",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 0,
+      "success": true,
+      "executable": "/bin/cat",
+      "arguments": [],
+      "full_command": "'/bin/cat'",
+      "shell": ":bash",
+      "timeout": 5,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "parity"
+    },
+    {
+      "id": "stdin_head_epipe",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": "line1\n",
+      "stdout_bytes": {
+        "hex": "6c696e65310a",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 0,
+      "success": true,
+      "executable": "/usr/bin/head",
+      "arguments": [
+        "-n",
+        "1"
+      ],
+      "full_command": "'/usr/bin/head' '-n' '1'",
+      "shell": ":bash",
+      "timeout": 90,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "parity"
+    },
+    {
+      "id": "stdin_head_epipe_large",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": "line\n",
+      "stdout_bytes": {
+        "hex": "6c696e650a",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 0,
+      "success": true,
+      "executable": "/usr/bin/head",
+      "arguments": [
+        "-n",
+        "1"
+      ],
+      "full_command": "'/usr/bin/head' '-n' '1'",
+      "shell": ":bash",
+      "timeout": 30,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "parity"
+    },
+    {
+      "id": "stdin_io_file",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": "file content",
+      "stdout_bytes": {
+        "hex": "66696c6520636f6e74656e74",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 0,
+      "success": true,
+      "executable": "/bin/cat",
+      "arguments": [],
+      "full_command": "'/bin/cat'",
+      "shell": ":bash",
+      "timeout": 90,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "parity"
+    },
+    {
+      "id": "stdin_large_cat_deadlock",
+      "outcome": "raise",
+      "class": "Ukiryu::Errors::TimeoutError",
+      "message": "Command timed out after 3 seconds: /bin/cat",
+      "timeout_attr": null,
+      "responds_to_result": false,
+      "elapsed_lt_2s": false,
+      "input_bytes": 1000000,
+      "contract": "migrated",
+      "trace": "ukiryu/ukiryu#20 (deadlock-safe stdin and capture)",
+      "target": "success; stdout equals the 1000000-byte input"
+    },
+    {
+      "id": "stdout_utf8",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": "hé",
+      "stdout_bytes": {
+        "hex": "68c3a9",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 0,
+      "success": true,
+      "executable": "printf",
+      "arguments": [
+        "h\\303\\251"
+      ],
+      "full_command": "'printf' 'h\\303\\251'",
+      "shell": ":bash",
+      "timeout": 30,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "parity"
+    },
+    {
+      "id": "stdout_invalid_utf8",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": null,
+      "stdout_bytes": {
+        "hex": "61ff62",
+        "encoding": "UTF-8",
+        "valid": false
+      },
+      "stderr": "",
+      "exit_status": 0,
+      "success": true,
+      "executable": "printf",
+      "arguments": [
+        "a\\377b"
+      ],
+      "full_command": "'printf' 'a\\377b'",
+      "shell": ":bash",
+      "timeout": 30,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "parity",
+      "note": "raw bytes compared; the result string replaces invalid UTF-8"
+    },
+    {
+      "id": "large_both_streams",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "exit_status": 0,
+      "success": true,
+      "executable": "sh",
+      "arguments": [
+        "-c",
+        "head -c 1000000 /dev/zero | tr \"\\0\" o; head -c 1000000 /dev/zero | tr \"\\0\" e >&2"
+      ],
+      "full_command": "'sh' '-c' 'head -c 1000000 /dev/zero | tr \"\\0\" o; head -c 1000000 /dev/zero | tr \"\\0\" e >&2'",
+      "shell": ":bash",
+      "timeout": 30,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "stdout_len": 1000000,
+      "stderr_len": 1000000,
+      "contract": "parity"
+    },
+    {
+      "id": "descendant_holds_pipe",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": "done\n",
+      "stdout_bytes": {
+        "hex": "646f6e650a",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 0,
+      "success": true,
+      "executable": "sh",
+      "arguments": [
+        "-c",
+        "sleep 1.5 & echo done"
+      ],
+      "full_command": "'sh' '-c' 'sleep 1.5 & echo done'",
+      "shell": ":bash",
+      "timeout": 30,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "elapsed_ge_1_4s": true,
+      "contract": "parity"
+    },
+    {
+      "id": "descendant_detached_pipes",
+      "outcome": "result",
+      "class": "Ukiryu::Execution::Result",
+      "stdout": "done\n",
+      "stdout_bytes": {
+        "hex": "646f6e650a",
+        "encoding": "UTF-8",
+        "valid": true
+      },
+      "stderr": "",
+      "exit_status": 0,
+      "success": true,
+      "executable": "sh",
+      "arguments": [
+        "-c",
+        "sleep 1.5 >/dev/null 2>&1 & echo done"
+      ],
+      "full_command": "'sh' '-c' 'sleep 1.5 >/dev/null 2>&1 & echo done'",
+      "shell": ":bash",
+      "timeout": 30,
+      "started_at_class": "Time",
+      "elapsed_lt_2s": true,
+      "contract": "parity"
+    },
+    {
+      "id": "shell_not_found",
+      "outcome": "raise",
+      "class": "RuntimeError",
+      "message": "Shell 'zsh' not found in system PATH",
+      "timeout_attr": "no_method",
+      "responds_to_result": false,
+      "elapsed_lt_2s": true,
+      "contract": "parity",
+      "note": "message parity; Ruby RuntimeError becomes ExecuteError::ShellNotFound"
+    },
+    {
+      "id": "tcsh_not_found",
+      "outcome": "raise",
+      "class": "RuntimeError",
+      "message": "tcsh not found in system PATH",
+      "timeout_attr": "no_method",
+      "responds_to_result": false,
+      "elapsed_lt_2s": true,
+      "contract": "parity",
+      "note": "message parity; Ruby RuntimeError becomes ExecuteError::ShellNotFound"
+    }
+  ],
+  "extract_status": [
+    {
+      "id": "exited_42",
+      "status": 42
+    },
+    {
+      "id": "signaled_15",
+      "status": 143
+    },
+    {
+      "id": "stopped_19",
+      "status": 147
+    },
+    {
+      "id": "unknown",
+      "status": 1
+    }
+  ]
+}

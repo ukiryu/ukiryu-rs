@@ -8,6 +8,7 @@
 //! `None` stands for a Ruby `nil` attribute; an absent key takes the model
 //! default.
 use crate::types::{OptionSource, Value};
+use num_bigint::BigInt;
 use serde::Deserialize;
 use std::collections::BTreeMap;
 
@@ -142,12 +143,12 @@ impl ArgumentSpec {
 
     /// `ArgumentDefinition#numeric_position`: `last` 999, `first` 1, a
     /// string with an all-digit line `to_i`, anything else 99.
-    pub fn numeric_position(&self) -> i128 {
+    pub fn numeric_position(&self) -> BigInt {
         match self.position.as_deref() {
-            Some("last") => 999,
-            Some("first") => 1,
+            Some("last") => BigInt::from(999),
+            Some("first") => BigInt::from(1),
             Some(p) if p.split('\n').any(all_digits) => ruby_to_i(p),
-            _ => 99,
+            _ => BigInt::from(99),
         }
     }
 }
@@ -158,27 +159,34 @@ fn all_digits(line: &str) -> bool {
 }
 
 /// `String#to_i`: leading whitespace, an optional sign, then decimal digits
-/// with single underscores between them. Saturates far beyond any position.
-fn ruby_to_i(s: &str) -> i128 {
+/// with single underscores between them. Exact for any length (Bignum).
+fn ruby_to_i(s: &str) -> BigInt {
     let t = s.trim_start_matches([' ', '\t', '\n', '\x0b', '\x0c', '\r']);
     let (neg, t) = match t.as_bytes().first() {
         Some(b'-') => (true, &t[1..]),
         Some(b'+') => (false, &t[1..]),
         _ => (false, t),
     };
-    let mut n: i128 = 0;
-    let mut prev_digit = false;
     let bytes = t.as_bytes();
+    let mut digits = String::new();
     for (i, &b) in bytes.iter().enumerate() {
         if b.is_ascii_digit() {
-            n = n.saturating_mul(10).saturating_add(i128::from(b - b'0'));
-            prev_digit = true;
-        } else if b == b'_' && prev_digit && bytes.get(i + 1).is_some_and(u8::is_ascii_digit) {
-            prev_digit = false;
+            digits.push(char::from(b));
+        } else if b == b'_'
+            && i > 0
+            && bytes[i - 1].is_ascii_digit()
+            && bytes.get(i + 1).is_some_and(u8::is_ascii_digit)
+        {
+            continue;
         } else {
             break;
         }
     }
+    let n: BigInt = if digits.is_empty() {
+        BigInt::from(0)
+    } else {
+        digits.parse().expect("ASCII digits")
+    };
     if neg {
         -n
     } else {
