@@ -1,0 +1,16 @@
+#!/bin/sh
+# Fixture: help mentions Ukiryu, but --ukiryu-definition fails.
+case "$1" in
+  --help)
+    echo "Usage: ukx-native-broken [options]"
+    echo "Built with Ukiryu support."
+    echo "  -f, --force            Overwrite files"
+    exit 0 ;;
+  --ukiryu-definition)
+    echo "definition export is disabled" >&2
+    exit 3 ;;
+  --version)
+    echo "no version here" >&2
+    exit 1 ;;
+esac
+exit 2
