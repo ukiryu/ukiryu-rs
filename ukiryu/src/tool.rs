@@ -16,7 +16,10 @@
 //! * arguments and environment come from [`crate::command_builder`];
 //! * processes run through [`crate::executor::execute`];
 //! * exit-code meanings use [`crate::execution::exit_code_meaning`];
-//! * version detection uses [`crate::version_detection::detect_profile_version`].
+//! * version detection uses [`crate::version_detection::detect_profile_version`];
+//! * [`Tool::check_version_compatibility`] answers with the core
+//!   [`crate::models::VersionCompatibility`], and [`Tool::probe_flag`] runs
+//!   through a [`FlagProbe`] ([`ExecutorProbe`] is the executor).
 //!
 //! # Intentional differences from the pinned source
 //!
@@ -33,8 +36,9 @@
 //! - `stdin` must be a String parameter; for an IO, build the request with
 //!   [`Tool::request`] and attach a reader.
 //! - The environment passed to the executor is the caller's base
-//!   environment with the command's variables applied over it. With an empty
-//!   base (the default) this is what the source passes (D1 is owner-pending).
+//!   environment with the command's variables applied over it. The executor
+//!   requires an explicit environment, shell and timeout; with an empty base
+//!   (the default) this is what the source passes.
 //! - [`Tool::exit_code_meaning`] reads the tool's selected profile; the
 //!   source's response object looks the tool up again by name first.
 mod command;
@@ -43,6 +47,10 @@ mod version;
 
 pub use command::{BuiltCommand, ExecuteSettings};
 pub use resolution::{profile_is_modern, ActionResolution};
+pub use version::{
+    version_info_to_s, CompatibilityMode, ExecutorProbe, FlagProbe, FlagProbeRequest,
+    PROBE_FLAG_TIMEOUT_SECS,
+};
 
 use std::fmt;
 use std::rc::Rc;
