@@ -437,6 +437,13 @@ fn shell_named(name: &str) -> ShellName {
 /// every detection command failing) through [`RegisterSource`]: tools Ruby
 /// could not load are `ToolNotFoundError` from `tool::get`, and every other
 /// row gets the definition Ruby built (`loaded.profile.to_yaml`).
+///
+/// That YAML was written after `Tool.new` had read the definition. Reading a
+/// lutaml attribute that holds its declared default makes `to_yaml` write
+/// the default, so the oracle carries keys the loader itself never set
+/// (`conversion_over_register_fixtures` checks the loader's own output
+/// without them). Those keys, and only with their declared default value,
+/// are allowed to be missing from the loader's definition.
 #[test]
 fn register_source_serves_the_tool_runtime() {
     let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/tool_runtime_data/oracle.json");
@@ -478,7 +485,7 @@ fn register_source_serves_the_tool_runtime() {
                     .as_str()
                     .unwrap();
                 let got = definition.to_yaml().expect("to_yaml");
-                if support::yaml_equiv(want, &got) {
+                if same_after_tool_new(&support::yaml_value(want), &support::yaml_value(&got)) {
                     c.passed += 1;
                 } else {
                     c.failures
@@ -492,4 +499,72 @@ fn register_source_serves_the_tool_runtime() {
     }
     assert_eq!((missing, built), (18, 66));
     c.finish("register_source_serves_the_tool_runtime");
+}
+
+/// Declared defaults that `Tool.new` makes `to_yaml` write, by the list that
+/// holds the entry (`options`, `flags`, `arguments`).
+const READ_DEFAULTS: &[(&str, &str, &str)] = &[
+    ("options", "type", "string"),
+    ("options", "assignment_delimiter", "auto"),
+    ("flags", "default", "false"),
+    ("arguments", "type", "string"),
+    ("arguments", "required", "false"),
+    ("arguments", "position", "99"),
+    ("arguments", "variadic", "false"),
+    ("arguments", "separator", " "),
+];
+
+fn scalar_text(v: &yeptris::Value) -> Option<String> {
+    use yeptris::{Number, Value as Y};
+    match v {
+        Y::String(s) => Some(s.clone()),
+        Y::Bool(b) => Some(b.to_string()),
+        Y::Number(Number::I64(i)) => Some(i.to_string()),
+        Y::Number(Number::U64(u)) => Some(u.to_string()),
+        _ => None,
+    }
+}
+
+/// Ordered tree equality, except that an entry of `expected` listed in
+/// [`READ_DEFAULTS`] for the enclosing list may be absent from `actual`.
+fn same_after_tool_new(expected: &yeptris::Value, actual: &yeptris::Value) -> bool {
+    tree_same(expected, actual, "")
+}
+
+fn tree_same(e: &yeptris::Value, a: &yeptris::Value, list: &str) -> bool {
+    use yeptris::Value as Y;
+    match (e, a) {
+        (Y::Mapping(x), Y::Mapping(y)) => {
+            let mut ys = y.0.iter().peekable();
+            for (k, v) in &x.0 {
+                let key = scalar_text(k).unwrap_or_default();
+                match ys.peek() {
+                    Some((k2, v2)) if k2 == k => {
+                        let child = if matches!(key.as_str(), "options" | "flags" | "arguments") {
+                            key.as_str()
+                        } else {
+                            ""
+                        };
+                        if !tree_same(v, v2, child) {
+                            return false;
+                        }
+                        ys.next();
+                    }
+                    _ => {
+                        let allowed = READ_DEFAULTS.iter().any(|(l, k3, d)| {
+                            *l == list && *k3 == key && scalar_text(v).as_deref() == Some(*d)
+                        });
+                        if !allowed {
+                            return false;
+                        }
+                    }
+                }
+            }
+            ys.next().is_none()
+        }
+        (Y::Sequence(x), Y::Sequence(y)) => {
+            x.len() == y.len() && x.iter().zip(y).all(|(p, q)| tree_same(p, q, list))
+        }
+        _ => e == a,
+    }
 }
