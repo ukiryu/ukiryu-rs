@@ -371,7 +371,8 @@ impl Out {
     /// `error!`: `Thor::Error`, printed by `FriendlyCLI` on stderr, status 1.
     pub(crate) fn error(mut self, message: &str) -> CommandOutcome {
         let mut text = message.to_owned();
-        if !text.ends_with('\n') {
+        // Thor's `say` adds no newline after a message ending in a space.
+        if !text.ends_with(['\n', ' ']) {
             text.push('\n');
         }
         self.writes.push(OutputWrite::Stderr(text));
