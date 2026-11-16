@@ -404,6 +404,12 @@ pub fn bytes(data: &[u8]) -> Json {
     }
 }
 
+/// Bytes of an ASCII-8BIT string: always `$bytes`, even when valid UTF-8.
+pub fn bytes_tagged(data: &[u8]) -> Json {
+    let hex: String = data.iter().map(|b| format!("{b:02x}")).collect();
+    json!({ "$bytes": hex })
+}
+
 /// A Float in the wire encoding.
 pub fn float(f: f64) -> Json {
     json!({ "$float": float_to_s(f) })

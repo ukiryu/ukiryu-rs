@@ -17,8 +17,11 @@ use crate::models::{ImplementationIndex, Model, ToolDefinition};
 use crate::runtime::{ShellName, ShellSource};
 use crate::schema::{self, Permitted, ValidateOptions};
 use crate::tool::{BuiltCommand, Tool, ToolError, ToolOptions};
+use crate::types::onig::Encoding;
 use crate::types::{self, StdHost, Value};
-use crate::version_detection::{extract_version_from_pattern, PatternError};
+use crate::version_detection::{
+    extract_version_from_encoded, extract_version_from_pattern, EncodedText, PatternError,
+};
 use crate::version_ranges::{self, Bounds, RangeKind, SpecValue, VersionRange};
 
 /// Where a tool definition comes from.
@@ -165,7 +168,7 @@ pub fn build(request: BuildRequest) -> Json {
 pub enum ResolveRequest {
     /// `Tool::Loader.extract_version_from_pattern(output, pattern)`.
     ExtractVersion {
-        output: Option<String>,
+        output: Option<VersionOutput>,
         pattern: Option<String>,
     },
     /// `Versionian::VersionRange.new(range, scheme, **bounds).matches?(version)`
@@ -216,6 +219,57 @@ fn spec_value(value: &Value) -> Result<SpecValue, Json> {
             ))
         }
     })
+}
+
+/// Process output for version extraction: a JSON string is a UTF-8 Ruby
+/// string; `{"$bytes": hex}` is an ASCII-8BIT one, never decoded as text.
+#[derive(Debug)]
+pub enum VersionOutput {
+    Text(String),
+    Binary(Vec<u8>),
+}
+
+impl<'de> Deserialize<'de> for VersionOutput {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        #[derive(Deserialize)]
+        #[serde(untagged)]
+        enum Raw {
+            Text(String),
+            Bytes {
+                #[serde(rename = "$bytes")]
+                bytes: String,
+            },
+        }
+        match Raw::deserialize(deserializer)? {
+            Raw::Text(text) => Ok(Self::Text(text)),
+            Raw::Bytes { bytes } => value::decode_hex(&bytes)
+                .map(Self::Binary)
+                .map_err(serde::de::Error::custom),
+        }
+    }
+}
+
+fn extract_version(output: Option<VersionOutput>, pattern: Option<&str>) -> Result<Json, Json> {
+    match output {
+        Some(VersionOutput::Binary(bytes)) => {
+            let encoded = EncodedText {
+                bytes: &bytes,
+                encoding: Encoding::Binary,
+            };
+            match extract_version_from_encoded(Some(encoded), pattern) {
+                Ok(None) => Ok(Json::Null),
+                // A capture from a BINARY string stays BINARY, even when ASCII.
+                Ok(Some(found)) => Ok(value::bytes_tagged(&found.bytes)),
+                Err(error) => Err(ruby(error.class, error.message)),
+            }
+        }
+        None => extract_version_from_pattern(None, pattern)
+            .map(|v| json!(v))
+            .map_err(|e| pattern_error(&e)),
+        Some(VersionOutput::Text(text)) => extract_version_from_pattern(Some(&text), pattern)
+            .map(|v| json!(v))
+            .map_err(|e| pattern_error(&e)),
+    }
 }
 
 fn pattern_error(error: &PatternError) -> Json {
@@ -310,9 +364,7 @@ pub(super) fn tool_identity(tool: &Tool) -> Json {
 pub fn resolve(request: ResolveRequest) -> Json {
     let result = match request {
         ResolveRequest::ExtractVersion { output, pattern } => {
-            extract_version_from_pattern(output.as_deref(), pattern.as_deref())
-                .map(|v| json!(v))
-                .map_err(|e| pattern_error(&e))
+            extract_version(output, pattern.as_deref())
         }
         ResolveRequest::Range {
             scheme: Typed(scheme),
