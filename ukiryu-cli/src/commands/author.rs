@@ -2039,7 +2039,7 @@ fn value_receiver(v: &Value) -> String {
     }
 }
 
-fn lookup<'a>(pairs: &'a [(Data, Data)], key: Data) -> Option<&'a Data> {
+fn lookup(pairs: &[(Data, Data)], key: Data) -> Option<&Data> {
     pairs.iter().find(|(k, _)| k.eql(&key)).map(|(_, v)| v)
 }
 
