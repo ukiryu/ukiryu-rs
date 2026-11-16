@@ -1350,7 +1350,9 @@ fn negative_controls_fail_broken_engines() {
 }
 
 /// Applies `f` to the ivars of every object of `class` inside `v`.
-fn edit_ivars(v: &Oj, class: &str, f: &dyn Fn(&mut Vec<(String, Oj)>)) -> Oj {
+type IvarEdit<'a> = &'a dyn Fn(&mut Vec<(String, Oj)>);
+
+fn edit_ivars(v: &Oj, class: &str, f: IvarEdit<'_>) -> Oj {
     match v {
         Oj::Arr(items) => Oj::Arr(items.iter().map(|x| edit_ivars(x, class, f)).collect()),
         Oj::Obj(pairs) => {
