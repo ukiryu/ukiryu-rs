@@ -51,7 +51,8 @@ pub enum Source {
         /// `tools/<tool>/index.yaml`.
         #[serde(default)]
         index: Option<String>,
-        /// `interfaces/<path>.yaml`, keyed by `<path>` as the index names it.
+        /// `interfaces/<path>.yaml`, keyed by `<path>` as the index names it,
+        /// without a leading `/` (the file loader trims it when joining).
         #[serde(default)]
         interfaces: std::collections::BTreeMap<String, String>,
         /// `tools/<tool>/<implementation>/<file>`.
@@ -131,6 +132,14 @@ pub(super) fn load_tool(request: &ToolRequest) -> Result<std::rc::Rc<Tool>, Json
         .map_err(|e| tool_error(&e))
 }
 
+/// The `interfaces` key for an index's interface path. The file loader
+/// joins it as `File.join(register, "interfaces", "<path>.yaml")`
+/// (`tool_loader::ruby_join`), which trims the part's leading `/`; the same
+/// key reaches the same document here.
+fn interface_key(path: &str) -> &str {
+    path.trim_start_matches('/')
+}
+
 /// The loader chain of `Source::VersionFile` (index, interface, version
 /// file, `convert_to_tool_definition`) over documents given as text. An
 /// absent or empty document stops the chain with `ToolNotFoundError`, as a
@@ -155,7 +164,7 @@ fn register_text_definition(
         None => None,
     }
     .ok_or_else(not_found)?;
-    let interface = match interfaces.get(&index.interface.to_ruby_s()) {
+    let interface = match interfaces.get(interface_key(&index.interface.to_ruby_s())) {
         Some(text) => Interface::from_register_yaml(text).map_err(model)?,
         None => None,
     }

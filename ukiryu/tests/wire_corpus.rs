@@ -339,3 +339,34 @@ fn register_text_without_a_version_document_is_not_found() {
         "{reply}"
     );
 }
+
+/// An index naming its interface as `/bzip2` finds `interfaces/bzip2.yaml`,
+/// as the file loader's join does.
+#[test]
+fn register_text_trims_the_interface_path_like_the_file_loader() {
+    let index = read_input("register/tools/bzip2/index.yaml");
+    assert!(index.contains("\ninterface: bzip2\n"), "fixture changed");
+    let index = index.replace("\ninterface: bzip2\n", "\ninterface: \"/bzip2\"\n");
+    let reply = wire(&json!({
+        "op": "build",
+        "tool": {
+            "source": {
+                "kind": "register_text",
+                "tool": "bzip2",
+                "implementation": "default",
+                "index": index,
+                "interfaces": interface_texts(),
+                "version": read_input("register/tools/bzip2/default/1.0.yaml"),
+            },
+            "platform": "linux",
+            "shell": "bash",
+        },
+        "command": "compress",
+        "params": {"inputs": ["a.txt"]},
+    }));
+    assert_eq!(
+        outcome("build.args", &reply),
+        json!({"ok": ["a.txt"]}),
+        "{reply}"
+    );
+}
