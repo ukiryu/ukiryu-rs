@@ -903,3 +903,334 @@ fn an_output_file_that_cannot_be_written_is_an_errno_error() {
     );
     let _ = std::fs::remove_dir_all(&root);
 }
+
+// ------------------------------------------------------------ exec stdin step
+
+/// `stdin_data/cases.json`: `ukiryu exec jq process <params> -D filter=.`
+/// captured from the pinned Ruby CLI (ab6df35, Ruby 4.0.1, Linux) against
+/// `stdin_data/register`, with `NO_COLOR=1`. The binary replays each row with
+/// the row's stdin pipe and files and must match status, stdout and stderr.
+///
+/// Every row is counted in a bucket:
+/// - `invalid`: the stdin bytes are not valid UTF-8; the row must match;
+/// - `closed`: the row closes file descriptor 0 (through `sh`); the row must
+///   match;
+/// - `unreadable`: a mode-000 file that the test user can still read (root),
+///   skipped.
+#[cfg(target_os = "linux")]
+#[derive(Default, Debug, PartialEq)]
+struct StdinCounts {
+    exact: usize,
+    invalid: usize,
+    closed: usize,
+    unreadable: usize,
+}
+
+#[cfg(target_os = "linux")]
+fn unhex(hex: &str) -> Vec<u8> {
+    (0..hex.len())
+        .step_by(2)
+        .map(|i| u8::from_str_radix(&hex[i..i + 2], 16).unwrap())
+        .collect()
+}
+
+#[cfg(target_os = "linux")]
+fn run_stdin_row(
+    args: &[String],
+    env: &[(String, String)],
+    cwd: &Path,
+    stdin: Stdio,
+    bytes: &[u8],
+) -> (Vec<u8>, Vec<u8>, i32) {
+    let mut child = Command::new(BIN)
+        .args(args)
+        .env_clear()
+        .envs(env.iter().map(|(k, v)| (k, v)))
+        .current_dir(cwd)
+        .stdin(stdin)
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .expect("spawn the ukiryu binary");
+    if let Some(mut pipe) = child.stdin.take() {
+        let _ = pipe.write_all(bytes);
+    }
+    let out = child.wait_with_output().unwrap();
+    (
+        out.stdout,
+        out.stderr,
+        out.status.code().expect("exit status"),
+    )
+}
+
+/// Runs the binary with file descriptor 0 closed (not `/dev/null`): the
+/// shell closes it before `exec`, so the test needs no unsafe code.
+#[cfg(target_os = "linux")]
+fn closed_stdin_row(
+    args: &[String],
+    env: &[(String, String)],
+    cwd: &Path,
+) -> (Vec<u8>, Vec<u8>, i32) {
+    let out = Command::new("/bin/sh")
+        .arg("-c")
+        .arg(r#"exec "$0" "$@" <&-"#)
+        .arg(BIN)
+        .args(args)
+        .env_clear()
+        .envs(env.iter().map(|(k, v)| (k, v)))
+        .current_dir(cwd)
+        .stdin(Stdio::null())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .output()
+        .expect("run the ukiryu binary through sh");
+    (
+        out.stdout,
+        out.stderr,
+        out.status.code().expect("exit status"),
+    )
+}
+
+#[cfg(target_os = "linux")]
+fn replay_stdin() -> (StdinCounts, Vec<String>) {
+    use std::os::unix::fs::PermissionsExt;
+    let data: Value = serde_json::from_str(include_str!("stdin_data/cases.json")).unwrap();
+    let register = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/stdin_data/register");
+    let mut counts = StdinCounts::default();
+    let mut failures = Vec::new();
+    for case in data["cases"].as_array().unwrap() {
+        let id = case["id"].as_str().unwrap();
+        let root = scratch(&format!("stdin-{id}"));
+        let dir = root.join("work");
+        std::fs::create_dir_all(&dir).unwrap();
+        let setup = &case["setup"];
+        for (name, hex) in setup["files"].as_object().unwrap() {
+            std::fs::write(dir.join(name), unhex(hex.as_str().unwrap())).unwrap();
+        }
+        for name in setup["dirs"].as_array().unwrap() {
+            std::fs::create_dir(dir.join(name.as_str().unwrap())).unwrap();
+        }
+        for (name, target) in setup["symlinks"].as_object().unwrap() {
+            std::os::unix::fs::symlink(dir.join(target.as_str().unwrap()), dir.join(name)).unwrap();
+        }
+        let mut unreadable = false;
+        for name in setup["chmod0"].as_array().unwrap() {
+            let path = dir.join(name.as_str().unwrap());
+            std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o000)).unwrap();
+            unreadable |= std::fs::read(&path).is_ok();
+        }
+        let cleanup = |dir: &Path| {
+            if let Ok(entries) = std::fs::read_dir(dir) {
+                for entry in entries.flatten() {
+                    let _ = std::fs::set_permissions(
+                        entry.path(),
+                        std::fs::Permissions::from_mode(0o700),
+                    );
+                }
+            }
+            let _ = std::fs::remove_dir_all(&root);
+        };
+        let pipe = &case["pipe"];
+        let mode = pipe["mode"].as_str().unwrap();
+        if unreadable {
+            counts.unreadable += 1;
+            cleanup(&dir);
+            continue;
+        }
+        let d = dir.to_str().unwrap();
+        let mut args: Vec<String> = ["exec", "jq", "process"].map(String::from).to_vec();
+        args.extend(
+            strings(&case["params"])
+                .iter()
+                .map(|p| p.replace("{dir}", d)),
+        );
+        args.extend(["-D".to_owned(), "filter=.".to_owned()]);
+        let env = vec![
+            ("HOME".to_owned(), format!("{}/home", root.display())),
+            ("PATH".to_owned(), "/usr/bin:/bin".to_owned()),
+            ("SHELL".to_owned(), "/bin/bash".to_owned()),
+            (
+                "UKIRYU_REGISTER".to_owned(),
+                register.to_str().unwrap().to_owned(),
+            ),
+            ("TERM".to_owned(), "dumb".to_owned()),
+            ("TZ".to_owned(), "UTC".to_owned()),
+            ("LANG".to_owned(), "C.UTF-8".to_owned()),
+            ("NO_COLOR".to_owned(), "1".to_owned()),
+        ];
+        let cwd = if setup["chdir"] == true {
+            dir.clone()
+        } else {
+            root.clone()
+        };
+        let (stdin, bytes) = match mode {
+            "closed" => (Stdio::null(), Vec::new()),
+            "bytes" => (Stdio::piped(), unhex(pipe["hex"].as_str().unwrap())),
+            "devnull" => (
+                Stdio::from(std::fs::File::open("/dev/null").unwrap()),
+                Vec::new(),
+            ),
+            "directory" => (
+                Stdio::from(std::fs::File::open(dir.join(pipe["name"].as_str().unwrap())).unwrap()),
+                Vec::new(),
+            ),
+            other => panic!("unknown pipe mode {other}"),
+        };
+        let (stdout, stderr, code) = if mode == "closed" {
+            closed_stdin_row(&args, &env, &cwd)
+        } else {
+            run_stdin_row(&args, &env, &cwd, stdin, &bytes)
+        };
+        cleanup(&dir);
+
+        let want_stdout = unhex(case["stdout_hex"].as_str().unwrap());
+        let want_stderr = String::from_utf8(unhex(case["stderr_hex"].as_str().unwrap()))
+            .unwrap()
+            .replace("{dir}", d);
+        if i64::from(code) == case["exit_status"].as_i64().unwrap()
+            && stdout == want_stdout
+            && String::from_utf8_lossy(&stderr) == want_stderr
+        {
+            if mode == "closed" {
+                counts.closed += 1;
+            } else if case["resolved"]["stdin"]["valid_encoding"] == false {
+                counts.invalid += 1;
+            } else {
+                counts.exact += 1;
+            }
+        } else {
+            failures.push(format!(
+                "{id}: status {code} (want {}), stdout {:?} (want {:?}), stderr {:?} (want {want_stderr:?})",
+                case["exit_status"],
+                String::from_utf8_lossy(&stdout),
+                String::from_utf8_lossy(&want_stdout),
+                String::from_utf8_lossy(&stderr)
+            ));
+        }
+    }
+    (counts, failures)
+}
+
+/// `execute_data/stdin_bytes.json`: Ruby captures of `exec` with arbitrary
+/// stdin bytes, a closed fd 0 and a child that stops reading early, through
+/// the `cat` fixture tool (stdout, stderr, status and written files).
+#[cfg(target_os = "linux")]
+fn replay_stdin_bytes() -> (usize, Vec<String>) {
+    let data: Value = serde_json::from_str(include_str!("execute_data/stdin_bytes.json")).unwrap();
+    let fixture = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/execute_data/fixture");
+    let mut exact = 0;
+    let mut failures = Vec::new();
+    for case in data["cases"].as_array().unwrap() {
+        let id = case["id"].as_str().unwrap();
+        let root = scratch(&format!("stdinbytes-{id}"));
+        copy_tree(&fixture, &root, SystemTime::now());
+        for dir in ["home", "xdg", "sysdata"] {
+            std::fs::create_dir_all(root.join(dir)).unwrap();
+        }
+        for (name, hex) in case["files_in"].as_object().unwrap() {
+            std::fs::write(root.join(name), unhex(hex.as_str().unwrap())).unwrap();
+        }
+        let r = root.to_str().unwrap().to_owned();
+        let env = execute_env(&r, &case["env"]);
+        let args = strings(&case["args"]);
+        let pipe = &case["stdin"];
+        let (stdout, stderr, code) = match pipe["mode"].as_str().unwrap() {
+            "closed" => closed_stdin_row(&args, &env, &root),
+            "bytes" => {
+                let bytes = match pipe["hex"].as_str() {
+                    Some(hex) => unhex(hex),
+                    None => unhex(pipe["repeat_hex"].as_str().unwrap())
+                        .repeat(pipe["count"].as_u64().unwrap() as usize),
+                };
+                run_stdin_row(&args, &env, &root, Stdio::piped(), &bytes)
+            }
+            other => panic!("unknown stdin mode {other}"),
+        };
+        let written: Vec<(String, Option<String>)> = case["files_out"]
+            .as_object()
+            .unwrap()
+            .keys()
+            .map(|name| (name.clone(), std::fs::read_to_string(root.join(name)).ok()))
+            .collect();
+        let _ = std::fs::remove_dir_all(&root);
+
+        // Masks the timing fields; bytes that are not UTF-8 compare as bytes.
+        let mask = |bytes: &[u8]| -> Vec<u8> {
+            match std::str::from_utf8(bytes) {
+                Ok(text) => mask_timing(text).into_bytes(),
+                Err(_) => bytes.to_vec(),
+            }
+        };
+        let want_stdout = mask(&unhex(case["stdout_hex"].as_str().unwrap()));
+        let want_stderr = unhex(case["stderr_hex"].as_str().unwrap());
+        let got_stdout = mask(&stdout);
+        let stdout_ok = match (
+            std::str::from_utf8(&want_stdout),
+            std::str::from_utf8(&got_stdout),
+        ) {
+            (Ok(want), Ok(got)) => same_stdout(want, got),
+            _ => want_stdout == got_stdout,
+        };
+        let files_ok = case["files_out"]
+            .as_object()
+            .unwrap()
+            .iter()
+            .zip(&written)
+            .all(|((name, hex), (got_name, got))| {
+                let want = String::from_utf8(unhex(hex.as_str().unwrap())).ok();
+                name == got_name && same_file(&want, got)
+            });
+        if i64::from(code) == case["status"].as_i64().unwrap()
+            && stdout_ok
+            && stderr == want_stderr
+            && files_ok
+        {
+            exact += 1;
+        } else {
+            failures.push(format!(
+                "{id}: status {code} (want {}), stdout {:?} (want {:?}), stderr {:?} (want {:?}), files match {files_ok}",
+                case["status"],
+                String::from_utf8_lossy(&got_stdout),
+                String::from_utf8_lossy(&want_stdout),
+                String::from_utf8_lossy(&stderr),
+                String::from_utf8_lossy(&want_stderr),
+            ));
+        }
+    }
+    (exact, failures)
+}
+
+/// The compiled binary replays the Ruby captures of arbitrary stdin bytes
+/// (not UTF-8, NUL, CRLF), a closed fd 0 and a child that exits before it
+/// reads its stdin: every one of the 39 rows must match.
+#[cfg(target_os = "linux")]
+#[test]
+fn exec_stdin_bytes_closed_fd_and_early_exit_through_the_binary() {
+    let (exact, failures) = replay_stdin_bytes();
+    assert!(
+        failures.is_empty(),
+        "{} rows failed:\n{}",
+        failures.len(),
+        failures.join("\n\n")
+    );
+    assert_eq!(exact, 39);
+}
+
+/// The compiled binary replays the shared stdin step's Ruby captures through
+/// `exec`: 39 rows, every one counted in a named bucket.
+#[cfg(target_os = "linux")]
+#[test]
+fn exec_stdin_cases_through_the_binary() {
+    let (counts, failures) = replay_stdin();
+    assert!(
+        failures.is_empty(),
+        "{} stdin rows failed:\n{}",
+        failures.len(),
+        failures.join("\n")
+    );
+    assert_eq!(
+        counts.exact + counts.invalid + counts.closed + counts.unreadable,
+        39
+    );
+    assert!(counts.exact >= 30, "{counts:?}");
+}
