@@ -51,7 +51,12 @@ def enc(value, exact: false)
            else value.to_s
            end
     { '$float' => text }
-  when String then { '$str' => value, 'encoding' => value.encoding.name }
+  when String
+    if value.encoding == Encoding::BINARY
+      { '$bytes' => value.unpack1('H*'), 'encoding' => 'ASCII-8BIT' }
+    else
+      { '$str' => value, 'encoding' => value.encoding.name }
+    end
   when Array then { '$array' => value.map { |item| enc(item, exact: exact) } }
   when Hash then { '$hash' => value.map { |key, item| [enc(key, exact: exact), enc(item, exact: exact)] } }
   when Time then { '$time' => [value.to_i, value.nsec, value.utc_offset, value.utc?] }
@@ -69,6 +74,9 @@ samples = {
   'bigint' => 2**200, 'negative-bigint' => -(2**100) - 7,
   'float' => 1.5, 'negative-zero' => -0.0, 'infinity' => Float::INFINITY,
   'negative-infinity' => -Float::INFINITY, 'nan' => Float::NAN, 'tiny' => 5e-324,
+  'binary-ff' => (+"\xff\x00a").force_encoding(Encoding::BINARY), 'binary-ascii' => (+'abc').force_encoding(Encoding::BINARY),
+  'binary-empty' => (+'').force_encoding(Encoding::BINARY),
+  'binary-in-hash' => { (+'k').force_encoding(Encoding::BINARY) => [(+"\xc3\xa9").force_encoding(Encoding::BINARY)] },
   'empty-string' => +'', 'unicode-nul' => +"Ω\0z", 'ascii' => +'plain',
   'symbol' => :sym, 'symbol-space' => :'with space', 'symbol-unicode' => :Ω,
   'time-utc' => Time.at(0).utc,
@@ -105,8 +113,7 @@ refusals = {
   'rational' => [1r, TypeError],
   'range' => [(1..2), TypeError],
   'struct' => [Struct.new(:a).new(1), TypeError],
-  'binary-string' => [(+"\xff").force_encoding(Encoding::BINARY), EncodingError],
-  'binary-ascii-string' => [(+'abc').force_encoding(Encoding::BINARY), EncodingError],
+  'latin1-string' => [(+"\xe9").force_encoding(Encoding::ISO_8859_1), EncodingError],
   'invalid-utf8' => [(+"\xff").force_encoding(Encoding::UTF_8), EncodingError],
   'utf16' => ['abc'.encode(Encoding::UTF_16LE), EncodingError],
   'sub-nanosecond-time' => [Time.at(Rational(1, 3)), ArgumentError],
@@ -124,17 +131,8 @@ refusals.each do |label, (value, klass)|
 end
 
 # --- 2. register load path against the Ruby source ---------------------------
-# Rows where the core's register load path still returns a different value
-# than the Ruby source, observed through this binding: a !!binary payload
-# loses its ASCII-8BIT encoding (the core value has no byte String). Integers
-# outside i64/u64 and the YAML 1.2 float `1e300` now match Psych and are
-# checked against the capture like every other row.
-$known_divergences = []
-KNOWN_CORE_DIVERGENCES = {
-  # Psych returns an ASCII-8BIT String for !!binary; the core value has text
-  # Strings only, so the bytes come back as UTF-8.
-  'tag-binary' => { 'ok' => { '$hash' => [[{ '$sym' => 'v' }, { '$str' => 'hi', 'encoding' => 'UTF-8' }]] } }
-}.freeze
+# No known divergences remain: every row, `!!binary` (ASCII-8BIT) included,
+# is checked against the capture.
 REFERENCE.fetch('registers').each do |row|
   id = row['id']
   error = nil
@@ -144,12 +142,7 @@ REFERENCE.fetch('registers').each do |row|
     error = e
     { 'error' => { 'kind' => e.kind, 'source_class' => e.source_class } }
   end
-  if KNOWN_CORE_DIVERGENCES.key?(id) && actual == KNOWN_CORE_DIVERGENCES[id]
-    # Diverging exactly as recorded (reported); any other result is checked
-    # against the source below.
-    $known_divergences << id
-    check('register', "#{id}.known-core-divergence", true)
-  elsif row['expect'].key?('error')
+  if row['expect'].key?('error')
     check('register', id, error && error.source_class == row['expect']['error']['class'],
           "expected #{row['expect'].inspect}, got #{actual.inspect}")
   else
@@ -480,7 +473,7 @@ end
 
 # --- summary -----------------------------------------------------------------
 summary = { 'ruby' => RUBY_VERSION, 'platform' => RUBY_PLATFORM, 'checks' => $counts,
-            'known_core_divergences' => $known_divergences,
+            'known_core_divergences' => [],
             'model_outcomes' => outcomes, 'failures' => $failures.size }
 puts "RUBY-NATIVE-SUMMARY #{JSON.generate(summary)}"
 $failures.each { |failure| puts "FAIL #{failure}" }

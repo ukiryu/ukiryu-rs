@@ -26,14 +26,12 @@
 //!
 //! A tag is applied or dropped, never kept as a one-entry Hash.
 //!
-//! Two Ruby facts have no separate representation in [`Value`] and are
-//! lowered to the equal value: a `!!binary` result is an ASCII-8BIT String
-//! (held as `Value::String` when its bytes are ASCII, where Ruby's `==`,
-//! `eql?`, `hash`, `inspect` and `to_s` cannot tell the encodings apart;
-//! non-ASCII bytes are `Unsupported`), and a sequence `!!omap` is a
-//! `Psych::Omap` Hash subclass (held as a `Value::Hash` with the same
-//! pairs, which Ruby's `Hash#==` treats as equal). Recursive aliases,
-//! revived Ruby objects, and Date/Time scalars are `Unsupported`.
+//! One Ruby fact has no separate representation in [`Value`] and is lowered
+//! to the equal value: a sequence `!!omap` is a `Psych::Omap` Hash subclass
+//! (held as a `Value::Hash` with the same pairs, which Ruby's `Hash#==`
+//! treats as equal). A `!!binary` result is an ASCII-8BIT String, held as
+//! `Value::Bytes`. Recursive aliases, revived Ruby objects, and Date/Time
+//! scalars are `Unsupported`.
 use super::error::{ModelError, ModelErrorKind};
 use super::value::Value;
 use crate::schema::{tokenize, Data, Permitted};
@@ -534,15 +532,7 @@ fn string_tag_class(tag: &str) -> Option<Option<&str>> {
 /// `String#unpack('m')` (lenient Base64: characters outside the alphabet
 /// are skipped, `=` ends the data). The result is an ASCII-8BIT String.
 fn binary(text: &str) -> Result<Value, ModelError> {
-    let bytes = unpack_base64(text.as_bytes());
-    if !bytes.is_ascii() {
-        return Err(unsupported(
-            "a `!!binary` String with non-ASCII bytes; Value text is UTF-8 and cannot carry ASCII-8BIT bytes",
-        ));
-    }
-    Ok(Value::String(
-        String::from_utf8(bytes).expect("ASCII bytes are UTF-8"),
-    ))
+    Ok(Value::Bytes(unpack_base64(text.as_bytes())))
 }
 
 fn b64(c: u8) -> i32 {

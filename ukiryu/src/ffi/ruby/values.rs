@@ -2,14 +2,14 @@
 //!
 //! The mapping is exact in both directions for the classes the core value
 //! models: `nil`, `true`, `false`, `Integer` (any size), `Float` (including
-//! NaN, infinities and -0.0), `String` (UTF-8 or US-ASCII text), `Symbol`,
+//! NaN, infinities and -0.0), `String` (UTF-8 or US-ASCII text, or ASCII-8BIT bytes), `Symbol`,
 //! `Time` (instant to the nanosecond, UTC offset and the UTC flag), `Regexp`
 //! (source plus the IGNORECASE/EXTENDED/MULTILINE bits), `Array` and `Hash`
 //! (insertion order kept, keys of any supported class).
 //!
 //! Anything the core value cannot hold exactly raises instead of being
 //! coerced: other classes (including subclasses of the classes above, whose
-//! class would be lost), binary or other non-UTF-8 strings, invalid UTF-8,
+//! class would be lost), strings in encodings other than UTF-8, US-ASCII and ASCII-8BIT, invalid UTF-8,
 //! sub-nanosecond `Time` precision (in either direction), Regexp option bits other than the three
 //! above, `compare_by_identity` hashes, recursive structures and nesting
 //! deeper than [`MAX_DEPTH`].
@@ -99,6 +99,12 @@ fn convert_in(ruby: &Ruby, value: RValue, open: &mut Vec<RValue>) -> Result<Valu
     }
     if is_class(value, ruby.class_string()) {
         let string = RString::from_value(value).ok_or_else(|| type_error(ruby, value))?;
+        let encoding: RValue = string.funcall("encoding", ())?;
+        let name: String = encoding.funcall("name", ())?;
+        if name == "ASCII-8BIT" {
+            // SAFETY: the bytes are copied before any further Ruby call can run.
+            return Ok(Value::Bytes(unsafe { string.as_slice() }.to_vec()));
+        }
         return Ok(Value::String(text(ruby, string)?));
     }
     if is_class(value, ruby.class_time()) {
@@ -236,6 +242,8 @@ fn convert_out(ruby: &Ruby, value: &Value, depth: usize) -> Result<RValue, Error
         },
         Value::Float(f) => ruby.float_from_f64(*f).as_value(),
         Value::String(s) => ruby.str_new(s).as_value(),
+        // `rb_str_new`: an ASCII-8BIT String.
+        Value::Bytes(b) => ruby.str_from_slice(b).as_value(),
         Value::Symbol(s) => ruby.to_symbol(s).as_value(),
         Value::Time(t) => {
             if !t.is_integral_nanos() {

@@ -128,6 +128,9 @@ fn encode(v: &Value) -> Json {
         Value::Integer(i) => serde_json::from_str(&i.to_string()).unwrap(),
         Value::Float(f) => json!({ "$float": ruby::float_to_s(*f) }),
         Value::String(s) => json!(s),
+        Value::Bytes(b) => {
+            json!({ "$bin": b.iter().map(|x| format!("{x:02x}")).collect::<String>() })
+        }
         Value::Symbol(s) => json!({ "$sym": s }),
         Value::Time(t) => {
             let (y, mo, d) = civil_from_days(t.seconds.div_euclid(86_400));

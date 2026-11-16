@@ -24,6 +24,13 @@ impl Value {
     pub fn to_sym(&self) -> Result<String, ModelError> {
         match self {
             Value::String(s) | Value::Symbol(s) => Ok(s.clone()),
+            // An ASCII-only binary String is a US-ASCII Symbol; non-ASCII
+            // bytes would need an ASCII-8BIT Symbol, which has no value here.
+            Value::Bytes(b) if b.is_ascii() => Ok(String::from_utf8_lossy(b).into_owned()),
+            Value::Bytes(_) => Err(ModelError::new(
+                ModelErrorKind::Unsupported,
+                "`to_sym` of a binary String with non-ASCII bytes (an ASCII-8BIT Symbol)",
+            )),
             other => Err(ModelError::no_method("to_sym", other)),
         }
     }
@@ -91,6 +98,13 @@ impl Value {
             },
             Value::Float(f) => yeptris::Value::Number(Number::F64(*f)),
             Value::String(s) | Value::Symbol(s) => yeptris::Value::String(s.clone()),
+            Value::Bytes(b) if b.is_ascii() => {
+                yeptris::Value::String(String::from_utf8_lossy(b).into_owned())
+            }
+            Value::Bytes(b) => yeptris::Value::Tagged(Box::new(yeptris::Tagged {
+                tag: "tag:yaml.org,2002:binary".to_owned(),
+                value: yeptris::Value::String(base64_encode(b)),
+            })),
             Value::Time(_) | Value::Regexp(_) => yeptris::Value::String(self.to_ruby_s()),
             Value::Array(items) => {
                 yeptris::Value::Sequence(items.iter().map(Value::to_yaml_value).collect())
@@ -104,6 +118,24 @@ impl Value {
             }
         }
     }
+}
+
+fn base64_encode(bytes: &[u8]) -> String {
+    const TABLE: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    let mut out = String::with_capacity(bytes.len().div_ceil(3) * 4);
+    for chunk in bytes.chunks(3) {
+        let n = (u32::from(chunk[0]) << 16)
+            | (u32::from(*chunk.get(1).unwrap_or(&0)) << 8)
+            | u32::from(*chunk.get(2).unwrap_or(&0));
+        for i in 0..4usize {
+            if i <= chunk.len() {
+                out.push(char::from(TABLE[((n >> (18 - 6 * i)) & 63) as usize]));
+            } else {
+                out.push('=');
+            }
+        }
+    }
+    out
 }
 
 fn symbolize_value(v: &Value) -> Value {

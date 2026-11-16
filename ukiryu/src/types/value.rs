@@ -42,6 +42,10 @@ pub enum Value {
     Integer(BigInt),
     Float(f64),
     String(String),
+    /// An ASCII-8BIT String: raw bytes (a `!!binary` result, or any binary
+    /// String handed over by a binding). `eql?`/`==` with a UTF-8 String hold
+    /// only when the bytes are ASCII and equal, as in Ruby.
+    Bytes(Vec<u8>),
     Symbol(String),
     Time(Time),
     Regexp(Regexp),
@@ -80,7 +84,7 @@ impl Value {
             Value::Bool(false) => "FalseClass",
             Value::Integer(_) => "Integer",
             Value::Float(_) => "Float",
-            Value::String(_) => "String",
+            Value::String(_) | Value::Bytes(_) => "String",
             Value::Symbol(_) => "Symbol",
             Value::Time(_) => "Time",
             Value::Regexp(_) => "Regexp",
@@ -225,6 +229,10 @@ impl Serialize for Value {
             },
             Value::Float(f) => serializer.serialize_f64(*f),
             Value::String(s) | Value::Symbol(s) => serializer.serialize_str(s),
+            Value::Bytes(b) => match std::str::from_utf8(b) {
+                Ok(s) if s.is_ascii() => serializer.serialize_str(s),
+                _ => serializer.serialize_bytes(b),
+            },
             Value::Time(_) | Value::Regexp(_) => serializer.serialize_str(&self.to_ruby_s()),
             Value::Array(items) => {
                 let mut seq = serializer.serialize_seq(Some(items.len()))?;
@@ -390,6 +398,12 @@ pub fn eql(a: &Value, b: &Value) -> bool {
         (Value::Integer(x), Value::Integer(y)) => x == y,
         (Value::Float(x), Value::Float(y)) => x == y,
         (Value::String(x), Value::String(y)) => x == y,
+        (Value::Bytes(x), Value::Bytes(y)) => x == y,
+        // Ruby compares a binary and a UTF-8 String equal only when both are
+        // ASCII-only with the same bytes.
+        (Value::Bytes(x), Value::String(y)) | (Value::String(y), Value::Bytes(x)) => {
+            x.is_ascii() && x.as_slice() == y.as_bytes()
+        }
         (Value::Symbol(x), Value::Symbol(y)) => x == y,
         (Value::Time(x), Value::Time(y)) => x.instant_eql(y),
         (Value::Regexp(x), Value::Regexp(y)) => x == y,

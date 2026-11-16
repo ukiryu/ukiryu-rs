@@ -1066,7 +1066,7 @@
                 "$sym": "v"
               },
               {
-                "$str": "hi",
+                "$bytes": "6869",
                 "encoding": "ASCII-8BIT"
               }
             ]
@@ -1406,6 +1406,144 @@
               {
                 "$str": "1e300",
                 "encoding": "UTF-8"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "binary-ff",
+      "yaml": "v: !!binary /w==\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$bytes": "ff",
+                "encoding": "ASCII-8BIT"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "binary-utf8-bytes",
+      "yaml": "v: !!binary w6k=\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$bytes": "c3a9",
+                "encoding": "ASCII-8BIT"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "binary-nul-ctrl",
+      "yaml": "v: !!binary AAECG38J\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$bytes": "0001021b7f09",
+                "encoding": "ASCII-8BIT"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "binary-in-collections",
+      "yaml": "v: [!!binary /w==, {k: !!binary aGk=}]\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$array": [
+                  {
+                    "$bytes": "ff",
+                    "encoding": "ASCII-8BIT"
+                  },
+                  {
+                    "$hash": [
+                      [
+                        {
+                          "$sym": "k"
+                        },
+                        {
+                          "$bytes": "6869",
+                          "encoding": "ASCII-8BIT"
+                        }
+                      ]
+                    ]
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "binary-key-ascii",
+      "yaml": "v: {!!binary aGk=: 1}\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$hash": [
+                  [
+                    {
+                      "$sym": "hi"
+                    },
+                    {
+                      "$int": "1"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "binary-key-top",
+      "yaml": "!!binary aGk=: 1\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "hi"
+              },
+              {
+                "$int": "1"
               }
             ]
           ]

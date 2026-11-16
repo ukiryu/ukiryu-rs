@@ -11,9 +11,9 @@
 //!
 //! Each (row, policy) must match exactly, or be listed in [`UNSUPPORTED`]
 //! (the port raises `Ukiryu::Models::UnsupportedValue`) or [`UNTAGGED`].
-//! Two documented lowerings apply, both values Ruby's own `==` treats as
-//! equal: an ASCII-only `!!binary` result (ASCII-8BIT) is a UTF-8 String,
-//! and a sequence `!!omap` (`Psych::Omap`) is a Hash with the same pairs.
+//! One documented lowering applies, a value Ruby's own `==` treats as
+//! equal: a sequence `!!omap` (`Psych::Omap`) is a Hash with the same pairs.
+//! A `!!binary` result is `Value::Bytes` (ASCII-8BIT).
 #[path = "models_data/support.rs"]
 mod support;
 
@@ -26,11 +26,9 @@ const POLICIES: [&str; 3] = ["register", "register_raw", "model_file"];
 
 /// (row, policy) pairs the port refuses instead of guessing, with the reason.
 const UNSUPPORTED: &[(&str, &str, &str)] = &[
-    // Non-ASCII ASCII-8BIT bytes have no Value representation.
-    ("binary-ff", "*", "non-ASCII binary"),
-    ("binary-utf8-bytes", "*", "non-ASCII binary"),
-    ("binary-number", "*", "non-ASCII binary"),
-    ("binary-key-nonascii", "*", "non-ASCII binary"),
+    // `Utils.symbolize_keys` would make an ASCII-8BIT Symbol, which has no
+    // Value representation (register_raw and model_file keep the Bytes key).
+    ("binary-key-nonascii", "register", "non-ASCII binary Symbol"),
     // Psych raises NoMethodError from inside its visitor.
     ("omap-empty-map-item", "*", "visit_NilClass"),
     // A permitted class revives the Class object String.
@@ -86,10 +84,8 @@ fn matches(want: &Json, got: &Value) -> bool {
         ("str", Value::String(s)) => {
             want["enc"].as_str() == Some("UTF-8") && want["v"].as_str() == Some(s.as_str())
         }
-        // ASCII-only ASCII-8BIT String, held as a UTF-8 String.
-        ("bin", Value::String(s)) => {
-            s.is_ascii() && want["hex"].as_str() == Some(hex(s.as_bytes()).as_str())
-        }
+        // ASCII-8BIT String bytes.
+        ("bin", Value::Bytes(b)) => want["hex"].as_str() == Some(hex(b).as_str()),
         ("arr", Value::Array(items)) => {
             let w = want["v"].as_array().unwrap();
             want["class"] == "Array"
@@ -154,7 +150,7 @@ fn safe_load_policies_match_psych() {
     assert!(failures.is_empty(), "{failures:#?}");
     assert_eq!(counts.iter().sum::<usize>(), rows.len() * POLICIES.len());
     // exact, refused, untagged (row, policy) cases.
-    assert_eq!(counts, [447, 18, 3]);
+    assert_eq!(counts, [458, 7, 3]);
 }
 
 /// Every listed refusal names a captured row.
@@ -232,4 +228,19 @@ fn policy_constants_and_symbol_permission() {
             .get_str("v"),
         Some(&Value::sym("abc"))
     );
+}
+
+/// `Value::Bytes` follows Ruby's String comparison between a binary and a
+/// UTF-8 String: equal only when both are ASCII with the same bytes.
+#[test]
+fn bytes_compare_with_text_as_ruby_strings() {
+    use ukiryu::types::value::eql;
+    let hi = Value::Bytes(b"hi".to_vec());
+    assert!(eql(&hi, &Value::str("hi")) && eql(&Value::str("hi"), &hi));
+    assert!(!eql(&hi, &Value::str("ho")));
+    let e_acute = Value::Bytes("é".as_bytes().to_vec());
+    assert!(!eql(&e_acute, &Value::str("é")));
+    assert!(eql(&e_acute, &Value::Bytes("é".as_bytes().to_vec())));
+    assert_eq!(e_acute.inspect(), "\"\\xC3\\xA9\"");
+    assert_eq!(e_acute.class_name(), "String");
 }
