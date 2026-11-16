@@ -823,7 +823,8 @@ fn argument_errors_exit_1_on_stderr() {
 #[test]
 fn help_and_version_succeed_on_stdout() {
     // Thor's command table for the root, Thor's usage for a plain command,
-    // clap's help for the groups.
+    // clap's help for the groups. Each text contains its marker; the Thor
+    // texts begin with it.
     let cases: [(&[&str], &str); 7] = [
         (&["--help"], "ukiryu commands:\n"),
         (&["-h"], "ukiryu commands:\n"),
@@ -836,7 +837,7 @@ fn help_and_version_succeed_on_stdout() {
     for (args, start) in cases {
         let got = simple(args);
         assert_eq!(got.code, 0, "{args:?}: {}", got.stderr);
-        assert!(got.stdout.starts_with(start), "{args:?}: {:?}", got.stdout);
+        assert!(got.stdout.contains(start), "{args:?}: {:?}", got.stdout);
         assert_eq!(got.stderr, "", "{args:?}");
     }
     // Thor prints the command list (stdout, status 0) when no command or no

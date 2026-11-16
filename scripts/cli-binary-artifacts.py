@@ -236,7 +236,7 @@ def verify(directory, run, all_targets, negatives):
                 version = subprocess.run([str(executable), '--version'], check=True, capture_output=True, timeout=20)
                 require(version.stdout == f'ukiryu {marker["crate_version"]}\n'.encode(), 'unexpected CLI version')
                 help_result = subprocess.run([str(executable), '--help'], check=True, capture_output=True, timeout=20)
-                require(b'Usage:' in help_result.stdout and b'Commands:' in help_result.stdout, 'missing CLI help')
+                require(help_result.stdout.startswith(b'ukiryu commands:\n') and b'  ukiryu exec TOOL' in help_result.stdout, 'missing CLI help')
         print(f'{name}: {len(marker["files"])} files verified at {commit}')
     if all_targets:
         require(seen == set(TARGETS), 'target matrix incomplete')
