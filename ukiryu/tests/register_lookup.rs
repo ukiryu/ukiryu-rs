@@ -675,17 +675,17 @@ fn alias_tool_without_a_profile_for_the_options_is_rescued_then_raised_by_exhaus
     );
 
     // With two profiles, neither linux/bash, `Tool.get` raises
-    // ProfileNotFoundError. The alias step rescues it; the exhaustive step
-    // then reaches the same tool and does not rescue it.
+    // ProfileNotFoundError and the alias step rescues it. The exhaustive step
+    // iterates `Register.tools`, which lists only tool directories with an
+    // `index.yaml`; this fixture has none, so the tool is invisible there and
+    // `find_by` returns nil (pinned Ruby, B13 oracle rows D01-D10). With an
+    // index the exhaustive step would raise it: see `errors-exhaustive`.
     let w = World::new("alias-profile-two");
     w.index_doc("two-mac", &index_document("m", "al", "macos", "zsh"));
     let two_profiles = "name: two-mac\nversion: '1.0'\nprofiles:\n- name: zsh\n  platforms: [macos]\n  shells: [zsh]\n  executable_name: no-such-two-mac\n  commands:\n  - name: run\n    subcommand: run\n- name: fish\n  platforms: [macos]\n  shells: [fish]\n  executable_name: no-such-two-mac\n  commands:\n  - name: run\n    subcommand: run\n";
     let stub = Stub::new(&[("two-mac", two_profiles.to_string())]);
-    let err = w.find(&stub, "al", &options(), &mac).unwrap_err();
-    assert!(
-        matches!(err, LookupError::Tool(ToolError::ProfileNotFound { .. })),
-        "{err:?}"
-    );
+    let found = w.find(&stub, "al", &options(), &mac).expect("rescued");
+    assert!(found.is_none(), "{:?}", found.map(|t| t.name()));
 }
 
 #[test]
