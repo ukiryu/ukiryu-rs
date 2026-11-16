@@ -85,7 +85,13 @@ pub fn encode(v: &Value) -> Oj {
         Value::Integer(i) => Oj::Num(i.to_string()),
         Value::Float(f) => Oj::tagged("$float", Oj::Str(float_to_s(*f))),
         Value::String(s) => Oj::Str(s.clone()),
+        // The oracle tags every ASCII-8BIT String as hex `$bytes`.
+        Value::Bytes(b) => Oj::tagged(
+            "$bytes",
+            Oj::Str(b.iter().map(|x| format!("{x:02x}")).collect()),
+        ),
         Value::Symbol(s) => Oj::sym(s.clone()),
+        Value::BinarySymbol(b) => Oj::sym(String::from_utf8_lossy(b).into_owned()),
         Value::Time(t) => Oj::tagged("$time", Oj::Str(time_iso(t))),
         Value::Regexp(r) => Oj::tagged("$regexp", Oj::Str(r.source.clone())),
         Value::Array(items) => Oj::Arr(items.iter().map(encode).collect()),
