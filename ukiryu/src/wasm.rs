@@ -24,9 +24,17 @@ pub fn core_version() -> String {
 pub fn process(input: &str) -> String {
     let response = match serde_json::from_str::<serde_json::Value>(input) {
         Ok(request) => match request.get("op").and_then(|op| op.as_str()) {
+            // `yaml` `model_load` reads the file at `path`; the other
+            // document methods take their text in the request.
+            Some("yaml") if request.get("method").and_then(|m| m.as_str()) == Some("model_load") => {
+                crate::wire::failure(
+                    "UNSUPPORTED_CAPABILITY",
+                    "Operation \"yaml\" method \"model_load\" reads files and is not available in WebAssembly",
+                )
+            }
             Some(
                 "version" | "resolve_config" | "parse_yaml" | "resolve" | "build" | "validate"
-                | "escape" | "schema",
+                | "escape" | "schema" | "lint" | "yaml",
             ) => crate::wire::process(input.as_bytes()),
             Some(operation) => crate::wire::failure(
                 "UNSUPPORTED_CAPABILITY",
