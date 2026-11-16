@@ -7,7 +7,8 @@
 //! - a handler's own status (`CommandOutcome::exit_code`);
 //! - 1 for an argument error and for an uncaught source exception, as
 //!   `FriendlyCLI.start` exits after printing the error;
-//! - 0 for `--help` / `--version`;
+//! - 0 for `help`, `--help` and `--version`;
+//! - 1 for an unknown command, reported in Thor's wording;
 //! - [`GATED_EXIT`] for a verb (or a path of a verb) whose handler is not
 //!   integrated yet. It prints which part is missing on stderr and never
 //!   pretends to succeed.
@@ -25,7 +26,7 @@ use crate::commands::inspect::{
     self, ConfigInput, HandlerContext, InspectError, SystemInput, VersionInput,
 };
 use crate::commands::CommandOutcome;
-use clap::error::ErrorKind;
+use clap::error::{ContextKind, ContextValue, ErrorKind};
 use clap::ArgMatches;
 use serde_json::Value;
 use std::ffi::OsString;
@@ -70,9 +71,12 @@ where
     I: IntoIterator<Item = T>,
     T: Into<OsString> + Clone,
 {
-    let matches = match crate::arguments::command().try_get_matches_from(args) {
+    // Thor's command table depends on the terminal width, so it is set here.
+    let root_help = crate::thor_help::root_help(crate::thor_help::terminal_width());
+    let command = crate::arguments::command().override_help(root_help.clone());
+    let matches = match command.try_get_matches_from(args) {
         Ok(matches) => matches,
-        Err(error) => return parse_error(error),
+        Err(error) => return parse_error(error, &root_help),
     };
     let Some((verb, sub)) = matches.subcommand() else {
         // `subcommand_required` makes this unreachable through clap.
@@ -99,27 +103,59 @@ where
     }
 }
 
-/// clap's help and version requests print to stdout and succeed; every other
-/// parse error goes to stderr with the source's failure status 1.
-fn parse_error(error: clap::Error) -> i32 {
+/// Help and version requests print to stdout and succeed; an unknown command
+/// is Thor's `Could not find command` line; every other parse error goes to
+/// stderr with the source's failure status 1.
+fn parse_error(error: clap::Error, root_help: &str) -> i32 {
     match error.kind() {
-        ErrorKind::DisplayHelp | ErrorKind::DisplayVersion => {
-            let _ = error.print();
-            0
-        }
         // Thor prints the command list on stdout and succeeds when no
-        // command is given.
-        ErrorKind::DisplayHelpOnMissingArgumentOrSubcommand => {
+        // command is given, as for `help` and `--help`.
+        ErrorKind::DisplayHelp | ErrorKind::DisplayHelpOnMissingArgumentOrSubcommand => {
+            let rendered = error.render().to_string();
+            // clap trims the help's trailing blank line; Thor's table keeps
+            // it, so the root help is written as Thor renders it.
+            let text = if rendered.trim_end() == root_help.trim_end() {
+                root_help
+            } else {
+                rendered.as_str()
+            };
             let mut out = io::stdout().lock();
-            let _ = write!(out, "{}", error.render());
+            let _ = out.write_all(text.as_bytes());
             let _ = out.flush();
             0
         }
+        ErrorKind::DisplayVersion => {
+            let _ = error.print();
+            0
+        }
+        ErrorKind::InvalidSubcommand => match error.get(ContextKind::InvalidSubcommand) {
+            Some(ContextValue::String(name)) => {
+                thor_error(&format!("Could not find command \"{name}\"."));
+                1
+            }
+            _ => {
+                let _ = error.print();
+                1
+            }
+        },
         _ => {
             let _ = error.print();
             1
         }
     }
+}
+
+/// `FriendlyCLI#print_error_message`: Thor's `say_error(message, :red)`, red
+/// only when Thor would display colors.
+fn thor_error(message: &str) {
+    let text = if thor_colors() {
+        format!("\x1b[31m{message}\x1b[0m\n")
+    } else {
+        format!("{message}\n")
+    };
+    let mut err = io::stderr().lock();
+    let _ = err.write_all(text.as_bytes());
+    let _ = err.flush();
 }
 
 enum Failure {

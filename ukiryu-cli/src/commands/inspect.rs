@@ -224,12 +224,13 @@ impl Out {
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct VersionInput;
 
-/// `VersionCommand#run`: `Ukiryu version <VERSION>` in cyan.
+/// `VersionCommand#run`: `Ukiryu version <VERSION>` in cyan, with the source
+/// gem's version ([`crate::thor_help::COMPATIBILITY_VERSION`]).
 pub fn version(_input: VersionInput, ctx: &HandlerContext) -> Result<CommandOutcome, InspectError> {
     let config = ctx.configuration()?;
     let mut out = Out::new(colors_disabled(&config));
     out.say(
-        &format!("Ukiryu version {}", ukiryu::VERSION),
+        &format!("Ukiryu version {}", crate::thor_help::COMPATIBILITY_VERSION),
         Some(Color::Cyan),
     );
     Ok(out.done())

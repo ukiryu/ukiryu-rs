@@ -48,28 +48,6 @@ const DELETED: [&str; 14] = [
 /// differ; remove the entry when the row starts matching.
 const EXPECTED_FAILURES: &[(&str, &str)] = &[
     (
-        "cli-output.version",
-        "the version line carries ukiryu::VERSION (0.1.0), not the gem's 0.3.1",
-    ),
-    (
-        "cli-output.help",
-        "help text is clap's, not Thor's command table",
-    ),
-    (
-        "cli-output.help-exec",
-        "help text is clap's, not Thor's usage and option table",
-    ),
-    (
-        "cli-output.unknown-verb",
-        "unknown verb is reported in clap's wording, not Thor's \
-         'Could not find command' line",
-    ),
-    (
-        "cli-output.lint-file",
-        "'validate lint' is reported in clap's wording, not Thor's \
-         'Could not find command' line",
-    ),
-    (
         "cli-output.commands-jq",
         "'commands' is gated in dispatch: its handler (PR #73) is not merged",
     ),

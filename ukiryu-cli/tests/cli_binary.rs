@@ -29,7 +29,6 @@
 //!   and asserted by number, and the handler test `execute.rs` replays them.
 //!
 //! Recorded deviations (all decided outside this file):
-//! - the version line carries `ukiryu::VERSION` (D3), not the gem's 0.3.1;
 //! - shell detection is strict (DECISIONS.md D2): inspect rows with a `note`
 //!   expect the shell error after the same partial output, and extract rows
 //!   set `SHELL=/bin/bash` where Ruby searched PATH for bash;
@@ -46,8 +45,6 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use ukiryu_cli::dispatch::GATED_EXIT;
 
 const BIN: &str = env!("CARGO_BIN_EXE_ukiryu");
-#[cfg(target_os = "linux")]
-const RUBY_VERSION_LINE: &str = "Ukiryu version 0.3.1";
 
 struct Output {
     stdout: String,
@@ -180,10 +177,6 @@ fn inspect_goldens_through_the_binary() {
                 .replace("{HOME}", &s(&home))
                 .replace("{BIN}", &s(&bin))
                 .replace("{REGISTER}", &s(&register))
-                .replace(
-                    RUBY_VERSION_LINE,
-                    &format!("Ukiryu version {}", ukiryu::VERSION),
-                )
         };
         let (want_out, want_err) = (subst(&case["stdout"]), subst(&case["stderr"]));
         let want_code = case["exit"].as_i64().unwrap() as i32;
@@ -829,15 +822,22 @@ fn argument_errors_exit_1_on_stderr() {
 
 #[test]
 fn help_and_version_succeed_on_stdout() {
-    for args in [
-        &["--help"][..],
-        &["help"],
-        &["validate", "--help"],
-        &["lint", "--help"],
-    ] {
+    // Thor's command table for the root, Thor's usage for a plain command,
+    // clap's help for the groups.
+    let cases: [(&[&str], &str); 7] = [
+        (&["--help"], "ukiryu commands:\n"),
+        (&["-h"], "ukiryu commands:\n"),
+        (&["help"], "ukiryu commands:\n"),
+        (&["help", "version"], "Usage:\n  ukiryu version\n"),
+        (&["exec", "--help"], "Usage:\n  ukiryu exec TOOL"),
+        (&["validate", "--help"], "Usage"),
+        (&["lint", "--help"], "Usage"),
+    ];
+    for (args, start) in cases {
         let got = simple(args);
         assert_eq!(got.code, 0, "{args:?}: {}", got.stderr);
-        assert!(got.stdout.contains("Usage"), "{args:?}: {:?}", got.stdout);
+        assert!(got.stdout.starts_with(start), "{args:?}: {:?}", got.stdout);
+        assert_eq!(got.stderr, "", "{args:?}");
     }
     // Thor prints the command list (stdout, status 0) when no command or no
     // subcommand of a group is given (captured: logs/grammar-3.log).
@@ -855,13 +855,28 @@ fn help_and_version_succeed_on_stdout() {
 }
 
 #[test]
-fn version_verb_prints_the_crate_version() {
+fn version_verb_prints_the_source_gem_version() {
     let got = simple(&["version"]);
     assert_eq!(got.code, 0, "{}", got.stderr);
-    assert_eq!(
-        got.stdout,
-        format!("\x1b[36mUkiryu version {}\x1b[0m\n", ukiryu::VERSION)
-    );
+    assert_eq!(got.stdout, "\x1b[36mUkiryu version 0.3.1\x1b[0m\n");
+}
+
+#[test]
+fn unknown_commands_are_reported_in_thor_wording() {
+    for (args, name) in [
+        (&["frobnicate"][..], "frobnicate"),
+        (&["help", "bogus"], "bogus"),
+        (&["validate", "lint", "x.yaml"], "lint"),
+    ] {
+        let got = simple(args);
+        assert_eq!(got.code, 1, "{args:?}");
+        assert_eq!(got.stdout, "", "{args:?}");
+        assert_eq!(
+            got.stderr,
+            format!("Could not find command \"{name}\".\n"),
+            "{args:?}"
+        );
+    }
 }
 
 #[test]
