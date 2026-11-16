@@ -12,6 +12,11 @@
 //! - `execute_data/cases.json` (exec, run-file, cache), captured by
 //!   K22-CLI-EXECUTE from the same oracle.
 //!
+//! - the `info` and `opts` rows of the conformance corpus
+//!   (`corpus/conformance/cases/cli-output.jsonl`) and
+//!   `info_opts_data/cases.json`, captured from the same oracle in the
+//!   corpus environment.
+//!
 //! Rows are split into three contracts and counted separately:
 //! - source rows: captured from exe/ukiryu and expected byte for byte (or with
 //!   the recorded comparison mode), apart from the recorded deviations below;
@@ -791,9 +796,9 @@ fn simple(args: &[&str]) -> Output {
 fn verbs_without_a_merged_handler_fail_gated() {
     for args in [
         &["list"][..],
-        &["info", "ls"],
+        // A bare `info` prints Thor's help in the source.
+        &["info"],
         &["commands", "ls"],
-        &["opts", "ls"],
         &["describe", "ls"],
         &["which", "ls"],
         &["resolve", "ls"],
@@ -884,4 +889,130 @@ fn an_output_file_that_cannot_be_written_is_an_errno_error() {
         "[Errno::ENOENT] No such file or directory @ rb_sysopen - nodir/out.yaml\n"
     );
     let _ = std::fs::remove_dir_all(&root);
+}
+
+// ---------------------------------------------------------------- info/opts
+
+#[cfg(target_os = "linux")]
+fn conformance_dir() -> PathBuf {
+    std::env::var_os("UKIRYU_CONFORMANCE_DIR")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| Path::new(env!("CARGO_MANIFEST_DIR")).join("../corpus/conformance"))
+}
+
+/// Runs `argv` in the corpus `cli-output` environment
+/// (`corpus/oracle-ruby/lib/ops.rb`), with `${INPUTS}` substituted in the
+/// arguments and substituted back (with `${HOME}`) in the output. `PATH`
+/// holds only a `bash` link, so no register tool is installed.
+#[cfg(target_os = "linux")]
+fn corpus_cli(name: &str, argv: &[String], extra: &[(String, String)]) -> Output {
+    let inputs = std::fs::canonicalize(conformance_dir().join("inputs")).unwrap();
+    let inputs = inputs.to_str().unwrap();
+    let root = scratch(name);
+    let home = root.join("home");
+    let bin = root.join("bin");
+    std::fs::create_dir_all(&home).unwrap();
+    std::fs::create_dir_all(&bin).unwrap();
+    std::os::unix::fs::symlink("/bin/bash", bin.join("bash")).unwrap();
+    let h = home.to_str().unwrap();
+    let mut env: Vec<(String, String)> = [
+        ("HOME", h.to_owned()),
+        ("TZ", "UTC".to_owned()),
+        ("LANG", "C.UTF-8".to_owned()),
+        ("LC_ALL", "C.UTF-8".to_owned()),
+        ("SHELL", "/bin/bash".to_owned()),
+        ("UKIRYU_REGISTER", format!("{inputs}/register")),
+        ("COLUMNS", "100".to_owned()),
+        ("THOR_COLUMNS", "100".to_owned()),
+        ("TERM", "dumb".to_owned()),
+        ("PATH", bin.to_str().unwrap().to_owned()),
+    ]
+    .into_iter()
+    .map(|(k, v)| (k.to_owned(), v))
+    .collect();
+    env.extend(extra.iter().cloned());
+    let args: Vec<String> = argv
+        .iter()
+        .map(|a| a.replace("${INPUTS}", inputs))
+        .collect();
+    let out = run(&args, &env, &home, Some(""));
+    let scrub = |text: &str| text.replace(inputs, "${INPUTS}").replace(h, "${HOME}");
+    let out = Output {
+        stdout: scrub(&out.stdout),
+        stderr: scrub(&out.stderr),
+        code: out.code,
+    };
+    let _ = std::fs::remove_dir_all(&root);
+    out
+}
+
+/// Every `info` and `opts` row of the conformance corpus, byte for byte.
+#[cfg(target_os = "linux")]
+#[test]
+fn info_and_opts_replay_the_corpus_rows() {
+    let cases = std::fs::read_to_string(conformance_dir().join("cases/cli-output.jsonl")).unwrap();
+    let mut ids = Vec::new();
+    for line in cases.lines() {
+        let row: Value = serde_json::from_str(line).unwrap();
+        let id = row["id"].as_str().unwrap();
+        let argv = strings(&row["input"]["argv"]);
+        if !matches!(argv[0].as_str(), "info" | "opts") {
+            continue;
+        }
+        let want = &row["expect"]["ok"];
+        let got = corpus_cli(id, &argv, &[]);
+        assert_eq!(got.stdout, want["stdout"].as_str().unwrap(), "{id} stdout");
+        assert_eq!(got.stderr, want["stderr"].as_str().unwrap(), "{id} stderr");
+        assert_eq!(
+            i64::from(got.code),
+            want["exit"].as_i64().unwrap(),
+            "{id} exit"
+        );
+        ids.push(id.to_owned());
+    }
+    assert_eq!(
+        ids,
+        [
+            "cli-output.info-absent",
+            "cli-output.info-unknown",
+            "cli-output.opts-jq",
+            "cli-output.opts-jq-process",
+        ]
+    );
+}
+
+/// The interface, `--all`, `NO_COLOR` and error paths of `info` and `opts`
+/// the corpus does not cover, captured from the same oracle.
+#[cfg(target_os = "linux")]
+#[test]
+fn info_and_opts_match_the_oracle_captures() {
+    let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/info_opts_data/cases.json");
+    let data: Value = serde_json::from_str(&std::fs::read_to_string(path).unwrap()).unwrap();
+    let cases = data["cases"].as_array().unwrap();
+    assert_eq!(cases.len(), 9);
+    for (i, case) in cases.iter().enumerate() {
+        let argv = strings(&case["argv"]);
+        let extra: Vec<(String, String)> = case["env"]
+            .as_object()
+            .unwrap()
+            .iter()
+            .map(|(k, v)| (k.clone(), v.as_str().unwrap().to_owned()))
+            .collect();
+        let got = corpus_cli(&format!("info-opts-{i}"), &argv, &extra);
+        assert_eq!(
+            got.stdout,
+            case["stdout"].as_str().unwrap(),
+            "{argv:?} stdout"
+        );
+        assert_eq!(
+            got.stderr,
+            case["stderr"].as_str().unwrap(),
+            "{argv:?} stderr"
+        );
+        assert_eq!(
+            i64::from(got.code),
+            case["exit"].as_i64().unwrap(),
+            "{argv:?} exit"
+        );
+    }
 }

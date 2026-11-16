@@ -22,7 +22,8 @@ use crate::commands::execute::{
     self, CacheAction, CacheInput, ExecInput, ExecuteContext, ExecuteError, RunFileInput,
 };
 use crate::commands::inspect::{
-    self, ConfigInput, HandlerContext, InspectError, SystemInput, VersionInput,
+    self, ConfigInput, HandlerContext, InfoInput, InspectError, OptsInput, SystemInput,
+    VersionInput,
 };
 use crate::commands::CommandOutcome;
 use clap::error::ErrorKind;
@@ -42,11 +43,9 @@ pub const GATED_EXIT: i32 = 2;
 
 /// Verbs of the source CLI whose handlers are not merged yet, with the
 /// component they wait for.
-const GATED_VERBS: [(&str, &str); 8] = [
+const GATED_VERBS: [(&str, &str); 6] = [
     ("list", "the register and tool APIs (K22-CLI-INSPECT)"),
-    ("info", "the register and tool APIs (K22-CLI-INSPECT)"),
     ("commands", "the register and tool APIs (K22-CLI-INSPECT)"),
-    ("opts", "the register and tool APIs (K22-CLI-INSPECT)"),
     ("describe", "the tool API (K22-CLI-AUTHOR)"),
     ("which", "the register and tool APIs (K22-CLI-INSPECT)"),
     ("resolve", "the register and tool APIs (K22-CLI-INSPECT)"),
@@ -161,6 +160,27 @@ fn dispatch(verb: &str, sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Fai
                 needs: "the register API (Register.default)",
             })?;
             inspect_outcome(inspect::config(input, &ctx), io)
+        }
+        "info" => {
+            // A bare `ukiryu info` prints Thor's help for the command.
+            let tool = text(sub, "tool")?.ok_or(Failure::Gated {
+                what: "info without a TOOL".to_owned(),
+                needs: "Thor's help for the info command",
+            })?;
+            let ctx = handler_context(text(sub, "register")?)?;
+            let input = InfoInput {
+                tool,
+                all: flag(sub, "all"),
+            };
+            inspect_outcome(inspect::info(input, &ctx), io)
+        }
+        "opts" => {
+            let ctx = handler_context(text(sub, "register")?)?;
+            let input = OptsInput {
+                tool: text(sub, "tool")?.unwrap_or_default(),
+                command: text(sub, "command")?,
+            };
+            inspect_outcome(inspect::opts(input, &ctx), io)
         }
         "validate" => validate(sub, io),
         "lint" => lint(sub, io),

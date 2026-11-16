@@ -1,7 +1,7 @@
-//! `ukiryu version`, `ukiryu system`, `ukiryu config`, `list`, `commands`, `register`
-//! and `resolve`; `info`, `opts` and `which` are gated.
+//! `ukiryu version`, `ukiryu system`, `ukiryu config`, `list`, `commands`, `info`,
+//! `opts`, `register` and `resolve`; `which` is gated.
 //!
-//! Source: ukiryu `lib/ukiryu/cli_commands/{base,version,system,config,list,commands,register,resolve}_command.rb`
+//! Source: ukiryu `lib/ukiryu/cli_commands/{base,version,system,config,list,commands,info,opts,register,resolve}_command.rb`
 //! at ab6df353c6dc2d7faf7817a86aafcafa82579896. These verbs print with
 //! `BaseCommand#say`, not through `ResponseFormatter`, so each handler returns
 //! the ordered `say` lines as [`OutputWrite`]s.
@@ -18,15 +18,20 @@
 //! red only when stderr is a terminal; the handlers write it uncoloured, the
 //! form the captured (non-terminal) goldens show.
 //!
-//! The register-backed verbs (`config list`, `list`, `commands`, `register`,
-//! `resolve`) run on the real register and tool APIs: [`Register`],
-//! [`RegisterSource`] with [`tool::get`], [`Discovery`] and [`VersionResolver`].
+//! The register-backed verbs (`config list`, `list`, `commands`, `info`, `opts`,
+//! `register`, `resolve`) run on the real register and tool APIs: [`Register`],
+//! [`RegisterSource`] with [`tool::get`], [`register_lookup::find_by`]
+//! (`Tool.find_by`), [`Discovery`] and [`VersionResolver`].
 //!
 //! Not covered here:
-//! - `info`, `opts` and `which` are gated ([`info`], [`opts`], [`which`] return
-//!   [`InspectError::Gated`]), and so is the interface path of `list` (a tool
-//!   whose own version file is missing). They need core APIs that do not
-//!   exist yet: [`FIND_BY_NEEDS`].
+//! - `which` is gated ([`which`] returns [`InspectError::Gated`]), and so is
+//!   the interface path of `list` (a tool whose own version file is missing).
+//!   They need core APIs that are not wired here yet: [`FIND_BY_NEEDS`].
+//! - `info` and `opts` with `UKIRYU_DEBUG` set are gated: the debug lines of
+//!   `ToolFinder.find_by` are not ported. So is an Array held by a string
+//!   attribute they join or pad (the source flattens or raises there), and
+//!   `info` of an installed tool whose definition has no version (it needs
+//!   version detection, as `list` does).
 //! - `config get|set|unset` run `setup_register` first in the source, which
 //!   can clone the default register into `~/.ukiryu/register`. That bootstrap
 //!   does not change their output and is not performed here; `config list`,
@@ -54,8 +59,11 @@ use ukiryu::definition::{DefinitionMetadata, Discovery, DiscoveryEnv, VersionRes
 use ukiryu::environment::Environment;
 use ukiryu::executable::{find_in_path, DiscoveryContext, Platform};
 use ukiryu::extractors::base::ProcessHost;
-use ukiryu::models::{CommandDefinition, ModelError, Text, ToolMetadata, Value as ModelValue};
+use ukiryu::models::{
+    Attr, CommandDefinition, ModelError, Text, ToolMetadata, Value as ModelValue,
+};
 use ukiryu::register::{self, Git, Register};
+use ukiryu::register_lookup::{self, LookupError};
 use ukiryu::render::OutputWrite;
 use ukiryu::runtime::{Clock, Host, HostError, Runtime, ShellError};
 use ukiryu::tool::{self, Tool, ToolError, ToolOptions};
@@ -856,8 +864,8 @@ fn tool_metadata(
         .map_err(model_error)
 }
 
-/// The core APIs `info`, `opts`, `which` and the interface path of `list`
-/// need and that do not exist in the workspace.
+/// The core APIs `which` and the interface path of `list` need and that are
+/// not wired into these handlers yet.
 pub const FIND_BY_NEEDS: &str = "core APIs that do not exist yet: the register scanner \
      (routing::RegisterTool values built from a Register's tools directory for routing::ToolIndex), \
      Tool.find_by (ToolFinder.find_by: interface and alias lookup), \
@@ -1318,14 +1326,419 @@ pub struct WhichInput {
     pub shell: Option<String>,
 }
 
-/// `info` resolves its tool with `Tool.find_by`: gated, see [`FIND_BY_NEEDS`].
-pub fn info(_input: InfoInput, _ctx: &HandlerContext) -> Result<CommandOutcome, InspectError> {
-    Err(gated("info", FIND_BY_NEEDS, Vec::new()))
+/// `info` and `opts` with `UKIRYU_DEBUG` set: `ToolFinder.find_by` and
+/// `InfoCommand#find_other_implementations` print debug lines the port does
+/// not render.
+const DEBUG_NEEDS: &str = "the UKIRYU_DEBUG output of ToolFinder.find_by (not ported)";
+
+/// `config.debug` (`UKIRYU_DEBUG`).
+fn debug_enabled(config: &OverrideResolver) -> bool {
+    config.resolve("debug") == Some(&Value::Bool(true))
 }
 
-/// `opts` resolves its tool with `Tool.find_by`: gated, see [`FIND_BY_NEEDS`].
-pub fn opts(_input: OptsInput, _ctx: &HandlerContext) -> Result<CommandOutcome, InspectError> {
-    Err(gated("opts", FIND_BY_NEEDS, Vec::new()))
+/// A failure of `Tool.find_by` the source does not rescue.
+fn lookup_failure(error: LookupError, partial: Vec<OutputWrite>) -> InspectError {
+    match error {
+        LookupError::Register(error) => raised_register(error, partial),
+        LookupError::Model(error) => InspectError::Raised {
+            class: error.ruby_class(),
+            message: error.message,
+            partial,
+        },
+        LookupError::Source(fault) => InspectError::Raised {
+            class: fault.class,
+            message: fault.message,
+            partial,
+        },
+        LookupError::Tool(error) => tool_failure(&error, partial),
+        other @ LookupError::UnrepresentableTarget { .. } => InspectError::Source {
+            message: other.to_string(),
+            partial,
+        },
+    }
+}
+
+/// The tool `Tool.find_by` found, with what `info --all` reuses.
+struct Found {
+    tool: Rc<Tool>,
+    out: Out,
+    register: Register,
+    options: ToolOptions,
+    cache: ToolCache<Rc<Tool>>,
+}
+
+/// `setup_register` and `Tool.find_by(name.to_sym)`, or the `error!` both
+/// verbs raise for a missing tool (`Ok(Err(outcome))`).
+fn find_tool(
+    what: &str,
+    name: &str,
+    ctx: &HandlerContext,
+    config: &OverrideResolver,
+    out: Out,
+) -> Result<Result<Found, CommandOutcome>, InspectError> {
+    let register = setup_register(ctx, config)
+        .map_err(|f| f.into_error(Vec::new()))?
+        .register;
+    if debug_enabled(config) {
+        return Err(gated(what, DEBUG_NEEDS, Vec::new()));
+    }
+    let options = tool_options(ctx, config).map_err(|error| InspectError::Shell {
+        partial: Vec::new(),
+        error,
+    })?;
+    let index = register_lookup::load_tool_index(&register);
+    let source = RegisterSource::new(
+        register.clone(),
+        ctx.host.platform,
+        ProcessHost::new(Environment::new(), options.shell),
+    );
+    let cache = ToolCache::new();
+    let found =
+        register_lookup::find_by(&register, &index, &source, &cache, name, &options, &options)
+            .map_err(|e| lookup_failure(e, Vec::new()))?;
+    match found {
+        Some(tool) => Ok(Ok(Found {
+            tool,
+            out,
+            register,
+            options,
+            cache,
+        })),
+        None => {
+            let mut tools = register.tool_names();
+            tools.sort();
+            Ok(Err(out.error(&format!(
+                "Tool not found: {name}\nAvailable tools: {}",
+                tools.join(", ")
+            ))))
+        }
+    }
+}
+
+/// `Array#join` over a `:string` collection. `None` when an element is an
+/// Array, which the source's `join` flattens (not ported).
+fn join_texts(items: &[Text], separator: &str) -> Option<String> {
+    let mut parts = Vec::with_capacity(items.len());
+    for item in items {
+        match item {
+            Text::Str(s) => parts.push(s.clone()),
+            Text::Nil => parts.push(String::new()),
+            Text::List(_) => return None,
+        }
+    }
+    Some(parts.join(separator))
+}
+
+/// An `Attr<Text>` reader as the String Ruby reads (`nil` is `None`).
+fn attr_txt(value: &Attr<Text>) -> Option<String> {
+    match value.get() {
+        None | Some(Text::Nil) => None,
+        Some(other) => Some(other.to_ruby_s()),
+    }
+}
+
+/// A `Text` the source calls `String#ljust` on: an Array has no `ljust`.
+fn ljust_text(value: &Option<Text>, fallback: &str) -> Option<String> {
+    match value {
+        None | Some(Text::Nil) => Some(fallback.to_owned()),
+        Some(Text::Str(s)) => Some(s.clone()),
+        Some(Text::List(_)) => None,
+    }
+}
+
+const LIST_NEEDS: &str =
+    "an Array value in a string attribute (the source flattens it in join or raises in ljust)";
+
+/// `InfoCommand#run`.
+pub fn info(input: InfoInput, ctx: &HandlerContext) -> Result<CommandOutcome, InspectError> {
+    let config = ctx.configuration()?;
+    let out = Out::new(colors_disabled(&config));
+    let name = input.tool.as_str();
+    let Found {
+        tool,
+        mut out,
+        register,
+        options,
+        cache,
+    } = match find_tool("info", name, ctx, &config, out)? {
+        Ok(found) => found,
+        Err(outcome) => return Ok(outcome),
+    };
+    let profile = tool.definition();
+    let list_gate = |out: &mut Out| gated("info", LIST_NEEDS, std::mem::take(&mut out.writes));
+
+    out.clear();
+    let profile_name = txt(&profile.name);
+    if profile_name.as_deref() != Some(name) && profile.implements.is_some() {
+        out.say(&format!("Interface: {name}"), Some(Color::Cyan));
+        out.say(
+            &format!("  This tool implements the '{name}' interface"),
+            Some(Color::Dim),
+        );
+        out.say(
+            &format!("  Tool: {}", profile_name.clone().unwrap_or_default()),
+            Some(Color::White),
+        );
+        // `find_other_implementations` compares `ToolMetadata#implements` (a
+        // String) with a Symbol, so it never finds one: no "Other
+        // implementations" line, and `--all` lists the tool itself only.
+        if input.all {
+            out.clear();
+            out.say(
+                &format!("All '{name}' implementations:"),
+                Some(Color::Yellow),
+            );
+            let Some(implementation) = profile_name.clone() else {
+                return Err(gated(
+                    "info --all (a tool without a name)",
+                    "Tool.get(nil)",
+                    out.writes,
+                ));
+            };
+            match get_tool(ctx, &register, &cache, &options, &implementation) {
+                Ok(other) => {
+                    let available = other.is_available();
+                    let mark = if available { "[✓]" } else { "[✗]" };
+                    out.say(
+                        &format!("  {mark:<4} {implementation}"),
+                        Some(if available { Color::Green } else { Color::Red }),
+                    );
+                }
+                Err(ToolError::NotFound { .. } | ToolError::ProfileNotFound { .. }) => {
+                    out.say(&format!("  [ ] {implementation}"), Some(Color::Dim));
+                }
+                Err(error) => return Err(tool_failure(&error, out.writes)),
+            }
+        }
+    } else {
+        let shown = profile_name.unwrap_or_else(|| name.to_owned());
+        out.say(&format!("Tool: {shown}"), Some(Color::Cyan));
+    }
+
+    let or_na = |value: &Option<Text>| txt(value).unwrap_or_else(|| "N/A".to_owned());
+    out.say(
+        &format!("Display Name: {}", or_na(&profile.display_name)),
+        Some(Color::White),
+    );
+    out.say(
+        &format!("Version: {}", or_na(&profile.version)),
+        Some(Color::White),
+    );
+    out.say(
+        &format!("Homepage: {}", or_na(&profile.homepage)),
+        Some(Color::White),
+    );
+    if let Some(aliases) = profile.aliases.as_deref().filter(|a| !a.is_empty()) {
+        let Some(joined) = join_texts(aliases, ", ") else {
+            return Err(list_gate(&mut out));
+        };
+        out.say(&format!("Aliases: {joined}"), Some(Color::White));
+    }
+
+    if let Some(detection) = profile.version_detection.as_deref() {
+        out.clear();
+        out.say("Version Detection:", Some(Color::Yellow));
+        let command = match detection.command.as_deref() {
+            None => String::new(),
+            Some(parts) => match join_texts(parts, " ") {
+                Some(joined) => joined,
+                None => return Err(list_gate(&mut out)),
+            },
+        };
+        out.say(&format!("  Command: {command}"), Some(Color::White));
+        out.say(
+            &format!("  Pattern: {}", txt(&detection.pattern).unwrap_or_default()),
+            Some(Color::White),
+        );
+        if let Some(threshold) = txt(&detection.modern_threshold) {
+            out.say(
+                &format!("  Modern Threshold: {threshold}"),
+                Some(Color::White),
+            );
+        }
+    }
+
+    if let Some(profiles) = profile.profiles.as_deref() {
+        out.clear();
+        out.say(
+            &format!("Profiles ({}):", profiles.len()),
+            Some(Color::Yellow),
+        );
+        for prof in profiles {
+            let all = [Text::new("all")];
+            let platforms = join_texts(prof.platforms.as_deref().unwrap_or(&all), ", ");
+            let shells = join_texts(prof.shells.as_deref().unwrap_or(&all), ", ");
+            let (Some(platforms), Some(shells)) = (platforms, shells) else {
+                return Err(list_gate(&mut out));
+            };
+            let option_style = attr_txt(&prof.option_style).unwrap_or_else(|| "default".to_owned());
+            let prof_name = txt(&prof.name).unwrap_or_else(|| "unnamed".to_owned());
+            out.say(&format!("  {prof_name}:"), Some(Color::White));
+            out.say(&format!("    Platforms: {platforms}"), Some(Color::White));
+            out.say(&format!("    Shells: {shells}"), Some(Color::White));
+            out.say(
+                &format!("    Option Style: {option_style}"),
+                Some(Color::White),
+            );
+            if let Some(inherits) = txt(&prof.inherits) {
+                out.say(&format!("    Inherits: {inherits}"), Some(Color::White));
+            }
+        }
+    }
+
+    out.clear();
+    if tool.is_available() {
+        let Some(version) = tool.version() else {
+            return Err(gated(
+                &format!("info (detected version of {name})"),
+                "Tool#version detection, which needs a man-page date provider (ManPageDates)",
+                out.writes,
+            ));
+        };
+        out.say("Status: INSTALLED", Some(Color::Green));
+        out.say(
+            &format!("Executable: {}", tool.executable().unwrap_or_default()),
+            Some(Color::White),
+        );
+        out.say(&format!("Detected Version: {version}"), Some(Color::White));
+    } else {
+        out.say("Status: NOT FOUND", Some(Color::Red));
+    }
+    Ok(out.done())
+}
+
+/// `OptsCommand#run`.
+pub fn opts(input: OptsInput, ctx: &HandlerContext) -> Result<CommandOutcome, InspectError> {
+    let config = ctx.configuration()?;
+    let out = Out::new(colors_disabled(&config));
+    let name = input.tool.as_str();
+    let Found { tool, mut out, .. } = match find_tool("opts", name, ctx, &config, out)? {
+        Ok(found) => found,
+        Err(outcome) => return Ok(outcome),
+    };
+    let Some(commands) = tool.command_profile().commands.as_deref() else {
+        return Ok(out.error(&format!("No commands defined for {name}")));
+    };
+
+    if let Some(wanted) = input.command.as_deref() {
+        // The source assigns the `find` result to a local and then reads the
+        // still-nil `cmds`, so a named command never prints anything. The
+        // `find` block still runs and raises for a command without a String
+        // name before a match.
+        for command in commands {
+            let command_name = command.name.clone().unwrap_or(Text::Nil);
+            if command_name.to_ruby_s() == wanted {
+                break;
+            }
+            if let Err(error) = command_name.to_sym() {
+                return Err(InspectError::Raised {
+                    class: error.ruby_class(),
+                    message: error.message,
+                    partial: Vec::new(),
+                });
+            }
+        }
+        return Ok(out.done());
+    }
+
+    for command in commands {
+        if opts_command(&mut out, name, command).is_none() {
+            return Err(gated("opts", LIST_NEEDS, out.writes));
+        }
+    }
+    Ok(out.done())
+}
+
+/// One command of `opts`; `None` for an Array value the source does not
+/// render as a String.
+fn opts_command(out: &mut Out, title: &str, command: &CommandDefinition) -> Option<()> {
+    out.clear();
+    out.say(&format!("Options for {title}:"), Some(Color::Cyan));
+    if let Some(description) = txt(&command.description) {
+        out.say(&description, None);
+    }
+
+    if let Some(arguments) = command.arguments.as_deref().filter(|a| !a.is_empty()) {
+        out.clear();
+        out.say("Arguments:", Some(Color::Yellow));
+        for argument in arguments {
+            let name = txt(&argument.name).unwrap_or_else(|| "unnamed".to_owned());
+            let kind = attr_txt(&argument.r#type).unwrap_or_else(|| "unknown".to_owned());
+            let position = attr_txt(&argument.position).unwrap_or_else(|| "default".to_owned());
+            let variadic = if argument.variadic.get() == Some(&true) {
+                "(variadic)"
+            } else {
+                ""
+            };
+            out.say(&format!("  {name} ({kind}{variadic})"), Some(Color::White));
+            if position != "default" {
+                out.say(&format!("    Position: {position}"), Some(Color::Dim));
+            }
+            if let Some(description) = txt(&argument.description) {
+                out.say(&format!("    Description: {description}"), Some(Color::Dim));
+            }
+        }
+    }
+
+    let sections = [
+        (command.options.as_deref(), "Options:", true),
+        (
+            command.post_options.as_deref(),
+            "Post-Options (between input and output):",
+            false,
+        ),
+    ];
+    for (options, heading, with_values) in sections {
+        let Some(options) = options.filter(|o| !o.is_empty()) else {
+            continue;
+        };
+        out.clear();
+        out.say(heading, Some(Color::Yellow));
+        for option in options {
+            let name = ljust_text(&option.name, "unnamed")?;
+            let cli = txt(&option.cli).unwrap_or_else(|| "N/A".to_owned());
+            let kind = attr_txt(&option.r#type).unwrap_or_else(|| "unknown".to_owned());
+            let description = txt(&option.description).unwrap_or_default();
+            out.say(&format!("  --{name:<20} {cli}"), Some(Color::White));
+            out.say(&format!("    Type: {kind}"), Some(Color::Dim));
+            out.say(&format!("    {description}"), Some(Color::Dim));
+            if !with_values {
+                continue;
+            }
+            if let Some(values) = option.values.as_deref() {
+                let values = join_texts(values, ", ")?;
+                out.say(&format!("    Values: {values}"), Some(Color::Dim));
+            }
+            if let Some(range) = option.range.as_deref() {
+                let range: Vec<String> = range
+                    .iter()
+                    .map(|bound| bound.map(|b| b.to_string()).unwrap_or_default())
+                    .collect();
+                out.say(
+                    &format!("    Range: {}", range.join("..")),
+                    Some(Color::Dim),
+                );
+            }
+        }
+    }
+
+    if let Some(flags) = command.flags.as_deref().filter(|f| !f.is_empty()) {
+        out.clear();
+        out.say("Flags:", Some(Color::Yellow));
+        for flag in flags {
+            let name = txt(&flag.name).unwrap_or_else(|| "unnamed".to_owned());
+            let cli = ljust_text(&flag.cli, "N/A")?;
+            let default = match flag.default.get() {
+                None => String::new(),
+                Some(value) => format!(" (default: {value})"),
+            };
+            out.say(&format!("  {cli:<25} {name}{default}"), Some(Color::White));
+            if let Some(description) = txt(&flag.description) {
+                out.say(&format!("    {description}"), Some(Color::Dim));
+            }
+        }
+    }
+    Some(())
 }
 
 /// `which` falls back to interface and alias discovery and reads
