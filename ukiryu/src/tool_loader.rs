@@ -601,12 +601,9 @@ fn read_document(path: &Path) -> Result<Option<String>, LoadError> {
     if !path.exists() {
         return Ok(None);
     }
-    fs::read_to_string(path).map(Some).map_err(|error| {
-        LoadError::Register(register::Error::Io {
-            path: path.to_path_buf(),
-            error,
-        })
-    })
+    fs::read_to_string(path)
+        .map(Some)
+        .map_err(|error| LoadError::Register(register::open_error(path, error)))
 }
 
 /// `Register#load_implementation_index(tool)`: `tools/<tool>/index.yaml`.

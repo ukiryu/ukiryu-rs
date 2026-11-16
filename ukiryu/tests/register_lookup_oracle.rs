@@ -572,11 +572,20 @@ fn find_by_replays_the_pinned_ruby_oracle_row_by_row() {
             "MISMATCH"
         };
         let want_message = row["expect"]["raised"]["message"].as_str();
-        let got_message = message.replace(&root.display().to_string(), "<inputs>");
+        // Ruby starts git through PATH, so its Errno message names the bare
+        // program; the port is handed the stub's absolute path instead.
+        let got_message = regex::Regex::new(r"<inputs>/bin/[^/\s]+/git\b")
+            .unwrap()
+            .replace_all(
+                &message.replace(&root.display().to_string(), "<inputs>"),
+                regex::NoExpand("git"),
+            )
+            .into_owned();
         if let Some(m) = want_message {
             if got == want && m != got_message {
                 message_differences += 1;
-                verdict = "ok-class message-differs";
+                failures += 1;
+                verdict = "MESSAGE-MISMATCH";
             }
         }
         writeln!(

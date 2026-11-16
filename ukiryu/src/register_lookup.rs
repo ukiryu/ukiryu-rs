@@ -146,7 +146,8 @@ fn has_yaml_suffix(name: &str) -> bool {
 /// `YAML.safe_load(File.read(file), permitted_classes: [Symbol], aliases: true)`
 /// as the index consumes it: the document, or the failure's message.
 fn read_document(file: &Path) -> Result<Json, String> {
-    let content = fs::read_to_string(file).map_err(|e| format!("{e} @ {}", file.display()))?;
+    let content =
+        fs::read_to_string(file).map_err(|e| register::open_error(file, e).to_string())?;
     if content.trim().is_empty() {
         // `safe_load("")` is `false`, which the index skips like nil.
         return Ok(Json::Null);
@@ -231,10 +232,7 @@ pub fn load_tool_index(register: &Register) -> ToolIndex {
 }
 
 fn read_value(path: &Path) -> Result<Value, LookupError> {
-    let content = fs::read_to_string(path).map_err(|error| register::Error::Io {
-        path: path.to_path_buf(),
-        error,
-    })?;
+    let content = fs::read_to_string(path).map_err(|error| register::open_error(path, error))?;
     if content.trim().is_empty() {
         return Ok(Value::Nil);
     }
