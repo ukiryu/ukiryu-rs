@@ -1,0 +1,47 @@
+{
+  "note": "Declared-field projection for yaml.model_load snapshots (root ruling R2). On the listed rows only, objects of each class must carry exactly the declared ivars plus the framework-private ivars; the framework-private ones are removed from the frozen expectation before comparison. Nothing else is projected.",
+  "trace": "R2 root ruling 2026-11-13 (Lutaml snapshot rows); ukiryu#23, ukiryu#24 (models stop inheriting Lutaml::Model::Serializable)",
+  "evidence": "Oracle capture (handoffs/batch-05/B05-CORPUS-RUST/capture/lutaml_private.rb, lutaml-model 0.8.175): VersionDetection.attributes are command, pattern, modern_threshold, source, detection_methods; a bare Lutaml::Model::Serializable subclass with one attribute carries the same three extra ivars (@__mutated_after_parse__, @lutaml_register, @using_default).",
+  "classes": [
+    {
+      "class": "Ukiryu::Models::VersionDetection",
+      "declared": [
+        "@command",
+        "@detection_methods",
+        "@modern_threshold",
+        "@pattern",
+        "@source"
+      ],
+      "framework_private": [
+        "@__mutated_after_parse__",
+        "@lutaml_register",
+        "@using_default"
+      ]
+    }
+  ],
+  "rows": [
+    "yaml.model.register-tools-bzip2-default-1-0",
+    "yaml.model.register-tools-bzip2-gnu-default-1-0",
+    "yaml.model.register-tools-exiftool-default-1-0",
+    "yaml.model.register-tools-ffmpeg-default-1-0",
+    "yaml.model.register-tools-ghostscript-default-10-0",
+    "yaml.model.register-tools-gzip-default-1-0",
+    "yaml.model.register-tools-gzip-gnu-default-1-0",
+    "yaml.model.register-tools-imagemagick-default-6-0",
+    "yaml.model.register-tools-imagemagick-default-6-9",
+    "yaml.model.register-tools-imagemagick-default-7-1",
+    "yaml.model.register-tools-inkscape-default-0-92",
+    "yaml.model.register-tools-inkscape-default-1-0",
+    "yaml.model.register-tools-jq-default-1-0",
+    "yaml.model.register-tools-pdf2ps-default-1-0",
+    "yaml.model.register-tools-ping-bsd-1-0",
+    "yaml.model.register-tools-ping-gnu-2024-01-17",
+    "yaml.model.register-tools-ping-windows-1-0",
+    "yaml.model.register-tools-ping-windows-default-1-0",
+    "yaml.model.register-tools-sort-default-1-0",
+    "yaml.model.register-tools-tar-default-1-0",
+    "yaml.model.register-tools-unzip-default-1-0",
+    "yaml.model.register-tools-unzip-default-6-0",
+    "yaml.model.register-tools-yq-default-1-0"
+  ]
+}

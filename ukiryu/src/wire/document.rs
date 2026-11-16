@@ -13,7 +13,7 @@ use super::value::encode;
 use crate::definition::linter::{DefinitionLinter, LintResult};
 use crate::definition::LintIssueHash;
 use crate::models::{Model, ToolDefinition};
-use crate::schema::{self, Data, Permitted};
+use crate::schema::{self, Data, Permitted, SchemaError};
 use crate::types::Value;
 
 // ------------------------------------------------------------------- lint
@@ -101,7 +101,7 @@ pub enum YamlRequest {
 pub fn yaml(request: YamlRequest) -> Json {
     let value = match request {
         YamlRequest::SafeLoad { yaml } => schema::safe_load(&yaml, Permitted::DOCUMENT)
-            .map_err(|e| schema_error(&e))
+            .map_err(|e| reader_error(&e, "document"))
             .and_then(|data| data_value(&data))
             .map(|v| encode(&v)),
         #[cfg(not(target_arch = "wasm32"))]
@@ -118,6 +118,19 @@ pub fn yaml(request: YamlRequest) -> Json {
         Ok(value) => json!({"ok": true, "value": value}),
         Err(error) => error,
     }
+}
+
+/// A core reader failure with `detail`: the failure category and the
+/// stage that failed. The message is the core reader's own diagnostic, so
+/// callers compare these facts rather than the original's Psych wording.
+fn reader_error(error: &SchemaError, stage: &str) -> Json {
+    let mut reply = schema_error(error);
+    let category = match error {
+        SchemaError::YamlSyntax { .. } => "YamlSyntax",
+        _ => "Other",
+    };
+    reply["error"]["detail"] = json!({"category": category, "stage": stage});
+    reply
 }
 
 fn unknown_model(name: &str) -> Json {
