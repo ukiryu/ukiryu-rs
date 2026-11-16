@@ -42,8 +42,8 @@
 //!
 //! `--stdin` and `stdin=-` read the whole of the reader the caller passes
 //! (the process stdin in the binary); `stdin=@FILE` reads the file. The data
-//! is handed to the tool as its `stdin` parameter. This handling is local to
-//! this module until a shared stdin module exists.
+//! is handed to the tool as its `stdin` parameter. This handling is resolved by
+//! the shared [`crate::stdin`] module.
 //!
 //! # Not covered (returns [`ExecuteError::Unsupported`])
 //!
@@ -62,6 +62,7 @@ pub use cache::{cache, CacheAction, CacheInput};
 pub use run_file::{run_file, RunFileInput};
 
 use super::CommandOutcome;
+use crate::stdin::{self, Param, StdinError};
 use serde_json::Value as Json;
 use std::fmt;
 use std::io::Read;
@@ -554,7 +555,7 @@ fn parse_inline_params(params: &[String]) -> Result<Arguments, ParamError> {
                 "Invalid parameter format: {param}. Use key=value"
             )));
         };
-        let skip = key == "stdin" && (raw == "-" || raw.starts_with('@'));
+        let skip = stdin::keeps_literal(key, raw);
         let value = if skip {
             Value::str(raw)
         } else {
@@ -579,25 +580,8 @@ fn stdin_string(bytes: Vec<u8>) -> Result<Value, ExecuteError> {
         .map_err(|_| ExecuteError::unsupported("stdin data that is not UTF-8"))
 }
 
-/// `File.read(path)` failures other than `ENOENT`, as the `Errno` the source
-/// lets escape.
-fn file_read_error(path: &str, error: &std::io::Error) -> ExecuteError {
-    if std::path::Path::new(path).is_dir() {
-        return ExecuteError::raised(
-            "Errno::EISDIR",
-            format!("Is a directory @ io_fread - {path}"),
-        );
-    }
-    match error.kind() {
-        std::io::ErrorKind::PermissionDenied => ExecuteError::raised(
-            "Errno::EACCES",
-            format!("Permission denied @ rb_sysopen - {path}"),
-        ),
-        _ => ExecuteError::unsupported(format!("reading {path}: {error}")),
-    }
-}
-
-/// The stdin step of `RunCommand#run`. `Ok(Err(message))` is `error!`.
+/// The stdin step of `RunCommand#run`, through the shared [`crate::stdin`]
+/// module. `Ok(Err(message))` is `error!`.
 fn resolve_stdin(
     input_stdin: bool,
     arguments: &mut Arguments,
@@ -605,28 +589,24 @@ fn resolve_stdin(
 ) -> Result<Result<(), String>, ExecuteError> {
     let current = arguments
         .iter()
-        .find(|(k, _)| k == "stdin")
-        .map(|(_, v)| v.clone());
-    if input_stdin || current.as_ref().and_then(Value::as_str) == Some("-") {
-        let mut bytes = Vec::new();
-        stdin
-            .read_to_end(&mut bytes)
-            .map_err(|e| ExecuteError::unsupported(format!("reading stdin: {e}")))?;
-        upsert(arguments, "stdin", stdin_string(bytes)?);
-    } else if let Some(path) = current
-        .as_ref()
-        .and_then(Value::as_str)
-        .and_then(|s| s.strip_prefix('@'))
-    {
-        match std::fs::read(path) {
-            Ok(bytes) => upsert(arguments, "stdin", stdin_string(bytes)?),
-            Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
-                return Ok(Err(format!("File not found: {path}")))
-            }
-            Err(e) => return Err(file_read_error(path, &e)),
+        .find(|(k, _)| k == stdin::KEY)
+        .map(|(_, v)| v);
+    let param = match current {
+        None | Some(Value::Nil) | Some(Value::Bool(false)) => Param::Falsy,
+        Some(Value::String(text)) => Param::Text(text),
+        Some(_) => Param::Other,
+    };
+    match stdin::resolve(input_stdin, param, stdin) {
+        Ok(Some(bytes)) => {
+            let value = stdin_string(bytes)?;
+            stdin::store(arguments, value);
+            Ok(Ok(()))
         }
+        Ok(None) => Ok(Ok(())),
+        Err(e) if e.is_thor_error() => Ok(Err(e.cli_message())),
+        Err(StdinError::Raised { class, message }) => Err(ExecuteError::raised(class, message)),
+        Err(other) => Err(ExecuteError::unsupported(other.cli_message())),
     }
-    Ok(Ok(()))
 }
 
 /// `RunCommand#run(tool_name, command_name = nil, *params)`.
