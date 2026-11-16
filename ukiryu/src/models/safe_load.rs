@@ -183,12 +183,43 @@ impl Loader {
         let Some(tag) = tag_of(node)? else {
             let resolved = yeptris::Value::from_root(node)
                 .map_err(|e| ModelError::new(ModelErrorKind::Syntax, e.to_string()))?;
-            return Value::from_yaml_value(&resolved);
+            let value = Value::from_yaml_value(&resolved)?;
+            return self.plain_scalar_as_psych(node, value);
         };
         let text = node
             .str()
             .ok_or_else(|| unsupported("a YAML scalar that is not UTF-8 text"))?;
         self.tagged_scalar(tag, text)
+    }
+
+    /// Two places where the Yeptris resolution of an untagged plain scalar
+    /// differs from Psych's `ScalarScanner#tokenize` (checked against Psych
+    /// 5.3.1): an integer outside i64/u64 is an Integer in Psych, where
+    /// Yeptris yields its text; and a YAML 1.2 float without a `.` (`1e300`)
+    /// is a String in Psych's YAML 1.1 scanner. Everything else keeps the
+    /// Yeptris value.
+    fn plain_scalar_as_psych(&self, node: Node<'_>, value: Value) -> Result<Value, ModelError> {
+        if node.style() != yeptris::Style::Plain {
+            return Ok(value);
+        }
+        let Some(text) = node.str() else {
+            return Ok(value);
+        };
+        match value {
+            Value::String(_) => match self.tokenize(text) {
+                Ok(Value::Integer(i))
+                    if i64::try_from(&i).is_err() && u64::try_from(&i).is_err() =>
+                {
+                    Ok(Value::Integer(i))
+                }
+                _ => Ok(value),
+            },
+            Value::Float(_) => match self.tokenize(text) {
+                Ok(Value::String(s)) => Ok(Value::String(s)),
+                _ => Ok(value),
+            },
+            other => Ok(other),
+        }
     }
 
     /// `ToRuby#deserialize` for a scalar with an explicit tag.

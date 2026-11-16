@@ -124,19 +124,16 @@ refusals.each do |label, (value, klass)|
 end
 
 # --- 2. register load path against the Ruby source ---------------------------
-# Rows where the core's register load path returns a different value than the
-# Ruby source, observed through this binding (reported to the core owner, not
-# fixed here): Yeptris yields a String for an integer outside i64/u64, and
-# reads the YAML 1.2 float `1e300`, which Psych (YAML 1.1) keeps as a String;
-# a !!binary payload loses its ASCII-8BIT encoding.
+# Rows where the core's register load path still returns a different value
+# than the Ruby source, observed through this binding: a !!binary payload
+# loses its ASCII-8BIT encoding (the core value has no byte String). Integers
+# outside i64/u64 and the YAML 1.2 float `1e300` now match Psych and are
+# checked against the capture like every other row.
 $known_divergences = []
 KNOWN_CORE_DIVERGENCES = {
-  'bigint' => { 'ok' => { '$hash' => [[{ '$sym' => 'v' }, { '$str' => '123456789012345678901234567890', 'encoding' => 'UTF-8' }]] } },
-  'negative-bigint' => { 'ok' => { '$hash' => [[{ '$sym' => 'v' }, { '$str' => '-123456789012345678901234567890', 'encoding' => 'UTF-8' }]] } },
   # Psych returns an ASCII-8BIT String for !!binary; the core value has text
   # Strings only, so the bytes come back as UTF-8.
-  'tag-binary' => { 'ok' => { '$hash' => [[{ '$sym' => 'v' }, { '$str' => 'hi', 'encoding' => 'UTF-8' }]] } },
-  'floats' => { 'ok' => { '$hash' => [[{ '$sym' => 'v' }, { '$array' => [{ '$float' => '1.0' }, { '$float' => '2.5' }, { '$float' => '-0.0' }, { '$float' => '1.0e+300' }] }]] } }
+  'tag-binary' => { 'ok' => { '$hash' => [[{ '$sym' => 'v' }, { '$str' => 'hi', 'encoding' => 'UTF-8' }]] } }
 }.freeze
 REFERENCE.fetch('registers').each do |row|
   id = row['id']
