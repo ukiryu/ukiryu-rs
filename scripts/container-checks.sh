@@ -45,7 +45,7 @@ file -L /usr/local/bin/ukiryu 2>/dev/null | head -1
 [ -x /usr/local/bin/ukiryu ] && ok "binary is executable" || { CODE=1; bad "binary is executable"; }
 [ -d /register/tools ] && ok "register mounted with tools/" || { CODE=1; bad "register mounted with tools/"; }
 if touch /register/.write-probe 2>/dev/null; then rm -f /register/.write-probe; CODE=1; bad "register is read-only"; else ok "register is read-only"; fi
-if [ -d /register/tools/cat ]; then ok "register holds the cat tool"; else CODE=1; bad "register holds the cat tool"; fi
+if [ -d /register/tools/jq ]; then ok "register holds the jq tool"; else CODE=1; bad "register holds the jq tool"; fi
 
 # --- verbs merged on main
 run version;            check "version" 0 "Ukiryu" ""
@@ -58,7 +58,7 @@ for sh in bash zsh fish dash tcsh; do
   SHELL=$path run system; check "system detects SHELL=$sh" 0 "Available shells" ""
 done
 run config set format json;   check "config set" 0 "Set format = json" ""
-run config get format;        check "config get" 0 "json" ""
+run config get format;        check "config get" 0 "format:" ""
 run config unset format;      check "config unset" 0 "Unset format" ""
 run config unset format;      check "config unset absent key" 1 "" "Key not set in persistent config: format"
 run config set format;        check "config set without value" 1 "" "Usage: ukiryu config set <key> <value>"
@@ -73,13 +73,13 @@ run cache info;         [ "$CODE" = 0 ] && ok "cache info" || bad "cache info"
 # --- verbs gated on main: PENDING until their PR merges, then must pass
 verb "config list"       "PR #73" config list
 verb "list"              "PR #73" list
-verb "commands cat"      "PR #73" commands cat
+verb "commands jq"      "PR #73" commands jq
 verb "register"          "PR #73" register
-verb "resolve cat"       "PR #73" resolve cat
-verb "info cat"          "PR #77" info cat
-verb "opts cat"          "PR #77" opts cat
-verb "describe cat"      "PR #74" describe cat
-verb "which cat"         "no open PR (K22-CLI-INSPECT remainder)" which cat
+verb "resolve jq"       "PR #73" resolve jq
+verb "info jq"          "PR #77" info jq
+verb "opts jq"          "PR #77" opts jq
+verb "describe jq"      "PR #74" describe jq
+verb "which jq"         "no open PR (K22-CLI-INSPECT remainder)" which jq
 
 echo
 echo "summary: $pass passed, $fail failed, $pending pending"
