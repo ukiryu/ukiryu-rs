@@ -1,0 +1,46 @@
+---
+ukiryu_schema: '1.0'
+name: cat
+version: '1.0'
+display_name: Cat Interface
+actions:
+- name: concatenate
+  description: Concatenate and print files
+  signature:
+    inputs:
+      inputs:
+      - name: files
+        type: file
+        required:
+      options:
+      - name: number_nonblank
+        type:
+      - name: show_all
+        type:
+      - name: show_ends
+        type:
+      - name: number
+        type:
+      - name: squeeze_blank
+        type:
+      - name: show_tabs
+        type:
+      - name: show_nonprinting
+        type:
+      flags:
+      - name: number_nonblank
+        type: boolean
+      - name: show_all
+        type: boolean
+      - name: show_ends
+        type: boolean
+      - name: number
+        type: boolean
+      - name: squeeze_blank
+        type: boolean
+      - name: show_tabs
+        type: boolean
+      - name: show_nonprinting
+        type: boolean
+aliases:
+- cat

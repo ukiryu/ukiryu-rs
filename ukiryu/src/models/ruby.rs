@@ -1,5 +1,6 @@
 //! Ruby core semantics the models depend on (numeric formatting, String
 //! parsing, Array#sum), each pinned by oracle captures in the model tests.
+use num_bigint::BigInt;
 
 /// `Float#to_s`.
 pub fn float_to_s(f: f64) -> String {
@@ -193,6 +194,42 @@ pub fn str_to_i(s: &str) -> i128 {
         }
         i += 1;
     }
+    if neg {
+        -n
+    } else {
+        n
+    }
+}
+
+/// `String#to_i`: leading whitespace, an optional sign, then decimal digits
+/// with single underscores between them. Exact for any length (Bignum).
+pub fn str_to_bigint(s: &str) -> BigInt {
+    let t = s.trim_start_matches([' ', '\t', '\n', '\x0b', '\x0c', '\r']);
+    let (neg, t) = match t.as_bytes().first() {
+        Some(b'-') => (true, &t[1..]),
+        Some(b'+') => (false, &t[1..]),
+        _ => (false, t),
+    };
+    let bytes = t.as_bytes();
+    let mut digits = String::new();
+    for (i, &b) in bytes.iter().enumerate() {
+        if b.is_ascii_digit() {
+            digits.push(char::from(b));
+        } else if b == b'_'
+            && i > 0
+            && bytes[i - 1].is_ascii_digit()
+            && bytes.get(i + 1).is_some_and(u8::is_ascii_digit)
+        {
+            continue;
+        } else {
+            break;
+        }
+    }
+    let n: BigInt = if digits.is_empty() {
+        BigInt::from(0)
+    } else {
+        digits.parse().expect("ASCII digits")
+    };
     if neg {
         -n
     } else {
