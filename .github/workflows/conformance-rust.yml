@@ -32,6 +32,10 @@ jobs:
           export UKIRYU_CONFORMANCE_DIR="$GITHUB_WORKSPACE/corpus/conformance"
           export UKIRYU_CONFORMANCE_REPORT="$RUNNER_TEMP/conformance-report.json"
           cargo test -p ukiryu --locked --test conformance -- --nocapture
+      - name: Run the cli-output rows through the compiled binary
+        if: always()
+        shell: bash
+        run: cargo test -p ukiryu-cli --locked --test corpus_cli_output -- --nocapture
       - name: Upload coverage report
         if: always()
         uses: actions/upload-artifact@v4
