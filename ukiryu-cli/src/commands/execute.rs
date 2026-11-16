@@ -45,11 +45,18 @@
 //! is handed to the tool as its `stdin` parameter. This handling is resolved by
 //! the shared [`crate::stdin`] module.
 //!
+//! The bytes are kept exactly as read. Ruby holds them in a UTF-8 String that
+//! may be invalid; the tool's `stdin` parameter here is a Rust `String`, so
+//! invalid bytes travel beside it. The child receives the raw bytes, the
+//! dry-run preview prints the Ruby `#inspect` of the broken String (`\xFF` for
+//! each invalid byte, one character each), and the response's request echoes
+//! the String with its invalid sequences removed, as lutaml's `ensure_utf8`
+//! cast does for every String attribute.
+//!
 //! # Not covered (returns [`ExecuteError::Unsupported`])
 //!
 //! - `UKIRYU_DEBUG` (the `Logger` debug sections) and `UKIRYU_METRICS` (the
 //!   execution report).
-//! - stdin bytes that are not UTF-8.
 //! - A parameter value the shared YAML loader does not reproduce.
 //! - `setup_register` / `default_register_path` side effects (setting
 //!   `UKIRYU_REGISTER`, cloning the default register) are not performed;
@@ -75,6 +82,7 @@ use ukiryu::definition::{
 };
 use ukiryu::environment::Environment;
 use ukiryu::executable::DiscoveryContext;
+use ukiryu::execution::results::bytes::ensure_utf8;
 use ukiryu::execution::{InvalidByteSequence, ResultPartsError, Seconds};
 use ukiryu::executor::{self, ExecuteError as ProcessError};
 use ukiryu::extractors::base::ProcessHost;
@@ -84,8 +92,8 @@ use ukiryu::models::tool_definition::ToolDefinition;
 use ukiryu::models::{CommandDefinition, ErrorResponse, ExecutionResultParts, SuccessResponse};
 use ukiryu::register::{self, Register};
 use ukiryu::render::{
-    output_response, render_dry_run, DryRunStyle, OutputFormat, OutputWrite, PaintSupport,
-    RenderError, RenderSettings,
+    output_response, render_dry_run, DryRunStyle, InspectValue, OutputFormat, OutputWrite,
+    PaintSupport, RenderError, RenderSettings,
 };
 use ukiryu::runtime::{Clock, Host, Runtime};
 use ukiryu::schema::{safe_load, Data, Permitted, SchemaError};
@@ -575,19 +583,15 @@ fn parse_inline_params(params: &[String]) -> Result<Arguments, ParamError> {
     Ok(arguments)
 }
 
-fn stdin_string(bytes: Vec<u8>) -> Result<Value, ExecuteError> {
-    String::from_utf8(bytes)
-        .map(Value::String)
-        .map_err(|_| ExecuteError::unsupported("stdin data that is not UTF-8"))
-}
-
 /// The stdin step of `RunCommand#run`, through the shared [`crate::stdin`]
-/// module. `Ok(Err(message))` is `error!`.
+/// module. `Ok(Err(message))` is `error!`. `Ok(Ok(Some(bytes)))` is data
+/// that is not valid UTF-8: the argument then holds the String without its
+/// invalid sequences and the caller keeps the raw bytes.
 fn resolve_stdin(
     input_stdin: bool,
     arguments: &mut Arguments,
     stdin: &mut dyn Read,
-) -> Result<Result<(), String>, ExecuteError> {
+) -> Result<Result<Option<Vec<u8>>, String>, ExecuteError> {
     let current = arguments
         .iter()
         .find(|(k, _)| k == stdin::KEY)
@@ -598,16 +602,145 @@ fn resolve_stdin(
         Some(_) => Param::Other,
     };
     match stdin::resolve(input_stdin, param, stdin) {
-        Ok(Some(bytes)) => {
-            let value = stdin_string(bytes)?;
-            stdin::store(arguments, value);
-            Ok(Ok(()))
-        }
-        Ok(None) => Ok(Ok(())),
+        Ok(Some(bytes)) => match String::from_utf8(bytes) {
+            Ok(text) => {
+                stdin::store(arguments, Value::String(text));
+                Ok(Ok(None))
+            }
+            Err(invalid) => {
+                let raw = invalid.into_bytes();
+                stdin::store(arguments, Value::String(ensure_utf8(&raw)));
+                Ok(Ok(Some(raw)))
+            }
+        },
+        Ok(None) => Ok(Ok(None)),
         Err(e) if e.is_thor_error() => Ok(Err(e.cli_message())),
         Err(StdinError::Raised { class, message }) => Err(ExecuteError::raised(class, message)),
         Err(other) => Err(ExecuteError::unsupported(other.cli_message())),
     }
+}
+
+/// The first block of 256 private-use code points that `text` does not use.
+fn free_block(text: &str) -> Option<u32> {
+    const FIRST: u32 = 0xF0000;
+    let mut used = [false; 512];
+    for c in text.chars() {
+        let c = c as u32;
+        if c >= FIRST {
+            used[((c - FIRST) / 256) as usize] = true;
+        }
+    }
+    used.iter().position(|u| !u).map(|i| FIRST + 256 * i as u32)
+}
+
+/// Dry-run view of a request argument: the parsed value, or the stdin String
+/// that is not valid UTF-8. The latter is held as text where every invalid
+/// byte `b` is the one character `base + b` (Ruby counts each invalid byte
+/// as one character), so the shared preview cuts it at the same place.
+enum DryArg<'a> {
+    Plain(&'a Value),
+    Broken { text: String, base: u32 },
+}
+
+impl DryArg<'_> {
+    /// Ruby `String#inspect` of a String that holds invalid bytes.
+    fn inspect_broken(text: &str, base: u32) -> String {
+        fn flush(valid: &mut String, out: &mut String) {
+            if !valid.is_empty() {
+                let quoted = Value::str(std::mem::take(valid)).inspect();
+                out.push_str(&quoted[1..quoted.len() - 1]);
+            }
+        }
+        let mut out = String::from("\"");
+        let mut valid = String::new();
+        for c in text.chars() {
+            let c32 = c as u32;
+            if (base..base + 256).contains(&c32) {
+                flush(&mut valid, &mut out);
+                out.push_str(&format!("\\x{:02X}", c32 - base));
+            } else {
+                valid.push(c);
+            }
+        }
+        flush(&mut valid, &mut out);
+        out.push('"');
+        out
+    }
+}
+
+impl InspectValue for DryArg<'_> {
+    fn inspect(&self) -> String {
+        match self {
+            DryArg::Plain(value) => value.inspect(),
+            DryArg::Broken { text, base } => DryArg::inspect_broken(text, *base),
+        }
+    }
+
+    fn as_ruby_string(&self) -> Option<&str> {
+        match self {
+            DryArg::Plain(value) => value.as_str(),
+            DryArg::Broken { text, .. } => Some(text),
+        }
+    }
+
+    fn inspect_string(&self, text: &str) -> String {
+        match self {
+            DryArg::Plain(_) => Value::str(text).inspect(),
+            DryArg::Broken { base, .. } => DryArg::inspect_broken(text, *base),
+        }
+    }
+}
+
+/// The request arguments as the dry run shows them. `raw_stdin` is the
+/// stdin data that is not valid UTF-8, shown in place of the `stdin` value.
+fn dry_arguments<'a>(
+    arguments: &'a Arguments,
+    raw_stdin: Option<&[u8]>,
+) -> Result<Vec<(String, DryArg<'a>)>, ExecuteError> {
+    let broken = match raw_stdin {
+        None => None,
+        Some(raw) => {
+            let valid = ensure_utf8(raw);
+            let base = free_block(&valid).ok_or_else(|| {
+                ExecuteError::unsupported(
+                    "stdin data that is not UTF-8 and uses every private-use block",
+                )
+            })?;
+            let mut text = String::new();
+            let mut rest = raw;
+            while !rest.is_empty() {
+                match std::str::from_utf8(rest) {
+                    Ok(all) => {
+                        text.push_str(all);
+                        break;
+                    }
+                    Err(e) => {
+                        let upto = e.valid_up_to();
+                        text.push_str(std::str::from_utf8(&rest[..upto]).expect("valid prefix"));
+                        text.push(
+                            char::from_u32(base + u32::from(rest[upto]))
+                                .expect("private-use scalar"),
+                        );
+                        rest = &rest[upto + 1..];
+                    }
+                }
+            }
+            Some((text, base))
+        }
+    };
+    Ok(arguments
+        .iter()
+        .map(|(key, value)| {
+            let shown = match (&broken, key.as_str()) {
+                (Some((text, base)), stdin::KEY) => DryArg::Broken {
+                    text: text.clone(),
+                    base: *base,
+                },
+                _ => DryArg::Plain(value),
+            };
+            (key.clone(), shown)
+        })
+        .collect())
 }
 
 /// `RunCommand#run(tool_name, command_name = nil, *params)`.
@@ -650,9 +783,10 @@ pub fn exec(
         Err(ParamError::Thor(m)) => return Ok(out.error(&m)),
         Err(ParamError::Port(e)) => return Err(e),
     };
-    if let Err(message) = resolve_stdin(input.stdin, &mut arguments, stdin)? {
-        return Ok(out.error(&message));
-    }
+    let raw_stdin = match resolve_stdin(input.stdin, &mut arguments, stdin)? {
+        Ok(raw) => raw,
+        Err(message) => return Ok(out.error(&message)),
+    };
     reject_debug(&config)?;
 
     let format = if input.raw {
@@ -665,11 +799,12 @@ pub fn exec(
     };
 
     if truthy(config.resolve("dry_run")) {
+        let shown = dry_arguments(&arguments, raw_stdin.as_deref())?;
         let text = render_dry_run(
             DryRunStyle::Exec,
             &input.tool,
             &command,
-            &arguments,
+            &shown,
             render_use_color(&config),
         );
         let mut out = out;
@@ -727,6 +862,7 @@ pub fn exec(
                         &tool,
                         &command,
                         &arguments,
+                        raw_stdin,
                         &settings,
                         ctx.host.env.get("PATH"),
                     )?
@@ -1016,6 +1152,7 @@ pub fn respond(
     tool: &Tool,
     command: &str,
     arguments: &[(String, Value)],
+    raw_stdin: Option<Vec<u8>>,
     settings: &ExecuteSettings,
     shell_search_path: Option<&str>,
 ) -> Result<Response, ExecuteError> {
@@ -1038,10 +1175,14 @@ pub fn respond(
             .map(|(k, v)| (Value::Symbol(k.clone()), v.clone()))
             .collect(),
     );
-    let built = match tool.build(command, &params) {
+    let mut built = match tool.build(command, &params) {
         Ok(b) => b,
         Err(e) => return tool_error_response(e).map(Response::Error),
     };
+    // Bytes that are not valid UTF-8 replace the String the build took.
+    if raw_stdin.is_some() {
+        built.stdin = raw_stdin;
+    }
     let mut request = match tool.request(built, settings) {
         Ok(r) => r,
         Err(e) => return tool_error_response(e).map(Response::Error),
