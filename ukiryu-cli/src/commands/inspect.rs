@@ -1395,10 +1395,13 @@ fn register_step(
     }
 }
 
+/// A gate raised once the writes so far are known.
+type DeferredGate = Box<dyn FnOnce(Vec<OutputWrite>) -> InspectError>;
+
 enum RegisterStepError {
     Register(RegisterFailure),
     /// A gate raised once the writes so far are known.
-    Gated(Box<dyn FnOnce(Vec<OutputWrite>) -> InspectError>),
+    Gated(DeferredGate),
 }
 
 impl From<RegisterFailure> for RegisterStepError {
@@ -1721,7 +1724,7 @@ fn priority_icon(priority: u32) -> &'static str {
 fn definition_mtime(
     ctx: &HandlerContext,
     metadata: &DefinitionMetadata,
-) -> Result<String, Box<dyn FnOnce(Vec<OutputWrite>) -> InspectError>> {
+) -> Result<String, DeferredGate> {
     let Some(modified) = metadata.mtime() else {
         return Ok(String::new());
     };
