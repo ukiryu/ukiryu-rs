@@ -186,6 +186,11 @@ fn to_json(value: &Value) -> Result<Json, String> {
             None => return Err("Unsupported: non-finite float".to_string()),
         },
         Value::String(s) | Value::Symbol(s) => Json::String(s.clone()),
+        // An ASCII-only binary String compares equal to the UTF-8 one.
+        Value::Bytes(b) if b.is_ascii() => Json::String(String::from_utf8_lossy(b).into_owned()),
+        Value::Bytes(_) | Value::BinarySymbol(_) => {
+            return Err("Unsupported: non-ASCII binary String".to_string())
+        }
         Value::Time(_) => return Err("Tried to load unspecified class: Time".to_string()),
         Value::Regexp(_) => return Err("Tried to load unspecified class: Regexp".to_string()),
         Value::Array(items) => Json::Array(items.iter().map(to_json).collect::<Result<_, _>>()?),
