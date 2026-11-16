@@ -140,8 +140,11 @@ fn materialize(root: &Path, reg: &Json) {
     }
 }
 
+type ImplShape = (String, Vec<String>);
+type ToolShape = (String, Vec<ImplShape>);
+
 fn assert_same_register(scanned: &[RegisterTool], expected: &[RegisterTool]) {
-    let shape = |r: &[RegisterTool]| -> Vec<(String, Vec<(String, Vec<String>)>)> {
+    let shape = |r: &[RegisterTool]| -> Vec<ToolShape> {
         r.iter()
             .map(|t| {
                 (
