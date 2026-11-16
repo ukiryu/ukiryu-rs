@@ -1,0 +1,9 @@
+{
+  "oracle_commit": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+  "ruby": "4.0.1",
+  "lock_sha256": "fc3b12f2ede259028b638d2f26c65ddf9506d142c20a8bf0c1b151741078b65e",
+  "source": "lib/ukiryu/tool/loader.rb",
+  "source_sha256": "9103319de0ec25ad4e1bd619674c47025e20cd5466717eaac8e63b1a8140255e",
+  "rows": 663,
+  "sha256": "f53be31f62531a54f7cdfa5bc697153559429d919671059a0f2ee55831a1dbf1"
+}
