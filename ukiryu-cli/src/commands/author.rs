@@ -3256,6 +3256,15 @@ fn code_lines(out: &mut Out, off: bool, codes: &Value) -> Step {
     };
     let mut keyed = Vec::new();
     for (key, meaning) in pairs {
+        // The oracle's exit-code hash keys are Symbols (measured), so the
+        // first `k.to_i` raises; the core model stores the same keys as
+        // Strings.
+        if matches!(key, Value::String(_)) {
+            return Err(raise(
+                "NoMethodError",
+                "undefined method 'to_i' for an instance of Symbol",
+            ));
+        }
         keyed.push((key_to_i(key)?, key, meaning));
     }
     keyed.sort_by_key(|(n, _, _)| *n);
