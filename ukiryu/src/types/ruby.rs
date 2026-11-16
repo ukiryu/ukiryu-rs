@@ -68,7 +68,7 @@ pub fn to_s(v: &Value) -> String {
         Value::String(s) | Value::Symbol(s) => s.clone(),
         // `String#to_s` is the String itself; a Rust String cannot hold
         // non-UTF-8 bytes, so those are replaced (use `Value::Bytes` to keep them).
-        Value::Bytes(b) => String::from_utf8_lossy(b).into_owned(),
+        Value::Bytes(b) | Value::BinarySymbol(b) => String::from_utf8_lossy(b).into_owned(),
         Value::Time(t) => time_to_s(t),
         Value::Regexp(r) => regexp_to_s(r),
         Value::Array(_) | Value::Hash(_) => inspect(v),
@@ -82,6 +82,8 @@ pub fn inspect(v: &Value) -> String {
         Value::String(s) => string_inspect(s),
         Value::Bytes(b) => bytes_inspect(b),
         Value::Symbol(s) => symbol_inspect(s),
+        // A non-ASCII name is never a bare identifier: `:"\xFF"`.
+        Value::BinarySymbol(b) => format!(":{}", bytes_inspect(b)),
         Value::Time(t) => time_inspect(t),
         Value::Regexp(r) => regexp_inspect(r),
         Value::Array(items) => {
@@ -99,6 +101,7 @@ pub fn inspect(v: &Value) -> String {
                         format!("{name}: {}", inspect(val))
                     }
                     Value::Symbol(name) => format!("{}: {}", string_inspect(name), inspect(val)),
+                    Value::BinarySymbol(b) => format!("{}: {}", bytes_inspect(b), inspect(val)),
                     _ => format!("{} => {}", inspect(k), inspect(val)),
                 })
                 .collect();

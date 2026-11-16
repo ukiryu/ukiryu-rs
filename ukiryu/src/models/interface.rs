@@ -45,32 +45,7 @@ pub fn register_hash(yaml: &str) -> Result<Option<Value>, ModelError> {
     if !data.truthy() {
         return Ok(None);
     }
-    if matches!(data, Value::Hash(_)) {
-        refuse_binary_keys(&data)?;
-    }
     Ok(Some(data.symbolize_keys()))
-}
-
-/// `Utils.symbolize_keys` turns every Hash key into a Symbol; a key that is a
-/// binary String with non-ASCII bytes would become an ASCII-8BIT Symbol, which
-/// the value domain cannot hold, so it is refused instead of altered.
-fn refuse_binary_keys(v: &Value) -> Result<(), ModelError> {
-    match v {
-        Value::Hash(pairs) => {
-            for (k, val) in pairs {
-                if matches!(k, Value::Bytes(b) if !b.is_ascii()) {
-                    k.to_sym()?;
-                }
-                refuse_binary_keys(val)?;
-            }
-            Ok(())
-        }
-        Value::Array(items) => items.iter().try_for_each(|item| match item {
-            Value::Hash(_) => refuse_binary_keys(item),
-            _ => Ok(()),
-        }),
-        _ => Ok(()),
-    }
 }
 
 /// `Interface.symbolize_keys`: `transform_keys(&:to_sym)` recursively
@@ -80,7 +55,7 @@ fn symbolize(v: &Value) -> Result<Value, ModelError> {
         Value::Hash(pairs) => {
             let mut out = Value::Hash(Vec::new());
             for (k, val) in pairs {
-                let key = Value::Symbol(k.to_sym()?);
+                let key = k.to_sym_value()?;
                 let val = match val {
                     Value::Hash(_) => symbolize(val)?,
                     Value::Array(items) => Value::Array(

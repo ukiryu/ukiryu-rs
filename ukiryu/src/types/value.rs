@@ -47,6 +47,10 @@ pub enum Value {
     /// only when the bytes are ASCII and equal, as in Ruby.
     Bytes(Vec<u8>),
     Symbol(String),
+    /// An ASCII-8BIT Symbol (`String#b.to_sym` with a non-ASCII byte): its
+    /// raw name bytes. Ruby gives an ASCII-only name a US-ASCII Symbol, held
+    /// as `Value::Symbol`; build either with [`Value::sym_bytes`].
+    BinarySymbol(Vec<u8>),
     Time(Time),
     Regexp(Regexp),
     Array(Vec<Value>),
@@ -67,6 +71,16 @@ impl Value {
         Value::Symbol(s.into())
     }
 
+    /// `String#b.to_sym`: a US-ASCII Symbol when every byte is ASCII,
+    /// otherwise an ASCII-8BIT Symbol.
+    pub fn sym_bytes(bytes: Vec<u8>) -> Self {
+        if bytes.is_ascii() {
+            Value::Symbol(String::from_utf8(bytes).expect("ASCII bytes are UTF-8"))
+        } else {
+            Value::BinarySymbol(bytes)
+        }
+    }
+
     pub fn is_nil(&self) -> bool {
         matches!(self, Value::Nil)
     }
@@ -85,7 +99,7 @@ impl Value {
             Value::Integer(_) => "Integer",
             Value::Float(_) => "Float",
             Value::String(_) | Value::Bytes(_) => "String",
-            Value::Symbol(_) => "Symbol",
+            Value::Symbol(_) | Value::BinarySymbol(_) => "Symbol",
             Value::Time(_) => "Time",
             Value::Regexp(_) => "Regexp",
             Value::Array(_) => "Array",
@@ -229,7 +243,7 @@ impl Serialize for Value {
             },
             Value::Float(f) => serializer.serialize_f64(*f),
             Value::String(s) | Value::Symbol(s) => serializer.serialize_str(s),
-            Value::Bytes(b) => match std::str::from_utf8(b) {
+            Value::Bytes(b) | Value::BinarySymbol(b) => match std::str::from_utf8(b) {
                 Ok(s) if s.is_ascii() => serializer.serialize_str(s),
                 _ => serializer.serialize_bytes(b),
             },
@@ -405,6 +419,12 @@ pub fn eql(a: &Value, b: &Value) -> bool {
             x.is_ascii() && x.as_slice() == y.as_bytes()
         }
         (Value::Symbol(x), Value::Symbol(y)) => x == y,
+        (Value::BinarySymbol(x), Value::BinarySymbol(y)) => x == y,
+        // As for Strings: equal only when the bytes are ASCII, which never
+        // holds for a Symbol built by `sym_bytes`.
+        (Value::BinarySymbol(x), Value::Symbol(y)) | (Value::Symbol(y), Value::BinarySymbol(x)) => {
+            x.is_ascii() && x.as_slice() == y.as_bytes()
+        }
         (Value::Time(x), Value::Time(y)) => x.instant_eql(y),
         (Value::Regexp(x), Value::Regexp(y)) => x == y,
         (Value::Array(x), Value::Array(y)) => {

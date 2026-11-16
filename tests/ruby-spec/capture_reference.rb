@@ -17,7 +17,11 @@ require 'ukiryu/utils'
 def enc(value)
   case value
   when nil, true, false then value
-  when Symbol then { '$sym' => value.to_s }
+  when Symbol
+    # An ASCII-8BIT Symbol (non-ASCII name bytes): hex, like a binary String.
+    return { '$sym_bytes' => value.to_s.unpack1('H*'), 'encoding' => 'ASCII-8BIT' } if value.encoding == Encoding::BINARY
+
+    { '$sym' => value.to_s }
   when Integer then { '$int' => value.to_s }
   when Float
     text = if value.nan? then 'NaN'
@@ -104,6 +108,7 @@ extra_rows = [
   ['binary-in-collections', "v: [!!binary /w==, {k: !!binary aGk=}]\n"],
   ['binary-key-ascii', "v: {!!binary aGk=: 1}\n"],
   ['binary-key-top', "!!binary aGk=: 1\n"],
+  ['binary-key-nonascii', "v: {!!binary /w==: 1}\n"],
   ['i64-edges', "v: [9223372036854775807, -9223372036854775808, 18446744073709551615]\n"],
   ['floats', "v: [1.0, 2.5, -0.0, 1e300]\n"],
   ['nil-false', "v: [null, ~, false, true]\n"],

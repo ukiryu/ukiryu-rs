@@ -13,7 +13,8 @@
 //! (the port raises `Ukiryu::Models::UnsupportedValue`) or [`UNTAGGED`].
 //! One documented lowering applies, a value Ruby's own `==` treats as
 //! equal: a sequence `!!omap` (`Psych::Omap`) is a Hash with the same pairs.
-//! A `!!binary` result is `Value::Bytes` (ASCII-8BIT).
+//! A `!!binary` result is `Value::Bytes` (ASCII-8BIT), and the register's
+//! `symbolize_keys` turns a non-ASCII one into `Value::BinarySymbol`.
 #[path = "models_data/support.rs"]
 mod support;
 
@@ -26,9 +27,6 @@ const POLICIES: [&str; 3] = ["register", "register_raw", "model_file"];
 
 /// (row, policy) pairs the port refuses instead of guessing, with the reason.
 const UNSUPPORTED: &[(&str, &str, &str)] = &[
-    // `Utils.symbolize_keys` would make an ASCII-8BIT Symbol, which has no
-    // Value representation (register_raw and model_file keep the Bytes key).
-    ("binary-key-nonascii", "register", "non-ASCII binary Symbol"),
     // Psych raises NoMethodError from inside its visitor.
     ("omap-empty-map-item", "*", "visit_NilClass"),
     // A permitted class revives the Class object String.
@@ -81,6 +79,11 @@ fn matches(want: &Json, got: &Value) -> bool {
             want["bits"].as_str() == Some(hex(&f.to_bits().to_be_bytes()).as_str())
         }
         ("sym", Value::Symbol(s)) => want["v"].as_str() == Some(s.as_str()),
+        // An ASCII-8BIT Symbol's name bytes.
+        ("sym", Value::BinarySymbol(b)) => {
+            want["enc"].as_str() == Some("ASCII-8BIT")
+                && want["hex"].as_str() == Some(hex(b).as_str())
+        }
         ("str", Value::String(s)) => {
             want["enc"].as_str() == Some("UTF-8") && want["v"].as_str() == Some(s.as_str())
         }
@@ -150,7 +153,7 @@ fn safe_load_policies_match_psych() {
     assert!(failures.is_empty(), "{failures:#?}");
     assert_eq!(counts.iter().sum::<usize>(), rows.len() * POLICIES.len());
     // exact, refused, untagged (row, policy) cases.
-    assert_eq!(counts, [458, 7, 3]);
+    assert_eq!(counts, [459, 6, 3]);
 }
 
 /// Every listed refusal names a captured row.
@@ -243,4 +246,41 @@ fn bytes_compare_with_text_as_ruby_strings() {
     assert!(eql(&e_acute, &Value::Bytes("é".as_bytes().to_vec())));
     assert_eq!(e_acute.inspect(), "\"\\xC3\\xA9\"");
     assert_eq!(e_acute.class_name(), "String");
+}
+
+/// `Utils.symbolize_keys` on a non-ASCII binary key builds an ASCII-8BIT
+/// Symbol: `String#b.to_sym` (values probed on Ruby 4.0.1).
+#[test]
+fn binary_keys_symbolize_to_ascii8bit_symbols() {
+    use ukiryu::types::value::eql;
+    let doc = golden("tag_policy.json");
+    let row = doc["rows"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|r| r["id"] == "binary-key-nonascii")
+        .unwrap();
+    let got = load("register", row["yaml"].as_str().unwrap()).unwrap();
+    assert_eq!(
+        Some(got.inspect().as_str()),
+        row["expect"]["register"]["inspect"].as_str()
+    );
+    let ff = Value::sym_bytes(vec![0xff]);
+    assert_eq!(ff, Value::BinarySymbol(vec![0xff]));
+    assert_eq!(ff.inspect(), ":\"\\xFF\"");
+    assert_eq!(ff.class_name(), "Symbol");
+    assert!(eql(&ff, &Value::sym_bytes(vec![0xff])));
+    assert!(!eql(&ff, &Value::Bytes(vec![0xff])));
+    // `"\xC3\xA9".b.to_sym` is not `:é`.
+    let e_acute = Value::sym_bytes("é".as_bytes().to_vec());
+    assert!(!eql(&e_acute, &Value::sym("é")));
+    assert_eq!(e_acute.inspect(), ":\"\\xC3\\xA9\"");
+    // ASCII-only bytes make a US-ASCII Symbol.
+    assert_eq!(Value::sym_bytes(b"hi".to_vec()), Value::sym("hi"));
+    let hash = Value::Hash(vec![
+        (Value::sym_bytes(b"\xffa".to_vec()), Value::int(1)),
+        (Value::sym("a"), Value::int(2)),
+        (Value::sym_bytes(b"a\xff".to_vec()), Value::int(3)),
+    ]);
+    assert_eq!(hash.inspect(), "{\"\\xFFa\": 1, a: 2, \"a\\xFF\": 3}");
 }

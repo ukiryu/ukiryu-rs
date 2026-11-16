@@ -25,13 +25,22 @@ impl Value {
         match self {
             Value::String(s) | Value::Symbol(s) => Ok(s.clone()),
             // An ASCII-only binary String is a US-ASCII Symbol; non-ASCII
-            // bytes would need an ASCII-8BIT Symbol, which has no value here.
+            // bytes make an ASCII-8BIT Symbol, whose name is not text.
             Value::Bytes(b) if b.is_ascii() => Ok(String::from_utf8_lossy(b).into_owned()),
-            Value::Bytes(_) => Err(ModelError::new(
+            Value::Bytes(_) | Value::BinarySymbol(_) => Err(ModelError::new(
                 ModelErrorKind::Unsupported,
-                "`to_sym` of a binary String with non-ASCII bytes (an ASCII-8BIT Symbol)",
+                "an ASCII-8BIT Symbol name is not a String; use `to_sym_value`",
             )),
             other => Err(ModelError::no_method("to_sym", other)),
+        }
+    }
+
+    /// `#to_sym` as a value: a binary String with a non-ASCII byte becomes an
+    /// ASCII-8BIT Symbol ([`Value::BinarySymbol`]).
+    pub fn to_sym_value(&self) -> Result<Value, ModelError> {
+        match self {
+            Value::Bytes(b) | Value::BinarySymbol(b) => Ok(Value::sym_bytes(b.clone())),
+            other => other.to_sym().map(Value::Symbol),
         }
     }
 
@@ -42,7 +51,7 @@ impl Value {
             Value::Hash(pairs) => Value::Hash(
                 pairs
                     .iter()
-                    .map(|(k, v)| (Value::Symbol(k.to_ruby_s()), symbolize_value(v)))
+                    .map(|(k, v)| (key_to_s_to_sym(k), symbolize_value(v)))
                     .collect(),
             ),
             other => other.clone(),
@@ -101,10 +110,13 @@ impl Value {
             Value::Bytes(b) if b.is_ascii() => {
                 yeptris::Value::String(String::from_utf8_lossy(b).into_owned())
             }
-            Value::Bytes(b) => yeptris::Value::Tagged(Box::new(yeptris::Tagged {
-                tag: "tag:yaml.org,2002:binary".to_owned(),
-                value: yeptris::Value::String(base64_encode(b)),
-            })),
+            // A binary Symbol name is written like its String.
+            Value::Bytes(b) | Value::BinarySymbol(b) => {
+                yeptris::Value::Tagged(Box::new(yeptris::Tagged {
+                    tag: "tag:yaml.org,2002:binary".to_owned(),
+                    value: yeptris::Value::String(base64_encode(b)),
+                }))
+            }
             Value::Time(_) | Value::Regexp(_) => yeptris::Value::String(self.to_ruby_s()),
             Value::Array(items) => {
                 yeptris::Value::Sequence(items.iter().map(Value::to_yaml_value).collect())
@@ -136,6 +148,15 @@ fn base64_encode(bytes: &[u8]) -> String {
         }
     }
     out
+}
+
+/// `k.to_s.to_sym`: binary String (or Symbol) bytes stay ASCII-8BIT, so a
+/// non-ASCII name gives an ASCII-8BIT Symbol as in Ruby.
+fn key_to_s_to_sym(k: &Value) -> Value {
+    match k {
+        Value::Bytes(b) | Value::BinarySymbol(b) => Value::sym_bytes(b.clone()),
+        other => Value::Symbol(other.to_ruby_s()),
+    }
 }
 
 fn symbolize_value(v: &Value) -> Value {

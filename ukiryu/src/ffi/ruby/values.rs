@@ -2,7 +2,8 @@
 //!
 //! The mapping is exact in both directions for the classes the core value
 //! models: `nil`, `true`, `false`, `Integer` (any size), `Float` (including
-//! NaN, infinities and -0.0), `String` (UTF-8 or US-ASCII text, or ASCII-8BIT bytes), `Symbol`,
+//! NaN, infinities and -0.0), `String` (UTF-8 or US-ASCII text, or ASCII-8BIT bytes), `Symbol`
+//! (an ASCII-8BIT Symbol keeps its bytes),
 //! `Time` (instant to the nanosecond, UTC offset and the UTC flag), `Regexp`
 //! (source plus the IGNORECASE/EXTENDED/MULTILINE bits), `Array` and `Hash`
 //! (insertion order kept, keys of any supported class).
@@ -95,6 +96,14 @@ fn convert_in(ruby: &Ruby, value: RValue, open: &mut Vec<RValue>) -> Result<Valu
     }
     if is_class(value, ruby.class_symbol()) {
         let symbol = Symbol::from_value(value).ok_or_else(|| type_error(ruby, value))?;
+        let encoding: RValue = symbol.funcall("encoding", ())?;
+        let name: String = encoding.funcall("name", ())?;
+        if name == "ASCII-8BIT" {
+            // `String#b.to_sym` with a non-ASCII byte: keep the name bytes.
+            let string: RString = symbol.funcall("to_s", ())?;
+            // SAFETY: the bytes are copied before any further Ruby call can run.
+            return Ok(Value::sym_bytes(unsafe { string.as_slice() }.to_vec()));
+        }
         return Ok(Value::Symbol(symbol.name()?.into_owned()));
     }
     if is_class(value, ruby.class_string()) {
@@ -245,6 +254,8 @@ fn convert_out(ruby: &Ruby, value: &Value, depth: usize) -> Result<RValue, Error
         // `rb_str_new`: an ASCII-8BIT String.
         Value::Bytes(b) => ruby.str_from_slice(b).as_value(),
         Value::Symbol(s) => ruby.to_symbol(s).as_value(),
+        // `String#b.to_sym`: an ASCII-8BIT Symbol with the same name bytes.
+        Value::BinarySymbol(b) => ruby.str_from_slice(b).funcall("to_sym", ())?,
         Value::Time(t) => {
             if !t.is_integral_nanos() {
                 return Err(arg_error(

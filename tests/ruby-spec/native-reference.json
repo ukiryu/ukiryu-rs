@@ -1551,6 +1551,34 @@
       }
     },
     {
+      "id": "binary-key-nonascii",
+      "yaml": "v: {!!binary /w==: 1}\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$hash": [
+                  [
+                    {
+                      "$sym_bytes": "ff",
+                      "encoding": "ASCII-8BIT"
+                    },
+                    {
+                      "$int": "1"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
       "id": "i64-edges",
       "yaml": "v: [9223372036854775807, -9223372036854775808, 18446744073709551615]\n",
       "expect": {

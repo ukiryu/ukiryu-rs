@@ -187,7 +187,9 @@ fn json_of(ruby: &Ruby, value: &Value) -> Result<Json, Error> {
         Value::String(s) => Json::String(s.clone()),
         Value::Bytes(b) if b.is_ascii() => Json::String(String::from_utf8_lossy(b).into_owned()),
         Value::Bytes(_) => return Err(refuse("a binary String with non-ASCII bytes")),
-        Value::Symbol(_) => return Err(refuse("a Symbol outside shell/format")),
+        Value::Symbol(_) | Value::BinarySymbol(_) => {
+            return Err(refuse("a Symbol outside shell/format"))
+        }
         Value::Time(_) => return Err(refuse("a Time")),
         Value::Regexp(_) => return Err(refuse("a Regexp")),
         Value::Array(items) => Json::Array(

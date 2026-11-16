@@ -41,7 +41,12 @@ end
 def enc(value, exact: false)
   case value
   when nil, true, false then value
-  when Symbol then { '$sym' => value.to_s }
+  when Symbol
+    if value.encoding == Encoding::BINARY
+      { '$sym_bytes' => value.to_s.unpack1('H*'), 'encoding' => 'ASCII-8BIT' }
+    else
+      { '$sym' => value.to_s }
+    end
   when Integer then { '$int' => value.to_s }
   when Float
     return { '$float_bits' => [value].pack('G').unpack1('H*') } if exact
@@ -79,6 +84,7 @@ samples = {
   'binary-in-hash' => { (+'k').force_encoding(Encoding::BINARY) => [(+"\xc3\xa9").force_encoding(Encoding::BINARY)] },
   'empty-string' => +'', 'unicode-nul' => +"Ω\0z", 'ascii' => +'plain',
   'symbol' => :sym, 'symbol-space' => :'with space', 'symbol-unicode' => :Ω,
+  'binary-symbol' => "\xff".b.to_sym, 'binary-symbol-key' => { "\xc3\xa9".b.to_sym => ["a\xffb c".b.to_sym] },
   'time-utc' => Time.at(0).utc,
   'time-offset' => Time.at(1_700_000_000, 123_456_789, :nsec, in: '+05:00'),
   'time-negative' => Time.at(-1, 5, :nsec).utc,
@@ -99,6 +105,12 @@ local = Time.at(1_700_000_000)
 back = NATIVE.core_value(local)
 check('value', 'time-local.instant', back == local && back.utc_offset == local.utc_offset && back.utc? == local.utc?,
       "#{local.inspect} -> #{back.inspect}")
+binary_symbol = "\xff".b.to_sym
+back = NATIVE.core_value(binary_symbol)
+check('value', 'binary-symbol.ruby',
+      back.encoding == Encoding::BINARY && back.eql?(binary_symbol) && back.inspect == binary_symbol.inspect &&
+        NATIVE.core_value({ binary_symbol => 1 }).inspect == { binary_symbol => 1 }.inspect,
+      "#{binary_symbol.inspect} -> #{back.inspect}")
 check('value', 'us-ascii.text', NATIVE.core_value(:abc.to_s) == 'abc' && NATIVE.core_value(:abc.to_s).encoding == Encoding::UTF_8)
 
 cyclic = []
