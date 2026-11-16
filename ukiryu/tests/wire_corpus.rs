@@ -283,6 +283,12 @@ fn build_rows_match_with_the_register_given_as_text() {
         let tool = i["tool"].as_str().expect("tool");
         let implementation = i["implementation"].as_str().expect("implementation");
         let file = i["file"].as_str().expect("file");
+        // A version file the register does not have is sent as no text at
+        // all (three `ping/*/latest.yaml` rows expect ToolNotFoundError).
+        let version = std::fs::read_to_string(
+            inputs().join(format!("register/tools/{tool}/{implementation}/{file}")),
+        )
+        .ok();
         let request = json!({
             "op": "build",
             "tool": {
@@ -292,7 +298,7 @@ fn build_rows_match_with_the_register_given_as_text() {
                     "implementation": implementation,
                     "index": read_input(&format!("register/tools/{tool}/index.yaml")),
                     "interfaces": interfaces,
-                    "version": read_input(&format!("register/tools/{tool}/{implementation}/{file}")),
+                    "version": version,
                 },
                 "platform": i["platform"],
                 "shell": i["shell"],
