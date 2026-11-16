@@ -462,6 +462,24 @@ fn integrity(c: &Corpus) -> (Vec<Row>, Vec<String>) {
     (rows, problems)
 }
 
+/// Rows on this platform that the engine's missing capabilities exclude. They
+/// are an explicit, reported gate (never a silent skip): each id is printed
+/// and written to the coverage report with the capability that is missing.
+fn gated<'a>(rows: &'a [Row], platform: &str) -> Vec<(&'a str, String)> {
+    rows.iter()
+        .filter(|r| r.platforms.iter().any(|p| p == platform) && !applies(r, platform))
+        .map(|r| {
+            let missing: Vec<&str> = r
+                .requires
+                .iter()
+                .map(String::as_str)
+                .filter(|q| !ENGINE_CAPABILITIES.contains(q))
+                .collect();
+            (r.id.as_str(), format!("engine lacks {}", missing.join(",")))
+        })
+        .collect()
+}
+
 fn applies(r: &Row, platform: &str) -> bool {
     r.platforms.iter().any(|p| p == platform)
         && r.requires
@@ -818,6 +836,7 @@ fn run_rows(rows: &[Row], plan: &Plan, ctx: &Ctx, run: &Runner) -> RunReport {
 }
 
 fn write_report(platform: &str, rows: &[Row], report: &RunReport) {
+    let gated_rows = gated(rows, platform);
     let Some(path) = std::env::var_os("UKIRYU_CONFORMANCE_REPORT") else {
         return;
     };
@@ -857,6 +876,17 @@ fn write_report(platform: &str, rows: &[Row], report: &RunReport) {
         (
             "capabilities",
             Oj::Arr(ENGINE_CAPABILITIES.iter().map(|c| Oj::s(*c)).collect()),
+        ),
+        (
+            "gated",
+            Oj::Arr(
+                gated_rows
+                    .iter()
+                    .map(|(id, why)| {
+                        Oj::obj(vec![("id", Oj::s(*id)), ("reason", Oj::s(why.clone()))])
+                    })
+                    .collect(),
+            ),
         ),
         ("total", Oj::Num(rows.len().to_string())),
         ("executed", Oj::Num(report.executed.len().to_string())),
@@ -907,6 +937,21 @@ fn every_applicable_row_matches_through_the_core() {
     write_report(ctx.platform, &rows, &report);
 
     let want = pinned(&ENGINE_EXECUTED, ctx.platform);
+    let gated_rows = gated(&rows, ctx.platform);
+    for (id, why) in &gated_rows {
+        eprintln!("GATED {id}: {why}");
+    }
+    assert!(
+        gated_rows
+            .iter()
+            .all(|(id, _)| id.starts_with("cli-output.")),
+        "only cli-output rows may be gated: {gated_rows:?}"
+    );
+    assert_eq!(
+        gated_rows.len(),
+        pinned(&PINNED_APPLICABLE, ctx.platform) - want,
+        "gated rows plus executed rows must equal the applicable rows"
+    );
     let mut by_op: BTreeMap<&str, (usize, usize)> = BTreeMap::new();
     for (_, op, _) in &report.executed {
         by_op.entry(op.as_str()).or_default().0 += 1;
@@ -945,6 +990,19 @@ fn every_applicable_row_matches_through_the_core() {
         shown.len(),
         shown.join("\n")
     );
+    // The `$bytes` version-extraction rows run through the encoding-preserving
+    // core API, and every one of them was executed (31 in this corpus).
+    let ran: BTreeSet<&str> = report.executed.iter().map(|e| e.0.as_str()).collect();
+    let bytes_rows: Vec<&Row> = rows
+        .iter()
+        .filter(|r| r.op == "resolve.extract_version" && canonical(&r.input).contains("\"$bytes\""))
+        .collect();
+    assert_eq!(bytes_rows.len(), 31, "`$bytes` extract_version row count");
+    assert!(
+        bytes_rows.iter().all(|r| ran.contains(r.id.as_str())),
+        "a `$bytes` row was not executed"
+    );
+    eprintln!("bytes rows executed: {}", bytes_rows.len());
     // Every listed rule must have decided a row this engine ran.
     let by_rule: BTreeSet<&str> = report
         .executed

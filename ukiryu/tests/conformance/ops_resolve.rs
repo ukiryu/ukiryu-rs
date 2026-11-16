@@ -4,8 +4,9 @@
 use ukiryu::environment::Environment;
 use ukiryu::errors::ErrorKind;
 use ukiryu::runtime::{detect_shell, Platform, ShellError, ShellName, ShellSource};
+use ukiryu::types::onig::Encoding;
 use ukiryu::types::Value;
-use ukiryu::version_detection::{extract_version_from_pattern, PatternError};
+use ukiryu::version_detection::{extract_version_from_encoded, EncodedText};
 use ukiryu::version_ranges::{
     resolve, Bounds, ErrorClass, RangeError, RangeKind, SpecValue, VersionRange,
 };
@@ -16,8 +17,9 @@ use super::json::Oj;
 
 /// `Tool::Loader.extract_version_from_pattern(output, pattern)`.
 ///
-/// A `$bytes` output is a BINARY Ruby string; the captured group of a BINARY
-/// string is BINARY too, so it is encoded back as `$bytes`.
+/// A `$bytes` output is a BINARY Ruby string and goes through the core's
+/// encoding-preserving API; the captured group of a BINARY string is BINARY
+/// too, so it is encoded back as `$bytes`. A plain string output is UTF-8.
 pub fn extract_version(input: &Oj, _ctx: &Ctx) -> Outcome {
     let output = input.get("output").filter(|o| !matches!(o, Oj::Null));
     let binary = output.is_some_and(|o| o.tag().is_some());
@@ -25,15 +27,6 @@ pub fn extract_version(input: &Oj, _ctx: &Ctx) -> Outcome {
         .map(codec::bytes)
         .transpose()
         .map_err(RowError::harness)?;
-    let text = raw
-        .as_deref()
-        .map(std::str::from_utf8)
-        .transpose()
-        .map_err(|_| {
-            RowError::harness(
-                "no core API: extract_version_from_pattern takes &str; output is non-UTF-8 bytes",
-            )
-        })?;
     let pattern = input
         .get("pattern")
         .filter(|p| !matches!(p, Oj::Null))
@@ -42,15 +35,22 @@ pub fn extract_version(input: &Oj, _ctx: &Ctx) -> Outcome {
                 .ok_or_else(|| RowError::harness("pattern must be a string or null"))
         })
         .transpose()?;
-    match extract_version_from_pattern(text, pattern) {
+    let encoding = if binary {
+        Encoding::Binary
+    } else {
+        Encoding::Utf8
+    };
+    let text = raw.as_deref().map(|bytes| EncodedText { bytes, encoding });
+    match extract_version_from_encoded(text, pattern) {
         Ok(None) => Ok(Oj::Null),
         Ok(Some(v)) if binary => Ok(Oj::tagged(
             "$bytes",
-            Oj::Str(v.bytes().map(|x| format!("{x:02x}")).collect()),
+            Oj::Str(v.bytes.iter().map(|x| format!("{x:02x}")).collect()),
         )),
-        Ok(Some(v)) => Ok(Oj::Str(v)),
-        Err(PatternError::RubyInvalid { reason, .. }) => Err(RowError::new("RegexpError", reason)),
-        Err(e @ PatternError::Unsupported { .. }) => Err(RowError::harness(e.to_string())),
+        Ok(Some(v)) => String::from_utf8(v.bytes)
+            .map(Oj::Str)
+            .map_err(|_| RowError::harness("UTF-8 capture is not valid UTF-8")),
+        Err(e) => Err(RowError::new(e.class, e.message)),
     }
 }
 
