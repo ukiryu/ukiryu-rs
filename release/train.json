@@ -6,9 +6,9 @@
     {"id": "core-crate", "runtime": "rust", "registry": "crates.io", "package": "ukiryu", "repo": "ukiryu/ukiryu-rs", "source": "ukiryu/Cargo.toml", "built_by": "registry-package.yml", "published": false},
     {"id": "cli-binaries", "runtime": "rust", "registry": "github-release-assets", "package": "ukiryu-cli", "repo": "ukiryu/ukiryu-rs", "source": "ukiryu-cli/Cargo.toml", "built_by": "cli-binaries.yml", "published": false},
     {"id": "wasm", "runtime": "wasm", "registry": "npm (via ukiryu-ts)", "package": "ukiryu", "repo": "ukiryu/ukiryu-rs", "source": "ukiryu/Cargo.toml", "built_by": "wasm.yml", "published": false},
-    {"id": "ruby-gem", "runtime": "ruby", "registry": "rubygems.org", "package": "ukiryu", "repo": "ukiryu/ukiryu-ruby", "source": null, "built_by": "ukiryu-ruby gem-build.yml", "published": false},
+    {"id": "ruby-gem", "runtime": "ruby", "registry": "rubygems.org", "package": "ukiryu", "repo": "ukiryu/ukiryu-ruby", "source": null, "built_by": "ukiryu-ruby .github/workflows/platform-gems.yml (PR ukiryu-ruby#2)", "published": false},
     {"id": "python-wheels", "runtime": "python", "registry": "pypi.org", "package": "ukiryu", "repo": "ukiryu/ukiryu-python", "source": null, "built_by": "ukiryu-python wheels.yml", "published": false},
-    {"id": "npm-package", "runtime": "typescript", "registry": "npmjs.com", "package": "ukiryu", "repo": "ukiryu/ukiryu-ts", "source": null, "built_by": "ukiryu-ts ci.yml", "published": false}
+    {"id": "npm-package", "runtime": "typescript", "registry": "npmjs.com", "package": "ukiryu", "repo": "ukiryu/ukiryu-ts", "source": null, "built_by": "ukiryu-ts .github/workflows/pack.yml (PR ukiryu-ts#2)", "published": false}
   ],
   "cli_targets": [
     "x86_64-unknown-linux-gnu",
