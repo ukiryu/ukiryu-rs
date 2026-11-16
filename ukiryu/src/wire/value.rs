@@ -16,6 +16,14 @@
 //! | Hash with only String keys | a JSON object |
 //! | any other Hash | `{"$map": [[key, value], ...]}` |
 //!
+//! An object is a tag exactly when it has one key and that key starts with
+//! `$`, as in the oracle's `Codec.decode`; an object with more keys is a
+//! plain Hash even when its keys start with `$` (`$schema`, `$id`). A Hash
+//! whose only key is a tag name ([`TAGS`]) is written as `$map`, so it reads
+//! back as itself. A Hash whose only key is any other `$` name (`$ref`) is
+//! written as the plain object the oracle writes, and reading that object
+//! back is an error, as it is in the oracle.
+//!
 //! Nothing is converted through a lossy form: a JSON number with a fraction
 //! or exponent is rejected (a Float must be `$float`), a `$float` must be the
 //! exact `Float#to_s` text of the value it denotes, and a Time keeps its whole
@@ -110,54 +118,72 @@ impl<'de> Visitor<'de> for TypedVisitor {
         let Some(first) = map.next_key::<String>()? else {
             return Ok(Value::Hash(Vec::new()));
         };
-        let tagged = match first.as_str() {
-            NUMBER_TOKEN => {
-                let text: String = map.next_value()?;
-                Some(integer::<A::Error>(&text)?)
-            }
-            "$sym" | "$float" | "$int" | "$time" | "$regexp" | "$bytes" => {
-                let inner: Json = map.next_value()?;
-                Some(tag(&first, &inner).map_err(<A::Error as de::Error>::custom)?)
-            }
-            "$map" => {
-                let pairs: Vec<(Typed, Typed)> = map.next_value()?;
-                Some(Value::Hash(
-                    pairs
-                        .into_iter()
-                        .map(|(Typed(k), Typed(v))| (k, v))
-                        .collect(),
-                ))
-            }
-            _ => None,
-        };
-        if let Some(value) = tagged {
-            if map.next_key::<String>()?.is_some() {
-                return Err(de::Error::custom(format!(
-                    "{first} must be the only key of its object"
-                )));
-            }
-            return Ok(value);
+        if first == NUMBER_TOKEN {
+            let text: String = map.next_value()?;
+            return integer::<A::Error>(&text);
         }
-        if first.starts_with('$') {
-            return Err(de::Error::custom(format!(
-                "unknown value tag {first}; a Hash with this String key must use $map"
-            )));
-        }
-        let Typed(value) = map.next_value()?;
-        let mut pairs = vec![(Value::String(first), value)];
-        while let Some(key) = map.next_key::<String>()? {
-            if pairs
-                .iter()
-                .any(|(k, _)| matches!(k, Value::String(s) if *s == key))
-            {
-                return Err(de::Error::custom(format!("duplicate key {key:?}")));
-            }
+        let mut pairs = if first.starts_with('$') {
+            // The oracle's rule: an object is a tag exactly when it has one
+            // key and that key starts with `$`. With more keys it is a plain
+            // Hash, `$` keys and all.
+            let inner: Json = map.next_value()?;
+            let Some(second) = map.next_key::<String>()? else {
+                return tagged(&first, inner).map_err(<A::Error as de::Error>::custom);
+            };
+            let Typed(value) =
+                Typed::deserialize(inner).map_err(<A::Error as de::Error>::custom)?;
+            let mut pairs = vec![(Value::String(first), value)];
             let Typed(value) = map.next_value()?;
-            pairs.push((Value::String(key), value));
+            push_unique::<A::Error>(&mut pairs, second, value)?;
+            pairs
+        } else {
+            let Typed(value) = map.next_value()?;
+            vec![(Value::String(first), value)]
+        };
+        while let Some(key) = map.next_key::<String>()? {
+            let Typed(value) = map.next_value()?;
+            push_unique::<A::Error>(&mut pairs, key, value)?;
         }
         Ok(Value::Hash(pairs))
     }
 }
+
+/// Adds one String-keyed pair to a plain Hash, rejecting a repeated key.
+fn push_unique<E: de::Error>(
+    pairs: &mut Vec<(Value, Value)>,
+    key: String,
+    value: Value,
+) -> Result<(), E> {
+    if pairs
+        .iter()
+        .any(|(k, _)| matches!(k, Value::String(s) if *s == key))
+    {
+        return Err(E::custom(format!("duplicate key {key:?}")));
+    }
+    pairs.push((Value::String(key), value));
+    Ok(())
+}
+
+/// The value of a one-key object whose key starts with `$`. As in the
+/// oracle's `Codec.decode`, an unknown tag is an error, never a Hash: a
+/// Hash whose only key starts with `$` cannot be sent as a plain object.
+fn tagged(name: &str, inner: Json) -> Result<Value, String> {
+    if name == "$map" {
+        let pairs = Vec::<(Typed, Typed)>::deserialize(inner).map_err(|e| e.to_string())?;
+        return Ok(Value::Hash(
+            pairs
+                .into_iter()
+                .map(|(Typed(k), Typed(v))| (k, v))
+                .collect(),
+        ));
+    }
+    tag(name, &inner)
+}
+
+/// The keys the decoder reads as tags when one stands alone in an object.
+pub const TAGS: [&str; 7] = [
+    "$sym", "$float", "$int", "$time", "$regexp", "$bytes", "$map",
+];
 
 /// One tagged scalar.
 fn tag(name: &str, inner: &Json) -> Result<Value, String> {
@@ -185,7 +211,9 @@ fn tag(name: &str, inner: &Json) -> Result<Value, String> {
                 .map(Value::String)
                 .map_err(|_| "a non-UTF-8 string cannot be a parameter value here".to_owned())
         }
-        other => Err(format!("unknown value tag {other}")),
+        other => Err(format!(
+            "unknown value tag {other}; a Hash whose only key is {other} must be sent as $map"
+        )),
     }
 }
 
@@ -436,7 +464,14 @@ pub fn encode(value: &Value) -> Json {
         Value::Array(items) => Json::Array(items.iter().map(encode).collect()),
         Value::Hash(pairs) => {
             let string_keys = pairs.iter().all(|(k, _)| matches!(k, Value::String(_)));
-            if string_keys {
+            // A Hash whose only key is a tag name would read back as that
+            // tag; `$map` keeps it a Hash for every decoder, the oracle's
+            // included. The oracle itself writes the plain object here,
+            // which its own `decode` misreads (corpus README, "Value
+            // encoding"); no corpus row holds such a Hash.
+            let reads_as_tag =
+                matches!(pairs.as_slice(), [(Value::String(k), _)] if TAGS.contains(&k.as_str()));
+            if string_keys && !reads_as_tag {
                 let mut object = Map::new();
                 for (k, v) in pairs {
                     if let Value::String(k) = k {

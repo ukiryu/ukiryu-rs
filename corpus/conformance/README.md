@@ -133,6 +133,21 @@ Values use JSON, with tags for values JSON cannot carry losslessly:
 A float is never equal to an integer: `[0.0, 1.0]` and `[0, 1]` are
 different values. Numeric YAML map keys stay numeric through `$map`.
 
+A JSON object is a tag exactly when it has one key and that key starts
+with `$`. An object with more keys is a map with string keys, even when
+some of them start with `$` (`{"$schema": ..., "$id": ...}`). A one-key
+object whose key is not a tag above is an error to read, never a map.
+
+The oracle writes every map with string keys as a JSON object, so a map
+whose only key starts with `$` comes out in the tag form. A JSON-schema
+`{"$ref": "..."}` appears that way in `yaml.load` rows, and the
+oracle's own decoder rejects it as an unknown tag. A map whose only key
+is a tag name (`{"$sym" => "x"}`) would read back as that tag; no input
+of this corpus holds one. A writer that needs such a map read back sends
+it as `{"$map": [["$ref", "..."]]}`, which the oracle also reads as the map.
+The Rust core writes `$map` for a tag-name key and keeps the oracle's
+bytes for any other `$` key, so its replies match every row.
+
 ## Comparison
 
 `compare` is `structural` for every row: JSON objects compare
