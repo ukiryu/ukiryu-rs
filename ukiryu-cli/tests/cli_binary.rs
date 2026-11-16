@@ -926,7 +926,13 @@ fn inspect_remainder_goldens_through_the_binary() {
             .map(str::to_owned)
             .chain(strings(&case["bins"]))
         {
-            install_executable(Path::new(&bin), &b);
+            if b == "git" {
+                // The capture links the real git (capture.rb), so `register
+                // update` sees a directory that is not a git work tree.
+                std::os::unix::fs::symlink("/usr/bin/git", Path::new(&bin).join("git")).unwrap();
+            } else {
+                install_executable(Path::new(&bin), &b);
+            }
         }
         for (rel, body) in case["home_before"].as_object().unwrap() {
             let path = Path::new(&home).join(rel);
