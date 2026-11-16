@@ -1,5 +1,32 @@
 //! Versioned, length-delimited JSON boundary for thin runtime adapters.
+//!
+//! One request is one JSON object whose `op` names the operation; the
+//! reply is `{"ok": true, ...}` or `{"ok": false, "error": {"code", ...}}`
+//! (see [`error`] for the codes). Ruby values use the typed encoding of
+//! [`value`], the conformance corpus value encoding.
+//!
+//! | op | what it runs |
+//! |---|---|
+//! | `version` | the core and ABI versions |
+//! | `resolve_config` | `Config` resolution |
+//! | `parse_yaml` | YAML through the core's YAML engine, as JSON |
+//! | `escape` | shell formatting ([`portable`]) |
+//! | `resolve` | version extraction, range matching, version-spec routing, `Tool.get` ([`ops`]) |
+//! | `build` | `Tool#execute` up to the executor: argv, env, stdin, executable ([`ops`]) |
+//! | `validate` | `Type.validate`, `DefinitionValidator.validate_string` ([`ops`]) |
+//! | `schema` | `SchemaValidator.validate_profile`, `JSON::Validator.fully_validate` ([`ops`]) |
+//! | `results` | exit-code meanings of a tool's commands ([`ops`]) |
+//! | `execute` | `Tool#execute`, native builds only ([`native`]); its value is a [`results`] payload |
+//!
+//! Register directories and process execution exist only in native builds:
+//! [`native`] is not compiled for WebAssembly.
+pub mod error;
+#[cfg(not(target_arch = "wasm32"))]
+pub mod native;
+pub mod ops;
 pub mod portable;
+pub mod results;
+pub mod value;
 
 use crate::config::{self, Environment, OverrideResolver, Values};
 use serde::Deserialize;
@@ -10,6 +37,13 @@ use serde_json::{json, Value};
 enum Request {
     Version,
     Escape(portable::EscapeRequest),
+    Resolve(Box<ops::ResolveRequest>),
+    Build(Box<ops::BuildRequest>),
+    Validate(ops::ValidateRequest),
+    Schema(ops::SchemaRequest),
+    Results(Box<ops::ResultsRequest>),
+    #[cfg(not(target_arch = "wasm32"))]
+    Execute(Box<native::ExecuteRequest>),
     ParseYaml {
         yaml: String,
     },
@@ -34,6 +68,13 @@ pub fn process(input: &[u8]) -> Value {
     };
     match request {
         Request::Escape(request) => portable::escape(request),
+        Request::Resolve(request) => ops::resolve(*request),
+        Request::Build(request) => ops::build(*request),
+        Request::Validate(request) => ops::validate(request),
+        Request::Schema(request) => ops::schema(request),
+        Request::Results(request) => ops::results(*request),
+        #[cfg(not(target_arch = "wasm32"))]
+        Request::Execute(request) => native::execute(*request),
         Request::Version => json!({"ok":true,"version":crate::VERSION,"abi_version":1}),
         Request::ParseYaml { yaml } => parse_yaml_json(&yaml),
         Request::ResolveConfig {
