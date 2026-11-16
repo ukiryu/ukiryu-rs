@@ -18,6 +18,7 @@
  * outside Ruby's configuration. */
 extern const OnigEncodingType OnigEncodingUTF_8;
 extern const OnigEncodingType OnigEncodingUS_ASCII;
+extern const OnigEncodingType OnigEncodingASCII;
 
 /* ------------------------------------------------------------------ */
 /* Ruby runtime hooks                                                  */
@@ -182,11 +183,12 @@ st_free_table(st_table *t)
 
 /* Compile like re.c make_regexp/onig_new_with_source: Ruby syntax, default
  * case-fold flag, `options` already masked to IGNORECASE|EXTEND|MULTILINE.
+ * encoding: 0 US-ASCII, 1 UTF-8, 2 ASCII-8BIT (Ruby BINARY).
  * Returns ONIG_NORMAL (0) or an Onigmo error code; on error `message`
  * (ONIG_MAX_ERROR_MESSAGE_LEN bytes) holds onig_error_code_to_str. */
 int
 ukiryu_onigmo_new(regex_t **out, const unsigned char *pattern, size_t len,
-                  unsigned int options, int utf8, unsigned char *message)
+                  unsigned int options, int encoding, unsigned char *message)
 {
     OnigErrorInfo einfo;
     int r;
@@ -195,7 +197,8 @@ ukiryu_onigmo_new(regex_t **out, const unsigned char *pattern, size_t len,
     message[0] = '\0';
     ukiryu_onigmo_raised = 0;
     r = onig_new(out, pattern, pattern + len, (OnigOptionType)options,
-                 utf8 ? &OnigEncodingUTF_8 : &OnigEncodingUS_ASCII,
+                 encoding == 2 ? &OnigEncodingASCII :
+                 encoding == 1 ? &OnigEncodingUTF_8 : &OnigEncodingUS_ASCII,
                  &OnigSyntaxRuby, &einfo);
     if (r != ONIG_NORMAL) {
         onig_error_code_to_str(message, r, &einfo);

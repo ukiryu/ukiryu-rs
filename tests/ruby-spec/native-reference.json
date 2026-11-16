@@ -1066,7 +1066,7 @@
                 "$sym": "v"
               },
               {
-                "$str": "hi",
+                "$bytes": "6869",
                 "encoding": "ASCII-8BIT"
               }
             ]
@@ -1247,6 +1247,331 @@
               },
               {
                 "$int": "-123456789012345678901234567890"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "bigint-in-sequence",
+      "yaml": "v: [123456789012345678901234567890, -99999999999999999999, 1]\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$array": [
+                  {
+                    "$int": "123456789012345678901234567890"
+                  },
+                  {
+                    "$int": "-99999999999999999999"
+                  },
+                  {
+                    "$int": "1"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "bigint-underscore",
+      "yaml": "v: 1_000_000_000_000_000_000_000\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$int": "1000000000000000000000"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "bigint-hex",
+      "yaml": "v: 0x1ffffffffffffffffffff\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$int": "2417851639229258349412351"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "bigint-quoted",
+      "yaml": "v: '123456789012345678901234567890'\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$str": "123456789012345678901234567890",
+                "encoding": "UTF-8"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "bigint-key",
+      "yaml": "99999999999999999999: a\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "99999999999999999999"
+              },
+              {
+                "$str": "a",
+                "encoding": "UTF-8"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "exponent-floats",
+      "yaml": "v: [1e5, 1E-3, 6.02e+23, 1.5e3, 2.e3]\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$array": [
+                  {
+                    "$str": "1e5",
+                    "encoding": "UTF-8"
+                  },
+                  {
+                    "$str": "1E-3",
+                    "encoding": "UTF-8"
+                  },
+                  {
+                    "$float": "6.02e+23"
+                  },
+                  {
+                    "$str": "1.5e3",
+                    "encoding": "UTF-8"
+                  },
+                  {
+                    "$str": "2.e3",
+                    "encoding": "UTF-8"
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "exponent-quoted",
+      "yaml": "v: '1e300'\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$str": "1e300",
+                "encoding": "UTF-8"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "binary-ff",
+      "yaml": "v: !!binary /w==\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$bytes": "ff",
+                "encoding": "ASCII-8BIT"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "binary-utf8-bytes",
+      "yaml": "v: !!binary w6k=\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$bytes": "c3a9",
+                "encoding": "ASCII-8BIT"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "binary-nul-ctrl",
+      "yaml": "v: !!binary AAECG38J\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$bytes": "0001021b7f09",
+                "encoding": "ASCII-8BIT"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "binary-in-collections",
+      "yaml": "v: [!!binary /w==, {k: !!binary aGk=}]\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$array": [
+                  {
+                    "$bytes": "ff",
+                    "encoding": "ASCII-8BIT"
+                  },
+                  {
+                    "$hash": [
+                      [
+                        {
+                          "$sym": "k"
+                        },
+                        {
+                          "$bytes": "6869",
+                          "encoding": "ASCII-8BIT"
+                        }
+                      ]
+                    ]
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "binary-key-ascii",
+      "yaml": "v: {!!binary aGk=: 1}\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$hash": [
+                  [
+                    {
+                      "$sym": "hi"
+                    },
+                    {
+                      "$int": "1"
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "binary-key-top",
+      "yaml": "!!binary aGk=: 1\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "hi"
+              },
+              {
+                "$int": "1"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "binary-key-nonascii",
+      "yaml": "v: {!!binary /w==: 1}\n",
+      "expect": {
+        "ok": {
+          "$hash": [
+            [
+              {
+                "$sym": "v"
+              },
+              {
+                "$hash": [
+                  [
+                    {
+                      "$sym_bytes": "ff",
+                      "encoding": "ASCII-8BIT"
+                    },
+                    {
+                      "$int": "1"
+                    }
+                  ]
+                ]
               }
             ]
           ]

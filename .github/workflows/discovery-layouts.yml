@@ -1,0 +1,59 @@
+name: Discovery layouts
+
+# Platform-family discovery layouts and the bundled definition search, run
+# natively on Linux, macOS and Windows. Expected results are the committed
+# golden file captured from the pinned Ruby oracle
+# (ukiryu/ukiryu@ab6df353, ukiryu/tests/discovery_layouts_data/capture); the
+# trees are built in a temp directory and nothing is installed.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'ukiryu/src/executable.rs'
+      - 'ukiryu/src/executable/**'
+      - 'ukiryu/src/tool/bundled.rs'
+      - 'ukiryu/tests/discovery_layouts*'
+      - '.github/workflows/discovery-layouts.yml'
+  pull_request:
+    paths:
+      - 'ukiryu/src/executable.rs'
+      - 'ukiryu/src/executable/**'
+      - 'ukiryu/src/tool/bundled.rs'
+      - 'ukiryu/tests/discovery_layouts*'
+      - '.github/workflows/discovery-layouts.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  native:
+    name: Discovery layouts (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-2022]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.95.0
+      - name: Run the layout tests
+        shell: bash
+        run: |
+          set -o pipefail
+          cargo test -p ukiryu --locked --no-fail-fast --test discovery_layouts --test executable_discovery \
+            -- --nocapture --test-threads=1 2>&1 | tee "$RUNNER_TEMP/discovery-layouts.log"
+      - name: Upload log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: discovery-layouts-${{ matrix.os }}
+          path: ${{ runner.temp }}/discovery-layouts.log
+          if-no-files-found: error
