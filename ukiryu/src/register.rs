@@ -72,8 +72,18 @@ pub enum Error {
     /// `ArgumentError` raised by the git layer when the register directory
     /// is not inside a git working tree; the source does not rescue it.
     NotGitWorkTree(String),
-    /// Filesystem failure (`Errno::*` in the source).
-    Io { path: PathBuf, error: io::Error },
+    /// Filesystem failure (`Errno::*` in the source). `call` is the Ruby
+    /// C function named in the message (`rb_sysopen` when a file cannot be
+    /// opened, `dir_s_mkdir` when a directory cannot be made).
+    Io {
+        path: PathBuf,
+        call: &'static str,
+        error: io::Error,
+    },
+    /// The git program could not be started. The source rescues only
+    /// `Git::Error` around a clone, so the `Errno::*` from spawning git
+    /// reaches the caller unchanged.
+    Spawn { program: PathBuf, error: io::Error },
     /// YAML or model conversion failure.
     Yaml { path: PathBuf, message: String },
     /// Index content the source cannot use (`TypeError`/`NoMethodError`).
@@ -87,7 +97,7 @@ impl Error {
             Error::Clone(_) => "Ukiryu::Register::CloneError",
             Error::Update(_) => "Ukiryu::Register::Error",
             Error::NotGitWorkTree(_) => "ArgumentError",
-            Error::Io { .. } => "SystemCallError",
+            Error::Io { error, .. } | Error::Spawn { error, .. } => errno_class(error),
             Error::Yaml { .. } => "Psych::Exception",
             Error::InvalidIndex { .. } => "TypeError",
         }
@@ -100,7 +110,12 @@ impl fmt::Display for Error {
             Error::NotFound(m) | Error::Clone(m) | Error::Update(m) | Error::NotGitWorkTree(m) => {
                 f.write_str(m)
             }
-            Error::Io { path, error } => write!(f, "{error} @ {}", path.display()),
+            Error::Io { path, call, error } => {
+                write!(f, "{} @ {call} - {}", strerror(error), path.display())
+            }
+            Error::Spawn { program, error } => {
+                write!(f, "{} - {}", strerror(error), program.display())
+            }
             Error::Yaml { path, message } | Error::InvalidIndex { path, message } => {
                 write!(f, "{message} ({})", path.display())
             }
@@ -111,7 +126,7 @@ impl fmt::Display for Error {
 impl std::error::Error for Error {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         match self {
-            Error::Io { error, .. } => Some(error),
+            Error::Io { error, .. } | Error::Spawn { error, .. } => Some(error),
             _ => None,
         }
     }
@@ -119,9 +134,29 @@ impl std::error::Error for Error {
 
 pub type Result<T> = std::result::Result<T, Error>;
 
-fn io_error(path: &Path, error: io::Error) -> Error {
+/// `Errno::*` class Ruby raises for an OS error; `SystemCallError` when the
+/// kind has no stable mapping.
+fn errno_class(error: &io::Error) -> &'static str {
+    match error.kind() {
+        io::ErrorKind::NotFound => "Errno::ENOENT",
+        io::ErrorKind::PermissionDenied => "Errno::EACCES",
+        io::ErrorKind::AlreadyExists => "Errno::EEXIST",
+        io::ErrorKind::IsADirectory => "Errno::EISDIR",
+        io::ErrorKind::NotADirectory => "Errno::ENOTDIR",
+        io::ErrorKind::DirectoryNotEmpty => "Errno::ENOTEMPTY",
+        _ => "SystemCallError",
+    }
+}
+
+fn strerror(error: &io::Error) -> String {
+    crate::definition::sources::file::strerror(error)
+}
+
+/// `File.read(path)` failing to open `path`.
+pub(crate) fn open_error(path: &Path, error: io::Error) -> Error {
     Error::Io {
         path: path.to_path_buf(),
+        call: "rb_sysopen",
         error,
     }
 }
@@ -485,11 +520,21 @@ impl Register {
         }
         if let Some(parent) = self.path.parent() {
             if !parent.as_os_str().is_empty() && !parent.is_dir() {
-                fs::create_dir_all(parent).map_err(|e| io_error(parent, e))?;
+                fs::create_dir_all(parent).map_err(|error| Error::Io {
+                    path: parent.to_path_buf(),
+                    call: "dir_s_mkdir",
+                    error,
+                })?;
             }
         }
         let existed_before = self.path.exists();
         if let Err(message) = git.clone_into(&self.path) {
+            if let GitFailure::Spawn(error) = message {
+                return Err(Error::Spawn {
+                    program: git.program.clone(),
+                    error,
+                });
+            }
             if !existed_before && self.path.is_dir() {
                 let _ = fs::remove_dir_all(&self.path);
             }
@@ -546,7 +591,7 @@ impl Register {
         if !file.exists() {
             return Ok(None);
         }
-        let content = fs::read_to_string(file).map_err(|e| io_error(file, e))?;
+        let content = fs::read_to_string(file).map_err(|e| open_error(file, e))?;
         if content.trim().is_empty() {
             return Ok(None);
         }
@@ -699,7 +744,7 @@ impl Register {
     /// listed file whose basename (minus `.yaml`) equals the version. Without
     /// one, the last listed file.
     pub fn load_tool_yaml(&self, name: &str, version: Option<&str>) -> Result<Option<String>> {
-        let read = |file: &Path| fs::read_to_string(file).map_err(|e| io_error(file, e));
+        let read = |file: &Path| fs::read_to_string(file).map_err(|e| open_error(file, e));
         if let Some(version) = version {
             let file = self.tool_dir(name).join(format!("{version}.yaml"));
             if file.exists() {
