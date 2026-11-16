@@ -91,7 +91,14 @@ pub fn encode(v: &Value) -> Oj {
             Oj::Str(b.iter().map(|x| format!("{x:02x}")).collect()),
         ),
         Value::Symbol(s) => Oj::sym(s.clone()),
-        Value::BinarySymbol(b) => Oj::sym(String::from_utf8_lossy(b).into_owned()),
+        // No corpus row can hold one. The oracle's Codec.encode gives
+        // `{"$sym" => value.to_s}`, and JSON.generate (json 3.1.0, Ruby 4.0.1)
+        // raises on its ASCII-8BIT name: `"\xFF".b.to_sym` gives
+        // `JSON::GeneratorError: "\xFF" from ASCII-8BIT to UTF-8`. So the
+        // capture fails, and this side fails too instead of inventing bytes.
+        Value::BinarySymbol(b) => {
+            panic!("the oracle cannot encode an ASCII-8BIT Symbol ({b:02x?})")
+        }
         Value::Time(t) => Oj::tagged("$time", Oj::Str(time_iso(t))),
         Value::Regexp(r) => Oj::tagged("$regexp", Oj::Str(r.source.clone())),
         Value::Array(items) => Oj::Arr(items.iter().map(encode).collect()),
