@@ -327,8 +327,8 @@
       ],
       "env": {},
       "pty": false,
-      "mode": "gated",
-      "note": "Tool.find_by interface/alias/register-wide fallbacks are not ported; the oracle prints Tool not found",
+      "mode": "exact",
+      "note": "Tool.find_by finds nothing (exact, interface, alias, register-wide)",
       "expect": {
         "stdout": "",
         "stderr": "Tool not found: nothere\nAvailable tools: badver, cat, ghost, nover, rich\n",
@@ -345,8 +345,8 @@
         "UKIRYU_REGISTER": "{root}/register"
       },
       "pty": false,
-      "mode": "gated",
-      "note": "as describe_unknown_tool",
+      "mode": "exact",
+      "note": "Tool.find_by finds nothing in the UKIRYU_REGISTER register",
       "expect": {
         "stdout": "",
         "stderr": "Tool not found: convert\nAvailable tools: convert, jq\n",
@@ -361,8 +361,8 @@
       ],
       "env": {},
       "pty": false,
-      "mode": "gated",
-      "note": "alias lookup through the register index is not ported",
+      "mode": "exact",
+      "note": "Tool.find_by resolves the alias richy to rich through the register index",
       "expect": {
         "stdout": "\u001b[37m\u001b[0m\n\u001b[36m============================================================\u001b[0m\n\u001b[36mTool: rich\u001b[0m\n\u001b[36m============================================================\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[37mDisplay Name: Rich Tool\u001b[0m\n\u001b[37mVersion: 3.2\u001b[0m\n\u001b[37mHomepage: N/A\u001b[0m\n\u001b[37mAliases: richy, rt\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[32mStatus: INSTALLED\u001b[0m\n\u001b[37mExecutable: {root}/tbin/rich\u001b[0m\n\u001b[37mDetected Version: 3.2\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mCommands (5):\u001b[0m\n\u001b[37m  convert              Convert one thing to another\u001b[0m\n\u001b[2m    Env Var Sets: locale, proxy\u001b[0m\n\u001b[37m  codes                Has exit codes\u001b[0m\n\u001b[37m  envy                 Has environment variables\u001b[0m\n\u001b[37m  plain                A plain command\u001b[0m\n\u001b[37m  nodesc               No description\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[2mUse 'ukiryu describe rich <command>' for detailed command documentation\u001b[0m\n",
         "stderr": "",

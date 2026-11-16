@@ -11,10 +11,9 @@
 //! set to it (one test function, so the cases run sequentially).
 //!
 //! The fake tools are POSIX shell scripts and the captures use Linux paths,
-//! so the replay is Linux only. Rows whose mode is `gated` are paths the
-//! handlers refuse to complete (`describe` of a name no tool has needs
-//! `Tool.find_by`'s interface and alias lookups); they must return
-//! `AuthorError::Gated` and the oracle's own output is kept as a record.
+//! so the replay is Linux only. Every row must match the oracle exactly;
+//! `describe` resolves names through `Tool.find_by` (exact name, interface,
+//! alias and register-wide lookups), so no row is gated.
 #![cfg(target_os = "linux")]
 
 use serde_json::Value;
@@ -213,7 +212,6 @@ fn tool_handlers_match_the_oracle_captures() {
     let original_dir = std::env::current_dir().unwrap();
     let mut failures = Vec::new();
     let mut checked = 0;
-    let mut gated = 0;
     for (n, case) in fixture["cases"].as_array().unwrap().iter().enumerate() {
         let id = case["id"].as_str().unwrap();
         let mode = case["mode"].as_str().unwrap();
@@ -229,14 +227,9 @@ fn tool_handlers_match_the_oracle_captures() {
         checked += 1;
         let mut fail = |what: String| failures.push(format!("{id}: {what}"));
         match (mode, run) {
-            ("gated", Err(AuthorError::Gated { partial, .. })) => {
-                gated += 1;
-                let (stdout, stderr) = perform(&partial);
-                if !stdout.is_empty() || !stderr.is_empty() {
-                    fail(format!("gated after output {stdout:?} {stderr:?}"));
-                }
+            (other, _) if other != "exact" && other != "tty" => {
+                fail(format!("unexpected mode {other}"))
             }
-            ("gated", other) => fail(format!("expected Gated, got {other:?}")),
             (_, Err(e)) => fail(format!("handler error {e:?}")),
             (_, Ok(outcome)) => {
                 let (stdout, stderr) = perform(&outcome.writes);
@@ -269,8 +262,7 @@ fn tool_handlers_match_the_oracle_captures() {
     }
     std::env::set_current_dir(original_dir).unwrap();
     let _ = std::fs::remove_dir_all(&base);
-    assert!(checked >= 45, "only {checked} cases checked");
-    assert!(gated >= 3, "only {gated} gated cases");
+    assert_eq!(checked, 51, "{checked} cases checked");
     assert!(
         failures.is_empty(),
         "{} of {checked} cases differ:\n{}",

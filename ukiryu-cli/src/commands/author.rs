@@ -31,11 +31,11 @@
 //! environment, configured shell) and the handlers load tools from the
 //! default register through `RegisterSource` and `tool::get`.
 //! [`validate`] without a [`ToolEnv`] returns [`AuthorError::Gated`] where the
-//! executable test starts; [`validate_with_tools`] runs it. `describe` looks
-//! the tool up by exact name only: `Tool.find_by`'s interface, alias and
-//! register-wide fallbacks need a `ToolFinder` and a register scan for
-//! `ToolIndex` that the core does not have, so a name that no tool has
-//! returns [`AuthorError::Gated`] instead of "Tool not found".
+//! executable test starts; [`validate_with_tools`] runs it (the source loads
+//! each tool with `Tool.get`, so the smoke tests take the exact name only).
+//! `describe` runs `Tool.find_by` through the core
+//! `ukiryu::register_lookup::find_by`: exact name, then the interface, alias
+//! and register-wide fallbacks over the `ToolIndex` of the same register.
 //!
 //! The source crashes on a few of its own paths and the handlers reproduce
 //! the crash (see [`REPRODUCED_DEFECTS`]); the owner-pending corrections
@@ -68,6 +68,7 @@ use ukiryu::models::error::ModelErrorKind;
 use ukiryu::models::tool_definition::ToolDefinition;
 use ukiryu::models::{CommandDefinition, Text};
 use ukiryu::register::Register;
+use ukiryu::register_lookup::{self, LookupError};
 use ukiryu::render::OutputWrite;
 use ukiryu::runtime::{Clock, Host, Runtime};
 use ukiryu::schema::{safe_load, Data, Permitted, SchemaError};
@@ -1909,13 +1910,6 @@ pub struct ToolEnv {
     pub configured_shell: Option<String>,
 }
 
-/// `Tool.find_by` falls back to interface, alias and register-wide lookups
-/// when no tool has the exact name. The core has no `ToolFinder` and no scan
-/// that feeds `ToolIndex` from the register directory, so those lookups are
-/// not available.
-const FIND_BY_FALLBACK: &str =
-    "describe: Tool.find_by interface/alias lookup (ToolFinder and the register ToolIndex scan are not ported)";
-
 /// Tools of one register, with the tool cache of one invocation.
 struct Tools<'a> {
     env: &'a ToolEnv,
@@ -1948,14 +1942,48 @@ impl<'a> Tools<'a> {
         })
     }
 
-    /// `Tool.get(name)`.
-    fn get(&self, name: &str) -> Result<Rc<Tool>, ToolError> {
-        let source = RegisterSource::new(
+    fn source(&self) -> RegisterSource<ProcessHost> {
+        RegisterSource::new(
             Register::at(&self.register),
             self.env.host.platform,
             ProcessHost::new(self.env.host.env.clone(), self.options.shell),
-        );
-        tool::get(&source, &self.cache, name, &self.options)
+        )
+    }
+
+    /// `Tool.get(name)`.
+    fn get(&self, name: &str) -> Result<Rc<Tool>, ToolError> {
+        tool::get(&self.source(), &self.cache, name, &self.options)
+    }
+
+    /// `Tool.find_by(name)` (`ToolFinder.find_by` with no options).
+    ///
+    /// `ToolIndex.instance` is built only when the exact name is not found,
+    /// as in the source, and a tool directory it fails to scan prints the
+    /// source's `warn` line (`Warning: Failed to parse TOOL: MESSAGE`).
+    fn find_by(&self, name: &str, out: &mut Out) -> Step<Option<Rc<Tool>>> {
+        match self.get(name) {
+            Ok(tool) => return Ok(Some(tool)),
+            Err(ToolError::NotFound { .. } | ToolError::ProfileNotFound { .. }) => {}
+            Err(other) => return Err(tool_stop(other)),
+        }
+        let register = Register::at(&self.register);
+        let index = register_lookup::load_tool_index(&register);
+        for warning in index.warnings() {
+            out.warn(&format!(
+                "Warning: Failed to parse {}: {}",
+                warning.tool, warning.fault.message
+            ));
+        }
+        register_lookup::find_by(
+            &register,
+            &index,
+            &self.source(),
+            &self.cache,
+            name,
+            &self.options,
+            &self.options,
+        )
+        .map_err(lookup_stop)
     }
 
     /// `tool.detect_version`.
@@ -1991,6 +2019,15 @@ fn tool_stop(e: ToolError) -> Stop {
         }
         ToolError::Ruby { class, message } => raise(class, message),
         other => unsupported(other.to_string()),
+    }
+}
+
+/// A `ToolFinder.find_by` failure as the Ruby exception it lets escape.
+fn lookup_stop(e: LookupError) -> Stop {
+    match e {
+        LookupError::Tool(e) => tool_stop(e),
+        LookupError::UnrepresentableTarget { .. } => unsupported(e.to_string()),
+        other => raise(&other.class_name(), other.to_string()),
     }
 }
 
@@ -2649,13 +2686,15 @@ fn run_describe(
         .map(str::to_owned)
         .or_else(|| ctx.default_register.clone())
         .ok_or(Stop::Error(AuthorErrorKind::Register))?;
-    let session = Tools::new(env, register)?;
-    let tool = match session.get(&input.tool) {
-        Ok(tool) => tool,
-        Err(ToolError::NotFound { .. } | ToolError::ProfileNotFound { .. }) => {
-            return Err(Stop::Error(AuthorErrorKind::Gated(FIND_BY_FALLBACK)));
-        }
-        Err(other) => return Err(tool_stop(other)),
+    let session = Tools::new(env, register.clone())?;
+    let Some(tool) = session.find_by(&input.tool, out)? else {
+        // `error!`: `Register.tools` of the register `setup_register` chose.
+        let tools = Register::at(&register).tool_names();
+        return out.thor_error(&format!(
+            "Tool not found: {}\nAvailable tools: {}",
+            input.tool,
+            tools.join(", ")
+        ));
     };
     let Some(commands) = tool.command_profile().commands.as_deref() else {
         return out.thor_error(&format!("No commands defined for {}", input.tool));
