@@ -1,0 +1,21 @@
+name: Shipped audit
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: shipped-audit-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  audit:
+    name: Artifact inventory and version consistency
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python scripts/shipped-audit.py
