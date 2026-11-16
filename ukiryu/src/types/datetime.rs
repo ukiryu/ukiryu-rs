@@ -12,10 +12,10 @@
 //! local zone abbreviation (`Time.local`, and `zone_offset` for zone names
 //! outside its table). They come from the [`Host`]; the current time is the
 //! injected [`crate::runtime::Clock`] (see [`Now`]). When a needed fact is
-//! missing the result is `Unsupported`, never a guess. Two more cases are
-//! `Unsupported`: a fraction finer than a nanosecond (Ruby keeps an exact
-//! `Rational`; [`Time`] holds nanoseconds) and calendar fields beyond what
-//! `Time` can hold here (years beyond ±10^11, fields beyond `i64`).
+//! missing the result is `Unsupported`, never a guess. Calendar fields
+//! beyond what `Time` can hold here (years beyond ±10^11, fields beyond
+//! `i64`) are `Unsupported` too. A fraction finer than a nanosecond is kept
+//! exactly, as Ruby keeps its `Rational` (see [`Time`]).
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use num_bigint::BigInt;
@@ -29,7 +29,7 @@ use crate::extractors::man::Today;
 use crate::runtime::Clock;
 
 /// Ruby's `Time.now` as `Time.parse` sees it.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Now {
     /// Only the local calendar day and the local UTC offset are known
     /// (`Clock::Fixed`). Inputs that need the time of day, or the day in
@@ -50,12 +50,12 @@ impl Now {
                 let d = SystemTime::now()
                     .duration_since(UNIX_EPOCH)
                     .unwrap_or_default();
-                Now::Instant(Time {
-                    seconds: d.as_secs() as i64,
-                    nanos: d.subsec_nanos(),
-                    utc_offset: utc_offset_secs,
-                    utc: false,
-                })
+                Now::Instant(Time::new(
+                    d.as_secs() as i64,
+                    d.subsec_nanos(),
+                    utc_offset_secs,
+                    false,
+                ))
             }
         }
     }
@@ -79,13 +79,13 @@ struct NowFields {
     time: Option<(i64, i64, i64, i64)>,
 }
 
-fn now_fields(now: Option<Now>, off: Option<i64>) -> NowFields {
+fn now_fields(now: Option<&Now>, off: Option<i64>) -> NowFields {
     match now {
         None => NowFields {
             date: None,
             time: None,
         },
-        Some(Now::Day { today, utc_offset }) => {
+        Some(&Now::Day { today, utc_offset }) => {
             let same = off.is_none_or(|o| o == i64::from(utc_offset));
             NowFields {
                 date: same.then_some((
@@ -114,7 +114,7 @@ fn now_fields(now: Option<Now>, off: Option<i64>) -> NowFields {
     }
 }
 
-fn now_year(now: Option<Now>) -> Option<i64> {
+fn now_year(now: Option<&Now>) -> Option<i64> {
     now_fields(now, None).date.map(|d| d.0)
 }
 
@@ -388,18 +388,25 @@ fn time_arg(year: i64, mon: i64, day: Option<i64>, hour: i64, min: i64, sec: i64
     Ok(days_from_civil(year, mon as u32, mday as u32) * 86_400 + hour * 3600 + min * 60 + sec)
 }
 
-/// Nanoseconds of `sec_fraction`, when exact.
-fn fraction_nanos(f: &Fraction) -> Option<u32> {
-    let n = if f.digits <= 9 {
-        &f.numerator * BigInt::from(10u64.pow(9 - f.digits as u32))
-    } else {
-        let scale = BigInt::from(10u32).pow(f.digits as u32 - 9);
-        if &f.numerator % &scale != BigInt::from(0) {
-            return None;
+/// `Time.utc`/`Time.local` with `usec = sec_fraction * 1000000`: the
+/// whole `seconds` plus the exact fraction (`Rational(numerator,
+/// 10**digits)`), or whole `nanos` when the fraction came from `Time.now`.
+fn exact_time(seconds: i64, sub: &SubSecond, utc_offset: i32, utc: bool) -> Time {
+    match sub {
+        SubSecond::Nanos(n) => Time::new(seconds, *n, utc_offset, utc),
+        SubSecond::Fraction(f) => {
+            let denom = BigInt::from(10u32).pow(f.digits as u32);
+            let numer = BigInt::from(seconds) * &denom + &f.numerator;
+            Time::from_rational(&numer, &denom, utc_offset, utc)
+                .expect("a fraction below one second keeps the whole seconds")
         }
-        &f.numerator / scale
-    };
-    u32::try_from(&n).ok()
+    }
+}
+
+/// Where the sub-second part of a parsed time comes from.
+enum SubSecond<'a> {
+    Nanos(u32),
+    Fraction(&'a Fraction),
 }
 
 fn small(v: &Option<BigInt>, input: &str) -> Result<Option<i64>> {
@@ -429,7 +436,7 @@ fn make_time(
     f: Fields,
     frac: Option<&Fraction>,
     zone: Option<&str>,
-    now: Option<Now>,
+    now: Option<&Now>,
     host: &dyn Host,
 ) -> Result<Time> {
     let Fields {
@@ -553,41 +560,25 @@ fn make_time(
         };
     }
 
-    let nanos = || -> Result<u32> {
-        match (usec_nanos, need_fraction) {
-            (Some(n), _) => Ok(n),
-            (None, Some(f)) => {
-                fraction_nanos(f).ok_or_else(|| need("a fraction finer than a nanosecond", input))
-            }
-            (None, None) => Ok(0),
-        }
+    let subsec = match (usec_nanos, need_fraction) {
+        (Some(n), _) => SubSecond::Nanos(n),
+        (None, Some(f)) => SubSecond::Fraction(f),
+        (None, None) => SubSecond::Nanos(0),
     };
 
     if let Some(off) = off {
         let (y, mo, d, h, mi, s) = apply_offset(year, mon, day, hour, min, sec, off);
         let seconds = time_arg(y, mo, d, h, mi, s)?;
-        let nanos = nanos()?;
         if zone.is_some_and(zone_utc) {
-            return Ok(Time {
-                seconds,
-                nanos,
-                utc_offset: 0,
-                utc: true,
-            });
+            return Ok(exact_time(seconds, &subsec, 0, true));
         }
         if off <= -86_400 || off >= 86_400 {
             return Err(argument("utc_offset out of range"));
         }
-        return Ok(Time {
-            seconds,
-            nanos,
-            utc_offset: off as i32,
-            utc: false,
-        });
+        return Ok(exact_time(seconds, &subsec, off as i32, false));
     }
 
     let local = time_arg(year, mon, Some(day), hour, min, sec)?;
-    let nanos = nanos()?;
     let (y, m, d) = civil_from_days(local.div_euclid(86_400));
     let sod = local.rem_euclid(86_400);
     let offset = host
@@ -600,12 +591,12 @@ fn make_time(
             (sod % 60) as u32,
         )
         .ok_or_else(|| need("the local time zone offset", input))?;
-    Ok(Time {
-        seconds: local - i64::from(offset),
-        nanos,
-        utc_offset: offset,
-        utc: false,
-    })
+    Ok(exact_time(
+        local - i64::from(offset),
+        &subsec,
+        offset,
+        false,
+    ))
 }
 
 /// `Time.parse(input)` with `Time.now` from the host.
@@ -642,7 +633,7 @@ pub fn parse(input: &str, host: &dyn Host) -> Result<Time> {
         fields,
         sec_fraction.as_ref(),
         zone.as_deref(),
-        host.now(),
+        host.now().as_ref(),
         host,
     )
 }

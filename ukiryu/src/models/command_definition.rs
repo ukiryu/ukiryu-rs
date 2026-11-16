@@ -7,7 +7,6 @@ use super::flag_definition::FlagDefinition;
 use super::option_definition::OptionDefinition;
 use super::value::Text;
 use crate::command_builder::ruby_sort_by;
-use num_bigint::BigInt;
 use serde::{Deserialize, Serialize};
 
 fn default_false() -> Attr<bool> {
@@ -175,7 +174,7 @@ impl CommandDefinition {
             .flatten()
             .filter(|a| !a.is_last())
             .collect();
-        ruby_sort_by(args, |a| BigInt::from(a.numeric_position()))
+        ruby_sort_by(args, |a| a.numeric_position())
     }
 
     /// `#has_subcommand?`

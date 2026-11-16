@@ -17,6 +17,7 @@ was produced by running the original Ruby implementation, ukiryu/ukiryu at
 | `ruby_format.jsonl` | Ruby core formatting that appears in messages (`Float#to_s`, `inspect`, `dump`, `downcase`) |
 | `datetime_parse.jsonl` | `Type.validate(value, :datetime, {})` (`Time.parse`, date gem 3.5.1) with `Time.now` pinned |
 | `regexp_match.jsonl` | `Type.validate(value, :string, pattern: re, allow_empty: true)` (`String#=~`) |
+| `time_exact.jsonl` | exact `Time` values: `Time#to_r`, `subsec`, `nsec`, `usec`, `to_f`, `inspect`, `to_s`, `<=>`, `==`, `eql?`, `hash`, `Time#-`, `JSON.generate`, and `Type.validate` for `:float`, `:integer` and `:datetime` |
 
 Each row has an `id`, a `source` (oracle commit and Ruby API), the `input`,
 and the `expect`ed outcome: `{"ok": value}` or `{"error": {"class", "message"}}`.
@@ -45,6 +46,17 @@ the test hands that instant to the port as the host clock. The datetime rows
 of `type_validate.jsonl` ran against the real clock on 2026-11-12 (UTC); the
 test pins that day. Both files come from `capture_gaps.rb` in the F7 evidence,
 which loads the same oracle bundle.
+
+`time_exact.jsonl` has its own row layout, read by `tests/types_time_exact.rs`.
+A `time` row builds `Time.at(Rational(n, d))` (then `.utc` or
+`.localtime(utc_offset)`) from `input.time.r`; a `pair` row compares two such
+Times; a `parse` row runs `Type.validate(text, :datetime, {})`. Integers and
+rational parts are decimal strings, and Floats carry both `Float#to_s` and
+their IEEE bits. The rows cover whole-nanosecond times as well as fractions
+finer than a nanosecond (long decimal fractions, thirds, power-of-two and
+large denominators, times before 1970 and at the ends of the four-digit
+years). They come from `capture_time_exact.rb` in the B05-EXACT-TIME
+evidence, which loads the same oracle bundle.
 
 `gaps.txt` lists rows whose Ruby behaviour the port does not reproduce
 (the port answers `Unsupported` for them instead of a guess), with the reason.

@@ -15,6 +15,8 @@
 //! - configuration uses [`crate::config`]; the operations shared with the C
 //!   ABI dispatch the same [`crate::wire`] implementation in process;
 //! - `Ukiryu::Errors::*` classes are defined from [`crate::errors::ErrorKind`].
+//! - `Tool.get`, `Tool#execute` and the execution result bind the core's
+//!   [`crate::tool`] runtime ([`tool`]).
 //!
 //! The Ruby namespace used here (`Ukiryu::Native`) is a development
 //! placeholder: the shipped gem's module layout and public exports are
@@ -24,6 +26,7 @@ use magnus::{function, prelude::*, Error, RString, Ruby, Value as RValue};
 mod config;
 mod errors;
 mod models;
+mod tool;
 mod values;
 mod wire;
 
@@ -53,6 +56,7 @@ pub fn init(ruby: &Ruby) -> Result<(), Error> {
     wire::define(ruby, native)?;
     config::define(ruby, native)?;
     models::define(ruby, native)?;
+    tool::define(ruby, native)?;
     native.define_module_function("core_value", function!(core_value, 1))?;
     native.define_module_function("register_hash", function!(register_hash, 1))?;
     Ok(())

@@ -64,12 +64,12 @@ fn ruby(v: &Json) -> Value {
             } else if let Some(n) = o.get("$sym") {
                 Value::sym(s(n))
             } else if let Some(t) = o.get("$time") {
-                Value::Time(Time {
-                    seconds: t["seconds"].as_i64().unwrap(),
-                    nanos: t["nanos"].as_u64().unwrap() as u32,
-                    utc_offset: t["utc_offset"].as_i64().unwrap() as i32,
-                    utc: t["utc"].as_bool().unwrap(),
-                })
+                Value::Time(Time::new(
+                    t["seconds"].as_i64().unwrap(),
+                    t["nanos"].as_u64().unwrap() as u32,
+                    t["utc_offset"].as_i64().unwrap() as i32,
+                    t["utc"].as_bool().unwrap(),
+                ))
             } else if let Some(pairs) = o.get("$map") {
                 Value::Hash(
                     pairs

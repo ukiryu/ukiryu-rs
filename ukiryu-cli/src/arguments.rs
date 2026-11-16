@@ -132,6 +132,7 @@ pub fn command() -> Command {
                     .arg(positional("value", false)),
             )
             .subcommand(validate())
+            .subcommand(lint())
             .subcommand(
                 Command::new("extract")
                     .about("Extract a definition from an installed CLI tool")
@@ -231,6 +232,28 @@ fn validate() -> Command {
                 .about("Validate a YAML string")
                 .arg(positional("yaml", true)),
         )
+}
+
+/// `ukiryu lint`: a target addition. The source's LintCommand is a Thor class
+/// that cli.rb never registers (`Could not find command "lint"`); issue #21
+/// names the lint CLI, so the port exposes it with LintCommand's own options.
+fn lint() -> Command {
+    Command::new("lint")
+        .about("Lint tool definitions for best practices")
+        .arg(flag("verbose", None, "Enable verbose output").global(true))
+        .arg(value("format", None, "Output format (text, json)").global(true))
+        .arg(value("severity", None, "Minimum severity level").global(true))
+        .subcommand(
+            Command::new("file")
+                .about("Lint a definition file")
+                .arg(positional("path", true)),
+        )
+        .subcommand(
+            Command::new("all")
+                .about("Lint all definitions in register")
+                .arg(value("register", None, "Register path")),
+        )
+        .subcommand(Command::new("rules").about("List all linting rules"))
 }
 
 fn definitions() -> Command {

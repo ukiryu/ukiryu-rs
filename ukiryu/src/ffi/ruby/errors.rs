@@ -1,7 +1,12 @@
 //! Exception classes: the `Ukiryu::Errors` taxonomy from
 //! [`crate::errors::ErrorKind`], and the binding's own failure classes.
 use crate::errors::ErrorKind;
+use crate::execution::Seconds;
+use crate::executor::ExecuteError;
 use crate::models::{ModelError, ModelErrorKind};
+use crate::runtime::ShellError;
+use crate::tool::ToolError;
+use crate::types::ErrorClass;
 use magnus::{
     method, prelude::*, Error, ExceptionClass, RArray, RClass, RModule, RString, Ruby,
     Value as RValue,
@@ -21,6 +26,18 @@ pub(super) fn define(ruby: &Ruby, ukiryu: RModule) -> Result<(), Error> {
     }
     let base = error_class(ruby, ErrorKind::Error.ruby_class())?;
     base.define_method("suggestions", method!(suggestions, 0))?;
+    // `TimeoutError.new(message = nil, timeout: nil)` and `#timeout`, exactly
+    // as lib/ukiryu/errors.rb defines them. The core's `ExecuteError::TimedOut`
+    // sets the value ([`timeout_ivar`]).
+    ruby.eval::<RValue>(
+        "class Ukiryu::Errors::TimeoutError\n\
+         attr_reader :timeout\n\
+         def initialize(message = nil, timeout: nil)\n\
+         super(message)\n\
+         @timeout = timeout\n\
+         end\n\
+         end",
+    )?;
     Ok(())
 }
 
@@ -140,4 +157,88 @@ fn build(ruby: &Ruby, class: &str, message: &str, ivars: &[(&str, RValue)]) -> E
         ))
     })();
     made.unwrap_or_else(|error| error)
+}
+
+/// `TimeoutError#timeout` as the Ruby Integer or Float the caller passed.
+fn timeout_ivar(ruby: &Ruby, timeout: Option<Seconds>) -> RValue {
+    match timeout {
+        Some(Seconds::Int(seconds)) => ruby.integer_from_i64(seconds).as_value(),
+        Some(Seconds::Float(seconds)) => ruby.float_from_f64(seconds).as_value(),
+        None => ruby.qnil().as_value(),
+    }
+}
+
+/// A core shell failure as `Ukiryu::Errors::UnknownShellError`.
+pub(super) fn shell_error(ruby: &Ruby, error: ShellError) -> Error {
+    match error_class(ruby, ErrorKind::UnknownShell.ruby_class()) {
+        Ok(class) => Error::new(class, error.to_string()),
+        Err(error) => error,
+    }
+}
+
+/// A Ruby class by constant path, else `Ukiryu::Native::WireError` carrying
+/// the unmapped class name as its code.
+fn named_or_wire(ruby: &Ruby, class: &str, message: String) -> Error {
+    match error_class(ruby, class) {
+        Ok(class) => Error::new(class, message),
+        Err(_) => build(
+            ruby,
+            "Ukiryu::Native::WireError",
+            &message,
+            &[("@code", ruby.str_new(class).as_value())],
+        ),
+    }
+}
+
+/// A failed or timed-out core run as the exception the source raises.
+fn execute_error(ruby: &Ruby, error: ExecuteError) -> Error {
+    match error {
+        ExecuteError::TimedOut(inner) => build(
+            ruby,
+            inner.ruby_class(),
+            inner.message(),
+            &[("@timeout", timeout_ivar(ruby, inner.timeout()))],
+        ),
+        ExecuteError::Failed { error: inner, .. } => {
+            named_or_wire(ruby, inner.ruby_class(), inner.message().to_owned())
+        }
+        ExecuteError::InvalidByteSequence { error: inner, .. } => {
+            named_or_wire(ruby, inner.ruby_class(), inner.message().to_owned())
+        }
+        ExecuteError::InvalidTimeout(_) => {
+            Error::new(ruby.exception_arg_error(), error.to_string())
+        }
+        ExecuteError::ShellNotFound { .. } => {
+            Error::new(ruby.exception_runtime_error(), error.to_string())
+        }
+        ExecuteError::Spawn { .. } | ExecuteError::Stdin(_) | ExecuteError::Io(_) => {
+            Error::new(ruby.exception_io_error(), error.to_string())
+        }
+    }
+}
+
+/// Raises a core [`ToolError`] as the Ruby class the source raises: the
+/// `Ukiryu::Errors` classes where the core names one, else the Ruby standard
+/// class it records; failures the core reports as not reproduced
+/// ([`ToolError::Source`]) are `NotImplementedError`.
+pub(super) fn tool_error(ruby: &Ruby, error: ToolError) -> Error {
+    match error {
+        ToolError::Execute(inner) => execute_error(ruby, *inner),
+        ToolError::Argument { message } => Error::new(ruby.exception_arg_error(), message),
+        ToolError::Ruby { class, message } => named_or_wire(ruby, class, message),
+        ToolError::Source { message } => Error::new(ruby.exception_not_imp_error(), message),
+        ToolError::Build(inner) => match inner.class {
+            ErrorClass::Unsupported => {
+                Error::new(ruby.exception_not_imp_error(), inner.message.clone())
+            }
+            class => named_or_wire(ruby, class.ruby_name(), inner.message.clone()),
+        },
+        other => {
+            let message = other.to_string();
+            match other.kind() {
+                Some(kind) => named_or_wire(ruby, kind.ruby_class(), message),
+                None => Error::new(ruby.exception_runtime_error(), message),
+            }
+        }
+    }
 }

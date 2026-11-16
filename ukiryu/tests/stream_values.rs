@@ -116,12 +116,12 @@ fn bool_eq(got: &bool, want: &Json) -> bool {
 }
 
 fn time(v: &Json) -> Time {
-    Time {
-        seconds: v["seconds"].as_i64().unwrap(),
-        nanos: v["nanos"].as_u64().unwrap() as u32,
-        utc_offset: v["utc_offset"].as_i64().unwrap() as i32,
-        utc: false,
-    }
+    Time::new(
+        v["seconds"].as_i64().unwrap(),
+        v["nanos"].as_u64().unwrap() as u32,
+        v["utc_offset"].as_i64().unwrap() as i32,
+        false,
+    )
 }
 
 fn fixed_metadata(doc: &Json) -> ExecutionMetadata {

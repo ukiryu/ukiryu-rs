@@ -7,6 +7,7 @@
 //! convert into them, and they deserialize from the same YAML/JSON keys.
 //! `None` stands for a Ruby `nil` attribute; an absent key takes the model
 //! default.
+use crate::models::ruby::str_to_bigint;
 use crate::types::{OptionSource, Value};
 use num_bigint::BigInt;
 use serde::Deserialize;
@@ -147,7 +148,7 @@ impl ArgumentSpec {
         match self.position.as_deref() {
             Some("last") => BigInt::from(999),
             Some("first") => BigInt::from(1),
-            Some(p) if p.split('\n').any(all_digits) => ruby_to_i(p),
+            Some(p) if p.split('\n').any(all_digits) => str_to_bigint(p),
             _ => BigInt::from(99),
         }
     }
@@ -156,42 +157,6 @@ impl ArgumentSpec {
 /// A line matching Ruby `/^\d+$/` (`\d` is ASCII only; `$` stops at `\n`).
 fn all_digits(line: &str) -> bool {
     !line.is_empty() && line.bytes().all(|b| b.is_ascii_digit())
-}
-
-/// `String#to_i`: leading whitespace, an optional sign, then decimal digits
-/// with single underscores between them. Exact for any length (Bignum).
-fn ruby_to_i(s: &str) -> BigInt {
-    let t = s.trim_start_matches([' ', '\t', '\n', '\x0b', '\x0c', '\r']);
-    let (neg, t) = match t.as_bytes().first() {
-        Some(b'-') => (true, &t[1..]),
-        Some(b'+') => (false, &t[1..]),
-        _ => (false, t),
-    };
-    let bytes = t.as_bytes();
-    let mut digits = String::new();
-    for (i, &b) in bytes.iter().enumerate() {
-        if b.is_ascii_digit() {
-            digits.push(char::from(b));
-        } else if b == b'_'
-            && i > 0
-            && bytes[i - 1].is_ascii_digit()
-            && bytes.get(i + 1).is_some_and(u8::is_ascii_digit)
-        {
-            continue;
-        } else {
-            break;
-        }
-    }
-    let n: BigInt = if digits.is_empty() {
-        BigInt::from(0)
-    } else {
-        digits.parse().expect("ASCII digits")
-    };
-    if neg {
-        -n
-    } else {
-        n
-    }
 }
 
 fn int_list(v: &Option<Vec<i64>>) -> Value {

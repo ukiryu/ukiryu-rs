@@ -5,4 +5,5 @@
 //! defaults, argument order, and the explicit `--` boundary remain observable.
 pub mod arguments;
 pub mod commands;
+pub mod dispatch;
 pub mod stdin;
