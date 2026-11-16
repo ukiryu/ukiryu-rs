@@ -1,0 +1,1347 @@
+{
+ "provenance": {
+  "source": "ukiryu ab6df353c6dc2d7faf7817a86aafcafa82579896",
+  "ruby": "4.0.1",
+  "psych": "5.3.1",
+  "call": "Ukiryu::Tool.find_by(identifier, options), one fresh process per row",
+  "runtime": "linux/bash",
+  "inputs": "registers are fixtures/register/spec plus the mutations named in the test; bins hold stub executables plus sh and bash; no git; HOME is an empty directory"
+ },
+ "rows": [
+  {
+   "id": "A01-exact-jq",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "jq",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "jq",
+     "available": true,
+     "executable": "<inputs>/bin/full/jq"
+    }
+   }
+  },
+  {
+   "id": "A02-exact-jq-symbol",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "jq",
+   "identifier_type": "symbol",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "jq",
+     "available": true,
+     "executable": "<inputs>/bin/full/jq"
+    }
+   }
+  },
+  {
+   "id": "A03-exact-jq-no-executable",
+   "register": "fixtures",
+   "bin": "empty",
+   "identifier": "jq",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "jq",
+     "available": false,
+     "executable": null
+    }
+   }
+  },
+  {
+   "id": "A04-exact-ping-beats-alias",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "ping",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "ping_bsd",
+     "available": true,
+     "executable": "<inputs>/bin/full/ping"
+    }
+   }
+  },
+  {
+   "id": "A05-exact-ping-ping-only-bin",
+   "register": "fixtures",
+   "bin": "ping-only",
+   "identifier": "ping",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "ping_bsd",
+     "available": true,
+     "executable": "<inputs>/bin/ping-only/ping"
+    }
+   }
+  },
+  {
+   "id": "A06-exact-ping-no-ping-bin",
+   "register": "fixtures",
+   "bin": "no-ping",
+   "identifier": "ping",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "ping_bsd",
+     "available": false,
+     "executable": null
+    }
+   }
+  },
+  {
+   "id": "A07-tool-dir-name-not-resolvable-ping_bsd",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "ping_bsd",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "A08-exact-imagemagick-unavailable",
+   "register": "fixtures",
+   "bin": "empty",
+   "identifier": "imagemagick",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "imagemagick",
+     "available": false,
+     "executable": null
+    }
+   }
+  },
+  {
+   "id": "A09-exact-jq-repeat-identity",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "jq",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": true,
+   "expect": {
+    "tool": {
+     "name": "jq",
+     "available": true,
+     "executable": "<inputs>/bin/full/jq"
+    },
+    "repeat_same_object": true
+   }
+  },
+  {
+   "id": "A10-uppercase-JQ",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "JQ",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "A11-leading-space-jq",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": " jq",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "A12-empty-string",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "A13-nil-identifier",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": null,
+   "identifier_type": "nil",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "A14-integer-identifier",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "42",
+   "identifier_type": "integer",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "A15-unknown-identifier",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "zzz-unknown",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "A16-unknown-identifier-symbol",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "zzz-unknown",
+   "identifier_type": "symbol",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "A17-path-traversal-ish-identifier",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "../jq",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "A18-unzip-name-equals-alias",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "unzip",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "unzip",
+     "available": true,
+     "executable": "<inputs>/bin/full/unzip"
+    }
+   }
+  },
+  {
+   "id": "B01-interface-versioned-single-available",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "bzip2/1.0",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "bzip2",
+     "available": true,
+     "executable": "<inputs>/bin/full/bzip2"
+    }
+   }
+  },
+  {
+   "id": "B02-interface-versioned-single-unavailable",
+   "register": "fixtures",
+   "bin": "no-bzip2",
+   "identifier": "bzip2/1.0",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "B03-shared-iface-first-candidate-wins",
+   "register": "shared-iface",
+   "bin": "full",
+   "identifier": "shared/1.0",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "bzip2",
+     "available": true,
+     "executable": "<inputs>/bin/full/bzip2"
+    }
+   }
+  },
+  {
+   "id": "B04-shared-iface-all-unavailable",
+   "register": "shared-iface",
+   "bin": "no-bzip2",
+   "identifier": "shared/1.0",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "B05-iface-array-first-available",
+   "register": "shared-iface-array",
+   "bin": "full",
+   "identifier": "shared/1.0",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "bzip2_gnu",
+     "available": true,
+     "executable": "<inputs>/bin/full/bzip2"
+    }
+   }
+  },
+  {
+   "id": "B06-iface-array-skip-unavailable-first",
+   "register": "shared-iface-array",
+   "bin": "no-bzip2",
+   "identifier": "shared/1.0",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "gzip_gnu",
+     "available": true,
+     "executable": "<inputs>/bin/no-bzip2/gzip"
+    }
+   }
+  },
+  {
+   "id": "B07-iface-array-second-name",
+   "register": "shared-iface-array",
+   "bin": "full",
+   "identifier": "other/1.0",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "bzip2_gnu",
+     "available": true,
+     "executable": "<inputs>/bin/full/bzip2"
+    }
+   }
+  },
+  {
+   "id": "B08-iface-array-none-available",
+   "register": "shared-iface-array",
+   "bin": "empty",
+   "identifier": "shared/1.0",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "B09-iface-array-platform-windows-option",
+   "register": "shared-iface-array",
+   "bin": "full",
+   "identifier": "shared/1.0",
+   "identifier_type": "string",
+   "options": {
+    "platform": "windows"
+   },
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "B10-iface-array-platform-macos-shell-zsh",
+   "register": "shared-iface-array",
+   "bin": "full",
+   "identifier": "shared/1.0",
+   "identifier_type": "string",
+   "options": {
+    "platform": "macos",
+    "shell": "zsh"
+   },
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "bzip2_gnu",
+     "available": true,
+     "executable": "<inputs>/bin/full/bzip2"
+    }
+   }
+  },
+  {
+   "id": "B11-iface-symbol-identifier",
+   "register": "shared-iface-array",
+   "bin": "full",
+   "identifier": "shared/1.0",
+   "identifier_type": "symbol",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "bzip2_gnu",
+     "available": true,
+     "executable": "<inputs>/bin/full/bzip2"
+    }
+   }
+  },
+  {
+   "id": "B12-iface-versioned-case-mismatch",
+   "register": "shared-iface-array",
+   "bin": "full",
+   "identifier": "Shared/1.0",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "B13-bare-interface-ping-name-collision",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "ping/1.0",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "C01-alias-gs",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "gs",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "ghostscript",
+     "available": true,
+     "executable": "<inputs>/bin/full/ghostscript"
+    }
+   }
+  },
+  {
+   "id": "C02-alias-gs-unavailable-still-returned",
+   "register": "fixtures",
+   "bin": "empty",
+   "identifier": "gs",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "ghostscript",
+     "available": false,
+     "executable": null
+    }
+   }
+  },
+  {
+   "id": "C03-alias-convert",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "convert",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "imagemagick",
+     "available": true,
+     "executable": "<inputs>/bin/full/magick"
+    }
+   }
+  },
+  {
+   "id": "C04-alias-magick",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "magick",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "imagemagick",
+     "available": true,
+     "executable": "<inputs>/bin/full/magick"
+    }
+   }
+  },
+  {
+   "id": "C05-alias-gswin64c",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "gswin64c",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "ghostscript",
+     "available": true,
+     "executable": "<inputs>/bin/full/ghostscript"
+    }
+   }
+  },
+  {
+   "id": "C06-alias-multi-tool-platform-pick-linux",
+   "register": "shared-alias",
+   "bin": "full",
+   "identifier": "zz",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "ping_gnu",
+     "available": true,
+     "executable": "<inputs>/bin/full/ping"
+    }
+   }
+  },
+  {
+   "id": "C07-alias-multi-tool-option-platform-windows",
+   "register": "shared-alias",
+   "bin": "full",
+   "identifier": "zz",
+   "identifier_type": "string",
+   "options": {
+    "platform": "windows"
+   },
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "ping_windows",
+     "available": true,
+     "executable": "<inputs>/bin/full/ping"
+    }
+   }
+  },
+  {
+   "id": "C08-alias-multi-tool-option-shell-cmd",
+   "register": "shared-alias",
+   "bin": "full",
+   "identifier": "zz",
+   "identifier_type": "string",
+   "options": {
+    "shell": "cmd"
+   },
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "ping_gnu",
+     "available": true,
+     "executable": "<inputs>/bin/full/ping"
+    }
+   }
+  },
+  {
+   "id": "C09-alias-multi-tool-unavailable",
+   "register": "shared-alias",
+   "bin": "empty",
+   "identifier": "zz",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "ping_gnu",
+     "available": false,
+     "executable": null
+    }
+   }
+  },
+  {
+   "id": "C10-alias-single-tool",
+   "register": "shared-alias",
+   "bin": "full",
+   "identifier": "solo",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "jq",
+     "available": true,
+     "executable": "<inputs>/bin/full/jq"
+    }
+   }
+  },
+  {
+   "id": "C11-alias-symbol-identifier",
+   "register": "shared-alias",
+   "bin": "full",
+   "identifier": "zz",
+   "identifier_type": "symbol",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "ping_gnu",
+     "available": true,
+     "executable": "<inputs>/bin/full/ping"
+    }
+   }
+  },
+  {
+   "id": "C12-alias-uppercase",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "GS",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "D01-orphan-exact-name",
+   "register": "orphan",
+   "bin": "full",
+   "identifier": "orphan",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "D02-orphan-alias-exhaustive",
+   "register": "orphan",
+   "bin": "full",
+   "identifier": "orph",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "D03-orphan-interface-exhaustive",
+   "register": "orphan",
+   "bin": "full",
+   "identifier": "orphan/1.0",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "D04-orphan-alias-no-executable",
+   "register": "orphan",
+   "bin": "empty",
+   "identifier": "orph",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "D05-orphan-win-alias-on-linux",
+   "register": "orphan",
+   "bin": "full",
+   "identifier": "orphw",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "D06-orphan-win-alias-platform-windows",
+   "register": "orphan",
+   "bin": "full",
+   "identifier": "orphw",
+   "identifier_type": "string",
+   "options": {
+    "platform": "windows",
+    "shell": "powershell"
+   },
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "D07-orphan-win-alias-platform-windows-shell-bash",
+   "register": "orphan",
+   "bin": "full",
+   "identifier": "orphw",
+   "identifier_type": "string",
+   "options": {
+    "platform": "windows",
+    "shell": "bash"
+   },
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "D08-orphan-win-alias-shell-cmd-only",
+   "register": "orphan",
+   "bin": "full",
+   "identifier": "orphw",
+   "identifier_type": "string",
+   "options": {
+    "shell": "cmd"
+   },
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "D09-orphan-unknown",
+   "register": "orphan",
+   "bin": "full",
+   "identifier": "nothing-here",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "D10-orphan-alias-repeat-cache",
+   "register": "orphan",
+   "bin": "full",
+   "identifier": "orph",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": true,
+   "expect": {
+    "nil": true,
+    "repeat_same_object": true
+   }
+  },
+  {
+   "id": "E01-ping-platform-windows",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "ping",
+   "identifier_type": "string",
+   "options": {
+    "platform": "windows"
+   },
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "ping_windows",
+     "available": true,
+     "executable": "<inputs>/bin/full/ping"
+    }
+   }
+  },
+  {
+   "id": "E02-ping-platform-macos",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "ping",
+   "identifier_type": "string",
+   "options": {
+    "platform": "macos"
+   },
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "ping_bsd",
+     "available": true,
+     "executable": "<inputs>/bin/full/ping"
+    }
+   }
+  },
+  {
+   "id": "E03-jq-platform-freebsd-unknown",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "jq",
+   "identifier_type": "string",
+   "options": {
+    "platform": "freebsd"
+   },
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "E04-jq-shell-fish",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "jq",
+   "identifier_type": "string",
+   "options": {
+    "shell": "fish"
+   },
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "jq",
+     "available": true,
+     "executable": "<inputs>/bin/full/jq"
+    }
+   }
+  },
+  {
+   "id": "E05-jq-shell-unknown",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "jq",
+   "identifier_type": "string",
+   "options": {
+    "shell": "nosuchshell"
+   },
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "E06-ping-shell-cmd",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "ping",
+   "identifier_type": "string",
+   "options": {
+    "shell": "cmd"
+   },
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "ping_bsd",
+     "available": true,
+     "executable": "<inputs>/bin/full/ping"
+    }
+   }
+  },
+  {
+   "id": "E07-gs-platform-windows-alias",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "gs",
+   "identifier_type": "string",
+   "options": {
+    "platform": "windows"
+   },
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "ghostscript",
+     "available": true,
+     "executable": "<inputs>/bin/full/gs"
+    }
+   }
+  },
+  {
+   "id": "E08-unknown-platform-windows-exhaustive",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "zzz-unknown",
+   "identifier_type": "string",
+   "options": {
+    "platform": "windows",
+    "shell": "cmd"
+   },
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "E09-options-register_path",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "jq",
+   "identifier_type": "string",
+   "options": {
+    "register_path": "<register>/fixtures"
+   },
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "jq",
+     "available": true,
+     "executable": "<inputs>/bin/full/jq"
+    }
+   }
+  },
+  {
+   "id": "E10-options-register_path-nonexistent",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "jq",
+   "identifier_type": "string",
+   "options": {
+    "register_path": "/nonexistent/register-xyz"
+   },
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "F01-missing-version-file-exact",
+   "register": "missing-version-file",
+   "bin": "full",
+   "identifier": "bzip2_gnu",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "raised": {
+     "class": "Errno::ENOENT",
+     "message": "No such file or directory @ rb_sysopen - <inputs>/registers/missing-version-file/tools/bzip2_gnu/default/1.0.yaml"
+    }
+   }
+  },
+  {
+   "id": "F02-missing-version-file-interface",
+   "register": "missing-version-file",
+   "bin": "full",
+   "identifier": "bzip2_gnu/1.0",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "raised": {
+     "class": "Errno::ENOENT",
+     "message": "No such file or directory @ rb_sysopen - <inputs>/registers/missing-version-file/tools/bzip2_gnu/default/1.0.yaml"
+    }
+   }
+  },
+  {
+   "id": "F03-malformed-profile-exact",
+   "register": "malformed-yaml",
+   "bin": "full",
+   "identifier": "bzip2_gnu",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "raised": {
+     "class": "Psych::SyntaxError",
+     "message": "(<unknown>): did not find expected ',' or ']' while parsing a flow sequence at line 1 column 13"
+    }
+   }
+  },
+  {
+   "id": "F04-malformed-profile-other-tool",
+   "register": "malformed-yaml",
+   "bin": "full",
+   "identifier": "jq",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "jq",
+     "available": true,
+     "executable": "<inputs>/bin/full/jq"
+    }
+   }
+  },
+  {
+   "id": "F05-malformed-profile-unknown-ident",
+   "register": "malformed-yaml",
+   "bin": "full",
+   "identifier": "zzz-unknown",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "raised": {
+     "class": "Psych::SyntaxError",
+     "message": "(<unknown>): did not find expected ',' or ']' while parsing a flow sequence at line 1 column 13"
+    }
+   }
+  },
+  {
+   "id": "F06-malformed-index-exact",
+   "register": "malformed-index",
+   "bin": "full",
+   "identifier": "bzip2_gnu",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "raised": {
+     "class": "Psych::SyntaxError",
+     "message": "(<unknown>): did not find expected ',' or ']' while parsing a flow sequence at line 1 column 18"
+    }
+   }
+  },
+  {
+   "id": "F07-malformed-index-unknown-ident",
+   "register": "malformed-index",
+   "bin": "full",
+   "identifier": "zzz-unknown",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "raised": {
+     "class": "Psych::SyntaxError",
+     "message": "(<unknown>): did not find expected ',' or ']' while parsing a flow sequence at line 1 column 18"
+    }
+   }
+  },
+  {
+   "id": "F08-unreadable-profile-exact",
+   "register": "unreadable-profile",
+   "bin": "full",
+   "identifier": "gzip_gnu",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "raised": {
+     "class": "Errno::EACCES",
+     "message": "Permission denied @ rb_sysopen - <inputs>/registers/unreadable-profile/tools/gzip_gnu/default/1.0.yaml"
+    }
+   }
+  },
+  {
+   "id": "F09-unreadable-profile-other",
+   "register": "unreadable-profile",
+   "bin": "full",
+   "identifier": "jq",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "jq",
+     "available": true,
+     "executable": "<inputs>/bin/full/jq"
+    }
+   }
+  },
+  {
+   "id": "F10-unreadable-profile-unknown",
+   "register": "unreadable-profile",
+   "bin": "full",
+   "identifier": "zzz-unknown",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "raised": {
+     "class": "Errno::EACCES",
+     "message": "Permission denied @ rb_sysopen - <inputs>/registers/unreadable-profile/tools/gzip_gnu/default/1.0.yaml"
+    }
+   }
+  },
+  {
+   "id": "F11-unreadable-index-exact",
+   "register": "unreadable-index",
+   "bin": "full",
+   "identifier": "bzip2_gnu",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "raised": {
+     "class": "Errno::EACCES",
+     "message": "Permission denied @ rb_sysopen - <inputs>/registers/unreadable-index/tools/bzip2_gnu/index.yaml"
+    }
+   }
+  },
+  {
+   "id": "F12-unreadable-index-unknown",
+   "register": "unreadable-index",
+   "bin": "full",
+   "identifier": "zzz-unknown",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "raised": {
+     "class": "Errno::EACCES",
+     "message": "Permission denied @ rb_sysopen - <inputs>/registers/unreadable-index/tools/bzip2_gnu/index.yaml"
+    }
+   }
+  },
+  {
+   "id": "F13-empty-tools-dir",
+   "register": "empty-tools",
+   "bin": "full",
+   "identifier": "jq",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "raised": {
+     "class": "Errno::ENOENT",
+     "message": "No such file or directory - git"
+    }
+   }
+  },
+  {
+   "id": "F14-no-tools-dir",
+   "register": "no-tools-dir",
+   "bin": "full",
+   "identifier": "jq",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "raised": {
+     "class": "Errno::ENOENT",
+     "message": "No such file or directory - git"
+    }
+   }
+  },
+  {
+   "id": "F15-register-env-nonexistent-no-git",
+   "register": "<abs-nonexistent>",
+   "bin": "empty",
+   "identifier": "jq",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "raised": {
+     "class": "Errno::ENOENT",
+     "message": "No such file or directory - git"
+    }
+   }
+  },
+  {
+   "id": "F16-register-env-is-file",
+   "register": "not-a-dir",
+   "bin": "empty",
+   "identifier": "jq",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "raised": {
+     "class": "Errno::ENOENT",
+     "message": "No such file or directory - git"
+    }
+   }
+  },
+  {
+   "id": "F17-register-env-unset-no-git",
+   "register": null,
+   "bin": "empty",
+   "identifier": "jq",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "raised": {
+     "class": "Errno::ENOENT",
+     "message": "No such file or directory - git"
+    }
+   }
+  },
+  {
+   "id": "G01-ping_windows-iface-linux",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "ping_windows/1.0",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "G02-ping_windows-iface-platform-windows-cmd",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "ping_windows/1.0",
+   "identifier_type": "string",
+   "options": {
+    "platform": "windows",
+    "shell": "cmd"
+   },
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "ping_windows",
+     "available": true,
+     "executable": "<inputs>/bin/full/ping"
+    }
+   }
+  },
+  {
+   "id": "G03-ping_windows-iface-platform-windows-bash",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "ping_windows/1.0",
+   "identifier_type": "string",
+   "options": {
+    "platform": "windows",
+    "shell": "bash"
+   },
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "ping_windows",
+     "available": true,
+     "executable": "<inputs>/bin/full/ping"
+    }
+   }
+  },
+  {
+   "id": "G04-ping_bsd-iface-linux",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "ping_bsd/1.0",
+   "identifier_type": "string",
+   "options": {},
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "G05-ping_bsd-iface-platform-macos",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "ping_bsd/1.0",
+   "identifier_type": "string",
+   "options": {
+    "platform": "macos",
+    "shell": "zsh"
+   },
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "ping_bsd",
+     "available": true,
+     "executable": "<inputs>/bin/full/ping"
+    }
+   }
+  },
+  {
+   "id": "G06-ping_bsd-iface-platform-macos-no-ping-bin",
+   "register": "fixtures",
+   "bin": "no-ping",
+   "identifier": "ping_bsd/1.0",
+   "identifier_type": "string",
+   "options": {
+    "platform": "macos",
+    "shell": "zsh"
+   },
+   "repeat": false,
+   "expect": {
+    "nil": true
+   }
+  },
+  {
+   "id": "G07-ping_windows-iface-windows-repeat",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "ping_windows/1.0",
+   "identifier_type": "string",
+   "options": {
+    "platform": "windows",
+    "shell": "cmd"
+   },
+   "repeat": true,
+   "expect": {
+    "tool": {
+     "name": "ping_windows",
+     "available": true,
+     "executable": "<inputs>/bin/full/ping"
+    },
+    "repeat_same_object": true
+   }
+  },
+  {
+   "id": "G08-ping_windows-iface-symbol",
+   "register": "fixtures",
+   "bin": "full",
+   "identifier": "ping_windows/1.0",
+   "identifier_type": "symbol",
+   "options": {
+    "platform": "windows",
+    "shell": "cmd"
+   },
+   "repeat": false,
+   "expect": {
+    "tool": {
+     "name": "ping_windows",
+     "available": true,
+     "executable": "<inputs>/bin/full/ping"
+    }
+   }
+  }
+ ],
+ "input_digests": {
+  "empty-tools": "14:9d4d027c9dfe8d38",
+  "fixtures": "62:f787c1cdeeb10709",
+  "malformed-index": "62:8a36cd6378259877",
+  "malformed-yaml": "62:4a456984b3d9c91d",
+  "missing-version-file": "61:6ec56831454d231d",
+  "no-tools-dir": "14:9d4d027c9dfe8d38",
+  "orphan": "64:e6b046973f0a1c79",
+  "shared-alias": "62:8ad497ff51b577fd",
+  "shared-iface": "62:a61ccc794f739e5c",
+  "shared-iface-array": "62:649d03fb3d3f0b09",
+  "unreadable-index": "62:2d5aacd75b4d0ac1",
+  "unreadable-profile": "62:d4930b23397ea2b9"
+ },
+ "digest_rule": "per register: files sorted by relative path bytes, each \"path:len:fnv1a64\" (or \"path:UNREADABLE\" for mode 000), joined by newline; value is \"count:fnv1a64(joined)\""
+}

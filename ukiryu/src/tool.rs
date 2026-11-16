@@ -383,6 +383,19 @@ pub trait DefinitionSource {
         name: &str,
         options: &ToolOptions,
     ) -> Result<Option<ToolDefinition>, ToolError>;
+
+    /// [`DefinitionSource::load_definition`] for an `options[:platform]` or
+    /// `options[:shell]` that [`ToolOptions`] cannot hold, compared as the
+    /// source compares them (by name). `None` when this source cannot load
+    /// for such values.
+    fn load_definition_for(
+        &self,
+        _name: &str,
+        _platform: &str,
+        _shell: &str,
+    ) -> Option<Result<Option<ToolDefinition>, ToolError>> {
+        None
+    }
 }
 
 impl<F> DefinitionSource for F
