@@ -50,9 +50,14 @@ jobs:
     needs: audit
     uses: ./.github/workflows/wasm.yml
 
+  shipped-replay:
+    name: Corpus replay against built artifacts
+    needs: [cli-binaries, wasm]
+    uses: ./.github/workflows/shipped-replay.yml
+
   summary:
     name: Train is release-ready
-    needs: [core-package, cli-binaries, wasm]
+    needs: [core-package, cli-binaries, wasm, shipped-replay]
     runs-on: ubuntu-24.04
     steps:
       - run: echo "Train ${{ inputs.version }} is release-ready for ukiryu-rs artifacts. Nothing was published."

@@ -73,6 +73,14 @@ def main():
     check(script_targets == wf_targets == manifest_targets,
           f'CLI targets agree (script {len(script_targets)}, workflow {len(wf_targets)}, manifest {len(manifest_targets)})')
 
+    # Shipped-artifact replay is reusable and part of the train.
+    replay = train['shipped_replay']
+    check((ROOT / '.github/workflows' / replay['workflow']).exists(), 'shipped replay workflow exists')
+    train_text = (ROOT / '.github/workflows/release-train.yml').read_text()
+    check(f"uses: ./.github/workflows/{replay['workflow']}" in train_text, 'release-train.yml calls the shipped replay')
+    replay_text = (ROOT / '.github/workflows/shipped-replay.yml').read_text()
+    check(all(f"name: {a}" in replay_text for a in replay['artifacts']), 'shipped replay downloads the declared artifacts')
+
     # Publication safety: nothing publishes on push/PR/merge.
     for wf in sorted((ROOT / '.github/workflows').glob('*.yml')):
         text = wf.read_text()
