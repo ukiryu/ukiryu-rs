@@ -219,6 +219,121 @@ fn corpus_rows_match_through_the_wire() {
     );
 }
 
+/// The schema of a row as text, as a host without a file system passes it:
+/// `None` when the row names no schema or the file does not exist (both are
+/// a missing schema file to the original), with the format the original's
+/// definition loader picks from the extension.
+fn schema_text(i: &Value) -> (Option<String>, &'static str) {
+    let Some(rel) = i["schema"].as_str() else {
+        return (None, "yaml");
+    };
+    let format = if rel.ends_with(".json") {
+        "json"
+    } else {
+        "yaml"
+    };
+    (std::fs::read_to_string(inputs().join(rel)).ok(), format)
+}
+
+/// The text forms of the schema operations (`validate_profile_text`,
+/// `definition_text`) reach the same expectations as the path forms, with
+/// the schema read here and passed as text.
+#[test]
+fn schema_rows_match_with_schema_text() {
+    let mut dispatched = BTreeMap::<String, usize>::new();
+    let mut failures = Vec::new();
+    for row in rows("schema") {
+        let id = row["id"].as_str().expect("id");
+        let op = row["op"].as_str().expect("op");
+        let i = &row["input"];
+        let (schema, format) = schema_text(i);
+        let request = match op {
+            "schema.validate_profile" => json!({
+                "op": "schema", "method": "validate_profile_text",
+                "profile": document(i), "schema": schema,
+            }),
+            "schema.definition_validate" => json!({
+                "op": "validate", "method": "definition_text",
+                "yaml": document(i), "schema": schema, "schema_format": format,
+            }),
+            other => panic!("{id}: unexpected op {other}"),
+        };
+        *dispatched.entry(op.to_owned()).or_default() += 1;
+        let have = outcome(op, &wire(&request));
+        if have != row["expect"] {
+            failures.push(format!("{id}:\n  got  {have}\n  want {}", row["expect"]));
+        }
+    }
+    for (op, count) in PINNED {
+        if op.starts_with("schema.") {
+            assert_eq!(
+                dispatched.get(op).copied(),
+                Some(count),
+                "{op} rows dispatched"
+            );
+        }
+    }
+    assert!(
+        failures.is_empty(),
+        "{} rows differ:\n{}",
+        failures.len(),
+        failures.join("\n")
+    );
+}
+
+/// The text forms read nothing from the environment or disk: no schema is a
+/// missing schema, and the supplied schema stage is reported.
+#[test]
+fn schema_text_forms_report_supplied_schemas() {
+    let reply = wire(&json!({
+        "op": "schema", "method": "validate_profile_text", "profile": "name: x\n",
+    }));
+    assert_eq!(
+        reply,
+        json!({"ok": true, "value": ["Failed to load schema"]})
+    );
+
+    let reply = wire(&json!({
+        "op": "validate", "method": "definition_text", "yaml": "name: x\n",
+    }));
+    assert_eq!(
+        reply["value"]["schema_stage"],
+        json!({"kind": "supplied_not_loaded"})
+    );
+
+    let reply = wire(&json!({
+        "op": "validate", "method": "definition_text", "yaml": "name: x\n",
+        "schema": "{\"type\": \"object\"}", "schema_format": "json",
+    }));
+    assert_eq!(reply["value"]["schema_stage"], json!({"kind": "supplied"}));
+
+    let reply = wire(&json!({
+        "op": "validate", "method": "definition_text", "yaml": "name: x\n",
+        "schema": "{not json", "schema_format": "json",
+    }));
+    assert_eq!(
+        reply["value"]["schema_stage"],
+        json!({"kind": "supplied_not_loaded"})
+    );
+}
+
+/// Reply objects keep the key order of the Hash they encode.
+#[test]
+fn reply_objects_keep_hash_key_order() {
+    let reply = ukiryu::wire::process(
+        json!({"op": "parse_yaml", "yaml": "zeta: 1\nalpha: 2\nmid: 3\n"})
+            .to_string()
+            .as_bytes(),
+    );
+    let text = reply.to_string();
+    let (z, a, m) = (
+        text.find("\"zeta\"").expect("zeta"),
+        text.find("\"alpha\"").expect("alpha"),
+        text.find("\"mid\"").expect("mid"),
+    );
+    assert!(z < a && a < m, "{text}");
+}
+
 /// Control: an altered input changes the reply, so a match is not an echo.
 #[test]
 fn altered_inputs_change_the_reply() {

@@ -427,10 +427,9 @@ pub(crate) fn valid_civil(year: i64, month: u32, day: u32) -> bool {
 }
 
 impl From<&serde_json::Value> for Data {
-    /// Map a JSON value onto the Ruby model. Object key order is whatever
-    /// `serde_json` preserves (sorted unless its `preserve_order` feature is
-    /// on), which matters for error order; prefer the YAML loaders when the
-    /// document order is known.
+    /// Map a JSON value onto the Ruby model. Object key order is the order
+    /// `serde_json` kept (the workspace enables `preserve_order`), which
+    /// matters for error order.
     fn from(v: &serde_json::Value) -> Data {
         match v {
             serde_json::Value::Null => Data::Null,
