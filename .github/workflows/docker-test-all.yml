@@ -1,0 +1,112 @@
+name: Docker test all (five distros)
+
+# Port of the Ruby repository's docker-test-all: the same five platforms, one
+# container per platform, the register mounted read-only. The Rust CLI is built
+# once per libc (gnu on the oldest runner for glibc compatibility, musl for
+# Alpine) and the exact binaries are mounted into each container.
+on:
+  pull_request:
+    paths:
+      - 'docker/**'
+      - 'scripts/docker-test-all.sh'
+      - 'scripts/container-checks.sh'
+      - 'ukiryu-cli/**'
+      - 'ukiryu/**'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+      - '.github/workflows/docker-test-all.yml'
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docker-test-all-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Qualified register revision; bump deliberately.
+  REGISTER_REF: 90fd6a4ae2712c28de652026c403fb2462b49d27
+
+jobs:
+  build:
+    name: Build CLI (${{ matrix.libc }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - libc: gnu
+            os: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+          - libc: musl
+            os: ubuntu-24.04
+            target: x86_64-unknown-linux-musl
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.95.0
+          targets: ${{ matrix.target }}
+      - name: Install musl toolchain
+        if: matrix.libc == 'musl'
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends musl-tools
+      - name: Build locked release CLI
+        env:
+          TARGET: ${{ matrix.target }}
+          CC_x86_64_unknown_linux_musl: musl-gcc
+        run: cargo build --release --locked -p ukiryu-cli --target "$TARGET"
+      - name: Stage binary
+        env:
+          TARGET: ${{ matrix.target }}
+        run: |
+          mkdir -p staged
+          cp "target/$TARGET/release/ukiryu" staged/ukiryu
+          file staged/ukiryu
+          sha256sum staged/ukiryu
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ukiryu-docker-${{ matrix.libc }}
+          path: staged/ukiryu
+          if-no-files-found: error
+
+  distro:
+    name: ${{ matrix.platform }}
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [alpine, ubuntu-22, ubuntu-24, debian-bookworm, debian-trixie]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: ukiryu/register
+          ref: ${{ env.REGISTER_REF }}
+          path: register
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: ukiryu-docker-*
+          path: bins
+      - name: Run container checks
+        env:
+          PLATFORM: ${{ matrix.platform }}
+          LOGDIR: ${{ runner.temp }}/docker-test-logs
+        run: |
+          chmod +x bins/*/ukiryu
+          scripts/docker-test-all.sh \
+            --binary-gnu "$PWD/bins/ukiryu-docker-gnu/ukiryu" \
+            --binary-musl "$PWD/bins/ukiryu-docker-musl/ukiryu" \
+            --register "$PWD/register" \
+            "$PLATFORM"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: docker-test-logs-${{ matrix.platform }}
+          path: ${{ runner.temp }}/docker-test-logs
+          if-no-files-found: ignore
