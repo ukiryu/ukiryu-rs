@@ -972,7 +972,7 @@ fn replay_stdin() -> (StdinCounts, Vec<String>) {
         let mut unreadable = false;
         for name in setup["chmod0"].as_array().unwrap() {
             let path = dir.join(name.as_str().unwrap());
-            std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0)).unwrap();
+            std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o000)).unwrap();
             unreadable |= std::fs::read(&path).is_ok();
         }
         let cleanup = |dir: &Path| {
