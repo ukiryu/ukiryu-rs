@@ -9,10 +9,9 @@
 //! same composition as the source: `Register.discover` (with its auto-clone),
 //! the tool index, and `find_by`.
 //!
-//! Rows whose input the Rust API cannot express (a `nil` or integer
-//! identifier, a platform or shell outside the port's enums) are listed in
-//! [`UNREPRESENTABLE`]; the test fails if that list and the rows it skips ever
-//! disagree.
+//! Every row goes through `find_by_input`, which also takes the `nil` and
+//! Integer identifiers and the platform and shell names outside the port's
+//! enums that the oracle passes.
 #![cfg(target_os = "linux")]
 
 use serde_json::Value as Json;
@@ -27,30 +26,10 @@ use ukiryu::environment::Environment;
 use ukiryu::executable::{DiscoveryContext as PathContext, Platform};
 use ukiryu::extractors::base::ProcessHost;
 use ukiryu::register::{DiscoveryContext, Git, Register};
-use ukiryu::register_lookup::{find_by, load_tool_index};
+use ukiryu::register_lookup::{find_by_input, load_tool_index, Identifier, Target};
 use ukiryu::runtime::ShellName;
 use ukiryu::tool::{Tool, ToolOptions};
 use ukiryu::tool_loader::RegisterSource;
-
-/// Rows the Rust API cannot express, with the reason.
-const UNREPRESENTABLE: [(&str, &str); 4] = [
-    (
-        "A13-nil-identifier",
-        "identifier is nil; find_by takes &str",
-    ),
-    (
-        "A14-integer-identifier",
-        "identifier is an Integer; find_by takes &str",
-    ),
-    (
-        "E03-jq-platform-freebsd-unknown",
-        "platform freebsd is not a Platform",
-    ),
-    (
-        "E05-jq-shell-unknown",
-        "shell nosuchshell is not a ShellName",
-    ),
-];
 
 const STUB: &str = "n=$(basename \"$0\")
 case \"$n:$*\" in
@@ -347,19 +326,6 @@ fn digest(dir: &Path) -> String {
     )
 }
 
-fn platform(name: &str) -> Option<Platform> {
-    match name {
-        "linux" => Some(Platform::Linux),
-        "macos" => Some(Platform::Macos),
-        "windows" => Some(Platform::Windows),
-        _ => None,
-    }
-}
-
-fn shell(name: &str) -> Option<ShellName> {
-    ShellName::ALL.into_iter().find(|s| s.as_str() == name)
-}
-
 /// What one `find_by` call produced, in the oracle's terms.
 fn describe(root: &Path, result: &Result<Option<Rc<Tool>>, (String, String)>) -> String {
     let inputs = root.display().to_string();
@@ -409,27 +375,6 @@ impl Row<'_> {
             .join(self.row["bin"].as_str().unwrap())
     }
 
-    fn unrepresentable(&self) -> Option<&'static str> {
-        let kind = self.row["identifier_type"].as_str().unwrap();
-        if kind == "nil" || kind == "integer" {
-            return Some("identifier");
-        }
-        let options = &self.row["options"];
-        if options["platform"]
-            .as_str()
-            .is_some_and(|p| platform(p).is_none())
-        {
-            return Some("platform");
-        }
-        if options["shell"]
-            .as_str()
-            .is_some_and(|s| shell(s).is_none())
-        {
-            return Some("shell");
-        }
-        None
-    }
-
     /// `Register.discover`, or `options[:register_path]` when given.
     fn register(&self) -> Result<Register, (String, String)> {
         if let Some(path) = self.row["options"]["register_path"].as_str() {
@@ -457,22 +402,26 @@ impl Row<'_> {
 
     fn run(&self) -> (String, Option<bool>, String) {
         let options = &self.row["options"];
-        let platform = options["platform"]
-            .as_str()
-            .map_or(Platform::Linux, |p| platform(p).unwrap());
-        let shell = options["shell"]
-            .as_str()
-            .map_or(ShellName::Bash, |s| shell(s).unwrap());
+        let target = Target {
+            platform: options["platform"].as_str(),
+            shell: options["shell"].as_str(),
+        };
         let bin = self.bin();
         let path = bin.display().to_string();
-        let tool_options = ToolOptions::new(platform, shell).discovery(PathContext::new(
-            Platform::Linux,
-            shell.as_str(),
-            Some(path.as_str()),
-            None,
-        ));
+        let tool_options =
+            ToolOptions::new(Platform::Linux, ShellName::Bash).discovery(PathContext::new(
+                Platform::Linux,
+                target.shell.unwrap_or("bash"),
+                Some(path.as_str()),
+                None,
+            ));
         let runtime = ToolOptions::new(Platform::Linux, ShellName::Bash);
-        let identifier = self.row["identifier"].as_str().unwrap();
+        let text = self.row["identifier"].as_str();
+        let identifier = match self.row["identifier_type"].as_str().unwrap() {
+            "nil" => Identifier::Nil,
+            "integer" => Identifier::Integer(text.unwrap().parse().unwrap()),
+            _ => Identifier::Str(text.unwrap()),
+        };
 
         let register = match self.register() {
             Ok(register) => register,
@@ -489,12 +438,13 @@ impl Row<'_> {
         );
         let cache = ToolCache::new();
         let call = || {
-            find_by(
+            find_by_input(
                 &register,
                 &index,
                 &source,
                 &cache,
                 identifier,
+                target,
                 &tool_options,
                 &runtime,
             )
@@ -549,11 +499,6 @@ fn find_by_replays_the_pinned_ruby_oracle_row_by_row() {
         let r = Row { root, row };
         let id = r.id();
         let want = expected(row);
-        if let Some(what) = r.unrepresentable() {
-            skipped.push(id.to_owned());
-            writeln!(report, "SKIP\t{id}\t{want}\tunrepresentable {what}").unwrap();
-            continue;
-        }
         if root_user
             && r.row["register"]
                 .as_str()
@@ -596,21 +541,6 @@ fn find_by_replays_the_pinned_ruby_oracle_row_by_row() {
             want_message
                 .map(|m| format!("\n\twant message: {m}\n\tgot message:  {got_message}"))
                 .unwrap_or_default(),
-        )
-        .unwrap();
-    }
-
-    let documented: Vec<&str> = UNREPRESENTABLE.iter().map(|(id, _)| *id).collect();
-    let skipped_unrepresentable: Vec<&str> = skipped
-        .iter()
-        .map(String::as_str)
-        .filter(|id| !root_user || documented.contains(id))
-        .collect();
-    if !root_user && skipped_unrepresentable != documented {
-        failures += 1;
-        writeln!(
-            report,
-            "SKIP LIST: skipped {skipped_unrepresentable:?}, documented {documented:?}"
         )
         .unwrap();
     }

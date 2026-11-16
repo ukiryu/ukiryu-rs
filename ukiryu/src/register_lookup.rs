@@ -38,11 +38,13 @@
 //! in the warning, the only difference.
 
 use crate::cache::ToolCache;
+use crate::executable::Platform;
 use crate::models::{Model, ModelError, ToolDefinition, ToolMetadata, Value};
 use crate::register::{self, Register};
 use crate::routing::{
     FileRef, RegisterFile, RegisterImplementation, RegisterTool, SourceFault, ToolIndex,
 };
+use crate::runtime::ShellName;
 use crate::tool::{self, DefinitionSource, Tool, ToolError, ToolOptions};
 use serde_json::Value as Json;
 use std::fmt;
@@ -61,6 +63,10 @@ pub enum LookupError {
     Source(SourceFault),
     /// `Tool.get` or `Tool.new` raised something the finder does not rescue.
     Tool(ToolError),
+    /// The source would build a tool for a platform or shell that
+    /// [`ToolOptions`] cannot hold. Not a Ruby class: the port fails here
+    /// rather than return a tool for different options.
+    UnrepresentableTarget { platform: String, shell: String },
 }
 
 impl LookupError {
@@ -77,6 +83,7 @@ impl LookupError {
                     .map(|k| k.ruby_class().to_string())
                     .unwrap_or_else(|| "Unclassified".to_string()),
             },
+            LookupError::UnrepresentableTarget { .. } => "Unrepresentable".to_string(),
         }
     }
 }
@@ -88,6 +95,10 @@ impl fmt::Display for LookupError {
             LookupError::Model(e) => write!(f, "{e}"),
             LookupError::Source(e) => write!(f, "{e}"),
             LookupError::Tool(e) => write!(f, "{e}"),
+            LookupError::UnrepresentableTarget { platform, shell } => write!(
+                f,
+                "a tool for platform {platform:?} and shell {shell:?} cannot be built"
+            ),
         }
     }
 }
@@ -387,6 +398,161 @@ pub fn find_by(
 
     // 4. Exhaustive search.
     exhaustive_search(register, source, cache, identifier, options)
+}
+
+/// The `identifier` argument of `ToolFinder.find_by` before its
+/// `identifier.to_s`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Identifier<'a> {
+    Nil,
+    Str(&'a str),
+    Integer(i64),
+}
+
+impl Identifier<'_> {
+    /// `identifier.to_s`: `""` for `nil`, decimal digits for an Integer.
+    pub fn to_ruby_s(&self) -> String {
+        match self {
+            Identifier::Nil => String::new(),
+            Identifier::Str(s) => (*s).to_owned(),
+            Identifier::Integer(i) => i.to_string(),
+        }
+    }
+}
+
+/// `options[:platform]` and `options[:shell]` as the caller gave them.
+/// `None` takes the value from the typed options.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct Target<'a> {
+    pub platform: Option<&'a str>,
+    pub shell: Option<&'a str>,
+}
+
+/// `ToolFinder.find_by(identifier, options)` for inputs [`find_by`]'s types
+/// cannot hold: a `nil` or Integer identifier, or a platform or shell name
+/// outside [`Platform`] and [`ShellName`].
+///
+/// Names the typed options can hold go through [`find_by`]. For any other
+/// name the steps run against the definitions alone, comparing profiles by
+/// name as the source does: `Ok(None)` when no step finds a tool, and
+/// [`LookupError::UnrepresentableTarget`] where the source would build one.
+#[allow(clippy::too_many_arguments)]
+pub fn find_by_input(
+    register: &Register,
+    index: &ToolIndex,
+    source: &dyn DefinitionSource,
+    cache: &ToolCache<Rc<Tool>>,
+    identifier: Identifier<'_>,
+    target: Target<'_>,
+    options: &ToolOptions,
+    runtime: &ToolOptions,
+) -> Result<Option<Rc<Tool>>, LookupError> {
+    let identifier = identifier.to_ruby_s();
+    let platform = match target.platform {
+        None => Some(options.platform),
+        Some(name) => Platform::from_name(name),
+    };
+    let shell = match target.shell {
+        None => Some(options.shell),
+        Some(name) => ShellName::lookup(name),
+    };
+    if let (Some(platform), Some(shell)) = (platform, shell) {
+        let mut typed = options.clone();
+        typed.platform = platform;
+        typed.shell = shell;
+        return find_by(register, index, source, cache, &identifier, &typed, runtime);
+    }
+    let names = Untyped {
+        platform: target.platform.unwrap_or(options.platform.as_str()),
+        shell: target.shell.unwrap_or(options.shell.as_str()),
+    };
+    names.find_by(register, index, source, &identifier, runtime)
+}
+
+/// A platform and shell compared by name only.
+struct Untyped<'a> {
+    platform: &'a str,
+    shell: &'a str,
+}
+
+impl Untyped<'_> {
+    fn unrepresentable(&self) -> LookupError {
+        LookupError::UnrepresentableTarget {
+            platform: self.platform.to_owned(),
+            shell: self.shell.to_owned(),
+        }
+    }
+
+    /// `Tool.get(name, options)` up to `Tool.new`; `None` is the source's
+    /// `ToolNotFoundError`.
+    fn definition(
+        &self,
+        source: &dyn DefinitionSource,
+        name: &str,
+    ) -> Result<Option<ToolDefinition>, LookupError> {
+        match source.load_definition_for(name, self.platform, self.shell) {
+            None => Err(self.unrepresentable()),
+            Some(Ok(definition)) => Ok(definition),
+            Some(Err(e)) if not_found(&e) => Ok(None),
+            Some(Err(e)) => Err(e.into()),
+        }
+    }
+
+    /// Each step of [`find_by`] that would build a tool is unrepresentable.
+    fn find_by(
+        &self,
+        register: &Register,
+        index: &ToolIndex,
+        source: &dyn DefinitionSource,
+        identifier: &str,
+        runtime: &ToolOptions,
+    ) -> Result<Option<Rc<Tool>>, LookupError> {
+        // 1. Exact name.
+        if self.definition(source, identifier)?.is_some() {
+            return Err(self.unrepresentable());
+        }
+        // 2. Interface candidates: building one is already unrepresentable.
+        for name in index.find_all_by_interface(identifier) {
+            if self.definition(source, name)?.is_some() {
+                return Err(self.unrepresentable());
+            }
+        }
+        // 3. Alias, chosen with the runtime's platform and shell.
+        if let Some(name) = index.find_by_alias(
+            identifier,
+            runtime.platform.as_str(),
+            runtime.shell.as_str(),
+        )? {
+            if self.definition(source, name)?.is_some() {
+                return Err(self.unrepresentable());
+            }
+        }
+        // 4. Exhaustive search.
+        for name in register.tool_names() {
+            let definition = match self.definition(source, &name)? {
+                Some(definition) => definition,
+                None => {
+                    let Some(definition) = load_tool_definition(register, &name, None)? else {
+                        continue;
+                    };
+                    if !matches_identifier(&definition, identifier)? {
+                        continue;
+                    }
+                    if definition
+                        .compatible_profile(self.platform, self.shell)?
+                        .is_none()
+                    {
+                        continue;
+                    }
+                    definition
+                }
+            };
+            if matches_identifier(&definition, identifier)? {
+                return Err(self.unrepresentable());
+            }
+        }
+        Ok(None)
+    }
 }
 
 fn exhaustive_search(
