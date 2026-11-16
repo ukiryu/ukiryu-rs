@@ -166,7 +166,13 @@ pub fn load_schema(path: Option<&Path>) -> Result<Option<Data>, SchemaError> {
         return Ok(None);
     }
     let text = read_text(path)?;
-    safe_load(&text, Permitted::NONE).map(Some)
+    load_schema_text(&text).map(Some)
+}
+
+/// What [`load_schema`] does with the text of an existing schema file:
+/// `YAML.safe_load(text)`. For callers that hold the schema as text.
+pub fn load_schema_text(text: &str) -> Result<Data, SchemaError> {
+    safe_load(text, Permitted::NONE)
 }
 
 /// `SchemaValidator.validate_profile(profile, schema_path:, strict:)`.
@@ -177,11 +183,22 @@ pub fn validate_profile(
     profile: &Data,
     options: &ValidateOptions,
 ) -> Result<Vec<String>, SchemaError> {
-    let schema = match load_schema(options.schema_path.as_deref())? {
+    let schema = load_schema(options.schema_path.as_deref())?;
+    validate_profile_with_schema(profile, schema, options.strict)
+}
+
+/// [`validate_profile`] with the schema already loaded: `None` stands for
+/// what `load_schema` returns when there is no schema file.
+pub fn validate_profile_with_schema(
+    profile: &Data,
+    schema: Option<Data>,
+    strict: bool,
+) -> Result<Vec<String>, SchemaError> {
+    let schema = match schema {
         Some(s) if s.truthy() => s,
         _ => return Ok(vec![FAILED_TO_LOAD_SCHEMA.to_owned()]),
     };
-    Ok(run(&schema, profile, options.strict)?
+    Ok(run(&schema, profile, strict)?
         .iter()
         .map(|e| e.to_string_at(0))
         .collect())
@@ -208,19 +225,38 @@ pub fn load_definition_schema(path: &Path) -> Result<Option<Data>, SchemaError> 
     if path.as_os_str().is_empty() || !path.exists() {
         return Ok(None);
     }
-    match path.extension().and_then(|e| e.to_str()) {
-        Some("json") => {
-            let text = read_text(path)?;
-            Ok(json::parse(&text))
-        }
-        Some("yaml" | "yml") => {
-            let text = read_text(path)?;
-            match safe_load(&text, Permitted::SYMBOL) {
-                Err(SchemaError::YamlSyntax { .. }) => Ok(None),
-                other => other.map(Some),
-            }
-        }
-        _ => Ok(None),
+    let format = match path.extension().and_then(|e| e.to_str()) {
+        Some("json") => DefinitionSchemaFormat::Json,
+        Some("yaml" | "yml") => DefinitionSchemaFormat::Yaml,
+        _ => return Ok(None),
+    };
+    let text = read_text(path)?;
+    load_definition_schema_text(&text, format)
+}
+
+/// The file formats `DefinitionValidator.load_schema` reads, chosen there
+/// by the file extension.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum DefinitionSchemaFormat {
+    /// `.json`: `JSON.parse`.
+    Json,
+    /// `.yaml`/`.yml`: `YAML.safe_load(permitted_classes: [Symbol])`.
+    Yaml,
+}
+
+/// What [`load_definition_schema`] does with the text of an existing schema
+/// file of the given format: `Ok(None)` for a JSON parse error or a YAML
+/// syntax error (the original rescues those).
+pub fn load_definition_schema_text(
+    text: &str,
+    format: DefinitionSchemaFormat,
+) -> Result<Option<Data>, SchemaError> {
+    match format {
+        DefinitionSchemaFormat::Json => Ok(json::parse(text)),
+        DefinitionSchemaFormat::Yaml => match safe_load(text, Permitted::SYMBOL) {
+            Err(SchemaError::YamlSyntax { .. }) => Ok(None),
+            other => other.map(Some),
+        },
     }
 }
 
