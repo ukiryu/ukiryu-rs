@@ -41,7 +41,12 @@ end
 def enc(value, exact: false)
   case value
   when nil, true, false then value
-  when Symbol then { '$sym' => value.to_s }
+  when Symbol
+    if value.encoding == Encoding::BINARY
+      { '$sym_bytes' => value.to_s.unpack1('H*'), 'encoding' => 'ASCII-8BIT' }
+    else
+      { '$sym' => value.to_s }
+    end
   when Integer then { '$int' => value.to_s }
   when Float
     return { '$float_bits' => [value].pack('G').unpack1('H*') } if exact
@@ -51,7 +56,12 @@ def enc(value, exact: false)
            else value.to_s
            end
     { '$float' => text }
-  when String then { '$str' => value, 'encoding' => value.encoding.name }
+  when String
+    if value.encoding == Encoding::BINARY
+      { '$bytes' => value.unpack1('H*'), 'encoding' => 'ASCII-8BIT' }
+    else
+      { '$str' => value, 'encoding' => value.encoding.name }
+    end
   when Array then { '$array' => value.map { |item| enc(item, exact: exact) } }
   when Hash then { '$hash' => value.map { |key, item| [enc(key, exact: exact), enc(item, exact: exact)] } }
   when Time then { '$time' => [value.to_i, value.nsec, value.utc_offset, value.utc?] }
@@ -69,8 +79,12 @@ samples = {
   'bigint' => 2**200, 'negative-bigint' => -(2**100) - 7,
   'float' => 1.5, 'negative-zero' => -0.0, 'infinity' => Float::INFINITY,
   'negative-infinity' => -Float::INFINITY, 'nan' => Float::NAN, 'tiny' => 5e-324,
+  'binary-ff' => (+"\xff\x00a").force_encoding(Encoding::BINARY), 'binary-ascii' => (+'abc').force_encoding(Encoding::BINARY),
+  'binary-empty' => (+'').force_encoding(Encoding::BINARY),
+  'binary-in-hash' => { (+'k').force_encoding(Encoding::BINARY) => [(+"\xc3\xa9").force_encoding(Encoding::BINARY)] },
   'empty-string' => +'', 'unicode-nul' => +"Ω\0z", 'ascii' => +'plain',
   'symbol' => :sym, 'symbol-space' => :'with space', 'symbol-unicode' => :Ω,
+  'binary-symbol' => "\xff".b.to_sym, 'binary-symbol-key' => { "\xc3\xa9".b.to_sym => ["a\xffb c".b.to_sym] },
   'time-utc' => Time.at(0).utc,
   'time-offset' => Time.at(1_700_000_000, 123_456_789, :nsec, in: '+05:00'),
   'time-negative' => Time.at(-1, 5, :nsec).utc,
@@ -91,6 +105,12 @@ local = Time.at(1_700_000_000)
 back = NATIVE.core_value(local)
 check('value', 'time-local.instant', back == local && back.utc_offset == local.utc_offset && back.utc? == local.utc?,
       "#{local.inspect} -> #{back.inspect}")
+binary_symbol = "\xff".b.to_sym
+back = NATIVE.core_value(binary_symbol)
+check('value', 'binary-symbol.ruby',
+      back.encoding == Encoding::BINARY && back.eql?(binary_symbol) && back.inspect == binary_symbol.inspect &&
+        NATIVE.core_value({ binary_symbol => 1 }).inspect == { binary_symbol => 1 }.inspect,
+      "#{binary_symbol.inspect} -> #{back.inspect}")
 check('value', 'us-ascii.text', NATIVE.core_value(:abc.to_s) == 'abc' && NATIVE.core_value(:abc.to_s).encoding == Encoding::UTF_8)
 
 cyclic = []
@@ -105,8 +125,7 @@ refusals = {
   'rational' => [1r, TypeError],
   'range' => [(1..2), TypeError],
   'struct' => [Struct.new(:a).new(1), TypeError],
-  'binary-string' => [(+"\xff").force_encoding(Encoding::BINARY), EncodingError],
-  'binary-ascii-string' => [(+'abc').force_encoding(Encoding::BINARY), EncodingError],
+  'latin1-string' => [(+"\xe9").force_encoding(Encoding::ISO_8859_1), EncodingError],
   'invalid-utf8' => [(+"\xff").force_encoding(Encoding::UTF_8), EncodingError],
   'utf16' => ['abc'.encode(Encoding::UTF_16LE), EncodingError],
   'sub-nanosecond-time' => [Time.at(Rational(1, 3)), ArgumentError],
@@ -124,20 +143,8 @@ refusals.each do |label, (value, klass)|
 end
 
 # --- 2. register load path against the Ruby source ---------------------------
-# Rows where the core's register load path returns a different value than the
-# Ruby source, observed through this binding (reported to the core owner, not
-# fixed here): Yeptris yields a String for an integer outside i64/u64, and
-# reads the YAML 1.2 float `1e300`, which Psych (YAML 1.1) keeps as a String;
-# a !!binary payload loses its ASCII-8BIT encoding.
-$known_divergences = []
-KNOWN_CORE_DIVERGENCES = {
-  'bigint' => { 'ok' => { '$hash' => [[{ '$sym' => 'v' }, { '$str' => '123456789012345678901234567890', 'encoding' => 'UTF-8' }]] } },
-  'negative-bigint' => { 'ok' => { '$hash' => [[{ '$sym' => 'v' }, { '$str' => '-123456789012345678901234567890', 'encoding' => 'UTF-8' }]] } },
-  # Psych returns an ASCII-8BIT String for !!binary; the core value has text
-  # Strings only, so the bytes come back as UTF-8.
-  'tag-binary' => { 'ok' => { '$hash' => [[{ '$sym' => 'v' }, { '$str' => 'hi', 'encoding' => 'UTF-8' }]] } },
-  'floats' => { 'ok' => { '$hash' => [[{ '$sym' => 'v' }, { '$array' => [{ '$float' => '1.0' }, { '$float' => '2.5' }, { '$float' => '-0.0' }, { '$float' => '1.0e+300' }] }]] } }
-}.freeze
+# No known divergences remain: every row, `!!binary` (ASCII-8BIT) included,
+# is checked against the capture.
 REFERENCE.fetch('registers').each do |row|
   id = row['id']
   error = nil
@@ -147,12 +154,7 @@ REFERENCE.fetch('registers').each do |row|
     error = e
     { 'error' => { 'kind' => e.kind, 'source_class' => e.source_class } }
   end
-  if KNOWN_CORE_DIVERGENCES.key?(id) && actual == KNOWN_CORE_DIVERGENCES[id]
-    # Diverging exactly as recorded (reported); any other result is checked
-    # against the source below.
-    $known_divergences << id
-    check('register', "#{id}.known-core-divergence", true)
-  elsif row['expect'].key?('error')
+  if row['expect'].key?('error')
     check('register', id, error && error.source_class == row['expect']['error']['class'],
           "expected #{row['expect'].inspect}, got #{actual.inspect}")
   else
@@ -483,7 +485,7 @@ end
 
 # --- summary -----------------------------------------------------------------
 summary = { 'ruby' => RUBY_VERSION, 'platform' => RUBY_PLATFORM, 'checks' => $counts,
-            'known_core_divergences' => $known_divergences,
+            'known_core_divergences' => [],
             'model_outcomes' => outcomes, 'failures' => $failures.size }
 puts "RUBY-NATIVE-SUMMARY #{JSON.generate(summary)}"
 $failures.each { |failure| puts "FAIL #{failure}" }

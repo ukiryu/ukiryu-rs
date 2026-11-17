@@ -12,7 +12,7 @@
 //! | Time in UTC | `{"$time": "2024-01-17T10:20:30.000000000Z"}` |
 //! | any other Time | `{"$time": {"seconds": "<decimal>", "nanos": n, "utc_offset": s, "utc": b}}` |
 //! | Regexp | `{"$regexp": "source"}`, or `{"$regexp": {"source": s, "options": n}}` with options |
-//! | bytes that are not UTF-8 | `{"$bytes": "hex"}` |
+//! | an ASCII-8BIT String | `{"$bytes": "hex"}`; decoding accepts only UTF-8 bytes |
 //! | Hash with only String keys | a JSON object |
 //! | any other Hash | `{"$map": [[key, value], ...]}` |
 //!
@@ -449,19 +449,44 @@ pub fn int(i: &BigInt) -> Json {
     serde_json::from_str(&i.to_string()).unwrap_or_else(|_| json!({ "$int": i.to_string() }))
 }
 
-/// A Ruby value in the wire encoding.
-pub fn encode(value: &Value) -> Json {
-    match value {
+/// A value the oracle's `JSON.generate` cannot write: an ASCII-8BIT Symbol
+/// name with a byte >= 0x80. Ruby raises `JSON::GeneratorError` with the
+/// message of the failed transcoding, e.g. `"\xFF" from ASCII-8BIT to UTF-8`.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct EncodeError(pub String);
+
+impl EncodeError {
+    pub const CLASS: &'static str = "JSON::GeneratorError";
+
+    fn binary_symbol(name: &[u8]) -> Self {
+        // Transcoding stops at the first byte with no UTF-8 meaning.
+        let byte = name.iter().find(|b| !b.is_ascii()).copied().unwrap_or(0);
+        EncodeError(format!("\"\\x{byte:02X}\" from ASCII-8BIT to UTF-8"))
+    }
+}
+
+impl fmt::Display for EncodeError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(&self.0)
+    }
+}
+
+/// A Ruby value in the wire encoding. An ASCII-8BIT String is always
+/// `$bytes`; an ASCII-8BIT Symbol fails as the oracle's encoder does.
+pub fn encode(value: &Value) -> Result<Json, EncodeError> {
+    Ok(match value {
         Value::Nil => Json::Null,
         Value::Bool(b) => Json::Bool(*b),
         Value::Integer(i) => int(i),
         Value::Float(f) => float(*f),
         Value::String(s) => Json::String(s.clone()),
+        Value::Bytes(b) => bytes_tagged(b),
         Value::Symbol(s) => json!({ "$sym": s }),
+        Value::BinarySymbol(b) => return Err(EncodeError::binary_symbol(b)),
         Value::Time(t) => time(t),
         Value::Regexp(r) if r.options == 0 => json!({ "$regexp": r.source }),
         Value::Regexp(r) => json!({ "$regexp": {"source": r.source, "options": r.options} }),
-        Value::Array(items) => Json::Array(items.iter().map(encode).collect()),
+        Value::Array(items) => Json::Array(items.iter().map(encode).collect::<Result<_, _>>()?),
         Value::Hash(pairs) => {
             let string_keys = pairs.iter().all(|(k, _)| matches!(k, Value::String(_)));
             // A Hash whose only key is a tag name would read back as that
@@ -475,13 +500,17 @@ pub fn encode(value: &Value) -> Json {
                 let mut object = Map::new();
                 for (k, v) in pairs {
                     if let Value::String(k) = k {
-                        object.insert(k.clone(), encode(v));
+                        object.insert(k.clone(), encode(v)?);
                     }
                 }
                 Json::Object(object)
             } else {
-                json!({ "$map": pairs.iter().map(|(k, v)| json!([encode(k), encode(v)])).collect::<Vec<_>>() })
+                let pairs = pairs
+                    .iter()
+                    .map(|(k, v)| Ok(json!([encode(k)?, encode(v)?])))
+                    .collect::<Result<Vec<_>, EncodeError>>()?;
+                json!({ "$map": pairs })
             }
         }
-    }
+    })
 }
