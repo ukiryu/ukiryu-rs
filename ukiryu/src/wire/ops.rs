@@ -338,9 +338,9 @@ fn version_spec(index: &str, implementation: &str, version: &str) -> Result<Json
         Value::Array(items) => &items[i],
         _ => unreachable!("checked above"),
     };
-    Ok(spec
-        .get_sym_or_str("file")
-        .map_or(Json::Null, value::encode))
+    spec.get_sym_or_str("file").map_or(Ok(Json::Null), |file| {
+        value::encode(file).map_err(|e| ruby(value::EncodeError::CLASS, e))
+    })
 }
 
 /// What `Tool.get` resolved.
@@ -445,7 +445,10 @@ pub fn validate(request: ValidateRequest) -> Json {
         } => {
             let options = options.map_or(Value::Hash(Vec::new()), |Typed(o)| o);
             match types::validate(&value, &spec, &options, &StdHost) {
-                Ok(value) => json!({"ok": true, "value": value::encode(&value)}),
+                Ok(value) => match value::encode(&value) {
+                    Ok(value) => json!({"ok": true, "value": value}),
+                    Err(error) => ruby(value::EncodeError::CLASS, error),
+                },
                 Err(error) => types_error(&error),
             }
         }
