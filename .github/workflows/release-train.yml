@@ -1,0 +1,58 @@
+name: Release train (dry run)
+
+# Manual only. Verifies that every ukiryu-rs artifact of one train version
+# builds and packages. It publishes nothing, creates no tag or release and
+# uses no secrets: the first publication of each registry package is the
+# owner's. The sibling runtimes (ruby gem, PyPI wheels, npm package) join the
+# train from their own repositories; see release/train.json.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Train version (X.Y.Z); must equal the workspace version'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-train
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    name: Shipped audit for ${{ inputs.version }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Audit with the requested version
+        env:
+          TRAIN_VERSION: ${{ inputs.version }}
+        run: python scripts/shipped-audit.py --version "$TRAIN_VERSION"
+
+  core-package:
+    name: Core crate package (dry run)
+    needs: audit
+    uses: ./.github/workflows/registry-package.yml
+
+  cli-binaries:
+    name: CLI binaries
+    needs: audit
+    uses: ./.github/workflows/cli-binaries.yml
+
+  wasm:
+    name: WebAssembly
+    needs: audit
+    uses: ./.github/workflows/wasm.yml
+
+  summary:
+    name: Train is release-ready
+    needs: [core-package, cli-binaries, wasm]
+    runs-on: ubuntu-24.04
+    steps:
+      - run: echo "Train ${{ inputs.version }} is release-ready for ukiryu-rs artifacts. Nothing was published."
