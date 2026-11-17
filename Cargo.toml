@@ -19,7 +19,7 @@ serde_json = { version = "1", features = ["arbitrary_precision", "preserve_order
 num-bigint = "0.4"
 # Registry release includes the qualified explicit `!!str`, float/emitter,
 # MSRV and browser fixes. Keep the vendored engine pinned to this release.
-yeptris = { version = "=0.6.66", features = ["vendored"] }
+yeptris = { version = "=0.6.72", features = ["vendored"] }
 
 [profile.release]
 opt-level = 3
