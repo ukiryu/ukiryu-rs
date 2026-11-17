@@ -478,7 +478,10 @@ pub fn validate(request: ValidateRequest) -> Json {
         } => {
             let options = options.map_or(Value::Hash(Vec::new()), |Typed(o)| o);
             match types::validate(&value, &spec, &options, &StdHost) {
-                Ok(value) => json!({"ok": true, "value": value::encode(&value)}),
+                Ok(value) => match value::encode(&value) {
+                    Ok(value) => json!({"ok": true, "value": value}),
+                    Err(error) => ruby(value::EncodeError::CLASS, error),
+                },
                 Err(error) => types_error(&error),
             }
         }
