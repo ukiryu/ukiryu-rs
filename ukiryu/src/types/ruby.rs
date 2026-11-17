@@ -66,6 +66,9 @@ pub fn to_s(v: &Value) -> String {
         Value::Integer(i) => i.to_string(),
         Value::Float(f) => float_to_s(*f),
         Value::String(s) | Value::Symbol(s) => s.clone(),
+        // `String#to_s` is the String itself; a Rust String cannot hold
+        // non-UTF-8 bytes, so those are replaced (use `Value::Bytes` to keep them).
+        Value::Bytes(b) | Value::BinarySymbol(b) => String::from_utf8_lossy(b).into_owned(),
         Value::Time(t) => time_to_s(t),
         Value::Regexp(r) => regexp_to_s(r),
         Value::Array(_) | Value::Hash(_) => inspect(v),
@@ -77,7 +80,10 @@ pub fn inspect(v: &Value) -> String {
     match v {
         Value::Nil => "nil".into(),
         Value::String(s) => string_inspect(s),
+        Value::Bytes(b) => bytes_inspect(b),
         Value::Symbol(s) => symbol_inspect(s),
+        // A non-ASCII name is never a bare identifier: `:"\xFF"`.
+        Value::BinarySymbol(b) => format!(":{}", bytes_inspect(b)),
         Value::Time(t) => time_inspect(t),
         Value::Regexp(r) => regexp_inspect(r),
         Value::Array(items) => {
@@ -95,6 +101,7 @@ pub fn inspect(v: &Value) -> String {
                         format!("{name}: {}", inspect(val))
                     }
                     Value::Symbol(name) => format!("{}: {}", string_inspect(name), inspect(val)),
+                    Value::BinarySymbol(b) => format!("{}: {}", bytes_inspect(b), inspect(val)),
                     _ => format!("{} => {}", inspect(k), inspect(val)),
                 })
                 .collect();
@@ -171,6 +178,27 @@ pub fn string_inspect(s: &str) -> String {
             out.push(c);
         } else {
             push_unicode_escape(&mut out, c);
+        }
+    }
+    out.push('"');
+    out
+}
+
+/// `String#inspect` for an ASCII-8BIT string: printable ASCII as is, the
+/// common escapes, every other byte as `\xHH`.
+pub fn bytes_inspect(bytes: &[u8]) -> String {
+    let mut out = String::with_capacity(bytes.len() + 2);
+    out.push('"');
+    for (i, &b) in bytes.iter().enumerate() {
+        let c = char::from(b);
+        let next = bytes.get(i + 1).map(|&n| char::from(n));
+        if b.is_ascii() && push_common_escape(&mut out, c, next) {
+            continue;
+        }
+        if (b' '..=b'~').contains(&b) {
+            out.push(c);
+        } else {
+            let _ = write!(out, "\\x{b:02X}");
         }
     }
     out.push('"');

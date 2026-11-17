@@ -1,0 +1,54 @@
+---
+ukiryu_schema: '1.0'
+name: zeta
+display_name: Zeta Tool
+homepage: https://example.invalid/zeta
+version: '1.0'
+aliases:
+- zt
+execution_profiles:
+- name: unix
+  platforms:
+  - macos
+  - linux
+  shells:
+  - bash
+  - sh
+  option_style: double_dash_equals
+  executable_name: zeta
+  routing:
+    remote: net
+  commands:
+  - name: run
+    description: Run the thing
+    usage: zeta run [options] target
+    arguments:
+    - name: target
+      type: string
+      position: 1
+      description: What to run
+    options:
+    - name: mode
+      type: string
+      cli: "--mode"
+      description: Run mode
+      values:
+      - fast
+      - slow
+    flags:
+    - name: verbose
+      cli: "-v"
+      description: Be chatty
+      default: false
+  - name: add
+    belongs_to: remote
+    description: Add a remote
+    usage: zeta remote add NAME
+    subcommand: add
+    arguments:
+    - name: name
+      type: string
+      position: 1
+  - name: help
+    description: Show help
+    cli_flag: "--help"

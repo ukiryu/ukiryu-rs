@@ -55,7 +55,7 @@ fn symbolize(v: &Value) -> Result<Value, ModelError> {
         Value::Hash(pairs) => {
             let mut out = Value::Hash(Vec::new());
             for (k, val) in pairs {
-                let key = Value::Symbol(k.to_sym()?);
+                let key = k.to_sym_value()?;
                 let val = match val {
                     Value::Hash(_) => symbolize(val)?,
                     Value::Array(items) => Value::Array(

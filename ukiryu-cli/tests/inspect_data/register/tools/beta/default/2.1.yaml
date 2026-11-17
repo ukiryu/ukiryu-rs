@@ -1,0 +1,29 @@
+---
+ukiryu_schema: '1.0'
+name: beta
+display_name: Beta Tool
+homepage: https://example.invalid/beta
+version: '2.1'
+aliases:
+- beta
+implements: beta/1.0
+execution_profiles:
+- name: unix
+  platforms:
+  - macos
+  - linux
+  shells:
+  - bash
+  - sh
+  option_style: double_dash_equals
+  executable_name: beta
+  commands:
+  - name: show
+    description: Show things
+    usage: beta [file...]
+    arguments:
+    - name: files
+      type: file
+      variadic: true
+      position: last
+      description: Files to show
