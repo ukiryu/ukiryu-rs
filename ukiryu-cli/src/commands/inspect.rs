@@ -29,9 +29,7 @@
 //!   They need core APIs that are not wired here yet: [`FIND_BY_NEEDS`].
 //! - `info` and `opts` with `UKIRYU_DEBUG` set are gated: the debug lines of
 //!   `ToolFinder.find_by` are not ported. So is an Array held by a string
-//!   attribute they join or pad (the source flattens or raises there), and
-//!   `info` of an installed tool whose definition has no version (it needs
-//!   version detection, as `list` does).
+//!   attribute they join or pad (the source flattens or raises there).
 //! - `config get|set|unset` run `setup_register` first in the source, which
 //!   can clone the default register into `~/.ukiryu/register`. That bootstrap
 //!   does not change their output and is not performed here; `config list`,
@@ -41,8 +39,9 @@
 //!   register search is `UKIRYU_REGISTER`, then `~/.ukiryu/register`.
 //! - Rendering a time (`register info`'s last update, `resolve`'s mtimes) needs
 //!   the local zone; only a `TZ` naming UTC is rendered, anything else is gated.
-//! - `list` needs `Tool#version`; a tool whose definition has no version would
-//!   need version detection, which has no man-page date provider yet (gated).
+//! - `Tool#version` of a tool whose definition has no version runs version
+//!   detection (`list`, `info`) through `ProcessHost` and the file-system
+//!   `ManPageParser`, with the system clock at UTC (`Clock::default()`).
 //! - Shell detection follows the strict migrated contract (DECISIONS.md D2):
 //!   a missing or unknown `SHELL`, or a Windows host naming no shell, is an
 //!   error where the source falls back to `/etc/shells`/`sh`/`cmd`.
@@ -59,6 +58,7 @@ use ukiryu::definition::{DefinitionMetadata, Discovery, DiscoveryEnv, VersionRes
 use ukiryu::environment::Environment;
 use ukiryu::executable::{find_in_path, DiscoveryContext, Platform};
 use ukiryu::extractors::base::ProcessHost;
+use ukiryu::extractors::man::{FileSystem, ManPageParser};
 use ukiryu::models::{
     Attr, CommandDefinition, ModelError, Text, ToolMetadata, Value as ModelValue,
 };
@@ -914,6 +914,29 @@ fn get_tool(
     tool::get(&source, cache, name, options)
 }
 
+/// `Tool#version`: the definition's version, else the detected one (runs the
+/// tool's version command and reads man pages for `.Dd` dates).
+fn tool_version(
+    tool: &Tool,
+    options: &ToolOptions,
+    writes: &mut Vec<OutputWrite>,
+) -> Result<Option<String>, InspectError> {
+    let mut runner = ProcessHost::new(Environment::new(), options.shell);
+    let mut man_pages = ManPageParser::with_clock(FileSystem, Clock::default());
+    tool.version_or_detect(&mut runner, &mut man_pages)
+        .map_err(|error| match error.ruby_class() {
+            Some(class) => InspectError::Raised {
+                class,
+                message: error.to_string(),
+                partial: std::mem::take(writes),
+            },
+            None => InspectError::Source {
+                message: error.to_string(),
+                partial: std::mem::take(writes),
+            },
+        })
+}
+
 /// A tool failure the source does not rescue.
 fn tool_failure(error: &ToolError, partial: Vec<OutputWrite>) -> InspectError {
     let class: Option<&'static str> = match error {
@@ -1174,17 +1197,14 @@ fn list_tool(
 ) -> Result<(), InspectError> {
     match get_tool(ctx, register, cache, options, name) {
         Ok(tool) => {
-            let Some(version) = tool.version() else {
-                return Err(gated(
-                    &format!("list (version of {name})"),
-                    "Tool#version detection, which needs a man-page date provider (ManPageDates)",
-                    std::mem::take(&mut out.writes),
-                ));
+            let version_info = match tool_version(&tool, options, &mut out.writes)? {
+                Some(version) => format!("v{version}"),
+                None => "version unknown".to_owned(),
             };
             let available = tool.is_available();
             let mark = if available { "[✓]" } else { "[✗]" };
             out.say(
-                &format!("{indent}{mark:<4} {name:<20} v{version}"),
+                &format!("{indent}{mark:<4} {name:<20} {version_info}"),
                 Some(if available { Color::Green } else { Color::Red }),
             );
             Ok(())
@@ -1588,13 +1608,8 @@ pub fn info(input: InfoInput, ctx: &HandlerContext) -> Result<CommandOutcome, In
 
     out.clear();
     if tool.is_available() {
-        let Some(version) = tool.version() else {
-            return Err(gated(
-                &format!("info (detected version of {name})"),
-                "Tool#version detection, which needs a man-page date provider (ManPageDates)",
-                out.writes,
-            ));
-        };
+        let version =
+            tool_version(&tool, &options, &mut out.writes)?.unwrap_or_else(|| "unknown".to_owned());
         out.say("Status: INSTALLED", Some(Color::Green));
         out.say(
             &format!("Executable: {}", tool.executable().unwrap_or_default()),

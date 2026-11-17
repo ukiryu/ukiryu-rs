@@ -1017,6 +1017,90 @@ fn info_and_opts_match_the_oracle_captures() {
     }
 }
 
+/// Replays `version_detection_cases.json` (a register of tools whose
+/// definition has no version) in the corpus environment, but with `PATH` set
+/// to `HOME/bin`, a directory holding a bash link and the case's scripts, so
+/// the installed tools run a script the test controls. `only` selects the
+/// verbs replayed.
+#[cfg(target_os = "linux")]
+fn replay_version_detection(only: &str) {
+    use std::os::unix::fs::PermissionsExt;
+    let tests = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/info_opts_data");
+    let data: Value = serde_json::from_str(
+        &std::fs::read_to_string(tests.join("version_detection_cases.json")).unwrap(),
+    )
+    .unwrap();
+    let register = tests.join("vreg");
+    let mut replayed = 0;
+    for (i, case) in data["cases"].as_array().unwrap().iter().enumerate() {
+        let argv = strings(&case["argv"]);
+        if argv[0] != only {
+            continue;
+        }
+        let root = scratch(&format!("version-detection-{only}-{i}"));
+        let home = root.join("home");
+        let bin = home.join("bin");
+        std::fs::create_dir_all(&bin).unwrap();
+        std::os::unix::fs::symlink("/bin/bash", bin.join("bash")).unwrap();
+        for (name, body) in data["scripts"].as_object().unwrap() {
+            let path = bin.join(name);
+            std::fs::write(&path, body.as_str().unwrap()).unwrap();
+            std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o755)).unwrap();
+        }
+        let h = home.to_str().unwrap();
+        let env: Vec<(String, String)> = [
+            ("HOME", h),
+            ("TZ", "UTC"),
+            ("LANG", "C.UTF-8"),
+            ("LC_ALL", "C.UTF-8"),
+            ("SHELL", "/bin/bash"),
+            ("UKIRYU_REGISTER", register.to_str().unwrap()),
+            ("COLUMNS", "100"),
+            ("THOR_COLUMNS", "100"),
+            ("TERM", "dumb"),
+            ("GIT_REDIRECT_STDERR", "/dev/null"),
+            ("PATH", bin.to_str().unwrap()),
+        ]
+        .iter()
+        .map(|(k, v)| ((*k).to_owned(), (*v).to_owned()))
+        .collect();
+        let got = run(&argv, &env, &home, Some(""));
+        assert_eq!(
+            got.stdout.replace(h, "${HOME}"),
+            case["stdout"].as_str().unwrap(),
+            "{argv:?} stdout"
+        );
+        assert_eq!(
+            got.stderr.replace(h, "${HOME}"),
+            case["stderr"].as_str().unwrap(),
+            "{argv:?} stderr"
+        );
+        assert_eq!(
+            i64::from(got.code),
+            case["exit"].as_i64().unwrap(),
+            "{argv:?} exit"
+        );
+        let _ = std::fs::remove_dir_all(&root);
+        replayed += 1;
+    }
+    assert!(replayed > 0, "no {only} cases replayed");
+}
+
+/// `info` of installed tools whose definition has no version: the detected
+/// version, and `unknown` when detection finds none.
+#[cfg(target_os = "linux")]
+#[test]
+fn info_detects_the_version_of_an_installed_tool() {
+    replay_version_detection("info");
+}
+
+/// `list` shows the detected version (`vX`) or `version unknown`.
+#[cfg(target_os = "linux")]
+#[test]
+fn list_detects_the_version_of_installed_tools() {
+    replay_version_detection("list");
+}
+
 // ------------------------------------------------- inspect remainder (#73)
 
 /// The register-backed inspect verbs this build integrates.
