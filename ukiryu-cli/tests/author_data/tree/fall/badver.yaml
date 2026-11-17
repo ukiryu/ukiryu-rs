@@ -1,0 +1,12 @@
+ukiryu_schema: '1.0'
+name: badver
+version: '1.0'
+version_detection:
+  command: --version
+  pattern: badver ([\d.]+)
+profiles:
+  - name: default
+    platforms: [linux, macos]
+    shells: [bash, zsh, sh]
+    commands:
+      - name: run

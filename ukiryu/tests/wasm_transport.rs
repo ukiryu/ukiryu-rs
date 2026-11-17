@@ -24,7 +24,7 @@ fn portable_transport_uses_the_existing_wire_implementation() {
 
 #[test]
 fn host_operations_never_reach_the_shared_dispatcher() {
-    for op in ["execute", "register", "load_file", "spawn"] {
+    for op in ["execute", "find_by", "register", "load_file", "spawn"] {
         let request = serde_json::json!({"op":op}).to_string();
         let result: serde_json::Value =
             serde_json::from_str(&ukiryu::wasm::process(&request)).unwrap();

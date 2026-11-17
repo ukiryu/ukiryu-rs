@@ -1,0 +1,14 @@
+---
+ukiryu_schema: '1.0'
+name: rich
+interface: rich
+implementations:
+- name: default
+  display_name: Rich Tool
+  detection:
+    pattern: rich ([\d.]+)
+  version_scheme: semantic
+  versions:
+  - equals: '3.2'
+    file: 3.2.yaml
+  default: 3.2.yaml

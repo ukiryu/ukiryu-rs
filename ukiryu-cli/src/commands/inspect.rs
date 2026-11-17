@@ -1,7 +1,7 @@
-//! `ukiryu version`, `ukiryu system`, `ukiryu config`, `list`, `commands`, `register`
-//! and `resolve`; `info`, `opts` and `which` are gated.
+//! `ukiryu version`, `ukiryu system`, `ukiryu config`, `list`, `commands`, `info`,
+//! `opts`, `register` and `resolve`; `which` is gated.
 //!
-//! Source: ukiryu `lib/ukiryu/cli_commands/{base,version,system,config,list,commands,register,resolve}_command.rb`
+//! Source: ukiryu `lib/ukiryu/cli_commands/{base,version,system,config,list,commands,info,opts,register,resolve}_command.rb`
 //! at ab6df353c6dc2d7faf7817a86aafcafa82579896. These verbs print with
 //! `BaseCommand#say`, not through `ResponseFormatter`, so each handler returns
 //! the ordered `say` lines as [`OutputWrite`]s.
@@ -18,15 +18,15 @@
 //! red only when stderr is a terminal; the handlers write it uncoloured, the
 //! form the captured (non-terminal) goldens show.
 //!
-//! The register-backed verbs (`config list`, `list`, `commands`, `register`,
-//! `resolve`) run on the real register and tool APIs: [`Register`],
-//! [`RegisterSource`] with [`tool::get`], [`Discovery`] and [`VersionResolver`].
+//! The register-backed verbs (`config list`, `list`, `commands`, `info`, `opts`,
+//! `register`, `resolve`) run on the real register and tool APIs: [`Register`],
+//! [`RegisterSource`] with [`tool::get`], [`register_lookup::find_by`]
+//! (`Tool.find_by`), [`Discovery`] and [`VersionResolver`].
 //!
 //! Not covered here:
-//! - `info`, `opts` and `which` are gated ([`info`], [`opts`], [`which`] return
-//!   [`InspectError::Gated`]), and so is the interface path of `list` (a tool
-//!   whose own version file is missing). They need core APIs that do not
-//!   exist yet: [`FIND_BY_NEEDS`].
+//! - `which` is gated ([`which`] returns [`InspectError::Gated`]), and so is
+//!   the interface path of `list` (a tool whose own version file is missing).
+//!   They need core APIs that are not wired here yet: [`FIND_BY_NEEDS`].
 //! - `config get|set|unset` run `setup_register` first in the source, which
 //!   can clone the default register into `~/.ukiryu/register`. That bootstrap
 //!   does not change their output and is not performed here; `config list`,
@@ -36,8 +36,9 @@
 //!   register search is `UKIRYU_REGISTER`, then `~/.ukiryu/register`.
 //! - Rendering a time (`register info`'s last update, `resolve`'s mtimes) needs
 //!   the local zone; only a `TZ` naming UTC is rendered, anything else is gated.
-//! - `list` needs `Tool#version`; a tool whose definition has no version would
-//!   need version detection, which has no man-page date provider yet (gated).
+//! - `Tool#version` of a tool whose definition has no version runs version
+//!   detection (`list`, `info`) through `ProcessHost` and the file-system
+//!   `ManPageParser`, with the system clock at UTC (`Clock::default()`).
 //! - Shell detection follows the strict migrated contract (DECISIONS.md D2):
 //!   a missing or unknown `SHELL`, or a Windows host naming no shell, is an
 //!   error where the source falls back to `/etc/shells`/`sh`/`cmd`.
@@ -54,8 +55,12 @@ use ukiryu::definition::{DefinitionMetadata, Discovery, DiscoveryEnv, VersionRes
 use ukiryu::environment::Environment;
 use ukiryu::executable::{find_in_path, DiscoveryContext, Platform};
 use ukiryu::extractors::base::ProcessHost;
-use ukiryu::models::{CommandDefinition, ModelError, Text, ToolMetadata, Value as ModelValue};
+use ukiryu::extractors::man::{FileSystem, ManPageParser};
+use ukiryu::models::{
+    Attr, CommandDefinition, ModelError, Text, ToolMetadata, Value as ModelValue,
+};
 use ukiryu::register::{self, Git, Register};
+use ukiryu::register_lookup::{self, LookupError};
 use ukiryu::render::OutputWrite;
 use ukiryu::runtime::{Clock, Host, HostError, Runtime, ShellError};
 use ukiryu::tool::{self, Tool, ToolError, ToolOptions};
@@ -856,8 +861,8 @@ fn tool_metadata(
         .map_err(model_error)
 }
 
-/// The core APIs `info`, `opts`, `which` and the interface path of `list`
-/// need and that do not exist in the workspace.
+/// The core APIs `which` and the interface path of `list` need and that are
+/// not wired into these handlers yet.
 pub const FIND_BY_NEEDS: &str = "core APIs that do not exist yet: the register scanner \
      (routing::RegisterTool values built from a Register's tools directory for routing::ToolIndex), \
      Tool.find_by (ToolFinder.find_by: interface and alias lookup), \
@@ -904,6 +909,29 @@ fn get_tool(
         ProcessHost::new(Environment::new(), options.shell),
     );
     tool::get(&source, cache, name, options)
+}
+
+/// `Tool#version`: the definition's version, else the detected one (runs the
+/// tool's version command and reads man pages for `.Dd` dates).
+fn tool_version(
+    tool: &Tool,
+    options: &ToolOptions,
+    writes: &mut Vec<OutputWrite>,
+) -> Result<Option<String>, InspectError> {
+    let mut runner = ProcessHost::new(Environment::new(), options.shell);
+    let mut man_pages = ManPageParser::with_clock(FileSystem, Clock::default());
+    tool.version_or_detect(&mut runner, &mut man_pages)
+        .map_err(|error| match error.ruby_class() {
+            Some(class) => InspectError::Raised {
+                class,
+                message: error.to_string(),
+                partial: std::mem::take(writes),
+            },
+            None => InspectError::Source {
+                message: error.to_string(),
+                partial: std::mem::take(writes),
+            },
+        })
 }
 
 /// A tool failure the source does not rescue.
@@ -1166,17 +1194,14 @@ fn list_tool(
 ) -> Result<(), InspectError> {
     match get_tool(ctx, register, cache, options, name) {
         Ok(tool) => {
-            let Some(version) = tool.version() else {
-                return Err(gated(
-                    &format!("list (version of {name})"),
-                    "Tool#version detection, which needs a man-page date provider (ManPageDates)",
-                    std::mem::take(&mut out.writes),
-                ));
+            let version_info = match tool_version(&tool, options, &mut out.writes)? {
+                Some(version) => format!("v{version}"),
+                None => "version unknown".to_owned(),
             };
             let available = tool.is_available();
             let mark = if available { "[✓]" } else { "[✗]" };
             out.say(
-                &format!("{indent}{mark:<4} {name:<20} v{version}"),
+                &format!("{indent}{mark:<4} {name:<20} {version_info}"),
                 Some(if available { Color::Green } else { Color::Red }),
             );
             Ok(())
@@ -1318,14 +1343,594 @@ pub struct WhichInput {
     pub shell: Option<String>,
 }
 
-/// `info` resolves its tool with `Tool.find_by`: gated, see [`FIND_BY_NEEDS`].
-pub fn info(_input: InfoInput, _ctx: &HandlerContext) -> Result<CommandOutcome, InspectError> {
-    Err(gated("info", FIND_BY_NEEDS, Vec::new()))
+/// `Paint[text, *codes]`: wrapped in SGR codes, or the bare text when Paint's
+/// mode is 0 (`NO_COLOR` set, even to an empty value).
+fn paint(on: bool, text: &str, codes: &str) -> String {
+    if on {
+        format!("\x1b[{codes}m{text}\x1b[0m")
+    } else {
+        text.to_owned()
+    }
 }
 
-/// `opts` resolves its tool with `Tool.find_by`: gated, see [`FIND_BY_NEEDS`].
-pub fn opts(_input: OptsInput, _ctx: &HandlerContext) -> Result<CommandOutcome, InspectError> {
-    Err(gated("opts", FIND_BY_NEEDS, Vec::new()))
+/// `Logger#debug_section_header`.
+fn debug_header(text: &mut String, color: bool, title: &str) {
+    let rule = "─".repeat(75usize.saturating_sub(title.chars().count() + 3).max(3));
+    text.push('\n');
+    text.push_str(&paint(color, &format!("┌─ {title} {rule}"), "36"));
+    text.push('\n');
+}
+
+/// `Logger#debug_section_footer`.
+fn debug_footer(text: &mut String, color: bool) {
+    text.push_str(&paint(color, &format!("└{}", "─".repeat(75)), "36"));
+    text.push('\n');
+}
+
+/// `Logger#debug_field(label, value, boxed: false)`.
+fn debug_field(text: &mut String, color: bool, label: &str, value: &str) {
+    text.push_str(&paint(color, "  ", "36"));
+    text.push_str(&paint(color, &format!("{label:<20}"), "37"));
+    text.push_str(&paint(color, ": ", "36"));
+    text.push_str(&paint(color, value, "33"));
+    text.push('\n');
+}
+
+/// The part of both sections up to the list of register tools.
+fn debug_section_start(
+    color: bool,
+    identifier: &str,
+    options: &ToolOptions,
+    tools: &[String],
+) -> String {
+    let mut text = String::new();
+    debug_header(&mut text, color, &format!("Tool Resolution: {identifier}"));
+    debug_field(&mut text, color, "Platform", options.platform.as_str());
+    debug_field(&mut text, color, "Shell", options.shell.as_str());
+    debug_field(
+        &mut text,
+        color,
+        "Available Tools",
+        &tools.len().to_string(),
+    );
+    text.push('\n');
+    text.push_str(&format!("  {}\n", tools.join(" • ")));
+    text
+}
+
+/// `Logger#debug_section_tool_resolution`, written to stderr.
+fn debug_tool_resolution(
+    color: bool,
+    identifier: &str,
+    options: &ToolOptions,
+    tools: &[String],
+    selected: &str,
+    executable: &str,
+) -> String {
+    let mut text = debug_section_start(color, identifier, options, tools);
+    text.push('\n');
+    text.push_str(&format!(
+        "{} {}{}{}\n",
+        paint(color, "  ✓", "32"),
+        paint(color, selected, "36;1"),
+        paint(color, " implements: ", "37"),
+        paint(color, identifier, "33"),
+    ));
+    text.push('\n');
+    debug_field(&mut text, color, "Selected", selected);
+    debug_field(&mut text, color, "Executable", executable);
+    debug_footer(&mut text, color);
+    text
+}
+
+/// `Logger#debug_section_tool_not_found`, written to stderr.
+fn debug_tool_not_found(
+    color: bool,
+    identifier: &str,
+    options: &ToolOptions,
+    tools: &[String],
+) -> String {
+    let mut text = debug_section_start(color, identifier, options, tools);
+    text.push('\n');
+    text.push_str(&format!(
+        "{} {}\n",
+        paint(color, "  ✗", "31"),
+        paint(color, "Tool not found", "31;1"),
+    ));
+    debug_footer(&mut text, color);
+    text
+}
+
+/// `String#inspect` of a plain name.
+fn ruby_string_inspect(value: &str) -> String {
+    let mut text = String::from("\"");
+    let mut chars = value.chars().peekable();
+    while let Some(c) = chars.next() {
+        match c {
+            '"' => text.push_str("\\\""),
+            '\\' => text.push_str("\\\\"),
+            '#' if matches!(chars.peek(), Some('{' | '$' | '@')) => text.push_str("\\#"),
+            '\n' => text.push_str("\\n"),
+            '\t' => text.push_str("\\t"),
+            '\r' => text.push_str("\\r"),
+            '\x1b' => text.push_str("\\e"),
+            c if (c as u32) < 0x20 || c as u32 == 0x7f => {
+                text.push_str(&format!("\\x{:02X}", c as u32));
+            }
+            c => text.push(c),
+        }
+    }
+    text.push('"');
+    text
+}
+
+/// The `[DEBUG]` lines of `InfoCommand#find_other_implementations`.
+fn debug_other_implementations(
+    out: &mut Out,
+    register: &Register,
+    interface: &str,
+    current: Option<&str>,
+) {
+    let index = register_lookup::load_tool_index(register);
+    let tools = register.tool_names();
+    out.say(
+        &format!(
+            "  [DEBUG] Looking for tools implementing '{interface}' (excluding '{}')",
+            current.unwrap_or("")
+        ),
+        Some(Color::Dim),
+    );
+    let listed: Vec<String> = tools.iter().map(|t| ruby_string_inspect(t)).collect();
+    out.say(
+        &format!("  [DEBUG] Register tools: [{}]", listed.join(", ")),
+        Some(Color::Dim),
+    );
+    for name in &tools {
+        if current == Some(name.as_str()) {
+            continue;
+        }
+        let line = match register_lookup::load_tool_metadata(register, &index, name) {
+            Ok(Some(metadata)) => format!(
+                "  [DEBUG] {name} -> metadata: {}",
+                txt(&metadata.implements).unwrap_or_default()
+            ),
+            Ok(None) => format!("  [DEBUG] {name} -> metadata: nil"),
+            Err(error) => format!("  [DEBUG] Failed to load {name}: {error}"),
+        };
+        out.say(&line, Some(Color::Dim));
+    }
+}
+
+/// `config.debug` (`UKIRYU_DEBUG`).
+fn debug_enabled(config: &OverrideResolver) -> bool {
+    config.resolve("debug") == Some(&Value::Bool(true))
+}
+
+/// A failure of `Tool.find_by` the source does not rescue.
+fn lookup_failure(error: LookupError, partial: Vec<OutputWrite>) -> InspectError {
+    match error {
+        LookupError::Register(error) => raised_register(error, partial),
+        LookupError::Model(error) => InspectError::Raised {
+            class: error.ruby_class(),
+            message: error.message,
+            partial,
+        },
+        LookupError::Source(fault) => InspectError::Raised {
+            class: fault.class,
+            message: fault.message,
+            partial,
+        },
+        LookupError::Tool(error) => tool_failure(&error, partial),
+        other @ LookupError::UnrepresentableTarget { .. } => InspectError::Source {
+            message: other.to_string(),
+            partial,
+        },
+    }
+}
+
+/// The tool `Tool.find_by` found, with what `info --all` reuses.
+struct Found {
+    tool: Rc<Tool>,
+    out: Out,
+    register: Register,
+    options: ToolOptions,
+    cache: ToolCache<Rc<Tool>>,
+}
+
+/// `setup_register` and `Tool.find_by(name.to_sym)`, or the `error!` both
+/// verbs raise for a missing tool (`Ok(Err(outcome))`).
+fn find_tool(
+    what: &str,
+    name: &str,
+    ctx: &HandlerContext,
+    config: &OverrideResolver,
+    mut out: Out,
+) -> Result<Result<Found, CommandOutcome>, InspectError> {
+    let _ = what;
+    let register = setup_register(ctx, config)
+        .map_err(|f| f.into_error(Vec::new()))?
+        .register;
+    let options = tool_options(ctx, config).map_err(|error| InspectError::Shell {
+        partial: Vec::new(),
+        error,
+    })?;
+    let index = register_lookup::load_tool_index(&register);
+    let source = RegisterSource::new(
+        register.clone(),
+        ctx.host.platform,
+        ProcessHost::new(Environment::new(), options.shell),
+    );
+    let cache = ToolCache::new();
+    let found = register_lookup::find_by_traced(
+        &register, &index, &source, &cache, name, &options, &options,
+    )
+    .map_err(|e| lookup_failure(e, Vec::new()))?;
+    // `Logger` sections go to $stderr; Paint colours them unless `NO_COLOR`
+    // is set (Paint reads the environment, not the configuration).
+    let debug = debug_enabled(config);
+    let color = ctx.env("NO_COLOR").is_none();
+    match found {
+        Some((tool, step)) => {
+            if debug {
+                // Only the exact-name and exhaustive steps log a resolution.
+                let selected = match &step {
+                    register_lookup::FoundBy::Exact => Some(name.to_owned()),
+                    register_lookup::FoundBy::Exhaustive(tool_name) => Some(tool_name.clone()),
+                    _ => None,
+                };
+                if let Some(selected) = selected {
+                    let tools = register.tool_names();
+                    out.writes.push(OutputWrite::Stderr(debug_tool_resolution(
+                        color,
+                        name,
+                        &options,
+                        &tools,
+                        &selected,
+                        tool.executable().unwrap_or(""),
+                    )));
+                }
+            }
+            Ok(Ok(Found {
+                tool,
+                out,
+                register,
+                options,
+                cache,
+            }))
+        }
+        None => {
+            let mut tools = register.tool_names();
+            tools.sort();
+            if debug {
+                out.writes.push(OutputWrite::Stderr(debug_tool_not_found(
+                    color, name, &options, &tools,
+                )));
+            }
+            Ok(Err(out.error(&format!(
+                "Tool not found: {name}\nAvailable tools: {}",
+                tools.join(", ")
+            ))))
+        }
+    }
+}
+
+/// `Array#join` over a `:string` collection: `nil` joins as `""` and a nested
+/// Array is flattened, joined with the same separator. (The source's
+/// `recursive array join` error needs a self-referencing Array, which a YAML
+/// sequence cannot build.)
+fn join_texts(items: &[Text], separator: &str) -> String {
+    let parts: Vec<String> = items
+        .iter()
+        .map(|item| match item {
+            Text::Str(s) => s.clone(),
+            Text::Nil => String::new(),
+            Text::List(inner) => ukiryu::types::ruby::join(inner, separator),
+        })
+        .collect();
+    parts.join(separator)
+}
+
+/// An `Attr<Text>` reader as the String Ruby reads (`nil` is `None`).
+fn attr_txt(value: &Attr<Text>) -> Option<String> {
+    match value.get() {
+        None | Some(Text::Nil) => None,
+        Some(other) => Some(other.to_ruby_s()),
+    }
+}
+
+/// A `Text` the source calls `String#ljust` on: an Array has no `ljust`, so
+/// the source raises `NoMethodError` (the message returned).
+fn ljust_text(value: &Option<Text>, fallback: &str) -> Result<String, String> {
+    match value {
+        None | Some(Text::Nil) => Ok(fallback.to_owned()),
+        Some(Text::Str(s)) => Ok(s.clone()),
+        Some(Text::List(_)) => Err("undefined method 'ljust' for an instance of Array".to_owned()),
+    }
+}
+
+/// `InfoCommand#run`.
+pub fn info(input: InfoInput, ctx: &HandlerContext) -> Result<CommandOutcome, InspectError> {
+    let config = ctx.configuration()?;
+    let out = Out::new(colors_disabled(&config));
+    let name = input.tool.as_str();
+    let Found {
+        tool,
+        mut out,
+        register,
+        options,
+        cache,
+    } = match find_tool("info", name, ctx, &config, out)? {
+        Ok(found) => found,
+        Err(outcome) => return Ok(outcome),
+    };
+    let profile = tool.definition();
+
+    out.clear();
+    let profile_name = txt(&profile.name);
+    if profile_name.as_deref() != Some(name) && profile.implements.is_some() {
+        out.say(&format!("Interface: {name}"), Some(Color::Cyan));
+        out.say(
+            &format!("  This tool implements the '{name}' interface"),
+            Some(Color::Dim),
+        );
+        out.say(
+            &format!("  Tool: {}", profile_name.clone().unwrap_or_default()),
+            Some(Color::White),
+        );
+        // `find_other_implementations` compares `ToolMetadata#implements` (a
+        // String) with a Symbol, so it never finds one: no "Other
+        // implementations" line, and `--all` lists the tool itself only.
+        if debug_enabled(&config) {
+            debug_other_implementations(&mut out, &register, name, profile_name.as_deref());
+        }
+        if input.all {
+            out.clear();
+            out.say(
+                &format!("All '{name}' implementations:"),
+                Some(Color::Yellow),
+            );
+            let Some(implementation) = profile_name.clone() else {
+                return Err(gated(
+                    "info --all (a tool without a name)",
+                    "Tool.get(nil)",
+                    out.writes,
+                ));
+            };
+            match get_tool(ctx, &register, &cache, &options, &implementation) {
+                Ok(other) => {
+                    let available = other.is_available();
+                    let mark = if available { "[✓]" } else { "[✗]" };
+                    out.say(
+                        &format!("  {mark:<4} {implementation}"),
+                        Some(if available { Color::Green } else { Color::Red }),
+                    );
+                }
+                Err(ToolError::NotFound { .. } | ToolError::ProfileNotFound { .. }) => {
+                    out.say(&format!("  [ ] {implementation}"), Some(Color::Dim));
+                }
+                Err(error) => return Err(tool_failure(&error, out.writes)),
+            }
+        }
+    } else {
+        let shown = profile_name.unwrap_or_else(|| name.to_owned());
+        out.say(&format!("Tool: {shown}"), Some(Color::Cyan));
+    }
+
+    let or_na = |value: &Option<Text>| txt(value).unwrap_or_else(|| "N/A".to_owned());
+    out.say(
+        &format!("Display Name: {}", or_na(&profile.display_name)),
+        Some(Color::White),
+    );
+    out.say(
+        &format!("Version: {}", or_na(&profile.version)),
+        Some(Color::White),
+    );
+    out.say(
+        &format!("Homepage: {}", or_na(&profile.homepage)),
+        Some(Color::White),
+    );
+    if let Some(aliases) = profile.aliases.as_deref().filter(|a| !a.is_empty()) {
+        let joined = join_texts(aliases, ", ");
+        out.say(&format!("Aliases: {joined}"), Some(Color::White));
+    }
+
+    if let Some(detection) = profile.version_detection.as_deref() {
+        out.clear();
+        out.say("Version Detection:", Some(Color::Yellow));
+        let command = match detection.command.as_deref() {
+            None => String::new(),
+            Some(parts) => join_texts(parts, " "),
+        };
+        out.say(&format!("  Command: {command}"), Some(Color::White));
+        out.say(
+            &format!("  Pattern: {}", txt(&detection.pattern).unwrap_or_default()),
+            Some(Color::White),
+        );
+        if let Some(threshold) = txt(&detection.modern_threshold) {
+            out.say(
+                &format!("  Modern Threshold: {threshold}"),
+                Some(Color::White),
+            );
+        }
+    }
+
+    if let Some(profiles) = profile.profiles.as_deref() {
+        out.clear();
+        out.say(
+            &format!("Profiles ({}):", profiles.len()),
+            Some(Color::Yellow),
+        );
+        for prof in profiles {
+            let all = [Text::new("all")];
+            let platforms = join_texts(prof.platforms.as_deref().unwrap_or(&all), ", ");
+            let shells = join_texts(prof.shells.as_deref().unwrap_or(&all), ", ");
+            let option_style = attr_txt(&prof.option_style).unwrap_or_else(|| "default".to_owned());
+            let prof_name = txt(&prof.name).unwrap_or_else(|| "unnamed".to_owned());
+            out.say(&format!("  {prof_name}:"), Some(Color::White));
+            out.say(&format!("    Platforms: {platforms}"), Some(Color::White));
+            out.say(&format!("    Shells: {shells}"), Some(Color::White));
+            out.say(
+                &format!("    Option Style: {option_style}"),
+                Some(Color::White),
+            );
+            if let Some(inherits) = txt(&prof.inherits) {
+                out.say(&format!("    Inherits: {inherits}"), Some(Color::White));
+            }
+        }
+    }
+
+    out.clear();
+    if tool.is_available() {
+        let version =
+            tool_version(&tool, &options, &mut out.writes)?.unwrap_or_else(|| "unknown".to_owned());
+        out.say("Status: INSTALLED", Some(Color::Green));
+        out.say(
+            &format!("Executable: {}", tool.executable().unwrap_or_default()),
+            Some(Color::White),
+        );
+        out.say(&format!("Detected Version: {version}"), Some(Color::White));
+    } else {
+        out.say("Status: NOT FOUND", Some(Color::Red));
+    }
+    Ok(out.done())
+}
+
+/// `OptsCommand#run`.
+pub fn opts(input: OptsInput, ctx: &HandlerContext) -> Result<CommandOutcome, InspectError> {
+    let config = ctx.configuration()?;
+    let out = Out::new(colors_disabled(&config));
+    let name = input.tool.as_str();
+    let Found { tool, mut out, .. } = match find_tool("opts", name, ctx, &config, out)? {
+        Ok(found) => found,
+        Err(outcome) => return Ok(outcome),
+    };
+    let Some(commands) = tool.command_profile().commands.as_deref() else {
+        return Ok(out.error(&format!("No commands defined for {name}")));
+    };
+
+    if let Some(wanted) = input.command.as_deref() {
+        // The source assigns the `find` result to a local and then reads the
+        // still-nil `cmds`, so a named command never prints anything. The
+        // `find` block still runs and raises for a command without a String
+        // name before a match.
+        for command in commands {
+            let command_name = command.name.clone().unwrap_or(Text::Nil);
+            if command_name.to_ruby_s() == wanted {
+                break;
+            }
+            if let Err(error) = command_name.to_sym() {
+                return Err(InspectError::Raised {
+                    class: error.ruby_class(),
+                    message: error.message,
+                    partial: Vec::new(),
+                });
+            }
+        }
+        return Ok(out.done());
+    }
+
+    for command in commands {
+        if let Err(message) = opts_command(&mut out, name, command) {
+            return Err(InspectError::Raised {
+                class: "NoMethodError",
+                message,
+                partial: out.writes,
+            });
+        }
+    }
+    Ok(out.done())
+}
+
+/// One command of `opts`; `Err` is the `NoMethodError` message the source
+/// raises on `ljust` of an Array value.
+fn opts_command(out: &mut Out, title: &str, command: &CommandDefinition) -> Result<(), String> {
+    out.clear();
+    out.say(&format!("Options for {title}:"), Some(Color::Cyan));
+    if let Some(description) = txt(&command.description) {
+        out.say(&description, None);
+    }
+
+    if let Some(arguments) = command.arguments.as_deref().filter(|a| !a.is_empty()) {
+        out.clear();
+        out.say("Arguments:", Some(Color::Yellow));
+        for argument in arguments {
+            let name = txt(&argument.name).unwrap_or_else(|| "unnamed".to_owned());
+            let kind = attr_txt(&argument.r#type).unwrap_or_else(|| "unknown".to_owned());
+            let position = attr_txt(&argument.position).unwrap_or_else(|| "default".to_owned());
+            let variadic = if argument.variadic.get() == Some(&true) {
+                "(variadic)"
+            } else {
+                ""
+            };
+            out.say(&format!("  {name} ({kind}{variadic})"), Some(Color::White));
+            if position != "default" {
+                out.say(&format!("    Position: {position}"), Some(Color::Dim));
+            }
+            if let Some(description) = txt(&argument.description) {
+                out.say(&format!("    Description: {description}"), Some(Color::Dim));
+            }
+        }
+    }
+
+    let sections = [
+        (command.options.as_deref(), "Options:", true),
+        (
+            command.post_options.as_deref(),
+            "Post-Options (between input and output):",
+            false,
+        ),
+    ];
+    for (options, heading, with_values) in sections {
+        let Some(options) = options.filter(|o| !o.is_empty()) else {
+            continue;
+        };
+        out.clear();
+        out.say(heading, Some(Color::Yellow));
+        for option in options {
+            let name = ljust_text(&option.name, "unnamed")?;
+            let cli = txt(&option.cli).unwrap_or_else(|| "N/A".to_owned());
+            let kind = attr_txt(&option.r#type).unwrap_or_else(|| "unknown".to_owned());
+            let description = txt(&option.description).unwrap_or_default();
+            out.say(&format!("  --{name:<20} {cli}"), Some(Color::White));
+            out.say(&format!("    Type: {kind}"), Some(Color::Dim));
+            out.say(&format!("    {description}"), Some(Color::Dim));
+            if !with_values {
+                continue;
+            }
+            if let Some(values) = option.values.as_deref() {
+                let values = join_texts(values, ", ");
+                out.say(&format!("    Values: {values}"), Some(Color::Dim));
+            }
+            if let Some(range) = option.range.as_deref() {
+                let range: Vec<String> = range
+                    .iter()
+                    .map(|bound| bound.map(|b| b.to_string()).unwrap_or_default())
+                    .collect();
+                out.say(
+                    &format!("    Range: {}", range.join("..")),
+                    Some(Color::Dim),
+                );
+            }
+        }
+    }
+
+    if let Some(flags) = command.flags.as_deref().filter(|f| !f.is_empty()) {
+        out.clear();
+        out.say("Flags:", Some(Color::Yellow));
+        for flag in flags {
+            let name = txt(&flag.name).unwrap_or_else(|| "unnamed".to_owned());
+            let cli = ljust_text(&flag.cli, "N/A")?;
+            let default = match flag.default.get() {
+                None => String::new(),
+                Some(value) => format!(" (default: {value})"),
+            };
+            out.say(&format!("  {cli:<25} {name}{default}"), Some(Color::White));
+            if let Some(description) = txt(&flag.description) {
+                out.say(&format!("    {description}"), Some(Color::Dim));
+            }
+        }
+    }
+    Ok(())
 }
 
 /// `which` falls back to interface and alias discovery and reads

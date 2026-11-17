@@ -28,8 +28,9 @@
 //! `ToolNotFoundError` (a `ProfileNotFoundError` there escapes); every other
 //! error escapes with its class.
 //!
-//! Not ported: the `UKIRYU_DEBUG` structured debug output of `find_by`, and
-//! the source's mtime-based index refresh (build a new index to refresh).
+//! The `UKIRYU_DEBUG` structured debug output of `find_by` is not produced
+//! here; [`find_by_traced`] reports the step that found the tool so a caller
+//! can print it. Not ported: the source's mtime-based index refresh (build a new index to refresh).
 //! Documents the port cannot represent faithfully (integers outside 64 bits,
 //! non-finite floats, timestamps and other classes `YAML.safe_load` rejects)
 //! are kept as `Err` documents, which the index treats as a parse failure of
@@ -372,9 +373,40 @@ pub fn find_by(
     options: &ToolOptions,
     runtime: &ToolOptions,
 ) -> Result<Option<Rc<Tool>>, LookupError> {
+    Ok(
+        find_by_traced(register, index, source, cache, identifier, options, runtime)?
+            .map(|(tool, _)| tool),
+    )
+}
+
+/// The step of [`find_by`] that produced a tool. The source prints its
+/// `UKIRYU_DEBUG` resolution section for the exact-name step and for the
+/// exhaustive step only.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum FoundBy {
+    /// Step 1, `Tool.get(identifier)`.
+    Exact,
+    /// Step 2, an interface candidate.
+    Interface,
+    /// Step 3, the alias.
+    Alias,
+    /// Step 4, the exhaustive search; the register tool that matched.
+    Exhaustive(String),
+}
+
+/// [`find_by`] that also reports which step found the tool.
+pub fn find_by_traced(
+    register: &Register,
+    index: &ToolIndex,
+    source: &dyn DefinitionSource,
+    cache: &ToolCache<Rc<Tool>>,
+    identifier: &str,
+    options: &ToolOptions,
+    runtime: &ToolOptions,
+) -> Result<Option<(Rc<Tool>, FoundBy)>, LookupError> {
     // 1. Exact name.
     match tool::get(source, cache, identifier, options) {
-        Ok(tool) => return Ok(Some(tool)),
+        Ok(tool) => return Ok(Some((tool, FoundBy::Exact))),
         Err(e) if not_found(&e) => {}
         Err(e) => return Err(e.into()),
     }
@@ -382,7 +414,7 @@ pub fn find_by(
     // 2. Interface candidates: the first that is available.
     for name in index.find_all_by_interface(identifier) {
         match tool::get(source, cache, name, options) {
-            Ok(tool) if tool.is_available() => return Ok(Some(tool)),
+            Ok(tool) if tool.is_available() => return Ok(Some((tool, FoundBy::Interface))),
             Ok(_) => {}
             Err(e) if not_found(&e) => {}
             Err(e) => return Err(e.into()),
@@ -396,14 +428,17 @@ pub fn find_by(
         runtime.shell.as_str(),
     )? {
         match tool::get(source, cache, name, options) {
-            Ok(tool) => return Ok(Some(tool)),
+            Ok(tool) => return Ok(Some((tool, FoundBy::Alias))),
             Err(e) if not_found(&e) => {}
             Err(e) => return Err(e.into()),
         }
     }
 
     // 4. Exhaustive search.
-    exhaustive_search(register, source, cache, identifier, options)
+    Ok(
+        exhaustive_search(register, source, cache, identifier, options)?
+            .map(|(tool, name)| (tool, FoundBy::Exhaustive(name))),
+    )
 }
 
 /// The `identifier` argument of `ToolFinder.find_by` before its
@@ -567,7 +602,7 @@ fn exhaustive_search(
     cache: &ToolCache<Rc<Tool>>,
     identifier: &str,
     options: &ToolOptions,
-) -> Result<Option<Rc<Tool>>, LookupError> {
+) -> Result<Option<(Rc<Tool>, String)>, LookupError> {
     for name in register.tool_names() {
         let tool = match tool::get(source, cache, &name, options) {
             Ok(tool) => tool,
@@ -586,7 +621,7 @@ fn exhaustive_search(
                 }
                 let key = tool::cache_key(&name, options);
                 if let Some(cached) = cache.get(&key) {
-                    return Ok(Some(cached));
+                    return Ok(Some((cached, name)));
                 }
                 let tool = Rc::new(Tool::new(definition, options)?);
                 cache.set(key, Rc::clone(&tool));
@@ -595,7 +630,7 @@ fn exhaustive_search(
             Err(e) => return Err(e.into()),
         };
         if matches_identifier(tool.definition(), identifier)? {
-            return Ok(Some(tool));
+            return Ok(Some((tool, name)));
         }
     }
     Ok(None)

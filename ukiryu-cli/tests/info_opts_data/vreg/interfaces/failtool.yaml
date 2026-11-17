@@ -1,0 +1,14 @@
+---
+ukiryu_schema: '1.0'
+name: failtool
+version: '1.0'
+display_name: failtool Interface
+actions:
+- name: process
+  description: Process input
+  signature:
+    inputs:
+      inputs:
+      - name: input
+        type: file
+        required: true

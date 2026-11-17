@@ -1,0 +1,48 @@
+ukiryu_schema: '1.0'
+name: cat
+display_name: Cat
+version: '1.0'
+version_detection:
+  command: --version
+  pattern: cat \(GNU coreutils\) ([\d.]+)
+profiles:
+  - name: default
+    platforms: [linux, macos]
+    shells: [bash, zsh, sh]
+    commands:
+      - name: concatenate
+        description: Concatenate
+smoke_tests:
+  - name: version
+    description: Prints the version
+    command: ['--version']
+    timeout: 10
+    expect:
+      exit_code: 0
+      output_match: 'coreutils\) \d+'
+      output_contains:
+        - coreutils
+        - '9.4'
+  - name: mismatch
+    command: ['--version']
+    timeout: 10
+    expect:
+      exit_code: 3
+      output_match: 'nothing'
+      output_contains:
+        - absent
+      stderr_match: 'oops'
+  - name: bad_flag
+    command: ['--fail', 'x y']
+    timeout: 5
+    expect:
+      exit_code: 1
+      stderr_match: 'unrecognized'
+  - name: other_platform
+    command: --version
+    timeout: 10
+    platforms: [windows]
+  - name: skipped
+    command: ['--version']
+    timeout: 10
+    skip_if: some_condition

@@ -1,0 +1,19 @@
+---
+ukiryu_schema: '1.0'
+name: nover
+display_name: Nover
+homepage: https://example.org/nover
+version: '1.0'
+execution_profiles:
+- name: unix
+  platforms:
+  - linux
+  - macos
+  shells:
+  - bash
+  - zsh
+  - sh
+  executable_name: nover
+  commands:
+  - name: run
+    description: Run it
