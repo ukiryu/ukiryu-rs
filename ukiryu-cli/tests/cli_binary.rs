@@ -989,7 +989,7 @@ fn info_and_opts_match_the_oracle_captures() {
     let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/info_opts_data/cases.json");
     let data: Value = serde_json::from_str(&std::fs::read_to_string(path).unwrap()).unwrap();
     let cases = data["cases"].as_array().unwrap();
-    assert_eq!(cases.len(), 16);
+    assert_eq!(cases.len(), 27);
     let data_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/info_opts_data");
     for (i, case) in cases.iter().enumerate() {
         let argv: Vec<String> = strings(&case["argv"])
