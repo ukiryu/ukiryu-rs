@@ -432,12 +432,16 @@ fn group(name: &str, rest: &[String]) -> Preempt {
     let names: Vec<&str> = group.subs.iter().map(|s| s.name).collect();
     let group_help = || output(verb_help(name));
     let Some(first) = words.first() else {
+        if !help && group.default.is_some() {
+            // No words: the default command runs.
+            return pass();
+        }
         return group_help();
     };
     let found = match resolve(&names, first) {
         Resolved::Name(found) => found,
         Resolved::Ambiguous(found) => return ambiguous(first, &found),
-        Resolved::Missing(missing) => match group.default {
+        Resolved::Missing(missing) => match group.default.filter(|_| !help) {
             Some(default) => {
                 // The default command runs on every word.
                 return sub_arguments(group, default, &words);
@@ -538,7 +542,7 @@ fn resolve(names: &[&str], word: &str) -> Resolved {
             if names.contains(&normal.as_str()) {
                 Resolved::Name(normal)
             } else {
-                Resolved::Missing(normal)
+                Resolved::Missing(word.to_owned())
             }
         }
         _ => Resolved::Ambiguous(possible),

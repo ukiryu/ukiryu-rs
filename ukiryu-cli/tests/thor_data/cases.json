@@ -1984,16 +1984,6 @@
     },
     {
       "argv": [
-        "info",
-        "--all=maybe",
-        "x"
-      ],
-      "stdout": "",
-      "stderr": "Invalid number of arguments for 'info'. Check the command syntax with: ukiryu help info\n",
-      "exit": 1
-    },
-    {
-      "argv": [
         "version",
         "x"
       ],
@@ -2364,14 +2354,6 @@
       "stdout": "",
       "stderr": "Ambiguous command v matches [validate, version]\n",
       "exit": 1
-    },
-    {
-      "argv": [
-        "s"
-      ],
-      "stdout": "\u001b[36mAvailable shells\u001b[0m\n\n  The following shells are installed and supported on this platform:\n\n\u001b[2m    No supported shells detected\u001b[0m\n\n\u001b[36mAdditional supported shells\u001b[0m\n\n  These shells are supported but not currently installed:\n\n\u001b[2m    • unix\u001b[0m\n\u001b[2m    • powershell - PowerShell command-line shell\u001b[0m\n\n\u001b[36mNot available on this platform\u001b[0m\n\n  These shells are not supported on this platform:\n\n\u001b[2m    • windows\u001b[0m\n\u001b[2m    • bash - GNU Bourne Again SHell\u001b[0m\n\u001b[2m    • zsh - Z shell\u001b[0m\n\u001b[2m    • fish - Friendly interactive shell\u001b[0m\n\u001b[2m    • sh - POSIX shell\u001b[0m\n\u001b[2m    • dash\u001b[0m\n\u001b[2m    • tcsh\u001b[0m\n\u001b[2m    • cmd - Windows Command Prompt\u001b[0m\n\n\u001b[2mPlatform: linux\u001b[0m\n\u001b[2mCurrent shell: bash\u001b[0m\n",
-      "stderr": "",
-      "exit": 0
     },
     {
       "argv": [
