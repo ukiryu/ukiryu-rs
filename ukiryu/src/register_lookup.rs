@@ -163,7 +163,8 @@ fn read_document(file: &Path) -> Result<Json, String> {
         // `safe_load("")` is `false`, which the index skips like nil.
         return Ok(Json::Null);
     }
-    let tree: yeptris::Value = crate::from_yaml(&content).map_err(|e| e.to_string())?;
+    let tree: yeptris::Value = crate::from_yaml(&content)
+        .map_err(|e| crate::models::safe_load::syntax_message(&e.to_string()))?;
     let value = Value::from_yaml_value(&tree).map_err(|e| e.to_string())?;
     to_json(&value)
 }
@@ -186,6 +187,11 @@ fn to_json(value: &Value) -> Result<Json, String> {
             None => return Err("Unsupported: non-finite float".to_string()),
         },
         Value::String(s) | Value::Symbol(s) => Json::String(s.clone()),
+        // An ASCII-only binary String compares equal to the UTF-8 one.
+        Value::Bytes(b) if b.is_ascii() => Json::String(String::from_utf8_lossy(b).into_owned()),
+        Value::Bytes(_) | Value::BinarySymbol(_) => {
+            return Err("Unsupported: non-ASCII binary String".to_string())
+        }
         Value::Time(_) => return Err("Tried to load unspecified class: Time".to_string()),
         Value::Regexp(_) => return Err("Tried to load unspecified class: Regexp".to_string()),
         Value::Array(items) => Json::Array(items.iter().map(to_json).collect::<Result<_, _>>()?),
@@ -593,4 +599,32 @@ fn exhaustive_search(
         }
     }
     Ok(None)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn read(name: &str, yaml: &str) -> Result<Json, String> {
+        let dir = std::env::temp_dir().join(format!("ukiryu-read-document-{}", std::process::id()));
+        fs::create_dir_all(&dir).unwrap();
+        let file = dir.join(name);
+        fs::write(&file, yaml).unwrap();
+        let result = read_document(&file);
+        fs::remove_file(&file).unwrap();
+        result
+    }
+
+    #[test]
+    fn other_syntax_errors_keep_the_yeptris_text() {
+        // Neither Psych diagnostic: the index reports the engine's message
+        // byte for byte.
+        let yaml = "key: \"unterminated\n";
+        let engine = crate::from_yaml::<yeptris::Value>(yaml)
+            .unwrap_err()
+            .to_string();
+        let message = read("neighbour.yaml", yaml).unwrap_err();
+        assert_eq!(message, engine);
+        assert!(!message.starts_with("(<unknown>)"), "{message}");
+    }
 }

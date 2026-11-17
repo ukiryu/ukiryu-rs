@@ -52,10 +52,7 @@ pub fn safe_load(text: &str, permitted: Permitted) -> Result<Data, SchemaError> 
         return Ok(Data::Null);
     }
     let doc = Document::parse(text.as_bytes()).map_err(|e| SchemaError::YamlSyntax {
-        message: e
-            .message()
-            .map(str::to_owned)
-            .unwrap_or_else(|| e.to_string()),
+        message: crate::models::safe_load::syntax_message(e.message().unwrap_or(&e.to_string())),
     })?;
     match doc.first_root() {
         None => Ok(Data::Null),
