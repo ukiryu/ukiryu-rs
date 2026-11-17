@@ -1,0 +1,15 @@
+---
+ukiryu_schema: '1.0'
+name: rich
+version: '1.0'
+display_name: Rich Interface
+actions:
+- name: convert
+  description: Convert
+  signature:
+    inputs:
+      inputs:
+      - name: input
+        type: file
+aliases:
+- rich
