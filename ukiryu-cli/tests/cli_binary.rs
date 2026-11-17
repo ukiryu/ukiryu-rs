@@ -829,7 +829,6 @@ fn argument_errors_exit_1_on_stderr() {
 fn help_and_version_succeed_on_stdout() {
     for args in [
         &["--help"][..],
-        &["help"],
         &["validate", "--help"],
         &["lint", "--help"],
     ] {
@@ -837,6 +836,14 @@ fn help_and_version_succeed_on_stdout() {
         assert_eq!(got.code, 0, "{args:?}: {}", got.stderr);
         assert!(got.stdout.contains("Usage"), "{args:?}: {:?}", got.stdout);
     }
+    // `help` is Thor's command list (the cli-output.help row pins its bytes).
+    let got = simple(&["help"]);
+    assert_eq!(got.code, 0, "help: {}", got.stderr);
+    assert!(
+        got.stdout.starts_with("ukiryu commands:\n"),
+        "{:?}",
+        got.stdout
+    );
     // Thor prints the command list (stdout, status 0) when no command or no
     // subcommand of a group is given (captured: logs/grammar-3.log).
     let cases: [(&[&str], &str); 3] = [
@@ -1006,6 +1013,9 @@ fn thor_help_and_unknown_command_rows_replay_the_corpus() {
         );
         seen.push(id.to_owned());
     }
+    seen.sort();
+    let mut wanted = wanted.to_vec();
+    wanted.sort();
     assert_eq!(seen, wanted);
 }
 
