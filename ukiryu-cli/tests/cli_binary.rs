@@ -11,6 +11,10 @@
 //!
 //! - `execute_data/cases.json` (exec, run-file, cache), captured by
 //!   K22-CLI-EXECUTE from the same oracle.
+//! - `inspect_remainder_goldens.json` (config list, list, commands,
+//!   register, resolve), captured by B09-CLI-INSPECT-REMAINDER from the same
+//!   oracle, and the corpus `cli-output` rows of those verbs
+//!   (`corpus/conformance/cases/cli-output.jsonl`).
 //!
 //! Rows are split into three contracts and counted separately:
 //! - source rows: captured from exe/ukiryu and expected byte for byte (or with
@@ -790,16 +794,10 @@ fn simple(args: &[&str]) -> Output {
 #[test]
 fn verbs_without_a_merged_handler_fail_gated() {
     for args in [
-        &["list"][..],
-        &["info", "ls"],
-        &["commands", "ls"],
+        &["info", "ls"][..],
         &["opts", "ls"],
         &["describe", "ls"],
         &["which", "ls"],
-        &["resolve", "ls"],
-        &["register"],
-        &["config"],
-        &["config", "list"],
     ] {
         let got = simple(args);
         assert_eq!(got.code, GATED_EXIT, "{args:?}: {}", got.stderr);
@@ -884,6 +882,314 @@ fn an_output_file_that_cannot_be_written_is_an_errno_error() {
     assert_eq!(
         got.stderr,
         "[Errno::ENOENT] No such file or directory @ rb_sysopen - nodir/out.yaml\n"
+    );
+    let _ = std::fs::remove_dir_all(&root);
+}
+
+// ------------------------------------------------- inspect remainder (#73)
+
+/// The register-backed inspect verbs this build integrates.
+#[cfg(target_os = "linux")]
+const REMAINDER_VERBS: [&str; 5] = ["config", "list", "commands", "register", "resolve"];
+
+/// `inspect_remainder_goldens.json` (config list, list, commands, register,
+/// resolve), captured from the pinned exe/ukiryu (ukiryu/ukiryu ab6df35)
+/// with the per-case environment in its `source.context`, replayed through
+/// the binary. The handler test `inspect_remainder.rs` replays the same rows
+/// against the handlers; this proves the binary dispatches to them.
+#[cfg(target_os = "linux")]
+#[test]
+fn inspect_remainder_goldens_through_the_binary() {
+    let goldens: Value =
+        serde_json::from_str(include_str!("inspect_remainder_goldens.json")).unwrap();
+    let mtime = UNIX_EPOCH + Duration::from_secs(goldens["fixed_mtime_unix"].as_u64().unwrap());
+    let fixture = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/inspect_data/register");
+    let mut failures = Vec::new();
+    let mut replayed = 0;
+    for case in goldens["cases"].as_array().unwrap() {
+        let name = case["name"].as_str().unwrap();
+        let root = scratch(&format!("remainder-{name}"));
+        let dir = |leaf: &str| {
+            let path = root.join(leaf);
+            std::fs::create_dir_all(&path).unwrap();
+            path.to_str().unwrap().to_owned()
+        };
+        let (home, bin, xdg, sysdata) = (dir("home"), dir("bin"), dir("xdg"), dir("sysdata"));
+        let mode = case["register"].as_str().unwrap();
+        let register = if mode == "user" {
+            format!("{home}/.ukiryu/register")
+        } else {
+            root.join("register").to_str().unwrap().to_owned()
+        };
+        for b in ["bash", "sh", "which"]
+            .into_iter()
+            .map(str::to_owned)
+            .chain(strings(&case["bins"]))
+        {
+            if b == "git" {
+                // The capture links the real git (capture.rb), so `register
+                // update` sees a directory that is not a git work tree.
+                std::os::unix::fs::symlink("/usr/bin/git", Path::new(&bin).join("git")).unwrap();
+            } else {
+                install_executable(Path::new(&bin), &b);
+            }
+        }
+        for (rel, body) in case["home_before"].as_object().unwrap() {
+            let path = Path::new(&home).join(rel);
+            std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+            std::fs::write(path, body.as_str().unwrap()).unwrap();
+        }
+        for (rel, body) in case["defs"].as_object().unwrap() {
+            let (base, rest) = rel.split_once('/').unwrap();
+            let base = if base == "user" { &xdg } else { &sysdata };
+            let path = Path::new(base).join("ukiryu/definitions").join(rest);
+            std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+            std::fs::write(&path, body.as_str().unwrap()).unwrap();
+            set_mtime(&path, mtime);
+        }
+        match mode {
+            "env" | "user" => copy_tree(&fixture, Path::new(&register), SystemTime::now()),
+            "empty" => {
+                let tools = Path::new(&register).join("tools/x");
+                std::fs::create_dir_all(&tools).unwrap();
+                std::fs::write(tools.join("a.yaml"), "---\nname: x\n").unwrap();
+            }
+            other => panic!("{name}: register mode {other}"),
+        }
+        let mut env = vec![
+            ("HOME".to_owned(), home.clone()),
+            ("PATH".to_owned(), bin.clone()),
+            ("TZ".to_owned(), "UTC".to_owned()),
+            ("XDG_DATA_HOME".to_owned(), xdg.clone()),
+            ("XDG_DATA_DIRS".to_owned(), sysdata.clone()),
+        ];
+        if mode != "user" {
+            env.push(("UKIRYU_REGISTER".to_owned(), register.clone()));
+        }
+        for (k, v) in case["env"].as_object().unwrap() {
+            env.retain(|(name, _)| name != k);
+            env.push((
+                k.clone(),
+                v.as_str().unwrap().replace("{REGISTER}", &register),
+            ));
+        }
+        let args: Vec<String> = strings(&case["args"])
+            .into_iter()
+            .map(|a| a.replace("{REGISTER}", &register))
+            .collect();
+        assert!(
+            REMAINDER_VERBS.contains(&args[0].as_str()),
+            "{name}: verb {}",
+            args[0]
+        );
+        let subst = |golden: &Value| {
+            golden
+                .as_str()
+                .unwrap()
+                .replace("{HOME}", &home)
+                .replace("{BIN}", &bin)
+                .replace("{XDG}", &xdg)
+                .replace("{SYSDATA}", &sysdata)
+                .replace("{REGISTER}", &register)
+        };
+        let (want_out, want_err) = (subst(&case["stdout"]), subst(&case["stderr"]));
+        let want_code = case["exit"].as_i64().unwrap() as i32;
+        let got = run(&args, &env, Path::new(&home), None);
+        replayed += 1;
+        let mut fail = |what: String| failures.push(format!("{name}: {what}"));
+        if !case["note"].is_null() {
+            // D2: the strict shell error after the output printed before the
+            // first tool lookup.
+            let first = want_out.split_inclusive('\n').next().unwrap();
+            if got.stdout != first
+                || !got
+                    .stderr
+                    .starts_with("[Ukiryu::Errors::UnknownShellError] ")
+                || got.code != 1
+            {
+                fail(format!(
+                    "D2 row: exit {} out {:?} err {:?}",
+                    got.code, got.stdout, got.stderr
+                ));
+            }
+        } else {
+            const WARNING: &str = "\x1b[31mWarning: Failed to load config file: ";
+            let got_lines: Vec<&str> = got.stdout.split('\n').collect();
+            let want_lines: Vec<&str> = want_out.split('\n').collect();
+            let same_out = got_lines.len() == want_lines.len()
+                && got_lines.iter().zip(&want_lines).all(|(g, w)| {
+                    if w.starts_with(WARNING) {
+                        g.starts_with(WARNING) && g.ends_with("\x1b[0m")
+                    } else {
+                        g == w
+                    }
+                });
+            if !same_out {
+                fail(format!("stdout {:?}\nexpected {want_out:?}", got.stdout));
+            }
+            if got.stderr != want_err {
+                fail(format!("stderr {:?}\nexpected {want_err:?}", got.stderr));
+            }
+            if got.code != want_code {
+                fail(format!("exit {} expected {want_code}", got.code));
+            }
+        }
+        let want_files = case["home_after"].as_object().unwrap();
+        let got_files: Vec<String> = files_under(Path::new(&home))
+            .into_iter()
+            .filter(|rel| !rel.starts_with(".ukiryu/register"))
+            .collect();
+        let keys: Vec<String> = want_files.keys().cloned().collect();
+        if got_files != keys {
+            fail(format!("files {got_files:?} expected {keys:?}"));
+        } else {
+            for (rel, body) in want_files {
+                let text = std::fs::read_to_string(Path::new(&home).join(rel)).unwrap();
+                if text != body.as_str().unwrap() {
+                    fail(format!("{rel} = {text:?}"));
+                }
+            }
+        }
+        let _ = std::fs::remove_dir_all(&root);
+    }
+    assert_eq!(
+        replayed,
+        goldens["cases"].as_array().unwrap().len(),
+        "every remainder row is replayed"
+    );
+    assert!(
+        failures.is_empty(),
+        "{} of {replayed} differ:\n{}",
+        failures.len(),
+        failures.join("\n\n")
+    );
+}
+
+/// The corpus `cli-output` rows of the verbs above (captured from the Ruby
+/// CLI on Linux by corpus/oracle-ruby `op_cli_run`), replayed byte for byte.
+/// Every such row must be listed here, so a new row cannot be skipped.
+#[cfg(target_os = "linux")]
+const CORPUS_REMAINDER_ROWS: [&str; 4] = [
+    "cli-output.commands-jq",
+    "cli-output.commands-unknown",
+    "cli-output.resolve-jq",
+    "cli-output.resolve-jq-1-0",
+];
+
+#[cfg(target_os = "linux")]
+#[test]
+fn corpus_cli_output_rows_of_the_remainder_verbs() {
+    let corpus = Path::new(env!("CARGO_MANIFEST_DIR")).join("../corpus/conformance");
+    let inputs = corpus.join("inputs");
+    let inputs = inputs.to_str().unwrap();
+    let cases = std::fs::read_to_string(corpus.join("cases/cli-output.jsonl")).unwrap();
+    let mut seen = Vec::new();
+    let mut failures = Vec::new();
+    for line in cases.lines().filter(|l| !l.trim().is_empty()) {
+        let case: Value = serde_json::from_str(line).unwrap();
+        let id = case["id"].as_str().unwrap();
+        let argv = strings(&case["input"]["argv"]);
+        if !REMAINDER_VERBS.contains(&argv[0].as_str()) {
+            continue;
+        }
+        assert!(CORPUS_REMAINDER_ROWS.contains(&id), "unlisted row {id}");
+        seen.push(id.to_owned());
+        let home = scratch(&format!("corpus-{id}"));
+        let h = home.to_str().unwrap();
+        // `op_cli_run`'s environment (corpus/oracle-ruby/lib/ops.rb). The
+        // oracle inherits the host PATH; a plain system PATH stands in.
+        let mut env: Vec<(String, String)> = [
+            ("HOME", h),
+            ("TZ", "UTC"),
+            ("LANG", "C.UTF-8"),
+            ("LC_ALL", "C.UTF-8"),
+            ("SHELL", "/bin/bash"),
+            ("COLUMNS", "100"),
+            ("THOR_COLUMNS", "100"),
+            ("TERM", "dumb"),
+            ("GIT_REDIRECT_STDERR", "/dev/null"),
+            ("PATH", "/usr/bin:/bin"),
+        ]
+        .iter()
+        .map(|(k, v)| ((*k).to_owned(), (*v).to_owned()))
+        .collect();
+        env.push(("UKIRYU_REGISTER".to_owned(), format!("{inputs}/register")));
+        if let Some(extra) = case["input"]["env"].as_object() {
+            for (k, v) in extra {
+                env.retain(|(name, _)| name != k);
+                env.push((k.clone(), v.as_str().unwrap().to_owned()));
+            }
+        }
+        let args: Vec<String> = argv
+            .iter()
+            .map(|a| a.replace("${INPUTS}", inputs))
+            .collect();
+        let stdin = case["input"]["stdin"].as_str();
+        let got = run(&args, &env, &home, stdin);
+        let expect = &case["expect"]["ok"];
+        let subst = |v: &Value| {
+            v.as_str()
+                .unwrap()
+                .replace("${INPUTS}", inputs)
+                .replace("${HOME}", h)
+        };
+        let (want_out, want_err) = (subst(&expect["stdout"]), subst(&expect["stderr"]));
+        let want_code = expect["exit"].as_i64().unwrap() as i32;
+        if got.stdout != want_out || got.stderr != want_err || got.code != want_code {
+            failures.push(format!(
+                "{id}: exit {} out {:?} err {:?}\nexpected exit {want_code} out {want_out:?} err {want_err:?}",
+                got.code, got.stdout, got.stderr
+            ));
+        }
+        let _ = std::fs::remove_dir_all(&home);
+    }
+    assert_eq!(seen, CORPUS_REMAINDER_ROWS, "corpus rows replayed");
+    assert!(failures.is_empty(), "{}", failures.join("\n\n"));
+}
+
+/// The interface path of `list` needs `Tool.find_by`: the binary prints the
+/// tools listed before it, then stops with the gated status.
+#[cfg(target_os = "linux")]
+#[test]
+fn list_stops_gated_at_an_interface_lookup() {
+    let root = scratch("remainder-list-gated");
+    let register = root.join("register");
+    copy_tree(
+        &Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/inspect_data/register"),
+        &register,
+        SystemTime::now(),
+    );
+    std::fs::write(
+        register.join("tools/zeta/index.yaml"),
+        "---\nukiryu_schema: '1.0'\nname: zeta\ninterface: zeta\nimplementations: []\n",
+    )
+    .unwrap();
+    let bin = root.join("bin");
+    std::fs::create_dir_all(&bin).unwrap();
+    for b in ["bash", "sh", "which", "beta", "zeta"] {
+        install_executable(&bin, b);
+    }
+    let s = |p: &Path| p.to_str().unwrap().to_owned();
+    let env = vec![
+        ("HOME".to_owned(), s(&root)),
+        ("PATH".to_owned(), s(&bin)),
+        ("TZ".to_owned(), "UTC".to_owned()),
+        ("SHELL".to_owned(), "/bin/bash".to_owned()),
+        ("UKIRYU_REGISTER".to_owned(), s(&register)),
+    ];
+    let got = run(&["list".to_owned()], &env, &root, None);
+    assert_eq!(got.code, GATED_EXIT, "{:?} {:?}", got.stdout, got.stderr);
+    // The header printed before the lookup comes first.
+    assert!(
+        got.stdout.contains("Available tools (2):"),
+        "{:?}",
+        got.stdout
+    );
+    assert!(
+        got.stderr
+            .starts_with("ukiryu: 'list (interface lookup for zeta)' is not available"),
+        "{:?}",
+        got.stderr
     );
     let _ = std::fs::remove_dir_all(&root);
 }
