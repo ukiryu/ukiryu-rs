@@ -3,10 +3,11 @@ on:
   pull_request:
   push:
     branches: [main]
+  workflow_call:
 permissions:
   contents: read
 concurrency:
-  group: wasm-${{ github.ref }}
+  group: wasm-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   floor:
