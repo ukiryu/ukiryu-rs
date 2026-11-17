@@ -1,0 +1,8 @@
+# Test image for the Rust ukiryu CLI on ubuntu:22.04.
+# The CLI binary and the repository are mounted at run time by
+# scripts/docker-test-all.sh; nothing is built or copied into the image.
+FROM ubuntu:22.04
+
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    bash zsh fish dash tcsh ca-certificates coreutils findutils grep sed gawk jq file \
+    && rm -rf /var/lib/apt/lists/*
