@@ -804,7 +804,8 @@ fn thor_command_list(width: Option<&str>) -> String {
         .unwrap_or(0);
     let mut out = String::from("ukiryu commands:\n");
     for (usage, about) in ROWS.iter().chain(std::iter::once(&WHICH)) {
-        let sentence = format!("{usage:<width$}{about}", width = column + 2);
+        // Thor lists each description as a `# ` comment.
+        let sentence = format!("{usage:<width$}# {about}", width = column + 2);
         let chars: Vec<char> = sentence.chars().collect();
         let line: String = if chars.len() <= terminal_width {
             sentence

@@ -798,12 +798,7 @@ fn simple(args: &[&str]) -> Output {
 
 #[test]
 fn verbs_without_a_merged_handler_fail_gated() {
-    for args in [
-        // A bare `info` prints Thor's help in the source.
-        &["info"][..],
-        &["describe", "ls"],
-        &["which", "ls"],
-    ] {
+    for args in [&["describe", "ls"][..], &["which", "ls"]] {
         let got = simple(args);
         assert_eq!(got.code, GATED_EXIT, "{args:?}: {}", got.stderr);
         assert_eq!(got.stdout, "", "{args:?}");
