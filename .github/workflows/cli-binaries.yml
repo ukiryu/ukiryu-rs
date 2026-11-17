@@ -5,13 +5,14 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  workflow_call:
 
 # Candidates only. Attaching assets, tags and release publication need approval.
 permissions:
   contents: read
 
 concurrency:
-  group: cli-binaries-${{ github.ref }}
+  group: cli-binaries-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
