@@ -9,7 +9,7 @@ use serde::Deserialize;
 use serde_json::{json, Value as Json};
 
 use super::error::{model_error, ruby, schema_error, transport};
-use super::value::encode;
+use super::value::{encode, EncodeError};
 use crate::definition::linter::{DefinitionLinter, LintResult};
 use crate::definition::LintIssueHash;
 use crate::models::{Model, ToolDefinition};
@@ -28,13 +28,22 @@ pub enum LintRequest {
 pub fn lint(request: LintRequest) -> Json {
     match request {
         LintRequest::String { yaml } => match DefinitionLinter::lint_string(&yaml, None) {
-            Ok(result) => json!({"ok": true, "value": encode(&lint_hash(&result))}),
+            Ok(result) => match encoded(&lint_hash(&result)) {
+                Ok(value) => json!({"ok": true, "value": value}),
+                Err(error) => error,
+            },
             Err(error) => match error.ruby_class() {
                 Some(class) => ruby(class, error.message()),
                 None => transport("NOT_PORTED", error.message()),
             },
         },
     }
+}
+
+/// `encode`, failing with the reply for the `JSON::GeneratorError` the
+/// oracle's `JSON.generate` raises on a value it cannot write.
+fn encoded(value: &Value) -> Result<Json, Json> {
+    encode(value).map_err(|error| ruby(EncodeError::CLASS, error))
 }
 
 fn sym(name: &str) -> Value {
@@ -103,7 +112,7 @@ pub fn yaml(request: YamlRequest) -> Json {
         YamlRequest::SafeLoad { yaml } => schema::safe_load(&yaml, Permitted::DOCUMENT)
             .map_err(|e| reader_error(&e, "document"))
             .and_then(|data| data_value(&data))
-            .map(|v| encode(&v)),
+            .and_then(|v| encoded(&v)),
         #[cfg(not(target_arch = "wasm32"))]
         YamlRequest::ModelLoad { model, path } => snapshot::load(&model, &path),
         YamlRequest::ModelToYaml { model, yaml } => match model.as_str() {
@@ -176,8 +185,7 @@ mod snapshot {
     use serde_json::{json, Value as Json};
 
     use super::super::error::model_error;
-    use super::super::value::encode;
-    use super::unknown_model;
+    use super::{encoded, unknown_model};
     use crate::models::{
         ImplementationIndex, ImplementationVersion, Interface, Text, VersionDetection,
         VersionDetectionMethod,
@@ -185,13 +193,18 @@ mod snapshot {
 
     pub fn load(model: &str, path: &str) -> Result<Json, Json> {
         let path = Path::new(path);
-        let loaded = match model {
-            "Interface" => Interface::from_yaml(path).map(|i| interface(&i)),
-            "ImplementationVersion" => ImplementationVersion::from_yaml(path).map(|v| version(&v)),
-            "ImplementationIndex" => ImplementationIndex::from_yaml(path).map(|i| index(&i)),
-            other => return Err(unknown_model(other)),
-        };
-        loaded.map_err(|e| model_error(&e))
+        match model {
+            "Interface" => Interface::from_yaml(path)
+                .map_err(|e| model_error(&e))
+                .and_then(|i| interface(&i)),
+            "ImplementationVersion" => ImplementationVersion::from_yaml(path)
+                .map_err(|e| model_error(&e))
+                .and_then(|v| version(&v)),
+            "ImplementationIndex" => ImplementationIndex::from_yaml(path)
+                .map_err(|e| model_error(&e))
+                .and_then(|i| index(&i)),
+            other => Err(unknown_model(other)),
+        }
     }
 
     /// `{"class": name, "ivars": {...}}`; `ivars` are given sorted by name.
@@ -201,92 +214,106 @@ mod snapshot {
         json!({"class": class, "ivars": ivars})
     }
 
-    fn interface(i: &Interface) -> Json {
-        object(
+    fn interface(i: &Interface) -> Result<Json, Json> {
+        Ok(object(
             "Ukiryu::Models::Interface",
             vec![
-                ("@actions", encode(&i.actions)),
+                ("@actions", encoded(&i.actions)?),
                 (
                     "@aliases",
                     Json::Array(i.aliases.iter().map(|a| json!({"$sym": a})).collect()),
                 ),
-                ("@display_name", encode(&i.display_name)),
-                ("@name", encode(&i.name)),
-                ("@version", encode(&i.version)),
+                ("@display_name", encoded(&i.display_name)?),
+                ("@name", encoded(&i.name)?),
+                ("@version", encoded(&i.version)?),
             ],
-        )
+        ))
     }
 
-    fn version(v: &ImplementationVersion) -> Json {
-        object(
+    fn version(v: &ImplementationVersion) -> Result<Json, Json> {
+        Ok(object(
             "Ukiryu::Models::ImplementationVersion",
             vec![
                 ("@aliases", json!(v.aliases)),
-                ("@display_name", encode(&v.display_name)),
-                ("@execution_profiles", encode(&v.execution_profiles)),
-                ("@implements", encode(&v.implements)),
-                ("@version", encode(&v.version)),
+                ("@display_name", encoded(&v.display_name)?),
+                ("@execution_profiles", encoded(&v.execution_profiles)?),
+                ("@implements", encoded(&v.implements)?),
+                ("@version", encoded(&v.version)?),
                 (
                     "@version_detection",
-                    v.version_detection.as_ref().map_or(Json::Null, detection),
+                    v.version_detection
+                        .as_ref()
+                        .map_or(Ok(Json::Null), detection)?,
                 ),
             ],
-        )
+        ))
     }
 
-    fn index(i: &ImplementationIndex) -> Json {
-        object(
+    fn index(i: &ImplementationIndex) -> Result<Json, Json> {
+        Ok(object(
             "Ukiryu::Models::ImplementationIndex",
             vec![
                 (
                     "@implementations",
-                    Json::Array(i.implementations.iter().map(encode).collect()),
+                    Json::Array(
+                        i.implementations
+                            .iter()
+                            .map(encoded)
+                            .collect::<Result<_, _>>()?,
+                    ),
                 ),
-                ("@interface", encode(&i.interface)),
-                ("@interface_version", encode(&i.interface_version)),
-                ("@name", encode(&i.name)),
+                ("@interface", encoded(&i.interface)?),
+                ("@interface_version", encoded(&i.interface_version)?),
+                ("@name", encoded(&i.name)?),
             ],
-        )
+        ))
     }
 
-    fn text(t: Option<&Text>) -> Json {
-        t.map_or(Json::Null, |t| encode(&t.to_ruby_value()))
+    fn text(t: Option<&Text>) -> Result<Json, Json> {
+        t.map_or(Ok(Json::Null), |t| encoded(&t.to_ruby_value()))
     }
 
     /// The model's declared attributes as the core holds them; lutaml's own
     /// bookkeeping instance variables have no counterpart in the core.
-    fn detection(vd: &VersionDetection) -> Json {
-        object(
+    fn detection(vd: &VersionDetection) -> Result<Json, Json> {
+        Ok(object(
             "Ukiryu::Models::VersionDetection",
             vec![
                 (
                     "@command",
-                    vd.command.as_ref().map_or(Json::Null, |items| {
-                        Json::Array(items.iter().map(|t| text(Some(t))).collect())
-                    }),
+                    match &vd.command {
+                        Some(items) => Json::Array(
+                            items
+                                .iter()
+                                .map(|t| text(Some(t)))
+                                .collect::<Result<_, _>>()?,
+                        ),
+                        None => Json::Null,
+                    },
                 ),
                 (
                     "@detection_methods",
-                    vd.detection_methods.as_ref().map_or(Json::Null, |ms| {
-                        Json::Array(ms.iter().map(method).collect())
-                    }),
+                    match &vd.detection_methods {
+                        Some(ms) => Json::Array(ms.iter().map(method).collect::<Result<_, _>>()?),
+                        None => Json::Null,
+                    },
                 ),
-                ("@modern_threshold", text(vd.modern_threshold.as_ref())),
-                ("@pattern", text(vd.pattern.as_ref())),
-                ("@source", text(vd.source.get())),
+                ("@modern_threshold", text(vd.modern_threshold.as_ref())?),
+                ("@pattern", text(vd.pattern.as_ref())?),
+                ("@source", text(vd.source.get())?),
             ],
-        )
+        ))
     }
 
-    fn method(m: &VersionDetectionMethod) -> Json {
-        object(
+    fn method(m: &VersionDetectionMethod) -> Result<Json, Json> {
+        Ok(object(
             "Ukiryu::Models::VersionDetectionMethod",
             vec![
-                ("@command", text(m.command.as_ref())),
-                ("@paths", m.paths.as_ref().map_or(Json::Null, encode)),
-                ("@pattern", text(m.pattern.as_ref())),
-                ("@type", text(m.r#type.as_ref())),
+                ("@command", text(m.command.as_ref())?),
+                ("@paths", m.paths.as_ref().map_or(Ok(Json::Null), encoded)?),
+                ("@pattern", text(m.pattern.as_ref())?),
+                ("@type", text(m.r#type.as_ref())?),
             ],
-        )
+        ))
     }
 }
