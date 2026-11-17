@@ -15,8 +15,8 @@
 //! Text is written as given: the handlers produce UTF-8 strings, and nothing
 //! here re-encodes, appends or strips bytes (no newline translation).
 use crate::commands::author::{
-    self, AuthorContext, AuthorError, Confirm, DefinitionsInput, ExtractInput, LintInput,
-    LintOptions, LintTarget, ValidateInput, ValidateOptions, ValidateTarget,
+    self, AuthorContext, AuthorError, Confirm, DefinitionsInput, DescribeInput, ExtractInput,
+    LintInput, LintOptions, LintTarget, ToolEnv, ValidateInput, ValidateOptions, ValidateTarget,
 };
 use crate::commands::execute::{
     self, CacheAction, CacheInput, ExecInput, ExecuteContext, ExecuteError, RunFileInput,
@@ -43,10 +43,7 @@ pub const GATED_EXIT: i32 = 2;
 
 /// Verbs of the source CLI whose handlers are not merged yet, with the
 /// component they wait for.
-const GATED_VERBS: [(&str, &str); 2] = [
-    ("describe", "the tool API (K22-CLI-AUTHOR)"),
-    ("which", "the register and tool APIs (K22-CLI-INSPECT)"),
-];
+const GATED_VERBS: [(&str, &str); 1] = [("which", "the register and tool APIs (K22-CLI-INSPECT)")];
 
 /// Run the CLI over `args` (including the program name) and return the exit
 /// status. All output goes to the process's stdout, stderr and files.
@@ -242,6 +239,7 @@ fn dispatch(verb: &str, sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Fai
         "lint" => lint(sub, io),
         "definitions" => definitions(sub, io),
         "extract" => extract(sub, io),
+        "describe" => describe(sub, io),
         "exec" => exec(sub, io),
         "run-file" => run_file(sub, io),
         "cache" => cache(sub, io),
@@ -457,6 +455,29 @@ fn extract(sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Failure> {
     let mut process = ProcessHost::new(Environment::new(), shell);
     let ctx = author_context(colors_disabled);
     author_outcome("extract", author::extract(input, &ctx, &mut process), io)
+}
+
+/// `ukiryu describe TOOL [COMMAND]`. `--format` is accepted and not read,
+/// as in the source `DescribeCommand`.
+fn describe(sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Failure> {
+    let input = DescribeInput {
+        tool: required(sub, "tool")?,
+        command: text(sub, "command")?,
+        register: text(sub, "register")?,
+    };
+    let host = Host::native().map_err(|e| Failure::Message(format!("ukiryu: {e}")))?;
+    let config = configuration(&host)?;
+    let colors_disabled = config.resolve("use_color") == Some(&Value::Bool(false));
+    let configured_shell = config
+        .resolve("shell")
+        .and_then(Value::as_str)
+        .map(str::to_owned);
+    let env = ToolEnv {
+        host,
+        configured_shell,
+    };
+    let ctx = author_context(colors_disabled);
+    author_outcome("describe", author::describe(input, &ctx, &env), io)
 }
 
 /// The process facts `exec`, `run-file` and `cache` read. The `paint` gem is
