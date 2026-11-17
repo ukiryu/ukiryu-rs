@@ -75,6 +75,10 @@ verb "config list"       "PR #73" config list
 verb "list"              "PR #73" list
 verb "commands jq"      "PR #73" commands jq
 verb "register"          "PR #73" register
+# resolve reads the user/bundled/system definition directories, not the
+# register, so install the register's jq definition as a user definition.
+mkdir -p "$HOME/.local/share/ukiryu/definitions/jq"
+cp /register/tools/jq/default/*.yaml "$HOME/.local/share/ukiryu/definitions/jq/"
 verb "resolve jq"       "PR #73" resolve jq
 verb "info jq"          "PR #77" info jq
 verb "opts jq"          "PR #77" opts jq
