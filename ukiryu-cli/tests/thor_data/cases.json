@@ -1483,14 +1483,6 @@
     },
     {
       "argv": [
-        "--version"
-      ],
-      "stdout": "",
-      "stderr": "Unknown switches \"--version\"\n",
-      "exit": 1
-    },
-    {
-      "argv": [
         "-v"
       ],
       "stdout": "",

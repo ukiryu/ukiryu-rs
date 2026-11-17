@@ -1028,7 +1028,7 @@ fn thor_help_and_parse_errors_match_the_oracle_captures() {
     let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/thor_data/cases.json");
     let data: Value = serde_json::from_str(&std::fs::read_to_string(path).unwrap()).unwrap();
     let cases = data["cases"].as_array().unwrap();
-    assert_eq!(cases.len(), 261);
+    assert_eq!(cases.len(), 260);
     let mut failures = Vec::new();
     for (i, case) in cases.iter().enumerate() {
         let argv = strings(&case["argv"]);

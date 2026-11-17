@@ -268,6 +268,10 @@ enum Run {
 pub fn preempt(args: &[String], columns: Option<&str>) -> Preempt {
     // Only printable ASCII is modeled; anything else is the clap grammar's.
     let printable = |a: &String| a.bytes().all(|b| (0x20..0x7f).contains(&b));
+    // The Ruby CLI rejects `--version`; the binary keeps it for release checks.
+    if args.len() == 1 && args[0] == "--version" {
+        return Preempt::Pass(args.to_vec());
+    }
     if !args.iter().all(printable) {
         return Preempt::Pass(args.to_vec());
     }
