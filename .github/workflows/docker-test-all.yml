@@ -27,8 +27,9 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # Qualified register revision; bump deliberately.
-  REGISTER_REF: 90fd6a4ae2712c28de652026c403fb2462b49d27
+  # Qualified register revision (head of the register v1 branch, which has the
+  # tools/<tool>/index.yaml layout the CLI reads); bump deliberately.
+  REGISTER_REF: 63c0997355e59afcecef6c45a2c949f0dd199c93
 
 jobs:
   build:
