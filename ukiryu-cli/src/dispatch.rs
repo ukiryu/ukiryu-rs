@@ -22,8 +22,8 @@ use crate::commands::execute::{
     self, CacheAction, CacheInput, ExecInput, ExecuteContext, ExecuteError, RunFileInput,
 };
 use crate::commands::inspect::{
-    self, ConfigInput, HandlerContext, InfoInput, InspectError, OptsInput, SystemInput,
-    VersionInput,
+    self, CommandsInput, ConfigInput, HandlerContext, InfoInput, InspectError, OptsInput,
+    RegisterInput, ResolveInput, SystemInput, VersionInput,
 };
 use crate::commands::CommandOutcome;
 use clap::error::ErrorKind;
@@ -43,13 +43,9 @@ pub const GATED_EXIT: i32 = 2;
 
 /// Verbs of the source CLI whose handlers are not merged yet, with the
 /// component they wait for.
-const GATED_VERBS: [(&str, &str); 6] = [
-    ("list", "the register and tool APIs (K22-CLI-INSPECT)"),
-    ("commands", "the register and tool APIs (K22-CLI-INSPECT)"),
+const GATED_VERBS: [(&str, &str); 2] = [
     ("describe", "the tool API (K22-CLI-AUTHOR)"),
     ("which", "the register and tool APIs (K22-CLI-INSPECT)"),
-    ("resolve", "the register and tool APIs (K22-CLI-INSPECT)"),
-    ("register", "the register API (K22-CLI-INSPECT)"),
 ];
 
 /// Run the CLI over `args` (including the program name) and return the exit
@@ -181,6 +177,35 @@ fn dispatch(verb: &str, sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Fai
                 command: text(sub, "command")?,
             };
             inspect_outcome(inspect::opts(input, &ctx), io)
+        }
+        "list" => {
+            let ctx = handler_context(text(sub, "register")?)?;
+            inspect_outcome(inspect::list(&ctx), io)
+        }
+        "commands" => {
+            let ctx = handler_context(text(sub, "register")?)?;
+            let input = CommandsInput {
+                tool: required(sub, "tool")?,
+            };
+            inspect_outcome(inspect::commands(input, &ctx), io)
+        }
+        "register" => {
+            // `RegisterCommand` takes no `--register` option.
+            let ctx = handler_context(None)?;
+            let input = RegisterInput {
+                subcommand: text(sub, "subcommand")?,
+                force: flag(sub, "force"),
+            };
+            inspect_outcome(inspect::register(input, &ctx), io)
+        }
+        "resolve" => {
+            // `ResolveCommand` takes no `--register` option.
+            let ctx = handler_context(None)?;
+            let input = ResolveInput {
+                tool: required(sub, "tool")?,
+                constraint: text(sub, "version-constraint")?,
+            };
+            inspect_outcome(inspect::resolve(input, &ctx), io)
         }
         "validate" => validate(sub, io),
         "lint" => lint(sub, io),
@@ -517,13 +542,17 @@ fn inspect_outcome(
     match result {
         Ok(outcome) => Ok(io.perform(&outcome.writes).unwrap_or(outcome.exit_code)),
         Err(error) => {
-            if let InspectError::Shell { partial, .. } = &error {
-                if let Some(code) = io.perform(partial) {
-                    return Ok(code);
-                }
+            // The output printed before the failure comes first.
+            if let Some(code) = io.perform(error.partial()) {
+                return Ok(code);
             }
             io.stderr(&format!("{}\n", error.friendly_message()));
-            Ok(1)
+            // A path whose component is missing never reports a plain failure.
+            Ok(if matches!(error, InspectError::Gated { .. }) {
+                GATED_EXIT
+            } else {
+                1
+            })
         }
     }
 }
