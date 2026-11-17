@@ -17,7 +17,11 @@ require 'ukiryu/utils'
 def enc(value)
   case value
   when nil, true, false then value
-  when Symbol then { '$sym' => value.to_s }
+  when Symbol
+    # An ASCII-8BIT Symbol (non-ASCII name bytes): hex, like a binary String.
+    return { '$sym_bytes' => value.to_s.unpack1('H*'), 'encoding' => 'ASCII-8BIT' } if value.encoding == Encoding::BINARY
+
+    { '$sym' => value.to_s }
   when Integer then { '$int' => value.to_s }
   when Float
     text = if value.nan? then 'NaN'
@@ -25,7 +29,11 @@ def enc(value)
            else value.to_s
            end
     { '$float' => text }
-  when String then { '$str' => value, 'encoding' => value.encoding.name }
+  when String
+    # Binary bytes are not valid UTF-8 JSON text; carry them as hex.
+    return { '$bytes' => value.unpack1('H*'), 'encoding' => 'ASCII-8BIT' } if value.encoding == Encoding::BINARY
+
+    { '$str' => value, 'encoding' => value.encoding.name }
   when Array then { '$array' => value.map { |item| enc(item) } }
   when Hash then { '$hash' => value.map { |key, item| [enc(key), enc(item)] } }
   else raise "unencodable #{value.class}"
@@ -87,6 +95,20 @@ extra_rows = [
   ['order', "b: 1\na: 2\nc: {z: 1, y: 2}\n"],
   ['bigint', "v: 123456789012345678901234567890\n"],
   ['negative-bigint', "v: -123456789012345678901234567890\n"],
+  ['bigint-in-sequence', "v: [123456789012345678901234567890, -99999999999999999999, 1]\n"],
+  ['bigint-underscore', "v: 1_000_000_000_000_000_000_000\n"],
+  ['bigint-hex', "v: 0x1ffffffffffffffffffff\n"],
+  ['bigint-quoted', "v: '123456789012345678901234567890'\n"],
+  ['bigint-key', "99999999999999999999: a\n"],
+  ['exponent-floats', "v: [1e5, 1E-3, 6.02e+23, 1.5e3, 2.e3]\n"],
+  ['exponent-quoted', "v: '1e300'\n"],
+  ['binary-ff', "v: !!binary /w==\n"],
+  ['binary-utf8-bytes', "v: !!binary w6k=\n"],
+  ['binary-nul-ctrl', "v: !!binary AAECG38J\n"],
+  ['binary-in-collections', "v: [!!binary /w==, {k: !!binary aGk=}]\n"],
+  ['binary-key-ascii', "v: {!!binary aGk=: 1}\n"],
+  ['binary-key-top', "!!binary aGk=: 1\n"],
+  ['binary-key-nonascii', "v: {!!binary /w==: 1}\n"],
   ['i64-edges', "v: [9223372036854775807, -9223372036854775808, 18446744073709551615]\n"],
   ['floats', "v: [1.0, 2.5, -0.0, 1e300]\n"],
   ['nil-false', "v: [null, ~, false, true]\n"],
