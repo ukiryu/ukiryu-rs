@@ -221,6 +221,27 @@ impl Tool {
     /// `:` is a routed action (`remote:add`), anything else a command name.
     /// `params` is the Symbol-keyed Hash `Options#to_params` produces.
     pub fn build(&self, root_path: &str, params: &Value) -> Result<BuiltCommand, ToolError> {
+        let (mut built, command) = self.build_parts(root_path, params)?;
+        if let Some(command) = command {
+            built.invocation.executable = self.command_executable(command)?;
+        }
+        Ok(built)
+    }
+
+    /// `#build_args` and `#build_env_vars` for `root_path`, without the
+    /// executable choice [`Tool::build`] makes afterwards: a routed action's
+    /// invocation names its routing target, a command's names no executable
+    /// (an empty string). Parameter validation and its errors are those of
+    /// [`Tool::build`].
+    pub fn build_args(&self, root_path: &str, params: &Value) -> Result<BuiltCommand, ToolError> {
+        self.build_parts(root_path, params).map(|(built, _)| built)
+    }
+
+    fn build_parts(
+        &self,
+        root_path: &str,
+        params: &Value,
+    ) -> Result<(BuiltCommand, Option<&CommandDefinition>), ToolError> {
         if root_path.contains(':') {
             let path = split_root_path(root_path);
             let resolution =
@@ -231,7 +252,10 @@ impl Tool {
             let action = resolution.action.ok_or_else(|| ToolError::Argument {
                 message: format!("Action not found: {}", inspect_path(&path)),
             })?;
-            self.build_command(resolution.executable, action, params)
+            Ok((
+                self.build_command(resolution.executable, action, params)?,
+                None,
+            ))
         } else {
             let command =
                 self.command_definition(root_path)
@@ -240,9 +264,10 @@ impl Tool {
                     })?;
             // Arguments are built (and validated) before the executable is
             // chosen, as in the source.
-            let mut built = self.build_command(String::new(), command, params)?;
-            built.invocation.executable = self.command_executable(command)?;
-            Ok(built)
+            Ok((
+                self.build_command(String::new(), command, params)?,
+                Some(command),
+            ))
         }
     }
 
