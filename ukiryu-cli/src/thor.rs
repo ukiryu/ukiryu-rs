@@ -428,7 +428,7 @@ fn group(name: &str, rest: &[String]) -> Preempt {
         return pass();
     }
     let help = rest.iter().any(is_help);
-    let words: Vec<&String> = rest.iter().filter(|w| !is_help(*w)).collect();
+    let words: Vec<&String> = rest.iter().filter(|w| !is_help(w)).collect();
     let names: Vec<&str> = group.subs.iter().map(|s| s.name).collect();
     let group_help = || output(verb_help(name));
     let Some(first) = words.first() else {
