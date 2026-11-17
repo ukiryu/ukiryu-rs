@@ -981,6 +981,39 @@ fn info_and_opts_replay_the_corpus_rows() {
     );
 }
 
+/// The Thor `help`, `help exec`, unknown-verb and `validate lint` rows.
+#[cfg(target_os = "linux")]
+#[test]
+fn thor_help_and_unknown_command_rows_replay_the_corpus() {
+    let cases = std::fs::read_to_string(conformance_dir().join("cases/cli-output.jsonl")).unwrap();
+    let wanted = [
+        "cli-output.help",
+        "cli-output.help-exec",
+        "cli-output.unknown-verb",
+        "cli-output.lint-file",
+    ];
+    let mut seen = Vec::new();
+    for line in cases.lines() {
+        let row: Value = serde_json::from_str(line).unwrap();
+        let id = row["id"].as_str().unwrap();
+        if !wanted.contains(&id) {
+            continue;
+        }
+        let argv = strings(&row["input"]["argv"]);
+        let want = &row["expect"]["ok"];
+        let got = corpus_cli(id, &argv, &[]);
+        assert_eq!(got.stdout, want["stdout"].as_str().unwrap(), "{id} stdout");
+        assert_eq!(got.stderr, want["stderr"].as_str().unwrap(), "{id} stderr");
+        assert_eq!(
+            i64::from(got.code),
+            want["exit"].as_i64().unwrap(),
+            "{id} exit"
+        );
+        seen.push(id.to_owned());
+    }
+    assert_eq!(seen, wanted);
+}
+
 /// The interface, `--all`, `NO_COLOR` and error paths of `info` and `opts`
 /// the corpus does not cover, captured from the same oracle.
 #[cfg(target_os = "linux")]

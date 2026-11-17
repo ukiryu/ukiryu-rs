@@ -65,9 +65,27 @@ where
     I: IntoIterator<Item = T>,
     T: Into<OsString> + Clone,
 {
+    let args: Vec<OsString> = args.into_iter().map(Into::into).collect();
+    // Thor's own `help [COMMAND]` replaces clap's help subcommand.
+    if args
+        .get(1)
+        .is_some_and(|verb| verb.to_str() == Some("help"))
+    {
+        let target = args.get(2).and_then(|name| name.to_str());
+        let help = match (args.len(), target) {
+            (2, _) => Some(thor_command_list(
+                std::env::var("THOR_COLUMNS").ok().as_deref(),
+            )),
+            (_, Some("exec")) => Some(THOR_EXEC_HELP.to_owned()),
+            _ => None,
+        };
+        if let Some(help) = help {
+            return io.perform(&[OutputWrite::Stdout(help)]).unwrap_or(0);
+        }
+    }
     let matches = match crate::arguments::command().try_get_matches_from(args) {
         Ok(matches) => matches,
-        Err(error) => return parse_error(error),
+        Err(error) => return parse_error(error, io),
     };
     let Some((verb, sub)) = matches.subcommand() else {
         // `subcommand_required` makes this unreachable through clap.
@@ -96,8 +114,19 @@ where
 
 /// clap's help and version requests print to stdout and succeed; every other
 /// parse error goes to stderr with the source's failure status 1.
-fn parse_error(error: clap::Error) -> i32 {
+fn parse_error(error: clap::Error, io: &mut ProcessIo) -> i32 {
     match error.kind() {
+        // Thor reports an unknown (sub)command as one stderr line, status 1.
+        ErrorKind::InvalidSubcommand => {
+            if let Some(clap::error::ContextValue::String(name)) =
+                error.get(clap::error::ContextKind::InvalidSubcommand)
+            {
+                io.stderr(&format!("Could not find command \"{name}\".\n"));
+                return 1;
+            }
+            let _ = error.print();
+            1
+        }
         ErrorKind::DisplayHelp | ErrorKind::DisplayVersion => {
             let _ = error.print();
             0
@@ -664,6 +693,27 @@ impl Confirm for StdinConfirm {
         }
     }
 }
+
+/// Thor's `ukiryu help exec`, captured from the pinned exe/ukiryu.
+const THOR_EXEC_HELP: &str = "Usage:
+  ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]
+
+Options:
+  -r, [--register=REGISTER]                          # Path to tool register
+  -d, [--definition=DEFINITION]                      # Path to tool definition file
+  -f, [--format=FORMAT]                              # Response format (yaml, json, table, raw)
+                                                     # Default: yaml
+  -o, [--output=OUTPUT]                              # Output file for response (default: stdout)
+  -D, [--dry-run], [--no-dry-run], [--skip-dry-run]  # Show execution request without executing
+                                                     # Default: false
+  -s, [--shell=SHELL]                                # Shell to use for command execution (bash, zsh, fish, sh, powershell, cmd)
+      [--stdin], [--no-stdin], [--skip-stdin]        # Read input from stdin (pass to command)
+                                                     # Default: false
+      [--raw], [--no-raw], [--skip-raw]              # Output raw stdout/stderr (for pipe composition)
+                                                     # Default: false
+
+Execute a tool command inline
+";
 
 /// Thor's `ukiryu help` listing (`Thor.help`: `print_table(list, indent: 2,
 /// truncate: true)` then a blank line), captured from the pinned exe/ukiryu.
