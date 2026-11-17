@@ -50,7 +50,9 @@ pub const FAILED_TO_LOAD_SCHEMA: &str = "Failed to load schema";
 /// this port refuses to emulate.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SchemaError {
-    /// `Psych::SyntaxError`. The message is the YAML engine's, not Psych's.
+    /// `Psych::SyntaxError`. The message is Psych's where
+    /// `models::safe_load::syntax_message` knows the diagnostic, else the
+    /// YAML engine's.
     YamlSyntax { message: String },
     /// `Psych::DisallowedClass`.
     DisallowedClass { class: String },

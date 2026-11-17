@@ -21,12 +21,12 @@ jobs:
           import pathlib, tomllib
           root = tomllib.loads(pathlib.Path('Cargo.toml').read_text())
           dep = root['workspace']['dependencies']['yeptris']
-          assert dep == {'version': '=0.6.66', 'features': ['vendored']}, dep
+          assert dep == {'version': '=0.6.72', 'features': ['vendored']}, dep
           core = tomllib.loads(pathlib.Path('ukiryu/Cargo.toml').read_text())
           assert core['package']['publish'] is False
           lock = tomllib.loads(pathlib.Path('Cargo.lock').read_text())
           dep = next(p for p in lock['package'] if p['name'] == 'yeptris')
-          assert dep['version'] == '0.6.66', dep
+          assert dep['version'] == '0.6.72', dep
           assert dep['source'] == 'registry+https://github.com/rust-lang/crates.io-index', dep
           assert len(dep['checksum']) == 64, dep
           print(dep)
