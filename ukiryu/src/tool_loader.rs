@@ -601,12 +601,9 @@ fn read_document(path: &Path) -> Result<Option<String>, LoadError> {
     if !path.exists() {
         return Ok(None);
     }
-    fs::read_to_string(path).map(Some).map_err(|error| {
-        LoadError::Register(register::Error::Io {
-            path: path.to_path_buf(),
-            error,
-        })
-    })
+    fs::read_to_string(path)
+        .map(Some)
+        .map_err(|error| LoadError::Register(register::open_error(path, error)))
 }
 
 /// `Register#load_implementation_index(tool)`: `tools/<tool>/index.yaml`.
@@ -1046,5 +1043,21 @@ impl<R: CommandRunner> DefinitionSource for RegisterSource<R> {
         };
         let mut runner = self.runner.borrow_mut();
         load_definition(&self.register, name, &load, &mut *runner).map_err(ToolError::from)
+    }
+
+    fn load_definition_for(
+        &self,
+        name: &str,
+        platform: &str,
+        shell: &str,
+    ) -> Option<Result<Option<ToolDefinition>, ToolError>> {
+        let load = LoadOptions {
+            current_platform: self.current_platform.as_str(),
+            platform: Some(platform),
+            shell,
+            executable: self.executable.as_deref(),
+        };
+        let mut runner = self.runner.borrow_mut();
+        Some(load_definition(&self.register, name, &load, &mut *runner).map_err(ToolError::from))
     }
 }

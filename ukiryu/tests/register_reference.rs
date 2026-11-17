@@ -565,28 +565,29 @@ fn clone_and_update_match_reference() {
 }
 
 #[test]
-fn missing_git_executable_uses_path_guidance() {
+fn missing_git_executable_raises_the_spawn_errno() {
+    // `Register#clone!` rescues only `Git::Error`; the `Errno::ENOENT` from
+    // starting a missing git reaches the caller (B13 oracle rows F13-F17).
     let scratch = Scratch::new("nogit");
     let reg = Register::at(scratch.path("register"));
+    let program = scratch.path("definitely-not-git");
     let git = Git {
-        program: scratch.path("definitely-not-git"),
+        program: program.clone(),
         remote_url: "https://example.invalid/register".into(),
     };
     let err = reg.clone_register(&git).unwrap_err();
-    assert_eq!(err.class_name(), "Ukiryu::Register::CloneError");
+    assert_eq!(err.class_name(), "Errno::ENOENT");
     let message = err.to_string();
     assert!(
-        message.starts_with("Failed to clone register: "),
+        message.ends_with(&format!(" - {}", program.display())),
         "{message}"
     );
-    assert!(message.contains("This error usually means git is not in PATH"));
+    assert!(!message.contains("(os error"), "{message}");
 
     // A spawn failure must not erase a directory the caller already owned.
     let note = scratch.write("occupied/keep.txt", "pre-existing user data");
     let occupied = Register::at(scratch.path("occupied"));
     let error = occupied.clone_register(&git).unwrap_err();
-    assert!(error
-        .to_string()
-        .contains("This error usually means git is not in PATH"));
+    assert_eq!(error.class_name(), "Errno::ENOENT");
     assert_eq!(fs::read_to_string(note).unwrap(), "pre-existing user data");
 }

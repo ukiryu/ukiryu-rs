@@ -105,7 +105,7 @@ pub fn safe_load(text: &str, policy: LoadPolicy) -> Result<Value, ModelError> {
         ModelError::new(
             ModelErrorKind::Syntax,
             e.message()
-                .map(str::to_owned)
+                .map(syntax_message)
                 .unwrap_or_else(|| e.to_string()),
         )
     })?;
@@ -117,6 +117,39 @@ pub fn safe_load(text: &str, policy: LoadPolicy) -> Result<Value, ModelError> {
         open: Vec::new(),
     }
     .node(root)
+}
+
+/// The libyaml diagnostics that Yeptris reports with libyaml's words and
+/// mark: the flow-sequence parser error and the scanner's mapping-value
+/// error.
+const PSYCH_DIAGNOSTICS: [&str; 2] = [
+    "did not find expected ',' or ']' while parsing a flow sequence",
+    "mapping values are not allowed in this context",
+];
+
+/// The Syntax message for a Yeptris parse failure. A message that is
+/// exactly one of [`PSYCH_DIAGNOSTICS`] followed by Yeptris'
+/// `(line L, column C)` mark is spelled as `Psych::SyntaxError#message`
+/// spells it for a string source (`(<unknown>): ... at line L column C`;
+/// Yeptris and Psych both count from 1). Every other message keeps the
+/// Yeptris text byte for byte.
+pub(crate) fn syntax_message(message: &str) -> String {
+    PSYCH_DIAGNOSTICS
+        .iter()
+        .find_map(|diagnostic| {
+            let (line, column) = message
+                .strip_prefix(diagnostic)?
+                .strip_prefix(" (line ")?
+                .strip_suffix(')')?
+                .split_once(", column ")?;
+            (is_number(line) && is_number(column))
+                .then(|| format!("(<unknown>): {diagnostic} at line {line} column {column}"))
+        })
+        .unwrap_or_else(|| message.to_owned())
+}
+
+fn is_number(text: &str) -> bool {
+    !text.is_empty() && text.bytes().all(|b| b.is_ascii_digit())
 }
 
 fn unsupported(message: impl Into<String>) -> ModelError {
@@ -734,6 +767,73 @@ mod tests {
         assert_eq!(unpack_base64(b"a*G=k="), b"h");
         assert_eq!(unpack_base64(b"aGVsbG8g\nd29ybGQ=\n"), b"hello world");
         assert_eq!(unpack_base64(b"/w=="), vec![0xffu8]);
+    }
+
+    #[test]
+    fn psych_diagnostics_are_spelled_as_psych() {
+        // Yeptris' message after the libyaml-compatible diagnostics land,
+        // and Psych 5.3.1's `Psych::SyntaxError#message` (B11 find_by
+        // oracle rows F03/F05 and F06/F07; a same-line second `:`).
+        for (yeptris, psych) in [
+            (
+                "did not find expected ',' or ']' while parsing a flow sequence (line 1, column 13)",
+                "(<unknown>): did not find expected ',' or ']' while parsing a flow sequence \
+                 at line 1 column 13",
+            ),
+            (
+                "did not find expected ',' or ']' while parsing a flow sequence (line 1, column 18)",
+                "(<unknown>): did not find expected ',' or ']' while parsing a flow sequence \
+                 at line 1 column 18",
+            ),
+            (
+                "mapping values are not allowed in this context (line 1, column 5)",
+                "(<unknown>): mapping values are not allowed in this context at line 1 column 5",
+            ),
+            (
+                "mapping values are not allowed in this context (line 287, column 32)",
+                "(<unknown>): mapping values are not allowed in this context at line 287 column 32",
+            ),
+        ] {
+            assert_eq!(syntax_message(yeptris), psych);
+        }
+    }
+
+    #[test]
+    fn other_syntax_messages_keep_the_yeptris_text() {
+        for other in [
+            "unexpected parser state (line 2, column 3)",
+            "did not find expected <document start> (line 2, column 1)",
+            "did not find expected ',' or ']' while parsing a flow sequence",
+            "mapping values are not allowed in this context",
+            "did not find expected ',' or ']' while parsing a flow sequence (line x, column 1)",
+            "mapping values are not allowed in this context (line 1, column +5)",
+            "mapping values are not allowed in this context (line 1, column )",
+            "mapping values are not allowed in this context (line 1, column 5) trailing",
+            "mapping values are not allowed (line 1, column 5)",
+            "did not find expected ',' or '}' while parsing a flow mapping (line 1, column 1)",
+            "x mapping values are not allowed in this context (line 1, column 5)",
+            "",
+        ] {
+            assert_eq!(syntax_message(other), other);
+        }
+    }
+
+    #[test]
+    fn neighbouring_syntax_error_keeps_the_engine_message() {
+        // An unterminated quoted scalar is neither diagnostic, so
+        // `safe_load` reports the engine's message unchanged.
+        let yaml = "key: \"unterminated\n";
+        let engine = Document::parse(yaml.as_bytes()).unwrap_err();
+        let e = safe_load(yaml, LoadPolicy::REGISTER).unwrap_err();
+        assert_eq!(e.ruby_class(), "Psych::SyntaxError");
+        assert_eq!(
+            e.message,
+            engine
+                .message()
+                .map(str::to_owned)
+                .unwrap_or_else(|| engine.to_string())
+        );
+        assert!(!e.message.starts_with("(<unknown>)"), "{}", e.message);
     }
 
     #[test]
