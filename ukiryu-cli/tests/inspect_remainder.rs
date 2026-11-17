@@ -1,5 +1,6 @@
 //! `config list`, `list`, `commands`, `register` and `resolve` against Ruby CLI
-//! goldens, plus the gates of `info`, `opts` and `which`.
+//! goldens, plus the gate of `which` (`info` and `opts` are replayed by
+//! `cli_binary.rs`).
 //!
 //! `inspect_remainder_goldens.json` holds stdout, stderr, exit status and the
 //! files left under `$HOME` for each case, captured from the pinned Ruby CLI
@@ -31,8 +32,8 @@ use ukiryu::executable::Platform;
 use ukiryu::render::OutputWrite;
 use ukiryu::runtime::{Host, ShellError};
 use ukiryu_cli::commands::inspect::{
-    self, CommandsInput, ConfigAction, ConfigInput, HandlerContext, InfoInput, InspectError,
-    OptsInput, RegisterInput, ResolveInput, WhichInput, FIND_BY_NEEDS,
+    self, CommandsInput, ConfigAction, ConfigInput, HandlerContext, InspectError, RegisterInput,
+    ResolveInput, WhichInput, FIND_BY_NEEDS,
 };
 use ukiryu_cli::commands::CommandOutcome;
 
@@ -399,34 +400,18 @@ fn context(sandbox: &Sandbox) -> HandlerContext {
 }
 
 #[test]
-fn info_opts_and_which_are_gated_with_the_missing_apis() {
+fn which_is_gated_with_the_missing_apis() {
     let sandbox = Sandbox::new("gated");
     copy_tree(&fixture_register(), Path::new(&sandbox.register));
     let ctx = context(&sandbox);
-    let errors = [
-        inspect::info(
-            InfoInput {
-                tool: "beta".to_owned(),
-                all: false,
-            },
-            &ctx,
-        ),
-        inspect::opts(
-            OptsInput {
-                tool: "beta".to_owned(),
-                command: None,
-            },
-            &ctx,
-        ),
-        inspect::which(
-            WhichInput {
-                identifier: "beta".to_owned(),
-                platform: None,
-                shell: None,
-            },
-            &ctx,
-        ),
-    ];
+    let errors = [inspect::which(
+        WhichInput {
+            identifier: "beta".to_owned(),
+            platform: None,
+            shell: None,
+        },
+        &ctx,
+    )];
     for result in errors {
         let error = result.expect_err("a gated verb never succeeds");
         let message = error.friendly_message();

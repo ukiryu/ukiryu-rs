@@ -1,0 +1,42 @@
+---
+ukiryu_schema: '1.0'
+name: nestedtool
+display_name: nestedtool (nested array control)
+version: '1.0'
+aliases: [alpha, [beta, [gamma, ~]], delta]
+version_detection:
+  command: [nestedtool, [--version, [-v, ~]]]
+  pattern: nestedtool ([d.]+)
+search_paths:
+  macos:
+  - "/nonexistent/ukiryu-corpus/bin/nestedtool"
+  linux:
+  - "/nonexistent/ukiryu-corpus/bin/nestedtool"
+  windows:
+  - "C:/nonexistent/ukiryu-corpus/nestedtool.exe"
+implements: nestedtool/1.0
+execution_profiles:
+- name: default
+  platforms:
+  - linux
+  - [macos, [windows]]
+  shells:
+  - bash
+  - [zsh, ~]
+  option_style: double_dash_equals
+  executable_name: nestedtool
+  commands:
+  - name: process
+    description: Process input
+    options:
+    - name: level
+      cli: "--level"
+      type: integer
+      values:
+      - a
+      - [b, [c, ~]]
+      - d
+    post_options:
+    - name: tail
+      cli: "--tail"
+      type: string
