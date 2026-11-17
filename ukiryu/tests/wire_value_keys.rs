@@ -28,7 +28,7 @@ fn hash(pairs: &[(&str, Value)]) -> Value {
 }
 
 fn round_trip(value: &Value) -> Value {
-    decode(&encode(value).to_string())
+    decode(&encode(value).unwrap().to_string())
         .unwrap_or_else(|e| panic!("{value:?} did not read back: {e}"))
 }
 
@@ -85,8 +85,8 @@ fn a_lone_unknown_dollar_key_is_an_unknown_tag() {
 #[test]
 fn a_lone_other_dollar_key_is_written_as_the_oracle_writes_it() {
     let value = hash(&[("$ref", s("#/x"))]);
-    assert_eq!(encode(&value), json!({"$ref": "#/x"}));
-    assert!(decode(&encode(&value).to_string()).is_err());
+    assert_eq!(encode(&value).unwrap(), json!({"$ref": "#/x"}));
+    assert!(decode(&encode(&value).unwrap().to_string()).is_err());
 }
 
 /// A Hash whose only key is a tag name is written as `$map`, which the
@@ -96,11 +96,18 @@ fn a_lone_other_dollar_key_is_written_as_the_oracle_writes_it() {
 fn a_lone_tag_name_key_round_trips_through_map() {
     for tag in TAGS {
         let value = hash(&[(tag, s("x"))]);
-        assert_eq!(encode(&value), json!({"$map": [[tag, "x"]]}), "{tag}");
+        assert_eq!(
+            encode(&value).unwrap(),
+            json!({"$map": [[tag, "x"]]}),
+            "{tag}"
+        );
         assert_eq!(round_trip(&value), value, "{tag}");
     }
     let nested = hash(&[("k", hash(&[("$float", s("1.5"))]))]);
-    assert_eq!(encode(&nested), json!({"k": {"$map": [["$float", "1.5"]]}}));
+    assert_eq!(
+        encode(&nested).unwrap(),
+        json!({"k": {"$map": [["$float", "1.5"]]}})
+    );
     assert_eq!(round_trip(&nested), nested);
     // The tags themselves are unchanged.
     for value in [
@@ -112,7 +119,10 @@ fn a_lone_tag_name_key_round_trips_through_map() {
     ] {
         assert_eq!(round_trip(&value), value);
     }
-    assert_eq!(encode(&Value::Symbol("x".to_owned())), json!({"$sym": "x"}));
+    assert_eq!(
+        encode(&Value::Symbol("x".to_owned())).unwrap(),
+        json!({"$sym": "x"})
+    );
 }
 
 fn objects_with_dollar_keys(value: &Json, out: &mut Vec<Json>) {
@@ -173,7 +183,7 @@ fn corpus_objects_with_dollar_keys_read_as_the_oracle_reads_them() {
         } else {
             let value = decoded.unwrap_or_else(|e| panic!("{object}: {e}"));
             assert!(matches!(value, Value::Hash(_)), "{object}");
-            assert_eq!(encode(&value), object);
+            assert_eq!(encode(&value).unwrap(), object);
             read += 1;
         }
     }
