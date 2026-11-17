@@ -167,7 +167,7 @@ fn malformed_requests_are_rejected_with_stable_codes() {
         json!({"op": "resolve", "method": "nope"}),
         json!({"op": "validate", "method": "type", "value": 1.5, "type": {"$sym": "float"}}),
         json!({"op": "validate", "method": "type", "value": {"$float": "1.50"}, "type": {"$sym": "float"}}),
-        json!({"op": "validate", "method": "type", "value": {"$sym": "a", "x": 1}, "type": {"$sym": "symbol"}}),
+        json!({"op": "validate", "method": "type", "value": {"$sym": 1}, "type": {"$sym": "symbol"}}),
         json!({"op": "validate", "method": "type", "value": {"$unknown": 1}, "type": {"$sym": "string"}}),
         json!({"op": "validate", "method": "type", "value": {"$time": "2024-02-30T00:00:00.000000000Z"}, "type": {"$sym": "datetime"}}),
         json!({"op": "validate", "method": "type", "value": {"$bytes": "ff"}, "type": {"$sym": "string"}}),

@@ -219,6 +219,121 @@ fn corpus_rows_match_through_the_wire() {
     );
 }
 
+/// The schema of a row as text, as a host without a file system passes it:
+/// `None` when the row names no schema or the file does not exist (both are
+/// a missing schema file to the original), with the format the original's
+/// definition loader picks from the extension.
+fn schema_text(i: &Value) -> (Option<String>, &'static str) {
+    let Some(rel) = i["schema"].as_str() else {
+        return (None, "yaml");
+    };
+    let format = if rel.ends_with(".json") {
+        "json"
+    } else {
+        "yaml"
+    };
+    (std::fs::read_to_string(inputs().join(rel)).ok(), format)
+}
+
+/// The text forms of the schema operations (`validate_profile_text`,
+/// `definition_text`) reach the same expectations as the path forms, with
+/// the schema read here and passed as text.
+#[test]
+fn schema_rows_match_with_schema_text() {
+    let mut dispatched = BTreeMap::<String, usize>::new();
+    let mut failures = Vec::new();
+    for row in rows("schema") {
+        let id = row["id"].as_str().expect("id");
+        let op = row["op"].as_str().expect("op");
+        let i = &row["input"];
+        let (schema, format) = schema_text(i);
+        let request = match op {
+            "schema.validate_profile" => json!({
+                "op": "schema", "method": "validate_profile_text",
+                "profile": document(i), "schema": schema,
+            }),
+            "schema.definition_validate" => json!({
+                "op": "validate", "method": "definition_text",
+                "yaml": document(i), "schema": schema, "schema_format": format,
+            }),
+            other => panic!("{id}: unexpected op {other}"),
+        };
+        *dispatched.entry(op.to_owned()).or_default() += 1;
+        let have = outcome(op, &wire(&request));
+        if have != row["expect"] {
+            failures.push(format!("{id}:\n  got  {have}\n  want {}", row["expect"]));
+        }
+    }
+    for (op, count) in PINNED {
+        if op.starts_with("schema.") {
+            assert_eq!(
+                dispatched.get(op).copied(),
+                Some(count),
+                "{op} rows dispatched"
+            );
+        }
+    }
+    assert!(
+        failures.is_empty(),
+        "{} rows differ:\n{}",
+        failures.len(),
+        failures.join("\n")
+    );
+}
+
+/// The text forms read nothing from the environment or disk: no schema is a
+/// missing schema, and the supplied schema stage is reported.
+#[test]
+fn schema_text_forms_report_supplied_schemas() {
+    let reply = wire(&json!({
+        "op": "schema", "method": "validate_profile_text", "profile": "name: x\n",
+    }));
+    assert_eq!(
+        reply,
+        json!({"ok": true, "value": ["Failed to load schema"]})
+    );
+
+    let reply = wire(&json!({
+        "op": "validate", "method": "definition_text", "yaml": "name: x\n",
+    }));
+    assert_eq!(
+        reply["value"]["schema_stage"],
+        json!({"kind": "supplied_not_loaded"})
+    );
+
+    let reply = wire(&json!({
+        "op": "validate", "method": "definition_text", "yaml": "name: x\n",
+        "schema": "{\"type\": \"object\"}", "schema_format": "json",
+    }));
+    assert_eq!(reply["value"]["schema_stage"], json!({"kind": "supplied"}));
+
+    let reply = wire(&json!({
+        "op": "validate", "method": "definition_text", "yaml": "name: x\n",
+        "schema": "{not json", "schema_format": "json",
+    }));
+    assert_eq!(
+        reply["value"]["schema_stage"],
+        json!({"kind": "supplied_not_loaded"})
+    );
+}
+
+/// Reply objects keep the key order of the Hash they encode.
+#[test]
+fn reply_objects_keep_hash_key_order() {
+    let reply = ukiryu::wire::process(
+        json!({"op": "parse_yaml", "yaml": "zeta: 1\nalpha: 2\nmid: 3\n"})
+            .to_string()
+            .as_bytes(),
+    );
+    let text = reply.to_string();
+    let (z, a, m) = (
+        text.find("\"zeta\"").expect("zeta"),
+        text.find("\"alpha\"").expect("alpha"),
+        text.find("\"mid\"").expect("mid"),
+    );
+    assert!(z < a && a < m, "{text}");
+}
+
 /// Control: an altered input changes the reply, so a match is not an echo.
 #[test]
 fn altered_inputs_change_the_reply() {
@@ -240,4 +355,139 @@ fn altered_inputs_change_the_reply() {
     altered["input"]["value"] = json!(8);
     let have = outcome("type.validate", &wire(&request(&altered).expect("request")));
     assert_eq!(have, json!({"ok": 8}));
+}
+
+/// Every `interfaces/**/*.yaml` of the corpus register, keyed by its path
+/// under `interfaces/` without `.yaml` (as an index names it).
+fn interface_texts() -> BTreeMap<String, String> {
+    let root = inputs().join("register/interfaces");
+    let mut found = BTreeMap::new();
+    let mut pending = vec![root.clone()];
+    while let Some(dir) = pending.pop() {
+        for entry in std::fs::read_dir(&dir).expect("interfaces") {
+            let path = entry.expect("entry").path();
+            if path.is_dir() {
+                pending.push(path);
+            } else if let Some(stem) = path.to_string_lossy().strip_suffix(".yaml") {
+                let key = std::path::Path::new(stem)
+                    .strip_prefix(&root)
+                    .expect("under interfaces")
+                    .to_string_lossy()
+                    .replace('\\', "/");
+                found.insert(key, std::fs::read_to_string(&path).expect("interface"));
+            }
+        }
+    }
+    found
+}
+
+/// The `build.args` rows again, with the register given as text
+/// (`register_text`), the portable source a WebAssembly or other thin
+/// adapter uses. No path reaches the core.
+#[test]
+fn build_rows_match_with_the_register_given_as_text() {
+    let interfaces = interface_texts();
+    let mut dispatched = 0;
+    let mut failures = Vec::new();
+    for row in rows("build") {
+        if row["op"] != "build.args" {
+            continue;
+        }
+        let id = row["id"].as_str().expect("id");
+        let i = &row["input"];
+        let tool = i["tool"].as_str().expect("tool");
+        let implementation = i["implementation"].as_str().expect("implementation");
+        let file = i["file"].as_str().expect("file");
+        // A version file the register does not have is sent as no text at
+        // all (three `ping/*/latest.yaml` rows expect ToolNotFoundError).
+        let version = std::fs::read_to_string(
+            inputs().join(format!("register/tools/{tool}/{implementation}/{file}")),
+        )
+        .ok();
+        let request = json!({
+            "op": "build",
+            "tool": {
+                "source": {
+                    "kind": "register_text",
+                    "tool": tool,
+                    "implementation": implementation,
+                    "index": read_input(&format!("register/tools/{tool}/index.yaml")),
+                    "interfaces": interfaces,
+                    "version": version,
+                },
+                "platform": i["platform"],
+                "shell": i["shell"],
+            },
+            "command": i["command"],
+            "params": i["params"],
+        });
+        dispatched += 1;
+        let have = outcome("build.args", &wire(&request));
+        if have != row["expect"] {
+            failures.push(format!("{id}:\n  got  {have}\n  want {}", row["expect"]));
+        }
+    }
+    assert_eq!(dispatched, 485, "build.args rows dispatched");
+    assert!(
+        failures.is_empty(),
+        "{} of {dispatched} rows differ:\n{}",
+        failures.len(),
+        failures.join("\n")
+    );
+}
+
+/// A register document left out is a missing file: `ToolNotFoundError`.
+#[test]
+fn register_text_without_a_version_document_is_not_found() {
+    let reply = wire(&json!({
+        "op": "build",
+        "tool": {
+            "source": {
+                "kind": "register_text",
+                "tool": "bzip2",
+                "implementation": "default",
+                "index": read_input("register/tools/bzip2/index.yaml"),
+                "interfaces": interface_texts(),
+            },
+            "platform": "linux",
+            "shell": "bash",
+        },
+        "command": "compress",
+    }));
+    assert_eq!(reply["ok"], false, "{reply}");
+    assert_eq!(
+        reply["error"]["source_class"], "Ukiryu::Errors::ToolNotFoundError",
+        "{reply}"
+    );
+}
+
+/// An index naming its interface as `/bzip2` finds `interfaces/bzip2.yaml`,
+/// as the file loader's join does.
+#[test]
+fn register_text_trims_the_interface_path_like_the_file_loader() {
+    let index = read_input("register/tools/bzip2/index.yaml");
+    assert!(index.contains("\ninterface: bzip2\n"), "fixture changed");
+    let index = index.replace("\ninterface: bzip2\n", "\ninterface: \"/bzip2\"\n");
+    let reply = wire(&json!({
+        "op": "build",
+        "tool": {
+            "source": {
+                "kind": "register_text",
+                "tool": "bzip2",
+                "implementation": "default",
+                "index": index,
+                "interfaces": interface_texts(),
+                "version": read_input("register/tools/bzip2/default/1.0.yaml"),
+            },
+            "platform": "linux",
+            "shell": "bash",
+        },
+        "command": "compress",
+        "params": {"inputs": ["a.txt"]},
+    }));
+    assert_eq!(
+        outcome("build.args", &reply),
+        json!({"ok": ["a.txt"]}),
+        "{reply}"
+    );
 }

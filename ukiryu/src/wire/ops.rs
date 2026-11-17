@@ -3,8 +3,9 @@
 //! carries every input explicitly; nothing is defaulted from the host except
 //! where the original reads the process (noted per method).
 //!
-//! Tools come from a [`Source`]: definition YAML supplied by the caller
-//! (portable), or, in native builds only, a register directory.
+//! Tools come from a [`Source`]: definition YAML or register documents
+//! supplied by the caller as text (portable), or, in native builds only, a
+//! register directory.
 use serde::Deserialize;
 use serde_json::{json, Value as Json};
 
@@ -13,10 +14,11 @@ use super::value::{self, Typed};
 use crate::definition::definition_validator::{self, SchemaStage, ValidationReport};
 use crate::definition::ValidatorEnv;
 use crate::executable::Platform;
-use crate::models::{ImplementationIndex, Model, ToolDefinition};
+use crate::models::{ImplementationIndex, ImplementationVersion, Interface, Model, ToolDefinition};
 use crate::runtime::{ShellName, ShellSource};
-use crate::schema::{self, Permitted, ValidateOptions};
+use crate::schema::{self, DefinitionSchemaFormat, Permitted, ValidateOptions};
 use crate::tool::{BuiltCommand, Tool, ToolError, ToolOptions};
+use crate::tool_loader::{self, LoadError};
 use crate::types::onig::Encoding;
 use crate::types::{self, StdHost, Value};
 use crate::version_detection::{
@@ -39,6 +41,23 @@ pub enum Source {
         tool: String,
         implementation: String,
         file: String,
+    },
+    /// The `version_file` chain over register documents given as text, so
+    /// it needs no filesystem (WebAssembly and other thin adapters).
+    /// A document left out is a file that does not exist.
+    RegisterText {
+        tool: String,
+        implementation: String,
+        /// `tools/<tool>/index.yaml`.
+        #[serde(default)]
+        index: Option<String>,
+        /// `interfaces/<path>.yaml`, keyed by `<path>` as the index names it,
+        /// without a leading `/` (the file loader trims it when joining).
+        #[serde(default)]
+        interfaces: std::collections::BTreeMap<String, String>,
+        /// `tools/<tool>/<implementation>/<file>`.
+        #[serde(default)]
+        version: Option<String>,
     },
     /// `Tool.get(name)` over a register, including implementation and
     /// version detection, which runs the detection commands.
@@ -80,6 +99,20 @@ pub(super) fn load_tool(request: &ToolRequest) -> Result<std::rc::Rc<Tool>, Json
         Source::Definition { yaml } => {
             ToolDefinition::from_yaml(yaml).map_err(|e| model_error(&e))?
         }
+        Source::RegisterText {
+            tool,
+            implementation,
+            index,
+            interfaces,
+            version,
+        } => register_text_definition(
+            tool,
+            implementation,
+            index.as_deref(),
+            interfaces,
+            version.as_deref(),
+            &options,
+        )?,
         #[cfg(not(target_arch = "wasm32"))]
         Source::VersionFile {
             register,
@@ -97,6 +130,61 @@ pub(super) fn load_tool(request: &ToolRequest) -> Result<std::rc::Rc<Tool>, Json
     Tool::new(definition, &options)
         .map(std::rc::Rc::new)
         .map_err(|e| tool_error(&e))
+}
+
+/// The `interfaces` key for an index's interface path. The file loader
+/// joins it as `File.join(register, "interfaces", "<path>.yaml")`
+/// (`tool_loader::ruby_join`), which trims the part's leading `/`; the same
+/// key reaches the same document here.
+fn interface_key(path: &str) -> &str {
+    path.trim_start_matches('/')
+}
+
+/// The loader chain of `Source::VersionFile` (index, interface, version
+/// file, `convert_to_tool_definition`) over documents given as text. An
+/// absent or empty document stops the chain with `ToolNotFoundError`, as a
+/// missing file does.
+fn register_text_definition(
+    tool: &str,
+    implementation: &str,
+    index: Option<&str>,
+    interfaces: &std::collections::BTreeMap<String, String>,
+    version: Option<&str>,
+    options: &ToolOptions,
+) -> Result<ToolDefinition, Json> {
+    let fail = |e: LoadError| tool_error(&ToolError::from(e));
+    let model = |e: crate::models::ModelError| fail(LoadError::from(e));
+    let not_found = || {
+        tool_error(&ToolError::NotFound {
+            name: tool.to_owned(),
+        })
+    };
+    let index = match index {
+        Some(text) => ImplementationIndex::from_register_yaml(text).map_err(model)?,
+        None => None,
+    }
+    .ok_or_else(not_found)?;
+    let interface = match interfaces.get(interface_key(&index.interface.to_ruby_s())) {
+        Some(text) => Interface::from_register_yaml(text).map_err(model)?,
+        None => None,
+    }
+    .ok_or_else(not_found)?;
+    let version = match version {
+        Some(text) => ImplementationVersion::from_register_yaml(text).map_err(model)?,
+        None => None,
+    }
+    .ok_or_else(not_found)?;
+    tool_loader::convert_to_tool_definition(
+        tool,
+        &interface,
+        &version,
+        Some(implementation),
+        None,
+        options.platform.as_str(),
+        options.shell.as_str(),
+    )
+    .map_err(fail)?
+    .ok_or_else(not_found)
 }
 
 // ------------------------------------------------------------------ build
@@ -406,6 +494,37 @@ pub enum ValidateRequest {
         #[serde(default)]
         schema_path: Option<String>,
     },
+    /// `Definition` with the schema supplied as text in the given format
+    /// (what `load_schema` picks by file extension), for hosts without a
+    /// file system. Nothing is read from disk or the environment; a null or
+    /// absent `schema` skips the schema stage.
+    DefinitionText {
+        yaml: String,
+        #[serde(default)]
+        schema: Option<String>,
+        #[serde(default)]
+        schema_format: SchemaFormat,
+    },
+}
+
+/// The format of a definition schema supplied as text.
+#[derive(Debug, Default, Clone, Copy, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum SchemaFormat {
+    /// `.yaml`/`.yml`.
+    #[default]
+    Yaml,
+    /// `.json`.
+    Json,
+}
+
+impl From<SchemaFormat> for DefinitionSchemaFormat {
+    fn from(format: SchemaFormat) -> Self {
+        match format {
+            SchemaFormat::Yaml => DefinitionSchemaFormat::Yaml,
+            SchemaFormat::Json => DefinitionSchemaFormat::Json,
+        }
+    }
 }
 
 fn stage(stage: &Option<SchemaStage>) -> Json {
@@ -419,6 +538,8 @@ fn stage(stage: &Option<SchemaStage>) -> Json {
         Some(SchemaStage::RemoteFallbackNotPerformed) => {
             json!({"kind": "remote_fallback_not_performed"})
         }
+        Some(SchemaStage::Supplied) => json!({"kind": "supplied"}),
+        Some(SchemaStage::SuppliedNotLoaded) => json!({"kind": "supplied_not_loaded"}),
     }
 }
 
@@ -462,6 +583,19 @@ pub fn validate(request: ValidateRequest) -> Json {
                 Err(error) => schema_error(&error),
             }
         }
+        ValidateRequest::DefinitionText {
+            yaml,
+            schema,
+            schema_format,
+        } => {
+            match definition_validator::validate_string_report_with_schema_text(
+                &yaml,
+                schema.as_deref().map(|text| (text, schema_format.into())),
+            ) {
+                Ok(r) => json!({"ok": true, "value": report(&r)}),
+                Err(error) => schema_error(&error),
+            }
+        }
     }
 }
 
@@ -484,6 +618,18 @@ pub enum SchemaRequest {
         profile: String,
         #[serde(default)]
         schema_path: Option<String>,
+        #[serde(default)]
+        strict: bool,
+    },
+    /// `ValidateProfile` with the schema supplied as text, loaded as
+    /// `load_schema` loads an existing file (`YAML.safe_load`), for hosts
+    /// without a file system. Nothing is read from disk or the environment;
+    /// a null or absent `schema` is a missing schema file
+    /// (`["Failed to load schema"]`).
+    ValidateProfileText {
+        profile: String,
+        #[serde(default)]
+        schema: Option<String>,
         #[serde(default)]
         strict: bool,
     },
@@ -511,6 +657,17 @@ pub fn schema(request: SchemaRequest) -> Json {
                     strict,
                 },
             )
+        }),
+        SchemaRequest::ValidateProfileText {
+            profile,
+            schema,
+            strict,
+        } => schema::safe_load(&profile, Permitted::DOCUMENT).and_then(|profile| {
+            let schema = schema
+                .as_deref()
+                .map(schema::load_schema_text)
+                .transpose()?;
+            schema::validate_profile_with_schema(&profile, schema, strict)
         }),
         SchemaRequest::FullyValidate {
             profile,

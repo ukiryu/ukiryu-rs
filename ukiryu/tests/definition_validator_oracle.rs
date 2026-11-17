@@ -86,6 +86,8 @@ fn stage_label(s: &SchemaStage) -> &'static str {
         SchemaStage::GivenNotLoaded { .. } => "given_not_loaded",
         SchemaStage::Env { .. } => "env",
         SchemaStage::RemoteFallbackNotPerformed => "remote_fallback",
+        SchemaStage::Supplied => "supplied",
+        SchemaStage::SuppliedNotLoaded => "supplied_not_loaded",
     }
 }
 
