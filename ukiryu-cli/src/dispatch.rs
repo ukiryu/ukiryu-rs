@@ -158,11 +158,13 @@ fn dispatch(verb: &str, sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Fai
             inspect_outcome(inspect::config(input, &ctx), io)
         }
         "info" => {
-            // A bare `ukiryu info` prints Thor's help for the command.
-            let tool = text(sub, "tool")?.ok_or(Failure::Gated {
-                what: "info without a TOOL".to_owned(),
-                needs: "Thor's help for the info command",
-            })?;
+            // A bare `ukiryu info` prints Thor's command list (not the info
+            // command's usage): `ThorExt` turns the missing argument into
+            // `help`, whatever other options were given.
+            let Some(tool) = text(sub, "tool")? else {
+                let help = thor_command_list(std::env::var("THOR_COLUMNS").ok().as_deref());
+                return Ok(io.perform(&[OutputWrite::Stdout(help)]).unwrap_or(0));
+            };
             let ctx = handler_context(text(sub, "register")?)?;
             let input = InfoInput {
                 tool,
@@ -661,4 +663,109 @@ impl Confirm for StdinConfirm {
             Ok(_) => Some(line),
         }
     }
+}
+
+/// Thor's `ukiryu help` listing (`Thor.help`: `print_table(list, indent: 2,
+/// truncate: true)` then a blank line), captured from the pinned exe/ukiryu.
+/// `width` is `THOR_COLUMNS`; without it Thor asks the terminal, and 80 is
+/// what a non-terminal reports. A width under 10 also means 80.
+fn thor_command_list(width: Option<&str>) -> String {
+    const ROWS: [(&str, &str); 18] = [
+        ("ukiryu cache [ACTION]", "Manage definition cache"),
+        (
+            "ukiryu commands TOOL",
+            "List all commands available for a tool",
+        ),
+        (
+            "ukiryu config [ACTION] [KEY] [VALUE]",
+            "Manage configuration (list, get, set, unset)",
+        ),
+        ("ukiryu definitions [COMMAND]", "Manage tool definitions"),
+        (
+            "ukiryu describe TOOL [COMMAND]",
+            "Show comprehensive documentation for a tool or specific command",
+        ),
+        (
+            "ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]",
+            "Execute a tool command inline",
+        ),
+        (
+            "ukiryu extract TOOL",
+            "Extract tool definition from an installed CLI tool",
+        ),
+        (
+            "ukiryu help [COMMAND]",
+            "Describe available commands or one specific command",
+        ),
+        (
+            "ukiryu info [TOOL]",
+            "Show detailed information about a tool",
+        ),
+        ("ukiryu list", "List all available tools in the register"),
+        (
+            "ukiryu opts TOOL [COMMAND]",
+            "Show options for a tool or specific command",
+        ),
+        ("ukiryu register [SUBCOMMAND]", "Manage the tool register"),
+        (
+            "ukiryu resolve TOOL [VERSION]",
+            "Resolve which definition would be used for a tool",
+        ),
+        (
+            "ukiryu run-file REQUEST_FILE",
+            "Execute a Ukiryu Structured Execution Request from a YAML file",
+        ),
+        (
+            "ukiryu system [SUBCOMMAND]",
+            "Show system information (shells, etc.)",
+        ),
+        ("ukiryu tree", "Print a tree of all available commands"),
+        ("ukiryu validate [COMMAND]", "Validate tool definitions"),
+        ("ukiryu version", "Show Ukiryu version"),
+    ];
+    // `which` is the 19th row and sorts last.
+    const WHICH: (&str, &str) = (
+        "ukiryu which IDENTIFIER",
+        "Show which tool implementation would be selected",
+    );
+    const INDENT: usize = 2;
+    let terminal_width = match width {
+        // Ruby `String#to_i`: leading digits, else 0.
+        Some(text) => {
+            let digits: String = text
+                .trim_start()
+                .chars()
+                .take_while(char::is_ascii_digit)
+                .collect();
+            digits.parse::<usize>().unwrap_or(0)
+        }
+        None => 80,
+    };
+    let terminal_width = if terminal_width < 10 {
+        80
+    } else {
+        terminal_width
+    };
+    let column = ROWS
+        .iter()
+        .chain(std::iter::once(&WHICH))
+        .map(|(usage, _)| usage.chars().count())
+        .max()
+        .unwrap_or(0);
+    let mut out = String::from("ukiryu commands:\n");
+    for (usage, about) in ROWS.iter().chain(std::iter::once(&WHICH)) {
+        let sentence = format!("{usage:<width$}{about}", width = column + 2);
+        let chars: Vec<char> = sentence.chars().collect();
+        let line: String = if chars.len() <= terminal_width {
+            sentence
+        } else {
+            let keep = terminal_width.saturating_sub(3 + INDENT);
+            chars[..keep.min(chars.len())].iter().collect::<String>() + "..."
+        };
+        out.push_str(&" ".repeat(INDENT));
+        out.push_str(&line);
+        out.push('\n');
+    }
+    out.push('\n');
+    out
 }

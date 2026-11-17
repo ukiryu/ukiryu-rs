@@ -28,8 +28,7 @@
 //!   the interface path of `list` (a tool whose own version file is missing).
 //!   They need core APIs that are not wired here yet: [`FIND_BY_NEEDS`].
 //! - `info` and `opts` with `UKIRYU_DEBUG` set are gated: the debug lines of
-//!   `ToolFinder.find_by` are not ported. So is an Array held by a string
-//!   attribute they join or pad (the source flattens or raises there).
+//!   `ToolFinder.find_by` are not ported.
 //! - `config get|set|unset` run `setup_register` first in the source, which
 //!   can clone the default register into `~/.ukiryu/register`. That bootstrap
 //!   does not change their output and is not performed here; `config list`,
@@ -1435,18 +1434,20 @@ fn find_tool(
     }
 }
 
-/// `Array#join` over a `:string` collection. `None` when an element is an
-/// Array, which the source's `join` flattens (not ported).
-fn join_texts(items: &[Text], separator: &str) -> Option<String> {
-    let mut parts = Vec::with_capacity(items.len());
-    for item in items {
-        match item {
-            Text::Str(s) => parts.push(s.clone()),
-            Text::Nil => parts.push(String::new()),
-            Text::List(_) => return None,
-        }
-    }
-    Some(parts.join(separator))
+/// `Array#join` over a `:string` collection: `nil` joins as `""` and a nested
+/// Array is flattened, joined with the same separator. (The source's
+/// `recursive array join` error needs a self-referencing Array, which a YAML
+/// sequence cannot build.)
+fn join_texts(items: &[Text], separator: &str) -> String {
+    let parts: Vec<String> = items
+        .iter()
+        .map(|item| match item {
+            Text::Str(s) => s.clone(),
+            Text::Nil => String::new(),
+            Text::List(inner) => ukiryu::types::ruby::join(inner, separator),
+        })
+        .collect();
+    parts.join(separator)
 }
 
 /// An `Attr<Text>` reader as the String Ruby reads (`nil` is `None`).
@@ -1457,17 +1458,15 @@ fn attr_txt(value: &Attr<Text>) -> Option<String> {
     }
 }
 
-/// A `Text` the source calls `String#ljust` on: an Array has no `ljust`.
-fn ljust_text(value: &Option<Text>, fallback: &str) -> Option<String> {
+/// A `Text` the source calls `String#ljust` on: an Array has no `ljust`, so
+/// the source raises `NoMethodError` (the message returned).
+fn ljust_text(value: &Option<Text>, fallback: &str) -> Result<String, String> {
     match value {
-        None | Some(Text::Nil) => Some(fallback.to_owned()),
-        Some(Text::Str(s)) => Some(s.clone()),
-        Some(Text::List(_)) => None,
+        None | Some(Text::Nil) => Ok(fallback.to_owned()),
+        Some(Text::Str(s)) => Ok(s.clone()),
+        Some(Text::List(_)) => Err("undefined method 'ljust' for an instance of Array".to_owned()),
     }
 }
-
-const LIST_NEEDS: &str =
-    "an Array value in a string attribute (the source flattens it in join or raises in ljust)";
 
 /// `InfoCommand#run`.
 pub fn info(input: InfoInput, ctx: &HandlerContext) -> Result<CommandOutcome, InspectError> {
@@ -1485,7 +1484,6 @@ pub fn info(input: InfoInput, ctx: &HandlerContext) -> Result<CommandOutcome, In
         Err(outcome) => return Ok(outcome),
     };
     let profile = tool.definition();
-    let list_gate = |out: &mut Out| gated("info", LIST_NEEDS, std::mem::take(&mut out.writes));
 
     out.clear();
     let profile_name = txt(&profile.name);
@@ -1549,9 +1547,7 @@ pub fn info(input: InfoInput, ctx: &HandlerContext) -> Result<CommandOutcome, In
         Some(Color::White),
     );
     if let Some(aliases) = profile.aliases.as_deref().filter(|a| !a.is_empty()) {
-        let Some(joined) = join_texts(aliases, ", ") else {
-            return Err(list_gate(&mut out));
-        };
+        let joined = join_texts(aliases, ", ");
         out.say(&format!("Aliases: {joined}"), Some(Color::White));
     }
 
@@ -1560,10 +1556,7 @@ pub fn info(input: InfoInput, ctx: &HandlerContext) -> Result<CommandOutcome, In
         out.say("Version Detection:", Some(Color::Yellow));
         let command = match detection.command.as_deref() {
             None => String::new(),
-            Some(parts) => match join_texts(parts, " ") {
-                Some(joined) => joined,
-                None => return Err(list_gate(&mut out)),
-            },
+            Some(parts) => join_texts(parts, " "),
         };
         out.say(&format!("  Command: {command}"), Some(Color::White));
         out.say(
@@ -1588,9 +1581,6 @@ pub fn info(input: InfoInput, ctx: &HandlerContext) -> Result<CommandOutcome, In
             let all = [Text::new("all")];
             let platforms = join_texts(prof.platforms.as_deref().unwrap_or(&all), ", ");
             let shells = join_texts(prof.shells.as_deref().unwrap_or(&all), ", ");
-            let (Some(platforms), Some(shells)) = (platforms, shells) else {
-                return Err(list_gate(&mut out));
-            };
             let option_style = attr_txt(&prof.option_style).unwrap_or_else(|| "default".to_owned());
             let prof_name = txt(&prof.name).unwrap_or_else(|| "unnamed".to_owned());
             out.say(&format!("  {prof_name}:"), Some(Color::White));
@@ -1657,16 +1647,20 @@ pub fn opts(input: OptsInput, ctx: &HandlerContext) -> Result<CommandOutcome, In
     }
 
     for command in commands {
-        if opts_command(&mut out, name, command).is_none() {
-            return Err(gated("opts", LIST_NEEDS, out.writes));
+        if let Err(message) = opts_command(&mut out, name, command) {
+            return Err(InspectError::Raised {
+                class: "NoMethodError",
+                message,
+                partial: out.writes,
+            });
         }
     }
     Ok(out.done())
 }
 
-/// One command of `opts`; `None` for an Array value the source does not
-/// render as a String.
-fn opts_command(out: &mut Out, title: &str, command: &CommandDefinition) -> Option<()> {
+/// One command of `opts`; `Err` is the `NoMethodError` message the source
+/// raises on `ljust` of an Array value.
+fn opts_command(out: &mut Out, title: &str, command: &CommandDefinition) -> Result<(), String> {
     out.clear();
     out.say(&format!("Options for {title}:"), Some(Color::Cyan));
     if let Some(description) = txt(&command.description) {
@@ -1721,7 +1715,7 @@ fn opts_command(out: &mut Out, title: &str, command: &CommandDefinition) -> Opti
                 continue;
             }
             if let Some(values) = option.values.as_deref() {
-                let values = join_texts(values, ", ")?;
+                let values = join_texts(values, ", ");
                 out.say(&format!("    Values: {values}"), Some(Color::Dim));
             }
             if let Some(range) = option.range.as_deref() {
@@ -1753,7 +1747,7 @@ fn opts_command(out: &mut Out, title: &str, command: &CommandDefinition) -> Opti
             }
         }
     }
-    Some(())
+    Ok(())
 }
 
 /// `which` falls back to interface and alias discovery and reads

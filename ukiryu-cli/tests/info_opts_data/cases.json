@@ -1,6 +1,6 @@
 {
   "source": "exe/ukiryu of ukiryu/ukiryu ab6df35 (corpus/oracle-ruby bundle), Ruby 4.0.1, Linux",
-  "environment": "the corpus cli-output environment (corpus/oracle-ruby/lib/ops.rb): HOME and the working directory a scratch home, TZ=UTC, LANG=LC_ALL=C.UTF-8, SHELL=/bin/bash, UKIRYU_REGISTER=${INPUTS}/register, COLUMNS=THOR_COLUMNS=100, TERM=dumb, empty stdin; PATH is a directory holding only a bash link, so no register tool is installed; env adds to that",
+  "environment": "the corpus cli-output environment (corpus/oracle-ruby/lib/ops.rb): HOME and the working directory a scratch home, TZ=UTC, LANG=LC_ALL=C.UTF-8, SHELL=/bin/bash, UKIRYU_REGISTER=${INPUTS}/register, COLUMNS=THOR_COLUMNS=100, TERM=dumb, empty stdin; PATH is a directory holding only a bash link, so no register tool is installed; env adds to that; ${DATA} is ukiryu-cli/tests/info_opts_data (nested-register: tools whose string attributes hold nested Arrays, authored for these rows)",
   "cases": [
     {
       "argv": [
@@ -100,6 +100,86 @@
       "env": {},
       "stdout": "",
       "stderr": "Tool not found: jq\nAvailable tools: absenttool\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "info"
+      ],
+      "env": {},
+      "stdout": "ukiryu commands:\n  ukiryu cache [ACTION]                       # Manage definition cache\n  ukiryu commands TOOL                        # List all commands available for a tool\n  ukiryu config [ACTION] [KEY] [VALUE]        # Manage configuration (list, get, set, unset)\n  ukiryu definitions [COMMAND]                # Manage tool definitions\n  ukiryu describe TOOL [COMMAND]              # Show comprehensive documentation for a tool or sp...\n  ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]  # Execute a tool command inline\n  ukiryu extract TOOL                         # Extract tool definition from an installed CLI tool\n  ukiryu help [COMMAND]                       # Describe available commands or one specific command\n  ukiryu info [TOOL]                          # Show detailed information about a tool\n  ukiryu list                                 # List all available tools in the register\n  ukiryu opts TOOL [COMMAND]                  # Show options for a tool or specific command\n  ukiryu register [SUBCOMMAND]                # Manage the tool register\n  ukiryu resolve TOOL [VERSION]               # Resolve which definition would be used for a tool\n  ukiryu run-file REQUEST_FILE                # Execute a Ukiryu Structured Execution Request fro...\n  ukiryu system [SUBCOMMAND]                  # Show system information (shells, etc.)\n  ukiryu tree                                 # Print a tree of all available commands\n  ukiryu validate [COMMAND]                   # Validate tool definitions\n  ukiryu version                              # Show Ukiryu version\n  ukiryu which IDENTIFIER                     # Show which tool implementation would be selected\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "info",
+        "--all",
+        "--register",
+        "${DATA}/nested-register"
+      ],
+      "env": {},
+      "stdout": "ukiryu commands:\n  ukiryu cache [ACTION]                       # Manage definition cache\n  ukiryu commands TOOL                        # List all commands available for a tool\n  ukiryu config [ACTION] [KEY] [VALUE]        # Manage configuration (list, get, set, unset)\n  ukiryu definitions [COMMAND]                # Manage tool definitions\n  ukiryu describe TOOL [COMMAND]              # Show comprehensive documentation for a tool or sp...\n  ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]  # Execute a tool command inline\n  ukiryu extract TOOL                         # Extract tool definition from an installed CLI tool\n  ukiryu help [COMMAND]                       # Describe available commands or one specific command\n  ukiryu info [TOOL]                          # Show detailed information about a tool\n  ukiryu list                                 # List all available tools in the register\n  ukiryu opts TOOL [COMMAND]                  # Show options for a tool or specific command\n  ukiryu register [SUBCOMMAND]                # Manage the tool register\n  ukiryu resolve TOOL [VERSION]               # Resolve which definition would be used for a tool\n  ukiryu run-file REQUEST_FILE                # Execute a Ukiryu Structured Execution Request fro...\n  ukiryu system [SUBCOMMAND]                  # Show system information (shells, etc.)\n  ukiryu tree                                 # Print a tree of all available commands\n  ukiryu validate [COMMAND]                   # Validate tool definitions\n  ukiryu version                              # Show Ukiryu version\n  ukiryu which IDENTIFIER                     # Show which tool implementation would be selected\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "info"
+      ],
+      "env": {
+        "THOR_COLUMNS": "60"
+      },
+      "stdout": "ukiryu commands:\n  ukiryu cache [ACTION]                       # Manage de...\n  ukiryu commands TOOL                        # List all ...\n  ukiryu config [ACTION] [KEY] [VALUE]        # Manage co...\n  ukiryu definitions [COMMAND]                # Manage to...\n  ukiryu describe TOOL [COMMAND]              # Show comp...\n  ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]  # Execute a...\n  ukiryu extract TOOL                         # Extract t...\n  ukiryu help [COMMAND]                       # Describe ...\n  ukiryu info [TOOL]                          # Show deta...\n  ukiryu list                                 # List all ...\n  ukiryu opts TOOL [COMMAND]                  # Show opti...\n  ukiryu register [SUBCOMMAND]                # Manage th...\n  ukiryu resolve TOOL [VERSION]               # Resolve w...\n  ukiryu run-file REQUEST_FILE                # Execute a...\n  ukiryu system [SUBCOMMAND]                  # Show syst...\n  ukiryu tree                                 # Print a t...\n  ukiryu validate [COMMAND]                   # Validate ...\n  ukiryu version                              # Show Ukir...\n  ukiryu which IDENTIFIER                     # Show whic...\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "info",
+        "nestedtool",
+        "--register",
+        "${DATA}/nested-register"
+      ],
+      "env": {},
+      "stdout": "\u001b[37m\u001b[0m\n\u001b[36mTool: nestedtool\u001b[0m\n\u001b[37mDisplay Name: nestedtool (nested array control)\u001b[0m\n\u001b[37mVersion: 1.0\u001b[0m\n\u001b[37mHomepage: N/A\u001b[0m\n\u001b[37mAliases: alpha, [\"beta\", [\"gamma\", nil]], delta\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mVersion Detection:\u001b[0m\n\u001b[37m  Command: nestedtool [\"--version\", [\"-v\", nil]]\u001b[0m\n\u001b[37m  Pattern: nestedtool ([d.]+)\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mProfiles (1):\u001b[0m\n\u001b[37m  default:\u001b[0m\n\u001b[37m    Platforms: linux, [\"macos\", [\"windows\"]]\u001b[0m\n\u001b[37m    Shells: bash, [\"zsh\", nil]\u001b[0m\n\u001b[37m    Option Style: double_dash_equals\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[31mStatus: NOT FOUND\u001b[0m\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "opts",
+        "nestedtool",
+        "--register",
+        "${DATA}/nested-register"
+      ],
+      "env": {},
+      "stdout": "\u001b[37m\u001b[0m\n\u001b[36mOptions for nestedtool:\u001b[0m\nProcess input\n\u001b[37m\u001b[0m\n\u001b[33mOptions:\u001b[0m\n\u001b[37m  --level                --level\u001b[0m\n\u001b[2m    Type: integer\u001b[0m\n\u001b[2m    \u001b[0m\n\u001b[2m    Values: a, [\"b\", [\"c\", nil]], d\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mPost-Options (between input and output):\u001b[0m\n\u001b[37m  --tail                 --tail\u001b[0m\n\u001b[2m    Type: string\u001b[0m\n\u001b[2m    \u001b[0m\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "opts",
+        "ljustopt",
+        "--register",
+        "${DATA}/nested-register"
+      ],
+      "env": {},
+      "stdout": "\u001b[37m\u001b[0m\n\u001b[36mOptions for ljustopt:\u001b[0m\nProcess input\n\u001b[37m\u001b[0m\n\u001b[33mOptions:\u001b[0m\n",
+      "stderr": "[NoMethodError] undefined method 'ljust' for an instance of Array\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "opts",
+        "ljustflag",
+        "--register",
+        "${DATA}/nested-register"
+      ],
+      "env": {},
+      "stdout": "\u001b[37m\u001b[0m\n\u001b[36mOptions for ljustflag:\u001b[0m\nProcess input\n\u001b[37m\u001b[0m\n\u001b[33mOptions:\u001b[0m\n\u001b[37m  --level                N/A\u001b[0m\n\u001b[2m    Type: integer\u001b[0m\n\u001b[2m    \u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mFlags:\u001b[0m\n",
+      "stderr": "[NoMethodError] undefined method 'ljust' for an instance of Array\n",
       "exit": 1
     }
   ]
