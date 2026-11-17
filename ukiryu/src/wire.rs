@@ -16,11 +16,14 @@
 //! | `validate` | `Type.validate`, `DefinitionValidator.validate_string` ([`ops`]) |
 //! | `schema` | `SchemaValidator.validate_profile`, `JSON::Validator.fully_validate` ([`ops`]) |
 //! | `results` | exit-code meanings of a tool's commands ([`ops`]) |
+//! | `lint` | `DefinitionLinter.lint_string` ([`document`]) |
+//! | `yaml` | `YAML.safe_load`, model `from_yaml` and `to_yaml` ([`document`]) |
 //! | `find_by` | `Tool.find_by` over a register, native builds only ([`native`]); its value is a tool identity or `null` |
 //! | `execute` | `Tool#execute`, native builds only ([`native`]); its value is a [`results`] payload |
 //!
 //! Register directories and process execution exist only in native builds:
 //! [`native`] is not compiled for WebAssembly.
+pub mod document;
 pub mod error;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod native;
@@ -43,6 +46,8 @@ enum Request {
     Validate(ops::ValidateRequest),
     Schema(ops::SchemaRequest),
     Results(Box<ops::ResultsRequest>),
+    Lint(document::LintRequest),
+    Yaml(document::YamlRequest),
     #[cfg(not(target_arch = "wasm32"))]
     Execute(Box<native::ExecuteRequest>),
     #[cfg(not(target_arch = "wasm32"))]
@@ -76,6 +81,8 @@ pub fn process(input: &[u8]) -> Value {
         Request::Validate(request) => ops::validate(request),
         Request::Schema(request) => ops::schema(request),
         Request::Results(request) => ops::results(*request),
+        Request::Lint(request) => document::lint(request),
+        Request::Yaml(request) => document::yaml(request),
         #[cfg(not(target_arch = "wasm32"))]
         Request::Execute(request) => native::execute(*request),
         #[cfg(not(target_arch = "wasm32"))]
