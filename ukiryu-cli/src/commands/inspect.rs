@@ -27,11 +27,10 @@
 //! - `which` is gated ([`which`] returns [`InspectError::Gated`]), and so is
 //!   the interface path of `list` (a tool whose own version file is missing).
 //!   They need core APIs that are not wired here yet: [`FIND_BY_NEEDS`].
-//! - `info` and `opts` with `UKIRYU_DEBUG` set are gated: the debug lines of
-//!   `ToolFinder.find_by` are not ported. So is an Array held by a string
-//!   attribute they join or pad (the source flattens or raises there), and
-//!   `info` of an installed tool whose definition has no version (it needs
-//!   version detection, as `list` does).
+//! - An Array held by a string attribute that `info` and `opts` join or pad
+//!   is gated (the source flattens or raises there), and so is `info` of an
+//!   installed tool whose definition has no version (it needs version
+//!   detection, as `list` does).
 //! - `config get|set|unset` run `setup_register` first in the source, which
 //!   can clone the default register into `~/.ukiryu/register`. That bootstrap
 //!   does not change their output and is not performed here; `config list`,
@@ -1326,10 +1325,163 @@ pub struct WhichInput {
     pub shell: Option<String>,
 }
 
-/// `info` and `opts` with `UKIRYU_DEBUG` set: `ToolFinder.find_by` and
-/// `InfoCommand#find_other_implementations` print debug lines the port does
-/// not render.
-const DEBUG_NEEDS: &str = "the UKIRYU_DEBUG output of ToolFinder.find_by (not ported)";
+/// `Paint[text, *codes]`: wrapped in SGR codes, or the bare text when Paint's
+/// mode is 0 (`NO_COLOR` set, even to an empty value).
+fn paint(on: bool, text: &str, codes: &str) -> String {
+    if on {
+        format!("\x1b[{codes}m{text}\x1b[0m")
+    } else {
+        text.to_owned()
+    }
+}
+
+/// `Logger#debug_section_header`.
+fn debug_header(text: &mut String, color: bool, title: &str) {
+    let rule = "─".repeat(75usize.saturating_sub(title.chars().count() + 3).max(3));
+    text.push('\n');
+    text.push_str(&paint(color, &format!("┌─ {title} {rule}"), "36"));
+    text.push('\n');
+}
+
+/// `Logger#debug_section_footer`.
+fn debug_footer(text: &mut String, color: bool) {
+    text.push_str(&paint(color, &format!("└{}", "─".repeat(75)), "36"));
+    text.push('\n');
+}
+
+/// `Logger#debug_field(label, value, boxed: false)`.
+fn debug_field(text: &mut String, color: bool, label: &str, value: &str) {
+    text.push_str(&paint(color, "  ", "36"));
+    text.push_str(&paint(color, &format!("{label:<20}"), "37"));
+    text.push_str(&paint(color, ": ", "36"));
+    text.push_str(&paint(color, value, "33"));
+    text.push('\n');
+}
+
+/// The part of both sections up to the list of register tools.
+fn debug_section_start(
+    color: bool,
+    identifier: &str,
+    options: &ToolOptions,
+    tools: &[String],
+) -> String {
+    let mut text = String::new();
+    debug_header(&mut text, color, &format!("Tool Resolution: {identifier}"));
+    debug_field(&mut text, color, "Platform", options.platform.as_str());
+    debug_field(&mut text, color, "Shell", options.shell.as_str());
+    debug_field(
+        &mut text,
+        color,
+        "Available Tools",
+        &tools.len().to_string(),
+    );
+    text.push('\n');
+    text.push_str(&format!("  {}\n", tools.join(" • ")));
+    text
+}
+
+/// `Logger#debug_section_tool_resolution`, written to stderr.
+fn debug_tool_resolution(
+    color: bool,
+    identifier: &str,
+    options: &ToolOptions,
+    tools: &[String],
+    selected: &str,
+    executable: &str,
+) -> String {
+    let mut text = debug_section_start(color, identifier, options, tools);
+    text.push('\n');
+    text.push_str(&format!(
+        "{} {}{}{}\n",
+        paint(color, "  ✓", "32"),
+        paint(color, selected, "36;1"),
+        paint(color, " implements: ", "37"),
+        paint(color, identifier, "33"),
+    ));
+    text.push('\n');
+    debug_field(&mut text, color, "Selected", selected);
+    debug_field(&mut text, color, "Executable", executable);
+    debug_footer(&mut text, color);
+    text
+}
+
+/// `Logger#debug_section_tool_not_found`, written to stderr.
+fn debug_tool_not_found(
+    color: bool,
+    identifier: &str,
+    options: &ToolOptions,
+    tools: &[String],
+) -> String {
+    let mut text = debug_section_start(color, identifier, options, tools);
+    text.push('\n');
+    text.push_str(&format!(
+        "{} {}\n",
+        paint(color, "  ✗", "31"),
+        paint(color, "Tool not found", "31;1"),
+    ));
+    debug_footer(&mut text, color);
+    text
+}
+
+/// `String#inspect` of a plain name.
+fn ruby_string_inspect(value: &str) -> String {
+    let mut text = String::from("\"");
+    let mut chars = value.chars().peekable();
+    while let Some(c) = chars.next() {
+        match c {
+            '"' => text.push_str("\\\""),
+            '\\' => text.push_str("\\\\"),
+            '#' if matches!(chars.peek(), Some('{' | '$' | '@')) => text.push_str("\\#"),
+            '\n' => text.push_str("\\n"),
+            '\t' => text.push_str("\\t"),
+            '\r' => text.push_str("\\r"),
+            '\x1b' => text.push_str("\\e"),
+            c if (c as u32) < 0x20 || c as u32 == 0x7f => {
+                text.push_str(&format!("\\x{:02X}", c as u32));
+            }
+            c => text.push(c),
+        }
+    }
+    text.push('"');
+    text
+}
+
+/// The `[DEBUG]` lines of `InfoCommand#find_other_implementations`.
+fn debug_other_implementations(
+    out: &mut Out,
+    register: &Register,
+    interface: &str,
+    current: Option<&str>,
+) {
+    let index = register_lookup::load_tool_index(register);
+    let tools = register.tool_names();
+    out.say(
+        &format!(
+            "  [DEBUG] Looking for tools implementing '{interface}' (excluding '{}')",
+            current.unwrap_or("")
+        ),
+        Some(Color::Dim),
+    );
+    let listed: Vec<String> = tools.iter().map(|t| ruby_string_inspect(t)).collect();
+    out.say(
+        &format!("  [DEBUG] Register tools: [{}]", listed.join(", ")),
+        Some(Color::Dim),
+    );
+    for name in &tools {
+        if current == Some(name.as_str()) {
+            continue;
+        }
+        let line = match register_lookup::load_tool_metadata(register, &index, name) {
+            Ok(Some(metadata)) => format!(
+                "  [DEBUG] {name} -> metadata: {}",
+                txt(&metadata.implements).unwrap_or_default()
+            ),
+            Ok(None) => format!("  [DEBUG] {name} -> metadata: nil"),
+            Err(error) => format!("  [DEBUG] Failed to load {name}: {error}"),
+        };
+        out.say(&line, Some(Color::Dim));
+    }
+}
 
 /// `config.debug` (`UKIRYU_DEBUG`).
 fn debug_enabled(config: &OverrideResolver) -> bool {
@@ -1374,14 +1526,12 @@ fn find_tool(
     name: &str,
     ctx: &HandlerContext,
     config: &OverrideResolver,
-    out: Out,
+    mut out: Out,
 ) -> Result<Result<Found, CommandOutcome>, InspectError> {
+    let _ = what;
     let register = setup_register(ctx, config)
         .map_err(|f| f.into_error(Vec::new()))?
         .register;
-    if debug_enabled(config) {
-        return Err(gated(what, DEBUG_NEEDS, Vec::new()));
-    }
     let options = tool_options(ctx, config).map_err(|error| InspectError::Shell {
         partial: Vec::new(),
         error,
@@ -1393,20 +1543,51 @@ fn find_tool(
         ProcessHost::new(Environment::new(), options.shell),
     );
     let cache = ToolCache::new();
-    let found =
-        register_lookup::find_by(&register, &index, &source, &cache, name, &options, &options)
-            .map_err(|e| lookup_failure(e, Vec::new()))?;
+    let found = register_lookup::find_by_traced(
+        &register, &index, &source, &cache, name, &options, &options,
+    )
+    .map_err(|e| lookup_failure(e, Vec::new()))?;
+    // `Logger` sections go to $stderr; Paint colours them unless `NO_COLOR`
+    // is set (Paint reads the environment, not the configuration).
+    let debug = debug_enabled(config);
+    let color = ctx.env("NO_COLOR").is_none();
     match found {
-        Some(tool) => Ok(Ok(Found {
-            tool,
-            out,
-            register,
-            options,
-            cache,
-        })),
+        Some((tool, step)) => {
+            if debug {
+                // Only the exact-name and exhaustive steps log a resolution.
+                let selected = match &step {
+                    register_lookup::FoundBy::Exact => Some(name.to_owned()),
+                    register_lookup::FoundBy::Exhaustive(tool_name) => Some(tool_name.clone()),
+                    _ => None,
+                };
+                if let Some(selected) = selected {
+                    let tools = register.tool_names();
+                    out.writes.push(OutputWrite::Stderr(debug_tool_resolution(
+                        color,
+                        name,
+                        &options,
+                        &tools,
+                        &selected,
+                        tool.executable().unwrap_or(""),
+                    )));
+                }
+            }
+            Ok(Ok(Found {
+                tool,
+                out,
+                register,
+                options,
+                cache,
+            }))
+        }
         None => {
             let mut tools = register.tool_names();
             tools.sort();
+            if debug {
+                out.writes.push(OutputWrite::Stderr(debug_tool_not_found(
+                    color, name, &options, &tools,
+                )));
+            }
             Ok(Err(out.error(&format!(
                 "Tool not found: {name}\nAvailable tools: {}",
                 tools.join(", ")
@@ -1482,6 +1663,9 @@ pub fn info(input: InfoInput, ctx: &HandlerContext) -> Result<CommandOutcome, In
         // `find_other_implementations` compares `ToolMetadata#implements` (a
         // String) with a Symbol, so it never finds one: no "Other
         // implementations" line, and `--all` lists the tool itself only.
+        if debug_enabled(&config) {
+            debug_other_implementations(&mut out, &register, name, profile_name.as_deref());
+        }
         if input.all {
             out.clear();
             out.say(
