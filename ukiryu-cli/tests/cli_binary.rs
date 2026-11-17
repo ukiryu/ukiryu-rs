@@ -16,6 +16,11 @@
 //!   oracle, and the corpus `cli-output` rows of those verbs
 //!   (`corpus/conformance/cases/cli-output.jsonl`).
 //!
+//! - the `info` and `opts` rows of the conformance corpus
+//!   (`corpus/conformance/cases/cli-output.jsonl`) and
+//!   `info_opts_data/cases.json`, captured from the same oracle in the
+//!   corpus environment.
+//!
 //! Rows are split into three contracts and counted separately:
 //! - source rows: captured from exe/ukiryu and expected byte for byte (or with
 //!   the recorded comparison mode), apart from the recorded deviations below;
@@ -793,12 +798,7 @@ fn simple(args: &[&str]) -> Output {
 
 #[test]
 fn verbs_without_a_merged_handler_fail_gated() {
-    for args in [
-        &["info", "ls"][..],
-        &["opts", "ls"],
-        &["describe", "ls"],
-        &["which", "ls"],
-    ] {
+    for args in [&["describe", "ls"][..], &["which", "ls"]] {
         let got = simple(args);
         assert_eq!(got.code, GATED_EXIT, "{args:?}: {}", got.stderr);
         assert_eq!(got.stdout, "", "{args:?}");
@@ -829,7 +829,6 @@ fn argument_errors_exit_1_on_stderr() {
 fn help_and_version_succeed_on_stdout() {
     for args in [
         &["--help"][..],
-        &["help"],
         &["validate", "--help"],
         &["lint", "--help"],
     ] {
@@ -837,6 +836,14 @@ fn help_and_version_succeed_on_stdout() {
         assert_eq!(got.code, 0, "{args:?}: {}", got.stderr);
         assert!(got.stdout.contains("Usage"), "{args:?}: {:?}", got.stdout);
     }
+    // `help` is Thor's command list (the cli-output.help row pins its bytes).
+    let got = simple(&["help"]);
+    assert_eq!(got.code, 0, "help: {}", got.stderr);
+    assert!(
+        got.stdout.starts_with("ukiryu commands:\n"),
+        "{:?}",
+        got.stdout
+    );
     // Thor prints the command list (stdout, status 0) when no command or no
     // subcommand of a group is given (captured: logs/grammar-3.log).
     let cases: [(&[&str], &str); 3] = [
@@ -884,6 +891,256 @@ fn an_output_file_that_cannot_be_written_is_an_errno_error() {
         "[Errno::ENOENT] No such file or directory @ rb_sysopen - nodir/out.yaml\n"
     );
     let _ = std::fs::remove_dir_all(&root);
+}
+
+// ---------------------------------------------------------------- info/opts
+
+#[cfg(target_os = "linux")]
+fn conformance_dir() -> PathBuf {
+    std::env::var_os("UKIRYU_CONFORMANCE_DIR")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| Path::new(env!("CARGO_MANIFEST_DIR")).join("../corpus/conformance"))
+}
+
+/// Runs `argv` in the corpus `cli-output` environment
+/// (`corpus/oracle-ruby/lib/ops.rb`), with `${INPUTS}` substituted in the
+/// arguments and substituted back (with `${HOME}`) in the output. `PATH`
+/// holds only a `bash` link, so no register tool is installed.
+#[cfg(target_os = "linux")]
+fn corpus_cli(name: &str, argv: &[String], extra: &[(String, String)]) -> Output {
+    let inputs = std::fs::canonicalize(conformance_dir().join("inputs")).unwrap();
+    let inputs = inputs.to_str().unwrap();
+    let root = scratch(name);
+    let home = root.join("home");
+    let bin = root.join("bin");
+    std::fs::create_dir_all(&home).unwrap();
+    std::fs::create_dir_all(&bin).unwrap();
+    std::os::unix::fs::symlink("/bin/bash", bin.join("bash")).unwrap();
+    let h = home.to_str().unwrap();
+    let mut env: Vec<(String, String)> = [
+        ("HOME", h.to_owned()),
+        ("TZ", "UTC".to_owned()),
+        ("LANG", "C.UTF-8".to_owned()),
+        ("LC_ALL", "C.UTF-8".to_owned()),
+        ("SHELL", "/bin/bash".to_owned()),
+        ("UKIRYU_REGISTER", format!("{inputs}/register")),
+        ("COLUMNS", "100".to_owned()),
+        ("THOR_COLUMNS", "100".to_owned()),
+        ("TERM", "dumb".to_owned()),
+        ("PATH", bin.to_str().unwrap().to_owned()),
+    ]
+    .into_iter()
+    .map(|(k, v)| (k.to_owned(), v))
+    .collect();
+    env.extend(extra.iter().cloned());
+    let args: Vec<String> = argv
+        .iter()
+        .map(|a| a.replace("${INPUTS}", inputs))
+        .collect();
+    let out = run(&args, &env, &home, Some(""));
+    let scrub = |text: &str| text.replace(inputs, "${INPUTS}").replace(h, "${HOME}");
+    let out = Output {
+        stdout: scrub(&out.stdout),
+        stderr: scrub(&out.stderr),
+        code: out.code,
+    };
+    let _ = std::fs::remove_dir_all(&root);
+    out
+}
+
+/// Every `info` and `opts` row of the conformance corpus, byte for byte.
+#[cfg(target_os = "linux")]
+#[test]
+fn info_and_opts_replay_the_corpus_rows() {
+    let cases = std::fs::read_to_string(conformance_dir().join("cases/cli-output.jsonl")).unwrap();
+    let mut ids = Vec::new();
+    for line in cases.lines() {
+        let row: Value = serde_json::from_str(line).unwrap();
+        let id = row["id"].as_str().unwrap();
+        let argv = strings(&row["input"]["argv"]);
+        if !matches!(argv[0].as_str(), "info" | "opts") {
+            continue;
+        }
+        let want = &row["expect"]["ok"];
+        let got = corpus_cli(id, &argv, &[]);
+        assert_eq!(got.stdout, want["stdout"].as_str().unwrap(), "{id} stdout");
+        assert_eq!(got.stderr, want["stderr"].as_str().unwrap(), "{id} stderr");
+        assert_eq!(
+            i64::from(got.code),
+            want["exit"].as_i64().unwrap(),
+            "{id} exit"
+        );
+        ids.push(id.to_owned());
+    }
+    assert_eq!(
+        ids,
+        [
+            "cli-output.info-absent",
+            "cli-output.info-unknown",
+            "cli-output.opts-jq",
+            "cli-output.opts-jq-process",
+        ]
+    );
+}
+
+/// The Thor `help`, `help exec`, unknown-verb and `validate lint` rows.
+#[cfg(target_os = "linux")]
+#[test]
+fn thor_help_and_unknown_command_rows_replay_the_corpus() {
+    let cases = std::fs::read_to_string(conformance_dir().join("cases/cli-output.jsonl")).unwrap();
+    let wanted = [
+        "cli-output.help",
+        "cli-output.help-exec",
+        "cli-output.unknown-verb",
+        "cli-output.lint-file",
+    ];
+    let mut seen = Vec::new();
+    for line in cases.lines() {
+        let row: Value = serde_json::from_str(line).unwrap();
+        let id = row["id"].as_str().unwrap();
+        if !wanted.contains(&id) {
+            continue;
+        }
+        let argv = strings(&row["input"]["argv"]);
+        let want = &row["expect"]["ok"];
+        let got = corpus_cli(id, &argv, &[]);
+        assert_eq!(got.stdout, want["stdout"].as_str().unwrap(), "{id} stdout");
+        assert_eq!(got.stderr, want["stderr"].as_str().unwrap(), "{id} stderr");
+        assert_eq!(
+            i64::from(got.code),
+            want["exit"].as_i64().unwrap(),
+            "{id} exit"
+        );
+        seen.push(id.to_owned());
+    }
+    seen.sort();
+    let mut wanted = wanted.to_vec();
+    wanted.sort();
+    assert_eq!(seen, wanted);
+}
+
+/// The interface, `--all`, `NO_COLOR` and error paths of `info` and `opts`
+/// the corpus does not cover, captured from the same oracle.
+#[cfg(target_os = "linux")]
+#[test]
+fn info_and_opts_match_the_oracle_captures() {
+    let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/info_opts_data/cases.json");
+    let data: Value = serde_json::from_str(&std::fs::read_to_string(path).unwrap()).unwrap();
+    let cases = data["cases"].as_array().unwrap();
+    assert_eq!(cases.len(), 27);
+    let data_dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/info_opts_data");
+    for (i, case) in cases.iter().enumerate() {
+        let argv: Vec<String> = strings(&case["argv"])
+            .iter()
+            .map(|a| a.replace("${DATA}", data_dir.to_str().unwrap()))
+            .collect();
+        let extra: Vec<(String, String)> = case["env"]
+            .as_object()
+            .unwrap()
+            .iter()
+            .map(|(k, v)| (k.clone(), v.as_str().unwrap().to_owned()))
+            .collect();
+        let got = corpus_cli(&format!("info-opts-{i}"), &argv, &extra);
+        assert_eq!(
+            got.stdout,
+            case["stdout"].as_str().unwrap(),
+            "{argv:?} stdout"
+        );
+        assert_eq!(
+            got.stderr,
+            case["stderr"].as_str().unwrap(),
+            "{argv:?} stderr"
+        );
+        assert_eq!(
+            i64::from(got.code),
+            case["exit"].as_i64().unwrap(),
+            "{argv:?} exit"
+        );
+    }
+}
+
+/// Replays `version_detection_cases.json` (a register of tools whose
+/// definition has no version) in the corpus environment, but with `PATH` set
+/// to `HOME/bin`, a directory holding a bash link and the case's scripts, so
+/// the installed tools run a script the test controls. `only` selects the
+/// verbs replayed.
+#[cfg(target_os = "linux")]
+fn replay_version_detection(only: &str) {
+    use std::os::unix::fs::PermissionsExt;
+    let tests = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/info_opts_data");
+    let data: Value = serde_json::from_str(
+        &std::fs::read_to_string(tests.join("version_detection_cases.json")).unwrap(),
+    )
+    .unwrap();
+    let register = tests.join("vreg");
+    let mut replayed = 0;
+    for (i, case) in data["cases"].as_array().unwrap().iter().enumerate() {
+        let argv = strings(&case["argv"]);
+        if argv[0] != only {
+            continue;
+        }
+        let root = scratch(&format!("version-detection-{only}-{i}"));
+        let home = root.join("home");
+        let bin = home.join("bin");
+        std::fs::create_dir_all(&bin).unwrap();
+        std::os::unix::fs::symlink("/bin/bash", bin.join("bash")).unwrap();
+        for (name, body) in data["scripts"].as_object().unwrap() {
+            let path = bin.join(name);
+            std::fs::write(&path, body.as_str().unwrap()).unwrap();
+            std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o755)).unwrap();
+        }
+        let h = home.to_str().unwrap();
+        let env: Vec<(String, String)> = [
+            ("HOME", h),
+            ("TZ", "UTC"),
+            ("LANG", "C.UTF-8"),
+            ("LC_ALL", "C.UTF-8"),
+            ("SHELL", "/bin/bash"),
+            ("UKIRYU_REGISTER", register.to_str().unwrap()),
+            ("COLUMNS", "100"),
+            ("THOR_COLUMNS", "100"),
+            ("TERM", "dumb"),
+            ("GIT_REDIRECT_STDERR", "/dev/null"),
+            ("PATH", bin.to_str().unwrap()),
+        ]
+        .iter()
+        .map(|(k, v)| ((*k).to_owned(), (*v).to_owned()))
+        .collect();
+        let got = run(&argv, &env, &home, Some(""));
+        assert_eq!(
+            got.stdout.replace(h, "${HOME}"),
+            case["stdout"].as_str().unwrap(),
+            "{argv:?} stdout"
+        );
+        assert_eq!(
+            got.stderr.replace(h, "${HOME}"),
+            case["stderr"].as_str().unwrap(),
+            "{argv:?} stderr"
+        );
+        assert_eq!(
+            i64::from(got.code),
+            case["exit"].as_i64().unwrap(),
+            "{argv:?} exit"
+        );
+        let _ = std::fs::remove_dir_all(&root);
+        replayed += 1;
+    }
+    assert!(replayed > 0, "no {only} cases replayed");
+}
+
+/// `info` of installed tools whose definition has no version: the detected
+/// version, and `unknown` when detection finds none.
+#[cfg(target_os = "linux")]
+#[test]
+fn info_detects_the_version_of_an_installed_tool() {
+    replay_version_detection("info");
+}
+
+/// `list` shows the detected version (`vX`) or `version unknown`.
+#[cfg(target_os = "linux")]
+#[test]
+fn list_detects_the_version_of_installed_tools() {
+    replay_version_detection("list");
 }
 
 // ------------------------------------------------- inspect remainder (#73)

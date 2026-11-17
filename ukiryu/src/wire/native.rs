@@ -12,11 +12,13 @@ use super::ops::{params, ToolRequest};
 use super::value::Typed;
 use crate::cache::ToolCache;
 use crate::environment::Environment;
+use crate::executable::DiscoveryContext as PathContext;
 use crate::execution::Seconds;
 use crate::extractors::base::ProcessHost;
 use crate::models::ToolDefinition;
-use crate::register::Register;
-use crate::runtime::native_platform;
+use crate::register::{DiscoveryContext, Git, Register};
+use crate::register_lookup::{find_by_input, load_tool_index, Identifier, LookupError, Target};
+use crate::runtime::{native_platform, ShellName};
 use crate::tool::{self, profile_is_modern, ExecuteSettings, Tool, ToolError, ToolOptions};
 use crate::tool_loader::{self, RegisterSource};
 use crate::types::Value;
@@ -191,4 +193,175 @@ fn run(request: ExecuteRequest) -> Result<Json, Json> {
         Ok(run) => Ok(super::results::execution(&run)),
         Err(error) => Err(execute_error(&error)),
     }
+}
+
+// ---------------------------------------------------------------- find_by
+
+/// Where the register comes from.
+#[derive(Debug, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+pub enum FindRegister {
+    /// `Register.new(path)`.
+    Path { path: String },
+    /// `Register.discover` over explicit inputs, auto-clone included:
+    /// `UKIRYU_REGISTER`, the development path, the home directory and the
+    /// git program. Nothing is read from the process environment.
+    Discover {
+        #[serde(default)]
+        env_register: Option<String>,
+        #[serde(default)]
+        dev_path: Option<String>,
+        #[serde(default)]
+        home: Option<String>,
+        /// The git program; `git` through `PATH` when absent.
+        #[serde(default)]
+        git: Option<String>,
+    },
+}
+
+/// The `identifier` argument before `identifier.to_s`: `nil`, a String or an
+/// Integer. Symbols are Strings on the wire (`Symbol#to_s`).
+#[derive(Debug)]
+pub enum FindIdentifier {
+    Nil,
+    Str(String),
+    Integer(i64),
+}
+
+impl<'de> Deserialize<'de> for FindIdentifier {
+    fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+        #[derive(Deserialize)]
+        #[serde(untagged)]
+        enum Raw {
+            Nil(()),
+            Int(i64),
+            Str(String),
+        }
+        Ok(match Raw::deserialize(deserializer)? {
+            Raw::Nil(()) => FindIdentifier::Nil,
+            Raw::Int(i) => FindIdentifier::Integer(i),
+            Raw::Str(s) => FindIdentifier::Str(s),
+        })
+    }
+}
+
+/// `Tool.find_by(identifier, platform:, shell:)` / `ToolFinder.find_by`.
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct FindByRequest {
+    pub register: FindRegister,
+    #[serde(default = "nil_identifier")]
+    pub identifier: FindIdentifier,
+    /// The `options[:platform]` / `options[:shell]` the caller passed, as
+    /// names (they may be outside the typed set).
+    #[serde(default)]
+    pub platform: Option<String>,
+    #[serde(default)]
+    pub shell: Option<String>,
+    /// The `PATH` searched for executables; the process `PATH` when absent.
+    #[serde(default)]
+    pub path: Option<String>,
+    /// Call twice against one cache and report whether both calls returned
+    /// the same tool object (`same_object` in the reply).
+    #[serde(default)]
+    pub repeat: bool,
+}
+
+fn nil_identifier() -> FindIdentifier {
+    FindIdentifier::Nil
+}
+
+/// Reply: `value` is `null` when no tool matches, else the tool's identity
+/// (as `resolve`). With `repeat`, the reply also carries `same_object`.
+pub fn find_by(request: FindByRequest) -> Json {
+    match run_find_by(request) {
+        Ok((value, same)) => {
+            let mut reply = json!({"ok": true, "value": value});
+            if let Some(same) = same {
+                reply["same_object"] = json!(same);
+            }
+            reply
+        }
+        Err(error) => error,
+    }
+}
+
+fn run_find_by(request: FindByRequest) -> Result<(Json, Option<bool>), Json> {
+    let platform =
+        native_platform().map_err(|e| ruby("Ukiryu::Errors::UnsupportedPlatformError", e))?;
+    let shell = request
+        .shell
+        .as_deref()
+        .and_then(ShellName::lookup)
+        .unwrap_or(ShellName::Bash);
+    let path = match &request.path {
+        Some(path) => Some(path.clone()),
+        None => std::env::var("PATH").ok(),
+    };
+    let register = match &request.register {
+        FindRegister::Path { path } => Register::at(path),
+        FindRegister::Discover {
+            env_register,
+            dev_path,
+            home,
+            git,
+        } => {
+            let context = DiscoveryContext {
+                env_register: env_register.as_ref().map(Into::into),
+                dev_path: dev_path.as_ref().map(Into::into),
+                home: home.as_ref().map(Into::into),
+            };
+            let mut git_runner = Git::default();
+            if let Some(program) = git {
+                git_runner.program = program.into();
+            }
+            context
+                .discover(&git_runner)
+                .map_err(|e| ruby(e.class_name(), e.to_string()))?
+        }
+    };
+    let options = ToolOptions::new(platform, shell).discovery(PathContext::new(
+        platform,
+        request.shell.as_deref().unwrap_or("bash"),
+        path.as_deref(),
+        None,
+    ));
+    let runtime = ToolOptions::new(platform, shell);
+    let index = load_tool_index(&register);
+    let mut env = Environment::new();
+    if let Some(path) = &path {
+        env = env.set("PATH", path);
+    }
+    let source = RegisterSource::new(register.clone(), platform, ProcessHost::new(env, shell));
+    let cache = ToolCache::new();
+    let target = Target {
+        platform: request.platform.as_deref(),
+        shell: request.shell.as_deref(),
+    };
+    let call = || {
+        let identifier = match &request.identifier {
+            FindIdentifier::Nil => Identifier::Nil,
+            FindIdentifier::Str(s) => Identifier::Str(s),
+            FindIdentifier::Integer(i) => Identifier::Integer(*i),
+        };
+        find_by_input(
+            &register, &index, &source, &cache, identifier, target, &options, &runtime,
+        )
+        .map_err(|e| match e {
+            LookupError::UnrepresentableTarget { .. } => transport("NOT_PORTED", e.to_string()),
+            other => ruby(&other.class_name(), other.to_string()),
+        })
+    };
+    let first = call()?;
+    let same = if request.repeat {
+        Some(match (&first, &call()?) {
+            (Some(a), Some(b)) => Rc::ptr_eq(a, b),
+            (None, None) => true,
+            _ => false,
+        })
+    } else {
+        None
+    };
+    let value = first.map_or(Json::Null, |tool| super::ops::tool_identity(&tool));
+    Ok((value, same))
 }

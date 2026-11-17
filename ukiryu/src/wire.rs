@@ -16,6 +16,7 @@
 //! | `validate` | `Type.validate`, `DefinitionValidator.validate_string` ([`ops`]) |
 //! | `schema` | `SchemaValidator.validate_profile`, `JSON::Validator.fully_validate` ([`ops`]) |
 //! | `results` | exit-code meanings of a tool's commands ([`ops`]) |
+//! | `find_by` | `Tool.find_by` over a register, native builds only ([`native`]); its value is a tool identity or `null` |
 //! | `execute` | `Tool#execute`, native builds only ([`native`]); its value is a [`results`] payload |
 //!
 //! Register directories and process execution exist only in native builds:
@@ -44,6 +45,8 @@ enum Request {
     Results(Box<ops::ResultsRequest>),
     #[cfg(not(target_arch = "wasm32"))]
     Execute(Box<native::ExecuteRequest>),
+    #[cfg(not(target_arch = "wasm32"))]
+    FindBy(Box<native::FindByRequest>),
     ParseYaml {
         yaml: String,
     },
@@ -75,6 +78,8 @@ pub fn process(input: &[u8]) -> Value {
         Request::Results(request) => ops::results(*request),
         #[cfg(not(target_arch = "wasm32"))]
         Request::Execute(request) => native::execute(*request),
+        #[cfg(not(target_arch = "wasm32"))]
+        Request::FindBy(request) => native::find_by(*request),
         Request::Version => json!({"ok":true,"version":crate::VERSION,"abi_version":1}),
         Request::ParseYaml { yaml } => parse_yaml_json(&yaml),
         Request::ResolveConfig {
