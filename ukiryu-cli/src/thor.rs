@@ -343,25 +343,24 @@ fn run(args: &[String], columns: Option<&str>) -> Run {
     };
     // `retrieve_command_name`: a first word that is not a switch, or one of
     // the help mappings, is the command; otherwise `help` runs on all words.
-    let (name, rest): (String, &[String]) =
-        if HELP_MAPPINGS.contains(&first.as_str()) || !first.starts_with('-') {
-            if HELP_MAPPINGS.contains(&first.as_str()) {
-                ("help".to_owned(), &args[1..])
-            } else if first == "lint" {
-                // The port's own `lint` verb; Thor has none.
-                return Run::Done(Preempt::Pass(args.to_vec()));
-            } else {
-                match resolve(&verb_names(), first) {
-                    Resolved::Name(name) => (name, &args[1..]),
-                    Resolved::Ambiguous(names) => return Run::Done(ambiguous(first, &names)),
-                    Resolved::Missing(name) => {
-                        return Run::Done(error(undefined(&name, &verb_names())))
-                    }
-                }
-            }
+    let (name, rest): (String, &[String]) = if HELP_MAPPINGS.contains(&first.as_str())
+        || !first.starts_with('-')
+    {
+        if HELP_MAPPINGS.contains(&first.as_str()) {
+            ("help".to_owned(), &args[1..])
+        } else if first == "lint" {
+            // The port's own `lint` verb; Thor has none.
+            return Run::Done(Preempt::Pass(args.to_vec()));
         } else {
-            ("help".to_owned(), args)
-        };
+            match resolve(&verb_names(), first) {
+                Resolved::Name(name) => (name, &args[1..]),
+                Resolved::Ambiguous(names) => return Run::Done(ambiguous(first, &names)),
+                Resolved::Missing(_) => return Run::Done(error(undefined(first, &verb_names()))),
+            }
+        }
+    } else {
+        ("help".to_owned(), args)
+    };
     if GROUPS.iter().any(|g| g.name == name) {
         return Run::Done(group(&name, rest));
     }
@@ -542,7 +541,7 @@ fn resolve(names: &[&str], word: &str) -> Resolved {
             if names.contains(&normal.as_str()) {
                 Resolved::Name(normal)
             } else {
-                Resolved::Missing(word.to_owned())
+                Resolved::Missing(normal)
             }
         }
         _ => Resolved::Ambiguous(possible),
