@@ -242,12 +242,12 @@ fn build_inputs(root: &Path) {
     .unwrap();
 
     let d = add_register(root, "unreadable-profile");
-    fs::set_permissions(profile(&d, "gzip_gnu"), fs::Permissions::from_mode(0)).unwrap();
+    fs::set_permissions(profile(&d, "gzip_gnu"), fs::Permissions::from_mode(0o000)).unwrap();
 
     let d = add_register(root, "unreadable-index");
     fs::set_permissions(
         d.join("tools/bzip2_gnu/index.yaml"),
-        fs::Permissions::from_mode(0),
+        fs::Permissions::from_mode(0o000),
     )
     .unwrap();
 
@@ -310,7 +310,6 @@ fn digest(dir: &Path) -> String {
 }
 
 /// What one `find_by` call produced, in the oracle's terms.
-
 fn expected(row: &Json) -> String {
     let e = &row["expect"];
     if e["nil"].as_bool() == Some(true) {
@@ -410,7 +409,7 @@ fn find_by_rows_match_ruby_through_the_wire() {
     let mut failures = 0;
     for (name, want) in doc["input_digests"].as_object().unwrap() {
         let got = digest(&root.join("registers").join(name));
-        if &got != want.as_str().unwrap() {
+        if got != want.as_str().unwrap() {
             failures += 1;
             writeln!(report, "INPUT {name}: built {got}, oracle {want}").unwrap();
         }
@@ -421,6 +420,7 @@ fn find_by_rows_match_ruby_through_the_wire() {
     let root_user = fs::read(&unreadable).is_ok();
 
     let mut skipped = 0;
+    let stub_git = regex::Regex::new(r"<inputs>/bin/[^/\s]+/git\b").unwrap();
     for row in rows {
         let id = row["id"].as_str().unwrap();
         if root_user
@@ -444,8 +444,7 @@ fn find_by_rows_match_ruby_through_the_wire() {
         };
         // Ruby starts git through PATH, so its Errno message names the bare
         // program; the wire is handed the stub's absolute path instead.
-        let got_message = regex::Regex::new(r"<inputs>/bin/[^/\s]+/git\b")
-            .unwrap()
+        let got_message = stub_git
             .replace_all(
                 &message.replace(&root.display().to_string(), "<inputs>"),
                 regex::NoExpand("git"),
