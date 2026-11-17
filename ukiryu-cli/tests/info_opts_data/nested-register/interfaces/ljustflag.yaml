@@ -1,0 +1,13 @@
+---
+ukiryu_schema: '1.0'
+name: ljustflag
+version: '1.0'
+display_name: ljustflag Interface
+actions:
+- name: process
+  description: Process input
+  signature:
+    inputs:
+      options:
+      - name: level
+        type: integer

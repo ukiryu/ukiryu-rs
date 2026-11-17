@@ -7,8 +7,7 @@
 //! - a handler's own status (`CommandOutcome::exit_code`);
 //! - 1 for an argument error and for an uncaught source exception, as
 //!   `FriendlyCLI.start` exits after printing the error;
-//! - 0 for `help`, `--help` and `--version`;
-//! - 1 for an unknown command, reported in Thor's wording;
+//! - 0 for `--help` / `--version`;
 //! - [`GATED_EXIT`] for a verb (or a path of a verb) whose handler is not
 //!   integrated yet. It prints which part is missing on stderr and never
 //!   pretends to succeed.
@@ -16,17 +15,18 @@
 //! Text is written as given: the handlers produce UTF-8 strings, and nothing
 //! here re-encodes, appends or strips bytes (no newline translation).
 use crate::commands::author::{
-    self, AuthorContext, AuthorError, Confirm, DefinitionsInput, ExtractInput, LintInput,
-    LintOptions, LintTarget, ValidateInput, ValidateOptions, ValidateTarget,
+    self, AuthorContext, AuthorError, Confirm, DefinitionsInput, DescribeInput, ExtractInput,
+    LintInput, LintOptions, LintTarget, ToolEnv, ValidateInput, ValidateOptions, ValidateTarget,
 };
 use crate::commands::execute::{
     self, CacheAction, CacheInput, ExecInput, ExecuteContext, ExecuteError, RunFileInput,
 };
 use crate::commands::inspect::{
-    self, ConfigInput, HandlerContext, InspectError, SystemInput, VersionInput,
+    self, CommandsInput, ConfigInput, HandlerContext, InfoInput, InspectError, OptsInput,
+    RegisterInput, ResolveInput, SystemInput, VersionInput,
 };
 use crate::commands::CommandOutcome;
-use clap::error::{ContextKind, ContextValue, ErrorKind};
+use clap::error::ErrorKind;
 use clap::ArgMatches;
 use serde_json::Value;
 use std::ffi::OsString;
@@ -43,16 +43,7 @@ pub const GATED_EXIT: i32 = 2;
 
 /// Verbs of the source CLI whose handlers are not merged yet, with the
 /// component they wait for.
-const GATED_VERBS: [(&str, &str); 8] = [
-    ("list", "the register and tool APIs (K22-CLI-INSPECT)"),
-    ("info", "the register and tool APIs (K22-CLI-INSPECT)"),
-    ("commands", "the register and tool APIs (K22-CLI-INSPECT)"),
-    ("opts", "the register and tool APIs (K22-CLI-INSPECT)"),
-    ("describe", "the tool API (K22-CLI-AUTHOR)"),
-    ("which", "the register and tool APIs (K22-CLI-INSPECT)"),
-    ("resolve", "the register and tool APIs (K22-CLI-INSPECT)"),
-    ("register", "the register API (K22-CLI-INSPECT)"),
-];
+const GATED_VERBS: [(&str, &str); 1] = [("which", "the register and tool APIs (K22-CLI-INSPECT)")];
 
 /// Run the CLI over `args` (including the program name) and return the exit
 /// status. All output goes to the process's stdout, stderr and files.
@@ -71,12 +62,43 @@ where
     I: IntoIterator<Item = T>,
     T: Into<OsString> + Clone,
 {
-    // Thor's command table depends on the terminal width, so it is set here.
-    let root_help = crate::thor_help::root_help(crate::thor_help::terminal_width());
-    let command = crate::arguments::command().override_help(root_help.clone());
-    let matches = match command.try_get_matches_from(args) {
+    let args: Vec<OsString> = args.into_iter().map(Into::into).collect();
+    // Thor decides help, `-h`, unknown or ambiguous commands, unknown switches
+    // and argument counts before any command runs (`crate::thor`); what it
+    // cannot model goes on to the clap grammar.
+    let args = match args
+        .iter()
+        .skip(1)
+        .map(|a| a.to_str().map(str::to_owned))
+        .collect::<Option<Vec<String>>>()
+    {
+        None => args,
+        Some(words) => {
+            match crate::thor::preempt(&words, std::env::var("THOR_COLUMNS").ok().as_deref()) {
+                crate::thor::Preempt::Output {
+                    stdout,
+                    stderr,
+                    code,
+                } => {
+                    if !stdout.is_empty() {
+                        let _ = io.perform(&[OutputWrite::Stdout(stdout)]);
+                    }
+                    if !stderr.is_empty() {
+                        io.stderr(&stderr);
+                    }
+                    return code;
+                }
+                crate::thor::Preempt::Pass(words) => {
+                    let mut passed = vec![args[0].clone()];
+                    passed.extend(words.into_iter().map(OsString::from));
+                    passed
+                }
+            }
+        }
+    };
+    let matches = match crate::arguments::command().try_get_matches_from(args) {
         Ok(matches) => matches,
-        Err(error) => return parse_error(error, &root_help),
+        Err(error) => return parse_error(error, io),
     };
     let Some((verb, sub)) = matches.subcommand() else {
         // `subcommand_required` makes this unreachable through clap.
@@ -103,59 +125,38 @@ where
     }
 }
 
-/// Help and version requests print to stdout and succeed; an unknown command
-/// is Thor's `Could not find command` line; every other parse error goes to
-/// stderr with the source's failure status 1.
-fn parse_error(error: clap::Error, root_help: &str) -> i32 {
+/// clap's help and version requests print to stdout and succeed; every other
+/// parse error goes to stderr with the source's failure status 1.
+fn parse_error(error: clap::Error, io: &mut ProcessIo) -> i32 {
     match error.kind() {
-        // Thor prints the command list on stdout and succeeds when no
-        // command is given, as for `help` and `--help`.
-        ErrorKind::DisplayHelp | ErrorKind::DisplayHelpOnMissingArgumentOrSubcommand => {
-            let rendered = error.render().to_string();
-            // clap trims the help's trailing blank line; Thor's table keeps
-            // it, so the root help is written as Thor renders it.
-            let text = if rendered.trim_end() == root_help.trim_end() {
-                root_help
-            } else {
-                rendered.as_str()
-            };
-            let mut out = io::stdout().lock();
-            let _ = out.write_all(text.as_bytes());
-            let _ = out.flush();
-            0
+        // Thor reports an unknown (sub)command as one stderr line, status 1.
+        ErrorKind::InvalidSubcommand => {
+            if let Some(clap::error::ContextValue::String(name)) =
+                error.get(clap::error::ContextKind::InvalidSubcommand)
+            {
+                io.stderr(&format!("Could not find command \"{name}\".\n"));
+                return 1;
+            }
+            let _ = error.print();
+            1
         }
-        ErrorKind::DisplayVersion => {
+        ErrorKind::DisplayHelp | ErrorKind::DisplayVersion => {
             let _ = error.print();
             0
         }
-        ErrorKind::InvalidSubcommand => match error.get(ContextKind::InvalidSubcommand) {
-            Some(ContextValue::String(name)) => {
-                thor_error(&format!("Could not find command \"{name}\"."));
-                1
-            }
-            _ => {
-                let _ = error.print();
-                1
-            }
-        },
+        // Thor prints the command list on stdout and succeeds when no
+        // command is given.
+        ErrorKind::DisplayHelpOnMissingArgumentOrSubcommand => {
+            let mut out = io::stdout().lock();
+            let _ = write!(out, "{}", error.render());
+            let _ = out.flush();
+            0
+        }
         _ => {
             let _ = error.print();
             1
         }
     }
-}
-
-/// `FriendlyCLI#print_error_message`: Thor's `say_error(message, :red)`, red
-/// only when Thor would display colors.
-fn thor_error(message: &str) {
-    let text = if thor_colors() {
-        format!("\x1b[31m{message}\x1b[0m\n")
-    } else {
-        format!("{message}\n")
-    };
-    let mut err = io::stderr().lock();
-    let _ = err.write_all(text.as_bytes());
-    let _ = err.flush();
 }
 
 enum Failure {
@@ -198,10 +199,63 @@ fn dispatch(verb: &str, sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Fai
             })?;
             inspect_outcome(inspect::config(input, &ctx), io)
         }
+        "info" => {
+            // A bare `ukiryu info` prints Thor's command list (not the info
+            // command's usage): `ThorExt` turns the missing argument into
+            // `help`, whatever other options were given.
+            let Some(tool) = text(sub, "tool")? else {
+                let help = thor_command_list(std::env::var("THOR_COLUMNS").ok().as_deref());
+                return Ok(io.perform(&[OutputWrite::Stdout(help)]).unwrap_or(0));
+            };
+            let ctx = handler_context(text(sub, "register")?)?;
+            let input = InfoInput {
+                tool,
+                all: flag(sub, "all"),
+            };
+            inspect_outcome(inspect::info(input, &ctx), io)
+        }
+        "opts" => {
+            let ctx = handler_context(text(sub, "register")?)?;
+            let input = OptsInput {
+                tool: text(sub, "tool")?.unwrap_or_default(),
+                command: text(sub, "command")?,
+            };
+            inspect_outcome(inspect::opts(input, &ctx), io)
+        }
+        "list" => {
+            let ctx = handler_context(text(sub, "register")?)?;
+            inspect_outcome(inspect::list(&ctx), io)
+        }
+        "commands" => {
+            let ctx = handler_context(text(sub, "register")?)?;
+            let input = CommandsInput {
+                tool: required(sub, "tool")?,
+            };
+            inspect_outcome(inspect::commands(input, &ctx), io)
+        }
+        "register" => {
+            // `RegisterCommand` takes no `--register` option.
+            let ctx = handler_context(None)?;
+            let input = RegisterInput {
+                subcommand: text(sub, "subcommand")?,
+                force: flag(sub, "force"),
+            };
+            inspect_outcome(inspect::register(input, &ctx), io)
+        }
+        "resolve" => {
+            // `ResolveCommand` takes no `--register` option.
+            let ctx = handler_context(None)?;
+            let input = ResolveInput {
+                tool: required(sub, "tool")?,
+                constraint: text(sub, "version-constraint")?,
+            };
+            inspect_outcome(inspect::resolve(input, &ctx), io)
+        }
         "validate" => validate(sub, io),
         "lint" => lint(sub, io),
         "definitions" => definitions(sub, io),
         "extract" => extract(sub, io),
+        "describe" => describe(sub, io),
         "exec" => exec(sub, io),
         "run-file" => run_file(sub, io),
         "cache" => cache(sub, io),
@@ -419,6 +473,29 @@ fn extract(sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Failure> {
     author_outcome("extract", author::extract(input, &ctx, &mut process), io)
 }
 
+/// `ukiryu describe TOOL [COMMAND]`. `--format` is accepted and not read,
+/// as in the source `DescribeCommand`.
+fn describe(sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Failure> {
+    let input = DescribeInput {
+        tool: required(sub, "tool")?,
+        command: text(sub, "command")?,
+        register: text(sub, "register")?,
+    };
+    let host = Host::native().map_err(|e| Failure::Message(format!("ukiryu: {e}")))?;
+    let config = configuration(&host)?;
+    let colors_disabled = config.resolve("use_color") == Some(&Value::Bool(false));
+    let configured_shell = config
+        .resolve("shell")
+        .and_then(Value::as_str)
+        .map(str::to_owned);
+    let env = ToolEnv {
+        host,
+        configured_shell,
+    };
+    let ctx = author_context(colors_disabled);
+    author_outcome("describe", author::describe(input, &ctx, &env), io)
+}
+
 /// The process facts `exec`, `run-file` and `cache` read. The `paint` gem is
 /// taken as available, as in the captures (the Ruby CLI ran with it
 /// installed).
@@ -533,13 +610,17 @@ fn inspect_outcome(
     match result {
         Ok(outcome) => Ok(io.perform(&outcome.writes).unwrap_or(outcome.exit_code)),
         Err(error) => {
-            if let InspectError::Shell { partial, .. } = &error {
-                if let Some(code) = io.perform(partial) {
-                    return Ok(code);
-                }
+            // The output printed before the failure comes first.
+            if let Some(code) = io.perform(error.partial()) {
+                return Ok(code);
             }
             io.stderr(&format!("{}\n", error.friendly_message()));
-            Ok(1)
+            // A path whose component is missing never reports a plain failure.
+            Ok(if matches!(error, InspectError::Gated { .. }) {
+                GATED_EXIT
+            } else {
+                1
+            })
         }
     }
 }
@@ -648,4 +729,110 @@ impl Confirm for StdinConfirm {
             Ok(_) => Some(line),
         }
     }
+}
+
+/// Thor's `ukiryu help` listing (`Thor.help`: `print_table(list, indent: 2,
+/// truncate: true)` then a blank line), captured from the pinned exe/ukiryu.
+/// `width` is `THOR_COLUMNS`; without it Thor asks the terminal, and 80 is
+/// what a non-terminal reports. A width under 10 also means 80.
+pub(crate) fn thor_command_list(width: Option<&str>) -> String {
+    const ROWS: [(&str, &str); 18] = [
+        ("ukiryu cache [ACTION]", "Manage definition cache"),
+        (
+            "ukiryu commands TOOL",
+            "List all commands available for a tool",
+        ),
+        (
+            "ukiryu config [ACTION] [KEY] [VALUE]",
+            "Manage configuration (list, get, set, unset)",
+        ),
+        ("ukiryu definitions [COMMAND]", "Manage tool definitions"),
+        (
+            "ukiryu describe TOOL [COMMAND]",
+            "Show comprehensive documentation for a tool or specific command",
+        ),
+        (
+            "ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]",
+            "Execute a tool command inline",
+        ),
+        (
+            "ukiryu extract TOOL",
+            "Extract tool definition from an installed CLI tool",
+        ),
+        (
+            "ukiryu help [COMMAND]",
+            "Describe available commands or one specific command",
+        ),
+        (
+            "ukiryu info [TOOL]",
+            "Show detailed information about a tool",
+        ),
+        ("ukiryu list", "List all available tools in the register"),
+        (
+            "ukiryu opts TOOL [COMMAND]",
+            "Show options for a tool or specific command",
+        ),
+        ("ukiryu register [SUBCOMMAND]", "Manage the tool register"),
+        (
+            "ukiryu resolve TOOL [VERSION]",
+            "Resolve which definition would be used for a tool",
+        ),
+        (
+            "ukiryu run-file REQUEST_FILE",
+            "Execute a Ukiryu Structured Execution Request from a YAML file",
+        ),
+        (
+            "ukiryu system [SUBCOMMAND]",
+            "Show system information (shells, etc.)",
+        ),
+        ("ukiryu tree", "Print a tree of all available commands"),
+        ("ukiryu validate [COMMAND]", "Validate tool definitions"),
+        ("ukiryu version", "Show Ukiryu version"),
+    ];
+    // `which` is the 19th row and sorts last.
+    const WHICH: (&str, &str) = (
+        "ukiryu which IDENTIFIER",
+        "Show which tool implementation would be selected",
+    );
+    const INDENT: usize = 2;
+    let terminal_width = match width {
+        // Ruby `String#to_i`: leading digits, else 0.
+        Some(text) => {
+            let digits: String = text
+                .trim_start()
+                .chars()
+                .take_while(char::is_ascii_digit)
+                .collect();
+            digits.parse::<usize>().unwrap_or(0)
+        }
+        None => 80,
+    };
+    let terminal_width = if terminal_width < 10 {
+        80
+    } else {
+        terminal_width
+    };
+    let column = ROWS
+        .iter()
+        .chain(std::iter::once(&WHICH))
+        .map(|(usage, _)| usage.chars().count())
+        .max()
+        .unwrap_or(0);
+    let mut out = String::from("ukiryu commands:\n");
+    for (usage, about) in ROWS.iter().chain(std::iter::once(&WHICH)) {
+        // Thor lists each description as a `# ` comment.
+        let sentence = format!("{usage:<width$}# {about}", width = column + 2);
+        let chars: Vec<char> = sentence.chars().collect();
+        let line: String = if chars.len() <= terminal_width {
+            sentence
+        } else {
+            let keep = terminal_width.saturating_sub(3 + INDENT);
+            chars[..keep.min(chars.len())].iter().collect::<String>() + "..."
+        };
+        out.push_str(&" ".repeat(INDENT));
+        out.push_str(&line);
+        out.push('\n');
+    }
+    out.push('\n');
+    out
 }

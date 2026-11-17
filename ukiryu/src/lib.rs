@@ -15,6 +15,7 @@ pub mod model_loading;
 pub mod models;
 pub mod options;
 pub mod register;
+pub mod register_lookup;
 pub mod render;
 pub mod request;
 pub mod routing;

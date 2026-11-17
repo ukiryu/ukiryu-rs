@@ -1,0 +1,14 @@
+---
+ukiryu_schema: '1.0'
+name: vertool
+version: '1.0'
+display_name: vertool Interface
+actions:
+- name: process
+  description: Process input
+  signature:
+    inputs:
+      inputs:
+      - name: input
+        type: file
+        required: true

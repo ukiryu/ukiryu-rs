@@ -33,7 +33,7 @@
 use std::path::Path;
 
 use super::ValidationResult;
-use crate::schema::{self, Data, Permitted, SchemaError};
+use crate::schema::{self, Data, DefinitionSchemaFormat, Permitted, SchemaError};
 
 /// `DefinitionValidator::DEFAULT_SCHEMA_VERSION`.
 pub const DEFAULT_SCHEMA_VERSION: &str = "1.0";
@@ -83,12 +83,22 @@ pub enum SchemaStage {
     /// `download_and_load_schema` ([`REMOTE_SCHEMA_URL`]). Not performed by
     /// this port; the stage is skipped, as in Ruby when the download fails.
     RemoteFallbackNotPerformed,
+    /// The schema was supplied by the caller as text (no file is read and
+    /// `UKIRYU_SCHEMA_PATH` is not consulted), and it loaded.
+    Supplied,
+    /// The schema was supplied as text and did not load (parse error or a
+    /// falsy document), or no schema was supplied. The stage is skipped,
+    /// as for [`SchemaStage::GivenNotLoaded`].
+    SuppliedNotLoaded,
 }
 
 impl SchemaStage {
     /// Whether the JSON Schema stage ran.
     pub fn ran(&self) -> bool {
-        matches!(self, SchemaStage::Given { .. } | SchemaStage::Env { .. })
+        matches!(
+            self,
+            SchemaStage::Given { .. } | SchemaStage::Env { .. } | SchemaStage::Supplied
+        )
     }
 }
 
@@ -280,8 +290,41 @@ pub fn validate_report(
     schema_path: Option<&str>,
     env: &ValidatorEnv,
 ) -> Result<ValidationReport, SchemaError> {
+    report_with(definition, || resolve_schema(schema_path, env))
+}
+
+/// The supplied schema text, loaded as `load_schema` loads a file of that
+/// format; `None` (no schema) skips the stage.
+fn resolve_supplied(
+    schema: Option<(&str, DefinitionSchemaFormat)>,
+) -> Result<(SchemaStage, Option<Data>), SchemaError> {
+    let loaded = match schema {
+        Some((text, format)) => {
+            schema::load_definition_schema_text(text, format)?.filter(Data::truthy)
+        }
+        None => None,
+    };
+    Ok(match loaded {
+        Some(schema) => (SchemaStage::Supplied, Some(schema)),
+        None => (SchemaStage::SuppliedNotLoaded, None),
+    })
+}
+
+/// [`validate_report`] with the schema supplied as text instead of a path.
+/// The schema is loaded after the structure stage, where Ruby loads it.
+pub fn validate_report_with_schema_text(
+    definition: &Data,
+    schema: Option<(&str, DefinitionSchemaFormat)>,
+) -> Result<ValidationReport, SchemaError> {
+    report_with(definition, || resolve_supplied(schema))
+}
+
+fn report_with(
+    definition: &Data,
+    resolve: impl FnOnce() -> Result<(SchemaStage, Option<Data>), SchemaError>,
+) -> Result<ValidationReport, SchemaError> {
     let structure = validate_structure(definition)?;
-    let (stage, schema) = resolve_schema(schema_path, env)?;
+    let (stage, schema) = resolve()?;
     let schema_issues = match &schema {
         Some(schema) => Some(validate_against_schema(definition, schema)?),
         None => None,
@@ -327,6 +370,19 @@ pub fn validate_string_report(
 ) -> Result<ValidationReport, SchemaError> {
     match schema::safe_load(yaml, Permitted::DOCUMENT) {
         Ok(definition) => validate_report(&definition, schema_path, env),
+        Err(SchemaError::YamlSyntax { message }) => Ok(invalid_yaml(message)),
+        Err(e) => Err(e),
+    }
+}
+
+/// [`validate_string_report`] with the schema supplied as text; see
+/// [`validate_report_with_schema_text`].
+pub fn validate_string_report_with_schema_text(
+    yaml: &str,
+    schema: Option<(&str, DefinitionSchemaFormat)>,
+) -> Result<ValidationReport, SchemaError> {
+    match schema::safe_load(yaml, Permitted::DOCUMENT) {
+        Ok(definition) => validate_report_with_schema_text(&definition, schema),
         Err(SchemaError::YamlSyntax { message }) => Ok(invalid_yaml(message)),
         Err(e) => Err(e),
     }

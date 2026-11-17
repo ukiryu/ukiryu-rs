@@ -1,0 +1,31 @@
+---
+ukiryu_schema: '1.0'
+name: vertool
+display_name: vertool (version detection)
+aliases: []
+version_detection:
+  command: "--version"
+  pattern: 'vertool ([0-9.]+)'
+search_paths:
+  linux:
+  - "/nonexistent/ukiryu-vreg/vertool"
+implements: vertool/1.0
+execution_profiles:
+- name: default
+  platforms:
+  - macos
+  - linux
+  - windows
+  shells:
+  - bash
+  - sh
+  option_style: double_dash_equals
+  executable_name: vertool
+  commands:
+  - name: process
+    description: Process input
+    arguments:
+    - name: input
+      type: file
+      position: last
+      required: true

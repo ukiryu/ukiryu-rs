@@ -54,7 +54,7 @@ fn response(command: Command) -> Command {
 /// Unknown options are errors, as in FriendlyCLI. Literal arguments beginning
 /// with `-` must follow `--`; those bytes are retained in exec's arguments.
 pub fn command() -> Command {
-    thor_help(boolean_options(
+    boolean_options(
         Command::new("ukiryu")
             .version(ukiryu::VERSION)
             .about("Platform-adaptive command execution from declarative tool profiles")
@@ -168,25 +168,7 @@ pub fn command() -> Command {
                     .arg(flag("force", Some('f'), "Force re-clone the register"))
                     .arg(flag("verbose", Some('v'), "Show verbose output")),
             ),
-    ))
-}
-
-/// Each plain command's help is Thor's `command_help` text. The root table
-/// depends on the terminal width, so the dispatcher sets it.
-/// Every child is visited in order, so the subcommand order is kept.
-fn thor_help(mut command: Command) -> Command {
-    let children: Vec<_> = command
-        .get_subcommands()
-        .map(|child| child.get_name().to_owned())
-        .collect();
-    for name in children {
-        let text = crate::thor_help::command_help(&name);
-        command = command.mut_subcommand(name, |sub| match text {
-            Some(text) => sub.override_help(text),
-            None => sub,
-        });
-    }
-    command
+    )
 }
 
 /// Preserve Thor's negated flags and last-value-wins behavior at each level.

@@ -1,0 +1,31 @@
+---
+ukiryu_schema: '1.0'
+name: failtool
+display_name: failtool (version detection)
+aliases: []
+version_detection:
+  command: "--version"
+  pattern: 'failtool ([0-9.]+)'
+search_paths:
+  linux:
+  - "/nonexistent/ukiryu-vreg/failtool"
+implements: failtool/1.0
+execution_profiles:
+- name: default
+  platforms:
+  - macos
+  - linux
+  - windows
+  shells:
+  - bash
+  - sh
+  option_style: double_dash_equals
+  executable_name: failtool
+  commands:
+  - name: process
+    description: Process input
+    arguments:
+    - name: input
+      type: file
+      position: last
+      required: true

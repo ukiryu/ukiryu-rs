@@ -133,6 +133,38 @@ Values use JSON, with tags for values JSON cannot carry losslessly:
 A float is never equal to an integer: `[0.0, 1.0]` and `[0, 1]` are
 different values. Numeric YAML map keys stay numeric through `$map`.
 
+A JSON object is a tag exactly when it has one key and that key starts
+with `$`. An object with more keys is a map with string keys, even when
+some of them start with `$` (`{"$schema": ..., "$id": ...}`). A one-key
+object whose key is not a tag above is an error to read, never a map.
+
+The oracle writes every map with string keys as a JSON object, so a map
+whose only key starts with `$` comes out in the tag form. A JSON-schema
+`{"$ref": "..."}` appears that way in `yaml.load` rows, and the
+oracle's own decoder rejects it as an unknown tag. A map whose only key
+is a tag name (`{"$sym" => "x"}`) would read back as that tag; no input
+of this corpus holds one. A writer that needs such a map read back sends
+it as `{"$map": [["$ref", "..."]]}`, which the oracle also reads as the map.
+The Rust core keeps the oracle's bytes for any other `$` key, so its
+replies match every row.
+
+For a map whose only key is a tag name, the Rust core deliberately
+deviates from the oracle. It writes `{"$map": [["$sym", "x"]]}` where the
+oracle writes `{"$sym": "x"}`. A probe of `Codec` at ab6df353 with Ruby
+4.0.1 and json 3.1.0 shows why:
+
+| Input | Oracle bytes | Oracle decode of those bytes |
+|---|---|---|
+| `{"$sym" => "x"}` | `{"$sym":"x"}` | `:x` |
+| `{"$bytes" => "ff"}` | `{"$bytes":"ff"}` | `"\xFF"` |
+| `{"$map" => []}` | `{"$map":[]}` | `{}` |
+| `{"$ref" => 1}`-like (`{"$foo" => 1}`) | `{"$foo":1}` | `ArgumentError: unknown tag $foo` |
+| (decode only) `{"$map":[["$sym","x"]]}` | | `{"$sym" => "x"}` |
+
+The oracle's bytes for such a map decode to a different value, while
+`$map` decodes to the same map in the oracle and in the core. No corpus
+row holds such a map, so the deviation changes no expected reply.
+
 ## Comparison
 
 `compare` is `structural` for every row: JSON objects compare
