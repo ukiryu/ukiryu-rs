@@ -16,7 +16,7 @@ use crate::definition::ValidatorEnv;
 use crate::executable::Platform;
 use crate::models::{ImplementationIndex, ImplementationVersion, Interface, Model, ToolDefinition};
 use crate::runtime::{ShellName, ShellSource};
-use crate::schema::{self, Permitted, ValidateOptions};
+use crate::schema::{self, DefinitionSchemaFormat, Permitted, ValidateOptions};
 use crate::tool::{BuiltCommand, Tool, ToolError, ToolOptions};
 use crate::tool_loader::{self, LoadError};
 use crate::types::onig::Encoding;
@@ -494,6 +494,37 @@ pub enum ValidateRequest {
         #[serde(default)]
         schema_path: Option<String>,
     },
+    /// `Definition` with the schema supplied as text in the given format
+    /// (what `load_schema` picks by file extension), for hosts without a
+    /// file system. Nothing is read from disk or the environment; a null or
+    /// absent `schema` skips the schema stage.
+    DefinitionText {
+        yaml: String,
+        #[serde(default)]
+        schema: Option<String>,
+        #[serde(default)]
+        schema_format: SchemaFormat,
+    },
+}
+
+/// The format of a definition schema supplied as text.
+#[derive(Debug, Default, Clone, Copy, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum SchemaFormat {
+    /// `.yaml`/`.yml`.
+    #[default]
+    Yaml,
+    /// `.json`.
+    Json,
+}
+
+impl From<SchemaFormat> for DefinitionSchemaFormat {
+    fn from(format: SchemaFormat) -> Self {
+        match format {
+            SchemaFormat::Yaml => DefinitionSchemaFormat::Yaml,
+            SchemaFormat::Json => DefinitionSchemaFormat::Json,
+        }
+    }
 }
 
 fn stage(stage: &Option<SchemaStage>) -> Json {
@@ -507,6 +538,8 @@ fn stage(stage: &Option<SchemaStage>) -> Json {
         Some(SchemaStage::RemoteFallbackNotPerformed) => {
             json!({"kind": "remote_fallback_not_performed"})
         }
+        Some(SchemaStage::Supplied) => json!({"kind": "supplied"}),
+        Some(SchemaStage::SuppliedNotLoaded) => json!({"kind": "supplied_not_loaded"}),
     }
 }
 
@@ -550,6 +583,19 @@ pub fn validate(request: ValidateRequest) -> Json {
                 Err(error) => schema_error(&error),
             }
         }
+        ValidateRequest::DefinitionText {
+            yaml,
+            schema,
+            schema_format,
+        } => {
+            match definition_validator::validate_string_report_with_schema_text(
+                &yaml,
+                schema.as_deref().map(|text| (text, schema_format.into())),
+            ) {
+                Ok(r) => json!({"ok": true, "value": report(&r)}),
+                Err(error) => schema_error(&error),
+            }
+        }
     }
 }
 
@@ -572,6 +618,18 @@ pub enum SchemaRequest {
         profile: String,
         #[serde(default)]
         schema_path: Option<String>,
+        #[serde(default)]
+        strict: bool,
+    },
+    /// `ValidateProfile` with the schema supplied as text, loaded as
+    /// `load_schema` loads an existing file (`YAML.safe_load`), for hosts
+    /// without a file system. Nothing is read from disk or the environment;
+    /// a null or absent `schema` is a missing schema file
+    /// (`["Failed to load schema"]`).
+    ValidateProfileText {
+        profile: String,
+        #[serde(default)]
+        schema: Option<String>,
         #[serde(default)]
         strict: bool,
     },
@@ -599,6 +657,17 @@ pub fn schema(request: SchemaRequest) -> Json {
                     strict,
                 },
             )
+        }),
+        SchemaRequest::ValidateProfileText {
+            profile,
+            schema,
+            strict,
+        } => schema::safe_load(&profile, Permitted::DOCUMENT).and_then(|profile| {
+            let schema = schema
+                .as_deref()
+                .map(schema::load_schema_text)
+                .transpose()?;
+            schema::validate_profile_with_schema(&profile, schema, strict)
         }),
         SchemaRequest::FullyValidate {
             profile,
