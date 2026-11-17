@@ -63,7 +63,9 @@ fn objects_with_more_than_one_key_are_plain_hashes() {
         ),
     ] {
         assert_eq!(decode(text).as_ref(), Ok(&expected), "{text}");
-        assert_eq!(round_trip(&expected), expected, "{text}");
+        // Object key order is not significant on the wire (module docs), so
+        // the read-back Hash is compared through its encoding.
+        assert_eq!(encode(&round_trip(&expected)), encode(&expected), "{text}");
     }
     assert!(decode(r#"{"$a":1,"$a":2}"#)
         .unwrap_err()
