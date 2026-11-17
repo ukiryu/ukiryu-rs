@@ -1,0 +1,20 @@
+ukiryu_schema: '1.0'
+name: rich
+version: '3.2'
+version_detection:
+  command: --version
+  pattern: rich ([\d.]+)
+profiles:
+  - name: default
+    platforms: [linux, macos]
+    shells: [bash, zsh, sh]
+    commands:
+      - name: convert
+smoke_tests:
+  - name: first
+    command: ['--version']
+    timeout: 5
+    expect:
+      output_match: 'rich 3'
+  - name: no_timeout
+    command: ['--version']

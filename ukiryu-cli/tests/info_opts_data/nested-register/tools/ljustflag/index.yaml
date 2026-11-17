@@ -1,0 +1,14 @@
+---
+ukiryu_schema: '1.0'
+name: ljustflag
+interface: ljustflag
+implementations:
+- name: default
+  display_name: ljustflag
+  detection:
+    pattern: ljustflag ([d.]+)
+  version_scheme: semantic
+  versions:
+  - equals: '1.0'
+    file: 1.0.yaml
+  default: 1.0.yaml

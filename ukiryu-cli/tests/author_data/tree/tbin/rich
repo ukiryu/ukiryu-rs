@@ -1,0 +1,5 @@
+#!/bin/sh
+case "$1" in
+  --version) echo "rich 3.2.1" ;;
+  *) echo "rich ran: $*" ;;
+esac
