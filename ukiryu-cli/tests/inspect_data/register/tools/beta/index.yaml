@@ -1,0 +1,14 @@
+---
+ukiryu_schema: '1.0'
+name: beta
+interface: beta
+implementations:
+- name: default
+  display_name: Beta
+  detection:
+    pattern: beta ([\d.]+)
+  version_scheme: semantic
+  versions:
+  - equals: '2.1'
+    file: 2.1.yaml
+  default: 2.1.yaml

@@ -26,14 +26,12 @@
 //!
 //! A tag is applied or dropped, never kept as a one-entry Hash.
 //!
-//! Two Ruby facts have no separate representation in [`Value`] and are
-//! lowered to the equal value: a `!!binary` result is an ASCII-8BIT String
-//! (held as `Value::String` when its bytes are ASCII, where Ruby's `==`,
-//! `eql?`, `hash`, `inspect` and `to_s` cannot tell the encodings apart;
-//! non-ASCII bytes are `Unsupported`), and a sequence `!!omap` is a
-//! `Psych::Omap` Hash subclass (held as a `Value::Hash` with the same
-//! pairs, which Ruby's `Hash#==` treats as equal). Recursive aliases,
-//! revived Ruby objects, and Date/Time scalars are `Unsupported`.
+//! One Ruby fact has no separate representation in [`Value`] and is lowered
+//! to the equal value: a sequence `!!omap` is a `Psych::Omap` Hash subclass
+//! (held as a `Value::Hash` with the same pairs, which Ruby's `Hash#==`
+//! treats as equal). A `!!binary` result is an ASCII-8BIT String, held as
+//! `Value::Bytes`. Recursive aliases, revived Ruby objects, and Date/Time
+//! scalars are `Unsupported`.
 use super::error::{ModelError, ModelErrorKind};
 use super::value::Value;
 use crate::schema::{tokenize, Data, Permitted};
@@ -183,12 +181,43 @@ impl Loader {
         let Some(tag) = tag_of(node)? else {
             let resolved = yeptris::Value::from_root(node)
                 .map_err(|e| ModelError::new(ModelErrorKind::Syntax, e.to_string()))?;
-            return Value::from_yaml_value(&resolved);
+            let value = Value::from_yaml_value(&resolved)?;
+            return self.plain_scalar_as_psych(node, value);
         };
         let text = node
             .str()
             .ok_or_else(|| unsupported("a YAML scalar that is not UTF-8 text"))?;
         self.tagged_scalar(tag, text)
+    }
+
+    /// Two places where the Yeptris resolution of an untagged plain scalar
+    /// differs from Psych's `ScalarScanner#tokenize` (checked against Psych
+    /// 5.3.1): an integer outside i64/u64 is an Integer in Psych, where
+    /// Yeptris yields its text; and a YAML 1.2 float without a `.` (`1e300`)
+    /// is a String in Psych's YAML 1.1 scanner. Everything else keeps the
+    /// Yeptris value.
+    fn plain_scalar_as_psych(&self, node: Node<'_>, value: Value) -> Result<Value, ModelError> {
+        if node.style() != yeptris::Style::Plain {
+            return Ok(value);
+        }
+        let Some(text) = node.str() else {
+            return Ok(value);
+        };
+        match value {
+            Value::String(_) => match self.tokenize(text) {
+                Ok(Value::Integer(i))
+                    if i64::try_from(&i).is_err() && u64::try_from(&i).is_err() =>
+                {
+                    Ok(Value::Integer(i))
+                }
+                _ => Ok(value),
+            },
+            Value::Float(_) => match self.tokenize(text) {
+                Ok(Value::String(s)) => Ok(Value::String(s)),
+                _ => Ok(value),
+            },
+            other => Ok(other),
+        }
     }
 
     /// `ToRuby#deserialize` for a scalar with an explicit tag.
@@ -503,15 +532,7 @@ fn string_tag_class(tag: &str) -> Option<Option<&str>> {
 /// `String#unpack('m')` (lenient Base64: characters outside the alphabet
 /// are skipped, `=` ends the data). The result is an ASCII-8BIT String.
 fn binary(text: &str) -> Result<Value, ModelError> {
-    let bytes = unpack_base64(text.as_bytes());
-    if !bytes.is_ascii() {
-        return Err(unsupported(
-            "a `!!binary` String with non-ASCII bytes; Value text is UTF-8 and cannot carry ASCII-8BIT bytes",
-        ));
-    }
-    Ok(Value::String(
-        String::from_utf8(bytes).expect("ASCII bytes are UTF-8"),
-    ))
+    Ok(Value::Bytes(unpack_base64(text.as_bytes())))
 }
 
 fn b64(c: u8) -> i32 {

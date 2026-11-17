@@ -11,6 +11,10 @@
 //!
 //! - `execute_data/cases.json` (exec, run-file, cache), captured by
 //!   K22-CLI-EXECUTE from the same oracle.
+//! - `inspect_remainder_goldens.json` (config list, list, commands,
+//!   register, resolve), captured by B09-CLI-INSPECT-REMAINDER from the same
+//!   oracle, and the corpus `cli-output` rows of those verbs
+//!   (`corpus/conformance/cases/cli-output.jsonl`).
 //!
 //! Rows are split into three contracts and counted separately:
 //! - source rows: captured from exe/ukiryu and expected byte for byte (or with
@@ -790,16 +794,10 @@ fn simple(args: &[&str]) -> Output {
 #[test]
 fn verbs_without_a_merged_handler_fail_gated() {
     for args in [
-        &["list"][..],
-        &["info", "ls"],
-        &["commands", "ls"],
+        &["info", "ls"][..],
         &["opts", "ls"],
         &["describe", "ls"],
         &["which", "ls"],
-        &["resolve", "ls"],
-        &["register"],
-        &["config"],
-        &["config", "list"],
     ] {
         let got = simple(args);
         assert_eq!(got.code, GATED_EXIT, "{args:?}: {}", got.stderr);
@@ -886,4 +884,643 @@ fn an_output_file_that_cannot_be_written_is_an_errno_error() {
         "[Errno::ENOENT] No such file or directory @ rb_sysopen - nodir/out.yaml\n"
     );
     let _ = std::fs::remove_dir_all(&root);
+}
+
+// ------------------------------------------------- inspect remainder (#73)
+
+/// The register-backed inspect verbs this build integrates.
+#[cfg(target_os = "linux")]
+const REMAINDER_VERBS: [&str; 5] = ["config", "list", "commands", "register", "resolve"];
+
+/// `inspect_remainder_goldens.json` (config list, list, commands, register,
+/// resolve), captured from the pinned exe/ukiryu (ukiryu/ukiryu ab6df35)
+/// with the per-case environment in its `source.context`, replayed through
+/// the binary. The handler test `inspect_remainder.rs` replays the same rows
+/// against the handlers; this proves the binary dispatches to them.
+#[cfg(target_os = "linux")]
+#[test]
+fn inspect_remainder_goldens_through_the_binary() {
+    let goldens: Value =
+        serde_json::from_str(include_str!("inspect_remainder_goldens.json")).unwrap();
+    let mtime = UNIX_EPOCH + Duration::from_secs(goldens["fixed_mtime_unix"].as_u64().unwrap());
+    let fixture = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/inspect_data/register");
+    let mut failures = Vec::new();
+    let mut replayed = 0;
+    for case in goldens["cases"].as_array().unwrap() {
+        let name = case["name"].as_str().unwrap();
+        let root = scratch(&format!("remainder-{name}"));
+        let dir = |leaf: &str| {
+            let path = root.join(leaf);
+            std::fs::create_dir_all(&path).unwrap();
+            path.to_str().unwrap().to_owned()
+        };
+        let (home, bin, xdg, sysdata) = (dir("home"), dir("bin"), dir("xdg"), dir("sysdata"));
+        let mode = case["register"].as_str().unwrap();
+        let register = if mode == "user" {
+            format!("{home}/.ukiryu/register")
+        } else {
+            root.join("register").to_str().unwrap().to_owned()
+        };
+        for b in ["bash", "sh", "which"]
+            .into_iter()
+            .map(str::to_owned)
+            .chain(strings(&case["bins"]))
+        {
+            if b == "git" {
+                // The capture links the real git (capture.rb), so `register
+                // update` sees a directory that is not a git work tree.
+                std::os::unix::fs::symlink("/usr/bin/git", Path::new(&bin).join("git")).unwrap();
+            } else {
+                install_executable(Path::new(&bin), &b);
+            }
+        }
+        for (rel, body) in case["home_before"].as_object().unwrap() {
+            let path = Path::new(&home).join(rel);
+            std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+            std::fs::write(path, body.as_str().unwrap()).unwrap();
+        }
+        for (rel, body) in case["defs"].as_object().unwrap() {
+            let (base, rest) = rel.split_once('/').unwrap();
+            let base = if base == "user" { &xdg } else { &sysdata };
+            let path = Path::new(base).join("ukiryu/definitions").join(rest);
+            std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+            std::fs::write(&path, body.as_str().unwrap()).unwrap();
+            set_mtime(&path, mtime);
+        }
+        match mode {
+            "env" | "user" => copy_tree(&fixture, Path::new(&register), SystemTime::now()),
+            "empty" => {
+                let tools = Path::new(&register).join("tools/x");
+                std::fs::create_dir_all(&tools).unwrap();
+                std::fs::write(tools.join("a.yaml"), "---\nname: x\n").unwrap();
+            }
+            other => panic!("{name}: register mode {other}"),
+        }
+        let mut env = vec![
+            ("HOME".to_owned(), home.clone()),
+            ("PATH".to_owned(), bin.clone()),
+            ("TZ".to_owned(), "UTC".to_owned()),
+            ("XDG_DATA_HOME".to_owned(), xdg.clone()),
+            ("XDG_DATA_DIRS".to_owned(), sysdata.clone()),
+        ];
+        if mode != "user" {
+            env.push(("UKIRYU_REGISTER".to_owned(), register.clone()));
+        }
+        for (k, v) in case["env"].as_object().unwrap() {
+            env.retain(|(name, _)| name != k);
+            env.push((
+                k.clone(),
+                v.as_str().unwrap().replace("{REGISTER}", &register),
+            ));
+        }
+        let args: Vec<String> = strings(&case["args"])
+            .into_iter()
+            .map(|a| a.replace("{REGISTER}", &register))
+            .collect();
+        assert!(
+            REMAINDER_VERBS.contains(&args[0].as_str()),
+            "{name}: verb {}",
+            args[0]
+        );
+        let subst = |golden: &Value| {
+            golden
+                .as_str()
+                .unwrap()
+                .replace("{HOME}", &home)
+                .replace("{BIN}", &bin)
+                .replace("{XDG}", &xdg)
+                .replace("{SYSDATA}", &sysdata)
+                .replace("{REGISTER}", &register)
+        };
+        let (want_out, want_err) = (subst(&case["stdout"]), subst(&case["stderr"]));
+        let want_code = case["exit"].as_i64().unwrap() as i32;
+        let got = run(&args, &env, Path::new(&home), None);
+        replayed += 1;
+        let mut fail = |what: String| failures.push(format!("{name}: {what}"));
+        if !case["note"].is_null() {
+            // D2: the strict shell error after the output printed before the
+            // first tool lookup.
+            let first = want_out.split_inclusive('\n').next().unwrap();
+            if got.stdout != first
+                || !got
+                    .stderr
+                    .starts_with("[Ukiryu::Errors::UnknownShellError] ")
+                || got.code != 1
+            {
+                fail(format!(
+                    "D2 row: exit {} out {:?} err {:?}",
+                    got.code, got.stdout, got.stderr
+                ));
+            }
+        } else {
+            const WARNING: &str = "\x1b[31mWarning: Failed to load config file: ";
+            let got_lines: Vec<&str> = got.stdout.split('\n').collect();
+            let want_lines: Vec<&str> = want_out.split('\n').collect();
+            let same_out = got_lines.len() == want_lines.len()
+                && got_lines.iter().zip(&want_lines).all(|(g, w)| {
+                    if w.starts_with(WARNING) {
+                        g.starts_with(WARNING) && g.ends_with("\x1b[0m")
+                    } else {
+                        g == w
+                    }
+                });
+            if !same_out {
+                fail(format!("stdout {:?}\nexpected {want_out:?}", got.stdout));
+            }
+            if got.stderr != want_err {
+                fail(format!("stderr {:?}\nexpected {want_err:?}", got.stderr));
+            }
+            if got.code != want_code {
+                fail(format!("exit {} expected {want_code}", got.code));
+            }
+        }
+        let want_files = case["home_after"].as_object().unwrap();
+        let got_files: Vec<String> = files_under(Path::new(&home))
+            .into_iter()
+            .filter(|rel| !rel.starts_with(".ukiryu/register"))
+            .collect();
+        let keys: Vec<String> = want_files.keys().cloned().collect();
+        if got_files != keys {
+            fail(format!("files {got_files:?} expected {keys:?}"));
+        } else {
+            for (rel, body) in want_files {
+                let text = std::fs::read_to_string(Path::new(&home).join(rel)).unwrap();
+                if text != body.as_str().unwrap() {
+                    fail(format!("{rel} = {text:?}"));
+                }
+            }
+        }
+        let _ = std::fs::remove_dir_all(&root);
+    }
+    assert_eq!(
+        replayed,
+        goldens["cases"].as_array().unwrap().len(),
+        "every remainder row is replayed"
+    );
+    assert!(
+        failures.is_empty(),
+        "{} of {replayed} differ:\n{}",
+        failures.len(),
+        failures.join("\n\n")
+    );
+}
+
+/// The corpus `cli-output` rows of the verbs above (captured from the Ruby
+/// CLI on Linux by corpus/oracle-ruby `op_cli_run`), replayed byte for byte.
+/// Every such row must be listed here, so a new row cannot be skipped.
+#[cfg(target_os = "linux")]
+const CORPUS_REMAINDER_ROWS: [&str; 4] = [
+    "cli-output.commands-jq",
+    "cli-output.commands-unknown",
+    "cli-output.resolve-jq",
+    "cli-output.resolve-jq-1-0",
+];
+
+#[cfg(target_os = "linux")]
+#[test]
+fn corpus_cli_output_rows_of_the_remainder_verbs() {
+    let corpus = Path::new(env!("CARGO_MANIFEST_DIR")).join("../corpus/conformance");
+    let inputs = corpus.join("inputs");
+    let inputs = inputs.to_str().unwrap();
+    let cases = std::fs::read_to_string(corpus.join("cases/cli-output.jsonl")).unwrap();
+    let mut seen = Vec::new();
+    let mut failures = Vec::new();
+    for line in cases.lines().filter(|l| !l.trim().is_empty()) {
+        let case: Value = serde_json::from_str(line).unwrap();
+        let id = case["id"].as_str().unwrap();
+        let argv = strings(&case["input"]["argv"]);
+        if !REMAINDER_VERBS.contains(&argv[0].as_str()) {
+            continue;
+        }
+        assert!(CORPUS_REMAINDER_ROWS.contains(&id), "unlisted row {id}");
+        seen.push(id.to_owned());
+        let home = scratch(&format!("corpus-{id}"));
+        let h = home.to_str().unwrap();
+        // `op_cli_run`'s environment (corpus/oracle-ruby/lib/ops.rb). The
+        // oracle inherits the host PATH; a plain system PATH stands in.
+        let mut env: Vec<(String, String)> = [
+            ("HOME", h),
+            ("TZ", "UTC"),
+            ("LANG", "C.UTF-8"),
+            ("LC_ALL", "C.UTF-8"),
+            ("SHELL", "/bin/bash"),
+            ("COLUMNS", "100"),
+            ("THOR_COLUMNS", "100"),
+            ("TERM", "dumb"),
+            ("GIT_REDIRECT_STDERR", "/dev/null"),
+            ("PATH", "/usr/bin:/bin"),
+        ]
+        .iter()
+        .map(|(k, v)| ((*k).to_owned(), (*v).to_owned()))
+        .collect();
+        env.push(("UKIRYU_REGISTER".to_owned(), format!("{inputs}/register")));
+        if let Some(extra) = case["input"]["env"].as_object() {
+            for (k, v) in extra {
+                env.retain(|(name, _)| name != k);
+                env.push((k.clone(), v.as_str().unwrap().to_owned()));
+            }
+        }
+        let args: Vec<String> = argv
+            .iter()
+            .map(|a| a.replace("${INPUTS}", inputs))
+            .collect();
+        let stdin = case["input"]["stdin"].as_str();
+        let got = run(&args, &env, &home, stdin);
+        let expect = &case["expect"]["ok"];
+        let subst = |v: &Value| {
+            v.as_str()
+                .unwrap()
+                .replace("${INPUTS}", inputs)
+                .replace("${HOME}", h)
+        };
+        let (want_out, want_err) = (subst(&expect["stdout"]), subst(&expect["stderr"]));
+        let want_code = expect["exit"].as_i64().unwrap() as i32;
+        if got.stdout != want_out || got.stderr != want_err || got.code != want_code {
+            failures.push(format!(
+                "{id}: exit {} out {:?} err {:?}\nexpected exit {want_code} out {want_out:?} err {want_err:?}",
+                got.code, got.stdout, got.stderr
+            ));
+        }
+        let _ = std::fs::remove_dir_all(&home);
+    }
+    assert_eq!(seen, CORPUS_REMAINDER_ROWS, "corpus rows replayed");
+    assert!(failures.is_empty(), "{}", failures.join("\n\n"));
+}
+
+/// The interface path of `list` needs `Tool.find_by`: the binary prints the
+/// tools listed before it, then stops with the gated status.
+#[cfg(target_os = "linux")]
+#[test]
+fn list_stops_gated_at_an_interface_lookup() {
+    let root = scratch("remainder-list-gated");
+    let register = root.join("register");
+    copy_tree(
+        &Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/inspect_data/register"),
+        &register,
+        SystemTime::now(),
+    );
+    std::fs::write(
+        register.join("tools/zeta/index.yaml"),
+        "---\nukiryu_schema: '1.0'\nname: zeta\ninterface: zeta\nimplementations: []\n",
+    )
+    .unwrap();
+    let bin = root.join("bin");
+    std::fs::create_dir_all(&bin).unwrap();
+    for b in ["bash", "sh", "which", "beta", "zeta"] {
+        install_executable(&bin, b);
+    }
+    let s = |p: &Path| p.to_str().unwrap().to_owned();
+    let env = vec![
+        ("HOME".to_owned(), s(&root)),
+        ("PATH".to_owned(), s(&bin)),
+        ("TZ".to_owned(), "UTC".to_owned()),
+        ("SHELL".to_owned(), "/bin/bash".to_owned()),
+        ("UKIRYU_REGISTER".to_owned(), s(&register)),
+    ];
+    let got = run(&["list".to_owned()], &env, &root, None);
+    assert_eq!(got.code, GATED_EXIT, "{:?} {:?}", got.stdout, got.stderr);
+    // The header printed before the lookup comes first.
+    assert!(
+        got.stdout.contains("Available tools (2):"),
+        "{:?}",
+        got.stdout
+    );
+    assert!(
+        got.stderr
+            .starts_with("ukiryu: 'list (interface lookup for zeta)' is not available"),
+        "{:?}",
+        got.stderr
+    );
+    let _ = std::fs::remove_dir_all(&root);
+}
+
+// ------------------------------------------------------------ exec stdin step
+
+/// `stdin_data/cases.json`: `ukiryu exec jq process <params> -D filter=.`
+/// captured from the pinned Ruby CLI (ab6df35, Ruby 4.0.1, Linux) against
+/// `stdin_data/register`, with `NO_COLOR=1`. The binary replays each row with
+/// the row's stdin pipe and files and must match status, stdout and stderr.
+///
+/// Every row is counted in a bucket:
+/// - `invalid`: the stdin bytes are not valid UTF-8; the row must match;
+/// - `closed`: the row closes file descriptor 0 (through `sh`); the row must
+///   match;
+/// - `unreadable`: a mode-000 file that the test user can still read (root),
+///   skipped.
+#[cfg(target_os = "linux")]
+#[derive(Default, Debug, PartialEq)]
+struct StdinCounts {
+    exact: usize,
+    invalid: usize,
+    closed: usize,
+    unreadable: usize,
+}
+
+#[cfg(target_os = "linux")]
+fn unhex(hex: &str) -> Vec<u8> {
+    (0..hex.len())
+        .step_by(2)
+        .map(|i| u8::from_str_radix(&hex[i..i + 2], 16).unwrap())
+        .collect()
+}
+
+#[cfg(target_os = "linux")]
+fn run_stdin_row(
+    args: &[String],
+    env: &[(String, String)],
+    cwd: &Path,
+    stdin: Stdio,
+    bytes: &[u8],
+) -> (Vec<u8>, Vec<u8>, i32) {
+    let mut child = Command::new(BIN)
+        .args(args)
+        .env_clear()
+        .envs(env.iter().map(|(k, v)| (k, v)))
+        .current_dir(cwd)
+        .stdin(stdin)
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .expect("spawn the ukiryu binary");
+    if let Some(mut pipe) = child.stdin.take() {
+        let _ = pipe.write_all(bytes);
+    }
+    let out = child.wait_with_output().unwrap();
+    (
+        out.stdout,
+        out.stderr,
+        out.status.code().expect("exit status"),
+    )
+}
+
+/// Runs the binary with file descriptor 0 closed (not `/dev/null`): the
+/// shell closes it before `exec`, so the test needs no unsafe code.
+#[cfg(target_os = "linux")]
+fn closed_stdin_row(
+    args: &[String],
+    env: &[(String, String)],
+    cwd: &Path,
+) -> (Vec<u8>, Vec<u8>, i32) {
+    let out = Command::new("/bin/sh")
+        .arg("-c")
+        .arg(r#"exec "$0" "$@" <&-"#)
+        .arg(BIN)
+        .args(args)
+        .env_clear()
+        .envs(env.iter().map(|(k, v)| (k, v)))
+        .current_dir(cwd)
+        .stdin(Stdio::null())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .output()
+        .expect("run the ukiryu binary through sh");
+    (
+        out.stdout,
+        out.stderr,
+        out.status.code().expect("exit status"),
+    )
+}
+
+#[cfg(target_os = "linux")]
+fn replay_stdin() -> (StdinCounts, Vec<String>) {
+    use std::os::unix::fs::PermissionsExt;
+    let data: Value = serde_json::from_str(include_str!("stdin_data/cases.json")).unwrap();
+    let register = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/stdin_data/register");
+    let mut counts = StdinCounts::default();
+    let mut failures = Vec::new();
+    for case in data["cases"].as_array().unwrap() {
+        let id = case["id"].as_str().unwrap();
+        let root = scratch(&format!("stdin-{id}"));
+        let dir = root.join("work");
+        std::fs::create_dir_all(&dir).unwrap();
+        let setup = &case["setup"];
+        for (name, hex) in setup["files"].as_object().unwrap() {
+            std::fs::write(dir.join(name), unhex(hex.as_str().unwrap())).unwrap();
+        }
+        for name in setup["dirs"].as_array().unwrap() {
+            std::fs::create_dir(dir.join(name.as_str().unwrap())).unwrap();
+        }
+        for (name, target) in setup["symlinks"].as_object().unwrap() {
+            std::os::unix::fs::symlink(dir.join(target.as_str().unwrap()), dir.join(name)).unwrap();
+        }
+        let mut unreadable = false;
+        for name in setup["chmod0"].as_array().unwrap() {
+            let path = dir.join(name.as_str().unwrap());
+            std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o000)).unwrap();
+            unreadable |= std::fs::read(&path).is_ok();
+        }
+        let cleanup = |dir: &Path| {
+            if let Ok(entries) = std::fs::read_dir(dir) {
+                for entry in entries.flatten() {
+                    let _ = std::fs::set_permissions(
+                        entry.path(),
+                        std::fs::Permissions::from_mode(0o700),
+                    );
+                }
+            }
+            let _ = std::fs::remove_dir_all(&root);
+        };
+        let pipe = &case["pipe"];
+        let mode = pipe["mode"].as_str().unwrap();
+        if unreadable {
+            counts.unreadable += 1;
+            cleanup(&dir);
+            continue;
+        }
+        let d = dir.to_str().unwrap();
+        let mut args: Vec<String> = ["exec", "jq", "process"].map(String::from).to_vec();
+        args.extend(
+            strings(&case["params"])
+                .iter()
+                .map(|p| p.replace("{dir}", d)),
+        );
+        args.extend(["-D".to_owned(), "filter=.".to_owned()]);
+        let env = vec![
+            ("HOME".to_owned(), format!("{}/home", root.display())),
+            ("PATH".to_owned(), "/usr/bin:/bin".to_owned()),
+            ("SHELL".to_owned(), "/bin/bash".to_owned()),
+            (
+                "UKIRYU_REGISTER".to_owned(),
+                register.to_str().unwrap().to_owned(),
+            ),
+            ("TERM".to_owned(), "dumb".to_owned()),
+            ("TZ".to_owned(), "UTC".to_owned()),
+            ("LANG".to_owned(), "C.UTF-8".to_owned()),
+            ("NO_COLOR".to_owned(), "1".to_owned()),
+        ];
+        let cwd = if setup["chdir"] == true {
+            dir.clone()
+        } else {
+            root.clone()
+        };
+        let (stdin, bytes) = match mode {
+            "closed" => (Stdio::null(), Vec::new()),
+            "bytes" => (Stdio::piped(), unhex(pipe["hex"].as_str().unwrap())),
+            "devnull" => (
+                Stdio::from(std::fs::File::open("/dev/null").unwrap()),
+                Vec::new(),
+            ),
+            "directory" => (
+                Stdio::from(std::fs::File::open(dir.join(pipe["name"].as_str().unwrap())).unwrap()),
+                Vec::new(),
+            ),
+            other => panic!("unknown pipe mode {other}"),
+        };
+        let (stdout, stderr, code) = if mode == "closed" {
+            closed_stdin_row(&args, &env, &cwd)
+        } else {
+            run_stdin_row(&args, &env, &cwd, stdin, &bytes)
+        };
+        cleanup(&dir);
+
+        let want_stdout = unhex(case["stdout_hex"].as_str().unwrap());
+        let want_stderr = String::from_utf8(unhex(case["stderr_hex"].as_str().unwrap()))
+            .unwrap()
+            .replace("{dir}", d);
+        if i64::from(code) == case["exit_status"].as_i64().unwrap()
+            && stdout == want_stdout
+            && String::from_utf8_lossy(&stderr) == want_stderr
+        {
+            if mode == "closed" {
+                counts.closed += 1;
+            } else if case["resolved"]["stdin"]["valid_encoding"] == false {
+                counts.invalid += 1;
+            } else {
+                counts.exact += 1;
+            }
+        } else {
+            failures.push(format!(
+                "{id}: status {code} (want {}), stdout {:?} (want {:?}), stderr {:?} (want {want_stderr:?})",
+                case["exit_status"],
+                String::from_utf8_lossy(&stdout),
+                String::from_utf8_lossy(&want_stdout),
+                String::from_utf8_lossy(&stderr)
+            ));
+        }
+    }
+    (counts, failures)
+}
+
+/// `execute_data/stdin_bytes.json`: Ruby captures of `exec` with arbitrary
+/// stdin bytes, a closed fd 0 and a child that stops reading early, through
+/// the `cat` fixture tool (stdout, stderr, status and written files).
+#[cfg(target_os = "linux")]
+fn replay_stdin_bytes() -> (usize, Vec<String>) {
+    let data: Value = serde_json::from_str(include_str!("execute_data/stdin_bytes.json")).unwrap();
+    let fixture = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/execute_data/fixture");
+    let mut exact = 0;
+    let mut failures = Vec::new();
+    for case in data["cases"].as_array().unwrap() {
+        let id = case["id"].as_str().unwrap();
+        let root = scratch(&format!("stdinbytes-{id}"));
+        copy_tree(&fixture, &root, SystemTime::now());
+        for dir in ["home", "xdg", "sysdata"] {
+            std::fs::create_dir_all(root.join(dir)).unwrap();
+        }
+        for (name, hex) in case["files_in"].as_object().unwrap() {
+            std::fs::write(root.join(name), unhex(hex.as_str().unwrap())).unwrap();
+        }
+        let r = root.to_str().unwrap().to_owned();
+        let env = execute_env(&r, &case["env"]);
+        let args = strings(&case["args"]);
+        let pipe = &case["stdin"];
+        let (stdout, stderr, code) = match pipe["mode"].as_str().unwrap() {
+            "closed" => closed_stdin_row(&args, &env, &root),
+            "bytes" => {
+                let bytes = match pipe["hex"].as_str() {
+                    Some(hex) => unhex(hex),
+                    None => unhex(pipe["repeat_hex"].as_str().unwrap())
+                        .repeat(pipe["count"].as_u64().unwrap() as usize),
+                };
+                run_stdin_row(&args, &env, &root, Stdio::piped(), &bytes)
+            }
+            other => panic!("unknown stdin mode {other}"),
+        };
+        let written: Vec<(String, Option<String>)> = case["files_out"]
+            .as_object()
+            .unwrap()
+            .keys()
+            .map(|name| (name.clone(), std::fs::read_to_string(root.join(name)).ok()))
+            .collect();
+        let _ = std::fs::remove_dir_all(&root);
+
+        // Masks the timing fields; bytes that are not UTF-8 compare as bytes.
+        let mask = |bytes: &[u8]| -> Vec<u8> {
+            match std::str::from_utf8(bytes) {
+                Ok(text) => mask_timing(text).into_bytes(),
+                Err(_) => bytes.to_vec(),
+            }
+        };
+        let want_stdout = mask(&unhex(case["stdout_hex"].as_str().unwrap()));
+        let want_stderr = unhex(case["stderr_hex"].as_str().unwrap());
+        let got_stdout = mask(&stdout);
+        let stdout_ok = match (
+            std::str::from_utf8(&want_stdout),
+            std::str::from_utf8(&got_stdout),
+        ) {
+            (Ok(want), Ok(got)) => same_stdout(want, got),
+            _ => want_stdout == got_stdout,
+        };
+        let files_ok = case["files_out"]
+            .as_object()
+            .unwrap()
+            .iter()
+            .zip(&written)
+            .all(|((name, hex), (got_name, got))| {
+                let want = String::from_utf8(unhex(hex.as_str().unwrap())).ok();
+                name == got_name && same_file(&want, got)
+            });
+        if i64::from(code) == case["status"].as_i64().unwrap()
+            && stdout_ok
+            && stderr == want_stderr
+            && files_ok
+        {
+            exact += 1;
+        } else {
+            failures.push(format!(
+                "{id}: status {code} (want {}), stdout {:?} (want {:?}), stderr {:?} (want {:?}), files match {files_ok}",
+                case["status"],
+                String::from_utf8_lossy(&got_stdout),
+                String::from_utf8_lossy(&want_stdout),
+                String::from_utf8_lossy(&stderr),
+                String::from_utf8_lossy(&want_stderr),
+            ));
+        }
+    }
+    (exact, failures)
+}
+
+/// The compiled binary replays the Ruby captures of arbitrary stdin bytes
+/// (not UTF-8, NUL, CRLF), a closed fd 0 and a child that exits before it
+/// reads its stdin: every one of the 39 rows must match.
+#[cfg(target_os = "linux")]
+#[test]
+fn exec_stdin_bytes_closed_fd_and_early_exit_through_the_binary() {
+    let (exact, failures) = replay_stdin_bytes();
+    assert!(
+        failures.is_empty(),
+        "{} rows failed:\n{}",
+        failures.len(),
+        failures.join("\n\n")
+    );
+    assert_eq!(exact, 39);
+}
+
+/// The compiled binary replays the shared stdin step's Ruby captures through
+/// `exec`: 39 rows, every one counted in a named bucket.
+#[cfg(target_os = "linux")]
+#[test]
+fn exec_stdin_cases_through_the_binary() {
+    let (counts, failures) = replay_stdin();
+    assert!(
+        failures.is_empty(),
+        "{} stdin rows failed:\n{}",
+        failures.len(),
+        failures.join("\n")
+    );
+    assert_eq!(
+        counts.exact + counts.invalid + counts.closed + counts.unreadable,
+        39
+    );
+    assert!(counts.exact >= 30, "{counts:?}");
 }
