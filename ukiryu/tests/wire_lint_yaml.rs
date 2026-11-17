@@ -230,7 +230,8 @@ fn altered_inputs_change_the_reply() {
         .into_iter()
         .find(|r| r["input"]["yaml"].is_string())
         .expect("inline lint row");
-    let altered = lint("name: other\nversion: '1.0'\n");
+    // The description clears one of the row's issues, so the reply differs.
+    let altered = lint("name: other\nversion: '1.0'\ndescription: altered\n");
     assert_eq!(altered["ok"], true, "{altered}");
     let original = lint(row["input"]["yaml"].as_str().expect("yaml"));
     assert_ne!(altered["value"], original["value"]);

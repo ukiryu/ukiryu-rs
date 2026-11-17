@@ -43,8 +43,7 @@ export function check(module) {
 }
 
 // The document operations that take their text in the request. Expected
-// values are the core's corpus results (lint.synthetic.invalid-yaml under its
-// R2 yaml-reader migration).
+// values are the core's corpus results (lint.synthetic.invalid-yaml).
 export function checkDocuments(module) {
   let count = 0;
   const call = request => JSON.parse(module.process(JSON.stringify(request)));
@@ -59,7 +58,7 @@ export function checkDocuments(module) {
     [sym('issues'), [{$map: [
       [sym('severity'), sym('error')],
       [sym('severity_string'), 'ERROR'],
-      [sym('message'), 'Invalid YAML: unexpected parser state (line 1, column 14)'],
+      [sym('message'), 'Invalid YAML: (<unknown>): mapping values are not allowed in this context at line 1 column 14'],
       [sym('location'), null],
       [sym('suggestion'), null],
       [sym('rule_id'), null],
