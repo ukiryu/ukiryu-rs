@@ -1,0 +1,35 @@
+{
+  "source": "exe/ukiryu of ukiryu/ukiryu ab6df35 (path gem, Ruby 4.0.1, Linux); register ukiryu-cli/tests/info_opts_data/vreg; env as cases.json but UKIRYU_REGISTER is that register and PATH is HOME/bin holding a bash link and the scripts",
+  "scripts": {
+    "vertool": "#!/bin/sh\necho \"vertool 2.5.1\"\n",
+    "failtool": "#!/bin/sh\necho \"no version here\"\n"
+  },
+  "cases": [
+    {
+      "argv": [
+        "info",
+        "vertool"
+      ],
+      "stdout": "\u001b[37m\u001b[0m\n\u001b[36mTool: vertool\u001b[0m\n\u001b[37mDisplay Name: vertool (version detection)\u001b[0m\n\u001b[37mVersion: N/A\u001b[0m\n\u001b[37mHomepage: N/A\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mVersion Detection:\u001b[0m\n\u001b[37m  Command: --version\u001b[0m\n\u001b[37m  Pattern: vertool ([0-9.]+)\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mProfiles (1):\u001b[0m\n\u001b[37m  default:\u001b[0m\n\u001b[37m    Platforms: macos, linux, windows\u001b[0m\n\u001b[37m    Shells: bash, sh\u001b[0m\n\u001b[37m    Option Style: double_dash_equals\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[32mStatus: INSTALLED\u001b[0m\n\u001b[37mExecutable: ${HOME}/bin/vertool\u001b[0m\n\u001b[37mDetected Version: 2.5.1\u001b[0m\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "info",
+        "failtool"
+      ],
+      "stdout": "\u001b[37m\u001b[0m\n\u001b[36mTool: failtool\u001b[0m\n\u001b[37mDisplay Name: failtool (version detection)\u001b[0m\n\u001b[37mVersion: N/A\u001b[0m\n\u001b[37mHomepage: N/A\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mVersion Detection:\u001b[0m\n\u001b[37m  Command: --version\u001b[0m\n\u001b[37m  Pattern: failtool ([0-9.]+)\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mProfiles (1):\u001b[0m\n\u001b[37m  default:\u001b[0m\n\u001b[37m    Platforms: macos, linux, windows\u001b[0m\n\u001b[37m    Shells: bash, sh\u001b[0m\n\u001b[37m    Option Style: double_dash_equals\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[32mStatus: INSTALLED\u001b[0m\n\u001b[37mExecutable: ${HOME}/bin/failtool\u001b[0m\n\u001b[37mDetected Version: unknown\u001b[0m\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "list"
+      ],
+      "stdout": "\u001b[36mAvailable tools (2):\u001b[0m\n\u001b[36m  failtool/1.0:\u001b[0m\n\u001b[32m    [✓]  failtool             version unknown\u001b[0m\n\u001b[36m  vertool/1.0:\u001b[0m\n\u001b[32m    [✓]  vertool              v2.5.1\u001b[0m\n",
+      "stderr": "",
+      "exit": 0
+    }
+  ]
+}
