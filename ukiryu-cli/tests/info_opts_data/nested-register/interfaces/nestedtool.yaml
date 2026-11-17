@@ -1,0 +1,13 @@
+---
+ukiryu_schema: '1.0'
+name: nestedtool
+version: '1.0'
+display_name: nestedtool Interface
+actions:
+- name: process
+  description: Process input
+  signature:
+    inputs:
+      options:
+      - name: level
+        type: integer

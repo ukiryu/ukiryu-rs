@@ -1,0 +1,9 @@
+ukiryu_schema: '1.0'
+name: cat
+version: '1.0'
+profiles:
+  - name: default
+    platforms: [linux, macos]
+    shells: [bash, zsh, sh]
+    commands:
+      - name: concatenate

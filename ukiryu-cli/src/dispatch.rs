@@ -22,8 +22,8 @@ use crate::commands::execute::{
     self, CacheAction, CacheInput, ExecInput, ExecuteContext, ExecuteError, RunFileInput,
 };
 use crate::commands::inspect::{
-    self, CommandsInput, ConfigInput, HandlerContext, InspectError, RegisterInput, ResolveInput,
-    SystemInput, VersionInput,
+    self, CommandsInput, ConfigInput, HandlerContext, InfoInput, InspectError, OptsInput,
+    RegisterInput, ResolveInput, SystemInput, VersionInput,
 };
 use crate::commands::CommandOutcome;
 use clap::error::ErrorKind;
@@ -43,9 +43,7 @@ pub const GATED_EXIT: i32 = 2;
 
 /// Verbs of the source CLI whose handlers are not merged yet, with the
 /// component they wait for.
-const GATED_VERBS: [(&str, &str); 4] = [
-    ("info", "the register and tool APIs (K22-CLI-INSPECT)"),
-    ("opts", "the register and tool APIs (K22-CLI-INSPECT)"),
+const GATED_VERBS: [(&str, &str); 2] = [
     ("describe", "the tool API (K22-CLI-AUTHOR)"),
     ("which", "the register and tool APIs (K22-CLI-INSPECT)"),
 ];
@@ -67,9 +65,27 @@ where
     I: IntoIterator<Item = T>,
     T: Into<OsString> + Clone,
 {
+    let args: Vec<OsString> = args.into_iter().map(Into::into).collect();
+    // Thor's own `help [COMMAND]` replaces clap's help subcommand.
+    if args
+        .get(1)
+        .is_some_and(|verb| verb.to_str() == Some("help"))
+    {
+        let target = args.get(2).and_then(|name| name.to_str());
+        let help = match (args.len(), target) {
+            (2, _) => Some(thor_command_list(
+                std::env::var("THOR_COLUMNS").ok().as_deref(),
+            )),
+            (_, Some("exec")) => Some(THOR_EXEC_HELP.to_owned()),
+            _ => None,
+        };
+        if let Some(help) = help {
+            return io.perform(&[OutputWrite::Stdout(help)]).unwrap_or(0);
+        }
+    }
     let matches = match crate::arguments::command().try_get_matches_from(args) {
         Ok(matches) => matches,
-        Err(error) => return parse_error(error),
+        Err(error) => return parse_error(error, io),
     };
     let Some((verb, sub)) = matches.subcommand() else {
         // `subcommand_required` makes this unreachable through clap.
@@ -98,8 +114,19 @@ where
 
 /// clap's help and version requests print to stdout and succeed; every other
 /// parse error goes to stderr with the source's failure status 1.
-fn parse_error(error: clap::Error) -> i32 {
+fn parse_error(error: clap::Error, io: &mut ProcessIo) -> i32 {
     match error.kind() {
+        // Thor reports an unknown (sub)command as one stderr line, status 1.
+        ErrorKind::InvalidSubcommand => {
+            if let Some(clap::error::ContextValue::String(name)) =
+                error.get(clap::error::ContextKind::InvalidSubcommand)
+            {
+                io.stderr(&format!("Could not find command \"{name}\".\n"));
+                return 1;
+            }
+            let _ = error.print();
+            1
+        }
         ErrorKind::DisplayHelp | ErrorKind::DisplayVersion => {
             let _ = error.print();
             0
@@ -158,6 +185,29 @@ fn dispatch(verb: &str, sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Fai
                 needs: "the register API (Register.default)",
             })?;
             inspect_outcome(inspect::config(input, &ctx), io)
+        }
+        "info" => {
+            // A bare `ukiryu info` prints Thor's command list (not the info
+            // command's usage): `ThorExt` turns the missing argument into
+            // `help`, whatever other options were given.
+            let Some(tool) = text(sub, "tool")? else {
+                let help = thor_command_list(std::env::var("THOR_COLUMNS").ok().as_deref());
+                return Ok(io.perform(&[OutputWrite::Stdout(help)]).unwrap_or(0));
+            };
+            let ctx = handler_context(text(sub, "register")?)?;
+            let input = InfoInput {
+                tool,
+                all: flag(sub, "all"),
+            };
+            inspect_outcome(inspect::info(input, &ctx), io)
+        }
+        "opts" => {
+            let ctx = handler_context(text(sub, "register")?)?;
+            let input = OptsInput {
+                tool: text(sub, "tool")?.unwrap_or_default(),
+                command: text(sub, "command")?,
+            };
+            inspect_outcome(inspect::opts(input, &ctx), io)
         }
         "list" => {
             let ctx = handler_context(text(sub, "register")?)?;
@@ -642,4 +692,131 @@ impl Confirm for StdinConfirm {
             Ok(_) => Some(line),
         }
     }
+}
+
+/// Thor's `ukiryu help exec`, captured from the pinned exe/ukiryu.
+const THOR_EXEC_HELP: &str = "Usage:
+  ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]
+
+Options:
+  -r, [--register=REGISTER]                          # Path to tool register
+  -d, [--definition=DEFINITION]                      # Path to tool definition file
+  -f, [--format=FORMAT]                              # Response format (yaml, json, table, raw)
+                                                     # Default: yaml
+  -o, [--output=OUTPUT]                              # Output file for response (default: stdout)
+  -D, [--dry-run], [--no-dry-run], [--skip-dry-run]  # Show execution request without executing
+                                                     # Default: false
+  -s, [--shell=SHELL]                                # Shell to use for command execution (bash, zsh, fish, sh, powershell, cmd)
+      [--stdin], [--no-stdin], [--skip-stdin]        # Read input from stdin (pass to command)
+                                                     # Default: false
+      [--raw], [--no-raw], [--skip-raw]              # Output raw stdout/stderr (for pipe composition)
+                                                     # Default: false
+
+Execute a tool command inline
+";
+
+/// Thor's `ukiryu help` listing (`Thor.help`: `print_table(list, indent: 2,
+/// truncate: true)` then a blank line), captured from the pinned exe/ukiryu.
+/// `width` is `THOR_COLUMNS`; without it Thor asks the terminal, and 80 is
+/// what a non-terminal reports. A width under 10 also means 80.
+fn thor_command_list(width: Option<&str>) -> String {
+    const ROWS: [(&str, &str); 18] = [
+        ("ukiryu cache [ACTION]", "Manage definition cache"),
+        (
+            "ukiryu commands TOOL",
+            "List all commands available for a tool",
+        ),
+        (
+            "ukiryu config [ACTION] [KEY] [VALUE]",
+            "Manage configuration (list, get, set, unset)",
+        ),
+        ("ukiryu definitions [COMMAND]", "Manage tool definitions"),
+        (
+            "ukiryu describe TOOL [COMMAND]",
+            "Show comprehensive documentation for a tool or specific command",
+        ),
+        (
+            "ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]",
+            "Execute a tool command inline",
+        ),
+        (
+            "ukiryu extract TOOL",
+            "Extract tool definition from an installed CLI tool",
+        ),
+        (
+            "ukiryu help [COMMAND]",
+            "Describe available commands or one specific command",
+        ),
+        (
+            "ukiryu info [TOOL]",
+            "Show detailed information about a tool",
+        ),
+        ("ukiryu list", "List all available tools in the register"),
+        (
+            "ukiryu opts TOOL [COMMAND]",
+            "Show options for a tool or specific command",
+        ),
+        ("ukiryu register [SUBCOMMAND]", "Manage the tool register"),
+        (
+            "ukiryu resolve TOOL [VERSION]",
+            "Resolve which definition would be used for a tool",
+        ),
+        (
+            "ukiryu run-file REQUEST_FILE",
+            "Execute a Ukiryu Structured Execution Request from a YAML file",
+        ),
+        (
+            "ukiryu system [SUBCOMMAND]",
+            "Show system information (shells, etc.)",
+        ),
+        ("ukiryu tree", "Print a tree of all available commands"),
+        ("ukiryu validate [COMMAND]", "Validate tool definitions"),
+        ("ukiryu version", "Show Ukiryu version"),
+    ];
+    // `which` is the 19th row and sorts last.
+    const WHICH: (&str, &str) = (
+        "ukiryu which IDENTIFIER",
+        "Show which tool implementation would be selected",
+    );
+    const INDENT: usize = 2;
+    let terminal_width = match width {
+        // Ruby `String#to_i`: leading digits, else 0.
+        Some(text) => {
+            let digits: String = text
+                .trim_start()
+                .chars()
+                .take_while(char::is_ascii_digit)
+                .collect();
+            digits.parse::<usize>().unwrap_or(0)
+        }
+        None => 80,
+    };
+    let terminal_width = if terminal_width < 10 {
+        80
+    } else {
+        terminal_width
+    };
+    let column = ROWS
+        .iter()
+        .chain(std::iter::once(&WHICH))
+        .map(|(usage, _)| usage.chars().count())
+        .max()
+        .unwrap_or(0);
+    let mut out = String::from("ukiryu commands:\n");
+    for (usage, about) in ROWS.iter().chain(std::iter::once(&WHICH)) {
+        // Thor lists each description as a `# ` comment.
+        let sentence = format!("{usage:<width$}# {about}", width = column + 2);
+        let chars: Vec<char> = sentence.chars().collect();
+        let line: String = if chars.len() <= terminal_width {
+            sentence
+        } else {
+            let keep = terminal_width.saturating_sub(3 + INDENT);
+            chars[..keep.min(chars.len())].iter().collect::<String>() + "..."
+        };
+        out.push_str(&" ".repeat(INDENT));
+        out.push_str(&line);
+        out.push('\n');
+    }
+    out.push('\n');
+    out
 }

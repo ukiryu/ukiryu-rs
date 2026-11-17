@@ -1,0 +1,22 @@
+---
+ukiryu_schema: '1.0'
+name: badver
+display_name: Badver
+homepage: https://example.org/badver
+version: '1.0'
+version_detection:
+  command: "--version"
+  pattern: badver ([\d.]+)
+execution_profiles:
+- name: unix
+  platforms:
+  - linux
+  - macos
+  shells:
+  - bash
+  - zsh
+  - sh
+  executable_name: badver
+  commands:
+  - name: run
+    description: Run it

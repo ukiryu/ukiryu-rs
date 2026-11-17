@@ -1,0 +1,113 @@
+---
+ukiryu_schema: '1.0'
+name: rich
+display_name: Rich Tool
+homepage: https://example.org/rich
+version: '3.2'
+aliases:
+- richy
+- rt
+version_detection:
+  command: "--version"
+  pattern: rich ([\d.]+)
+execution_profiles:
+- name: unix
+  platforms:
+  - linux
+  - macos
+  shells:
+  - bash
+  - zsh
+  - sh
+  option_style: double_dash_equals
+  executable_name: rich
+  commands:
+  - name: convert
+    description: Convert one thing to another
+    usage: rich convert [options] INPUT OUTPUT
+    subcommand: conv
+    use_env_vars:
+    - locale
+    - proxy
+    arguments:
+    - name: input
+      type: file
+      required: true
+      position: 1
+      description: Source file
+    - name: size
+      type: integer
+      min: 1
+      max: 99
+      size: 3
+      position: 2
+    - name: mode
+      type: string
+      values:
+      - fast
+      - slow
+      position: 3
+    - name: rest
+      type: string
+      variadic: true
+      position: last
+    options:
+    - name: quality
+      cli: "--quality"
+      type: integer
+      range:
+      - 1
+      - 100
+      default: 75
+      description: Output quality
+      platforms:
+      - linux
+    - name: output_format
+      cli: "--format"
+      type: symbol
+      values:
+      - png
+      - jpg
+      assignment_delimiter: space
+    - name: tags
+      cli: "--tag"
+      type: array
+      of: string
+    - name: compression
+      cli: "--compress"
+      type: string
+    post_options:
+    - name: verbosity
+      cli: "--verbosity"
+      type: integer
+      description: After the files
+    flags:
+    - name: verbose
+      cli: "-v"
+      default: false
+      description: Verbose output
+    - name: force
+      cli: "-f"
+      platforms:
+      - linux
+  - name: codes
+    description: Has exit codes
+    exit_codes:
+      standard:
+        '0': Success
+        '10': Soft failure
+        '2': Usage
+      custom:
+        '64': Custom thing
+  - name: envy
+    description: Has environment variables
+    env_vars:
+    - name: RICH_HOME
+      value: "/opt/rich"
+      platforms:
+      - linux
+    - name: RICH_PROXY
+      env_var: HTTP_PROXY
+  - name: plain
+    description: A plain command
+  - name: nodesc

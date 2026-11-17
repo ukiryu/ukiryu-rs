@@ -1,0 +1,9 @@
+---
+ukiryu_schema: '1.0'
+name: nover
+version: '1.0'
+actions:
+- name: run
+  description: Run it
+aliases:
+- nover
