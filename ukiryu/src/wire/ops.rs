@@ -426,9 +426,9 @@ fn version_spec(index: &str, implementation: &str, version: &str) -> Result<Json
         Value::Array(items) => &items[i],
         _ => unreachable!("checked above"),
     };
-    Ok(spec
-        .get_sym_or_str("file")
-        .map_or(Json::Null, value::encode))
+    spec.get_sym_or_str("file").map_or(Ok(Json::Null), |file| {
+        value::encode(file).map_err(|e| ruby(value::EncodeError::CLASS, e))
+    })
 }
 
 /// What `Tool.get` resolved.
