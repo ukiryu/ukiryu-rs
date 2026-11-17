@@ -1,0 +1,6 @@
+# Test image for the Rust ukiryu CLI on alpine:3.20.
+# The CLI binary and the repository are mounted at run time by
+# scripts/docker-test-all.sh; nothing is built or copied into the image.
+FROM alpine:3.20
+
+RUN apk add --no-cache bash zsh fish dash tcsh ca-certificates coreutils findutils grep sed gawk jq file
