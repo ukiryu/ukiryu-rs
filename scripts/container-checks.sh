@@ -82,7 +82,7 @@ cp /register/tools/jq/default/*.yaml "$HOME/.local/share/ukiryu/definitions/jq/"
 verb "resolve jq"       "PR #73" resolve jq
 verb "info jq"          "PR #77" info jq
 verb "opts jq"          "PR #77" opts jq
-verb "describe jq"      "PR #74" describe jq
+verb "describe jq"      "PR #74" describe jq --register /register
 verb "which jq"         "no open PR (K22-CLI-INSPECT remainder)" which jq
 
 echo
