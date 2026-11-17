@@ -1,0 +1,2453 @@
+{
+  "source": "exe/ukiryu of ukiryu/ukiryu ab6df35 (the pinned oracle), Thor 1.5.0, Ruby 4.0.1, Linux; bare ruby with -I lib, gems from the Ruby 4.0.1 install",
+  "environment": "the corpus cli-output environment: HOME and the working directory a scratch home, TZ=UTC, LANG=LC_ALL=C.UTF-8, SHELL=/bin/bash, UKIRYU_REGISTER=${INPUTS}/register, COLUMNS=THOR_COLUMNS=100, TERM=dumb, empty stdin, PATH a directory holding only a bash link",
+  "cases": [
+    {
+      "argv": [],
+      "stdout": "ukiryu commands:\n  ukiryu cache [ACTION]                       # Manage definition cache\n  ukiryu commands TOOL                        # List all commands available for a tool\n  ukiryu config [ACTION] [KEY] [VALUE]        # Manage configuration (list, get, set, unset)\n  ukiryu definitions [COMMAND]                # Manage tool definitions\n  ukiryu describe TOOL [COMMAND]              # Show comprehensive documentation for a tool or sp...\n  ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]  # Execute a tool command inline\n  ukiryu extract TOOL                         # Extract tool definition from an installed CLI tool\n  ukiryu help [COMMAND]                       # Describe available commands or one specific command\n  ukiryu info [TOOL]                          # Show detailed information about a tool\n  ukiryu list                                 # List all available tools in the register\n  ukiryu opts TOOL [COMMAND]                  # Show options for a tool or specific command\n  ukiryu register [SUBCOMMAND]                # Manage the tool register\n  ukiryu resolve TOOL [VERSION]               # Resolve which definition would be used for a tool\n  ukiryu run-file REQUEST_FILE                # Execute a Ukiryu Structured Execution Request fro...\n  ukiryu system [SUBCOMMAND]                  # Show system information (shells, etc.)\n  ukiryu tree                                 # Print a tree of all available commands\n  ukiryu validate [COMMAND]                   # Validate tool definitions\n  ukiryu version                              # Show Ukiryu version\n  ukiryu which IDENTIFIER                     # Show which tool implementation would be selected\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help"
+      ],
+      "stdout": "ukiryu commands:\n  ukiryu cache [ACTION]                       # Manage definition cache\n  ukiryu commands TOOL                        # List all commands available for a tool\n  ukiryu config [ACTION] [KEY] [VALUE]        # Manage configuration (list, get, set, unset)\n  ukiryu definitions [COMMAND]                # Manage tool definitions\n  ukiryu describe TOOL [COMMAND]              # Show comprehensive documentation for a tool or sp...\n  ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]  # Execute a tool command inline\n  ukiryu extract TOOL                         # Extract tool definition from an installed CLI tool\n  ukiryu help [COMMAND]                       # Describe available commands or one specific command\n  ukiryu info [TOOL]                          # Show detailed information about a tool\n  ukiryu list                                 # List all available tools in the register\n  ukiryu opts TOOL [COMMAND]                  # Show options for a tool or specific command\n  ukiryu register [SUBCOMMAND]                # Manage the tool register\n  ukiryu resolve TOOL [VERSION]               # Resolve which definition would be used for a tool\n  ukiryu run-file REQUEST_FILE                # Execute a Ukiryu Structured Execution Request fro...\n  ukiryu system [SUBCOMMAND]                  # Show system information (shells, etc.)\n  ukiryu tree                                 # Print a tree of all available commands\n  ukiryu validate [COMMAND]                   # Validate tool definitions\n  ukiryu version                              # Show Ukiryu version\n  ukiryu which IDENTIFIER                     # Show which tool implementation would be selected\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "cache"
+      ],
+      "stdout": "Commands:\n  ukiryu cache clear           # Clear all cached definitions\n  ukiryu cache help [COMMAND]  # Describe subcommands or one specific subcommand\n  ukiryu cache info            # Show cache information\n  ukiryu cache stats           # Show detailed cache statistics\n  ukiryu cache_command tree    # Print a tree of all available commands\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]  \n                                                 # Default: false\n  [--dry-run], [--no-dry-run], [--skip-dry-run]  \n                                                 # Default: false\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "commands"
+      ],
+      "stdout": "Usage:\n  ukiryu commands TOOL\n\nOptions:\n  -r, [--register=REGISTER]  # Path to tool register\n\nList all commands available for a tool\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "config"
+      ],
+      "stdout": "Usage:\n  ukiryu config [ACTION] [KEY] [VALUE]\n\nOptions:\n  -r, [--register=REGISTER]  # Path to tool register\n\nManage configuration (list, get, set, unset)\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "definitions"
+      ],
+      "stdout": "Commands:\n  ukiryu definitions add SOURCE      # Add definition to user library\n  ukiryu definitions help [COMMAND]  # Describe subcommands or one specific subcommand\n  ukiryu definitions info TOOL       # Show definition details\n  ukiryu definitions list            # List all discovered definitions\n  ukiryu definitions path            # Show definition search paths\n  ukiryu definitions remove TOOL     # Remove definition from user library\n  ukiryu definitions_command tree    # Print a tree of all available commands\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "describe"
+      ],
+      "stdout": "Usage:\n  ukiryu describe TOOL [COMMAND]\n\nOptions:\n  -r, [--register=REGISTER]  # Path to tool register\n  -f, [--format=FORMAT]      # Output format (text, yaml, json)\n                             # Default: text\n\nShow comprehensive documentation for a tool or specific command\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "exec"
+      ],
+      "stdout": "Usage:\n  ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]\n\nOptions:\n  -r, [--register=REGISTER]                          # Path to tool register\n  -d, [--definition=DEFINITION]                      # Path to tool definition file\n  -f, [--format=FORMAT]                              # Response format (yaml, json, table, raw)\n                                                     # Default: yaml\n  -o, [--output=OUTPUT]                              # Output file for response (default: stdout)\n  -D, [--dry-run], [--no-dry-run], [--skip-dry-run]  # Show execution request without executing\n                                                     # Default: false\n  -s, [--shell=SHELL]                                # Shell to use for command execution (bash, zsh, fish, sh, powershell, cmd)\n      [--stdin], [--no-stdin], [--skip-stdin]        # Read input from stdin (pass to command)\n                                                     # Default: false\n      [--raw], [--no-raw], [--skip-raw]              # Output raw stdout/stderr (for pipe composition)\n                                                     # Default: false\n\nExecute a tool command inline\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "extract"
+      ],
+      "stdout": "Usage:\n  ukiryu extract TOOL\n\nOptions:\n  -o, [--output=OUTPUT]                              # Output file for extracted definition\n  -m, [--method=METHOD]                              # Extraction method (auto, native, help)\n                                                     # Default: auto\n  -v, [--verbose], [--no-verbose], [--skip-verbose]  # Enable verbose output\n                                                     # Default: false\n\nExtract tool definition from an installed CLI tool\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "help"
+      ],
+      "stdout": "Usage:\n  ukiryu help [COMMAND]\n\nDescribe available commands or one specific command\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "info"
+      ],
+      "stdout": "Usage:\n  ukiryu info [TOOL]\n\nOptions:\n  -r, [--register=REGISTER]              # Path to tool register\n      [--all], [--no-all], [--skip-all]  # Show all implementations for interfaces\n                                         # Default: false\n\nShow detailed information about a tool\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "list"
+      ],
+      "stdout": "Usage:\n  ukiryu list\n\nOptions:\n  -r, [--register=REGISTER]  # Path to tool register\n\nList all available tools in the register\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "opts"
+      ],
+      "stdout": "Usage:\n  ukiryu opts TOOL [COMMAND]\n\nOptions:\n  -r, [--register=REGISTER]  # Path to tool register\n\nShow options for a tool or specific command\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "register"
+      ],
+      "stdout": "Usage:\n  ukiryu register [SUBCOMMAND]\n\nOptions:\n  -f, [--force]                                      # Force re-clone the register\n                                                     # Default: false\n  -v, [--verbose], [--no-verbose], [--skip-verbose]  # Show verbose output\n                                                     # Default: false\n\nManage the tool register\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "resolve"
+      ],
+      "stdout": "Usage:\n  ukiryu resolve TOOL [VERSION]\n\nResolve which definition would be used for a tool\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "run-file"
+      ],
+      "stdout": "Usage:\n  ukiryu run-file REQUEST_FILE\n\nOptions:\n  -r, [--register=REGISTER]                          # Path to tool register\n  -o, [--output=OUTPUT]                              # Output file for response (default: stdout)\n  -f, [--format=FORMAT]                              # Response format (yaml, json, table, raw)\n                                                     # Default: yaml\n  -d, [--dry-run], [--no-dry-run], [--skip-dry-run]  # Show execution request without executing\n                                                     # Default: false\n      [--shell=SHELL]                                # Shell to use for command execution (bash, zsh, fish, sh, powershell, cmd)\n\nExecute a Ukiryu Structured Execution Request from a YAML file\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "system"
+      ],
+      "stdout": "Usage:\n  ukiryu system [SUBCOMMAND]\n\nOptions:\n  -r, [--register=REGISTER]  # Path to tool register\n\nShow system information (shells, etc.)\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "tree"
+      ],
+      "stdout": "Usage:\n  ukiryu tree\n\nPrint a tree of all available commands\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "validate"
+      ],
+      "stdout": "Commands:\n  ukiryu validate all             # Validate all definitions in register\n  ukiryu validate file PATH       # Validate a definition file\n  ukiryu validate help [COMMAND]  # Describe subcommands or one specific subcommand\n  ukiryu validate string YAML     # Validate a YAML string\n  ukiryu validate_command tree    # Print a tree of all available commands\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]           \n                                                          # Default: false\n  [--format=FORMAT]                                       \n                                                          # Default: text\n                                                          # Possible values: text, json\n  [--schema=SCHEMA]                                       # Path to JSON Schema file\n  [--strict], [--no-strict], [--skip-strict]              # Treat warnings as errors\n                                                          # Default: false\n  [--executable], [--no-executable], [--skip-executable]  # Test executable against actual tool\n                                                          # Default: false\n  [--all], [--no-all], [--skip-all]                       # Enable all validations (schema + executable + smoke tests)\n                                                          # Default: false\n  [--register=REGISTER]                                   # Path to tool register\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "version"
+      ],
+      "stdout": "Usage:\n  ukiryu version\n\nShow Ukiryu version\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "which"
+      ],
+      "stdout": "Usage:\n  ukiryu which IDENTIFIER\n\nOptions:\n  -r, [--register=REGISTER]  # Path to tool register\n      [--platform=PLATFORM]  # Platform to check (macos, linux, windows)\n      [--shell=SHELL]        # Shell to check (bash, zsh, fish, sh, powershell, cmd)\n\nShow which tool implementation would be selected\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "run_file"
+      ],
+      "stdout": "Usage:\n  ukiryu run-file REQUEST_FILE\n\nOptions:\n  -r, [--register=REGISTER]                          # Path to tool register\n  -o, [--output=OUTPUT]                              # Output file for response (default: stdout)\n  -f, [--format=FORMAT]                              # Response format (yaml, json, table, raw)\n                                                     # Default: yaml\n  -d, [--dry-run], [--no-dry-run], [--skip-dry-run]  # Show execution request without executing\n                                                     # Default: false\n      [--shell=SHELL]                                # Shell to use for command execution (bash, zsh, fish, sh, powershell, cmd)\n\nExecute a Ukiryu Structured Execution Request from a YAML file\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "lis"
+      ],
+      "stdout": "Usage:\n  ukiryu list\n\nOptions:\n  -r, [--register=REGISTER]  # Path to tool register\n\nList all available tools in the register\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "hel"
+      ],
+      "stdout": "Usage:\n  ukiryu help [COMMAND]\n\nDescribe available commands or one specific command\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "nosuch"
+      ],
+      "stdout": "",
+      "stderr": "Could not find command \"nosuch\".\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "help",
+        "lst"
+      ],
+      "stdout": "",
+      "stderr": "Could not find command \"lst\".\nDid you mean?  \"list\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "help",
+        "foo-bar"
+      ],
+      "stdout": "",
+      "stderr": "Could not find command \"foo_bar\".\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "help",
+        "exec",
+        "extra"
+      ],
+      "stdout": "Usage:\n  ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]\n\nOptions:\n  -r, [--register=REGISTER]                          # Path to tool register\n  -d, [--definition=DEFINITION]                      # Path to tool definition file\n  -f, [--format=FORMAT]                              # Response format (yaml, json, table, raw)\n                                                     # Default: yaml\n  -o, [--output=OUTPUT]                              # Output file for response (default: stdout)\n  -D, [--dry-run], [--no-dry-run], [--skip-dry-run]  # Show execution request without executing\n                                                     # Default: false\n  -s, [--shell=SHELL]                                # Shell to use for command execution (bash, zsh, fish, sh, powershell, cmd)\n      [--stdin], [--no-stdin], [--skip-stdin]        # Read input from stdin (pass to command)\n                                                     # Default: false\n      [--raw], [--no-raw], [--skip-raw]              # Output raw stdout/stderr (for pipe composition)\n                                                     # Default: false\n\nExecute a tool command inline\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "c"
+      ],
+      "stdout": "",
+      "stderr": "Ambiguous command c matches [cache, commands, config]\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "help",
+        "list",
+        "--bogus"
+      ],
+      "stdout": "ukiryu commands:\n  ukiryu cache [ACTION]                       # Manage definition cache\n  ukiryu commands TOOL                        # List all commands available for a tool\n  ukiryu config [ACTION] [KEY] [VALUE]        # Manage configuration (list, get, set, unset)\n  ukiryu definitions [COMMAND]                # Manage tool definitions\n  ukiryu describe TOOL [COMMAND]              # Show comprehensive documentation for a tool or sp...\n  ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]  # Execute a tool command inline\n  ukiryu extract TOOL                         # Extract tool definition from an installed CLI tool\n  ukiryu help [COMMAND]                       # Describe available commands or one specific command\n  ukiryu info [TOOL]                          # Show detailed information about a tool\n  ukiryu list                                 # List all available tools in the register\n  ukiryu opts TOOL [COMMAND]                  # Show options for a tool or specific command\n  ukiryu register [SUBCOMMAND]                # Manage the tool register\n  ukiryu resolve TOOL [VERSION]               # Resolve which definition would be used for a tool\n  ukiryu run-file REQUEST_FILE                # Execute a Ukiryu Structured Execution Request fro...\n  ukiryu system [SUBCOMMAND]                  # Show system information (shells, etc.)\n  ukiryu tree                                 # Print a tree of all available commands\n  ukiryu validate [COMMAND]                   # Validate tool definitions\n  ukiryu version                              # Show Ukiryu version\n  ukiryu which IDENTIFIER                     # Show which tool implementation would be selected\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "list",
+        "-h"
+      ],
+      "stdout": "ukiryu commands:\n  ukiryu cache [ACTION]                       # Manage definition cache\n  ukiryu commands TOOL                        # List all commands available for a tool\n  ukiryu config [ACTION] [KEY] [VALUE]        # Manage configuration (list, get, set, unset)\n  ukiryu definitions [COMMAND]                # Manage tool definitions\n  ukiryu describe TOOL [COMMAND]              # Show comprehensive documentation for a tool or sp...\n  ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]  # Execute a tool command inline\n  ukiryu extract TOOL                         # Extract tool definition from an installed CLI tool\n  ukiryu help [COMMAND]                       # Describe available commands or one specific command\n  ukiryu info [TOOL]                          # Show detailed information about a tool\n  ukiryu list                                 # List all available tools in the register\n  ukiryu opts TOOL [COMMAND]                  # Show options for a tool or specific command\n  ukiryu register [SUBCOMMAND]                # Manage the tool register\n  ukiryu resolve TOOL [VERSION]               # Resolve which definition would be used for a tool\n  ukiryu run-file REQUEST_FILE                # Execute a Ukiryu Structured Execution Request fro...\n  ukiryu system [SUBCOMMAND]                  # Show system information (shells, etc.)\n  ukiryu tree                                 # Print a tree of all available commands\n  ukiryu validate [COMMAND]                   # Validate tool definitions\n  ukiryu version                              # Show Ukiryu version\n  ukiryu which IDENTIFIER                     # Show which tool implementation would be selected\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "--help"
+      ],
+      "stdout": "ukiryu commands:\n  ukiryu cache [ACTION]                       # Manage definition cache\n  ukiryu commands TOOL                        # List all commands available for a tool\n  ukiryu config [ACTION] [KEY] [VALUE]        # Manage configuration (list, get, set, unset)\n  ukiryu definitions [COMMAND]                # Manage tool definitions\n  ukiryu describe TOOL [COMMAND]              # Show comprehensive documentation for a tool or sp...\n  ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]  # Execute a tool command inline\n  ukiryu extract TOOL                         # Extract tool definition from an installed CLI tool\n  ukiryu help [COMMAND]                       # Describe available commands or one specific command\n  ukiryu info [TOOL]                          # Show detailed information about a tool\n  ukiryu list                                 # List all available tools in the register\n  ukiryu opts TOOL [COMMAND]                  # Show options for a tool or specific command\n  ukiryu register [SUBCOMMAND]                # Manage the tool register\n  ukiryu resolve TOOL [VERSION]               # Resolve which definition would be used for a tool\n  ukiryu run-file REQUEST_FILE                # Execute a Ukiryu Structured Execution Request fro...\n  ukiryu system [SUBCOMMAND]                  # Show system information (shells, etc.)\n  ukiryu tree                                 # Print a tree of all available commands\n  ukiryu validate [COMMAND]                   # Validate tool definitions\n  ukiryu version                              # Show Ukiryu version\n  ukiryu which IDENTIFIER                     # Show which tool implementation would be selected\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "a",
+        "b",
+        "c"
+      ],
+      "stdout": "",
+      "stderr": "Invalid number of arguments for 'help'. Check the command syntax with: ukiryu help help\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "help",
+        "cache",
+        "clear"
+      ],
+      "stdout": "Commands:\n  ukiryu cache clear           # Clear all cached definitions\n  ukiryu cache help [COMMAND]  # Describe subcommands or one specific subcommand\n  ukiryu cache info            # Show cache information\n  ukiryu cache stats           # Show detailed cache statistics\n  ukiryu cache_command tree    # Print a tree of all available commands\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]  \n                                                 # Default: false\n  [--dry-run], [--no-dry-run], [--skip-dry-run]  \n                                                 # Default: false\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "cache",
+        "nosuch"
+      ],
+      "stdout": "Commands:\n  ukiryu cache clear           # Clear all cached definitions\n  ukiryu cache help [COMMAND]  # Describe subcommands or one specific subcommand\n  ukiryu cache info            # Show cache information\n  ukiryu cache stats           # Show detailed cache statistics\n  ukiryu cache_command tree    # Print a tree of all available commands\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]  \n                                                 # Default: false\n  [--dry-run], [--no-dry-run], [--skip-dry-run]  \n                                                 # Default: false\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "validate",
+        "file"
+      ],
+      "stdout": "Commands:\n  ukiryu validate all             # Validate all definitions in register\n  ukiryu validate file PATH       # Validate a definition file\n  ukiryu validate help [COMMAND]  # Describe subcommands or one specific subcommand\n  ukiryu validate string YAML     # Validate a YAML string\n  ukiryu validate_command tree    # Print a tree of all available commands\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]           \n                                                          # Default: false\n  [--format=FORMAT]                                       \n                                                          # Default: text\n                                                          # Possible values: text, json\n  [--schema=SCHEMA]                                       # Path to JSON Schema file\n  [--strict], [--no-strict], [--skip-strict]              # Treat warnings as errors\n                                                          # Default: false\n  [--executable], [--no-executable], [--skip-executable]  # Test executable against actual tool\n                                                          # Default: false\n  [--all], [--no-all], [--skip-all]                       # Enable all validations (schema + executable + smoke tests)\n                                                          # Default: false\n  [--register=REGISTER]                                   # Path to tool register\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "definitions",
+        "add"
+      ],
+      "stdout": "Commands:\n  ukiryu definitions add SOURCE      # Add definition to user library\n  ukiryu definitions help [COMMAND]  # Describe subcommands or one specific subcommand\n  ukiryu definitions info TOOL       # Show definition details\n  ukiryu definitions list            # List all discovered definitions\n  ukiryu definitions path            # Show definition search paths\n  ukiryu definitions remove TOOL     # Remove definition from user library\n  ukiryu definitions_command tree    # Print a tree of all available commands\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "cache"
+      ],
+      "stdout": "Commands:\n  ukiryu cache clear           # Clear all cached definitions\n  ukiryu cache help [COMMAND]  # Describe subcommands or one specific subcommand\n  ukiryu cache info            # Show cache information\n  ukiryu cache stats           # Show detailed cache statistics\n  ukiryu cache_command tree    # Print a tree of all available commands\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]  \n                                                 # Default: false\n  [--dry-run], [--no-dry-run], [--skip-dry-run]  \n                                                 # Default: false\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "cache",
+        "--help"
+      ],
+      "stdout": "Commands:\n  ukiryu cache clear           # Clear all cached definitions\n  ukiryu cache help [COMMAND]  # Describe subcommands or one specific subcommand\n  ukiryu cache info            # Show cache information\n  ukiryu cache stats           # Show detailed cache statistics\n  ukiryu cache_command tree    # Print a tree of all available commands\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]  \n                                                 # Default: false\n  [--dry-run], [--no-dry-run], [--skip-dry-run]  \n                                                 # Default: false\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "cache",
+        "-h"
+      ],
+      "stdout": "Commands:\n  ukiryu cache clear           # Clear all cached definitions\n  ukiryu cache help [COMMAND]  # Describe subcommands or one specific subcommand\n  ukiryu cache info            # Show cache information\n  ukiryu cache stats           # Show detailed cache statistics\n  ukiryu cache_command tree    # Print a tree of all available commands\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]  \n                                                 # Default: false\n  [--dry-run], [--no-dry-run], [--skip-dry-run]  \n                                                 # Default: false\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "cache",
+        "help"
+      ],
+      "stdout": "Commands:\n  ukiryu cache clear           # Clear all cached definitions\n  ukiryu cache help [COMMAND]  # Describe subcommands or one specific subcommand\n  ukiryu cache info            # Show cache information\n  ukiryu cache stats           # Show detailed cache statistics\n  ukiryu cache_command tree    # Print a tree of all available commands\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]  \n                                                 # Default: false\n  [--dry-run], [--no-dry-run], [--skip-dry-run]  \n                                                 # Default: false\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "cache",
+        "hel"
+      ],
+      "stdout": "Commands:\n  ukiryu cache clear           # Clear all cached definitions\n  ukiryu cache help [COMMAND]  # Describe subcommands or one specific subcommand\n  ukiryu cache info            # Show cache information\n  ukiryu cache stats           # Show detailed cache statistics\n  ukiryu cache_command tree    # Print a tree of all available commands\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]  \n                                                 # Default: false\n  [--dry-run], [--no-dry-run], [--skip-dry-run]  \n                                                 # Default: false\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "cache",
+        "help",
+        "help"
+      ],
+      "stdout": "Usage:\n  ukiryu cache help [COMMAND]\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]  \n                                                 # Default: false\n  [--dry-run], [--no-dry-run], [--skip-dry-run]  \n                                                 # Default: false\n\nDescribe subcommands or one specific subcommand\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "cache",
+        "help",
+        "tree"
+      ],
+      "stdout": "Usage:\n  ukiryu tree\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]  \n                                                 # Default: false\n  [--dry-run], [--no-dry-run], [--skip-dry-run]  \n                                                 # Default: false\n\nPrint a tree of all available commands\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "cache",
+        "help",
+        "nosuch"
+      ],
+      "stdout": "",
+      "stderr": "Could not find command \"nosuch\".\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "cache",
+        "nosuch",
+        "--help"
+      ],
+      "stdout": "",
+      "stderr": "Could not find command \"nosuch\".\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "cache",
+        "help",
+        "clear"
+      ],
+      "stdout": "Usage:\n  ukiryu cache clear\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]  \n                                                 # Default: false\n  [--dry-run], [--no-dry-run], [--skip-dry-run]  \n                                                 # Default: false\n\nClear all cached definitions\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "cache",
+        "clear",
+        "--help"
+      ],
+      "stdout": "Usage:\n  ukiryu cache clear\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]  \n                                                 # Default: false\n  [--dry-run], [--no-dry-run], [--skip-dry-run]  \n                                                 # Default: false\n\nClear all cached definitions\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "cache",
+        "clear",
+        "-h"
+      ],
+      "stdout": "Usage:\n  ukiryu cache clear\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]  \n                                                 # Default: false\n  [--dry-run], [--no-dry-run], [--skip-dry-run]  \n                                                 # Default: false\n\nClear all cached definitions\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "cache",
+        "--help",
+        "clear"
+      ],
+      "stdout": "Usage:\n  ukiryu cache clear\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]  \n                                                 # Default: false\n  [--dry-run], [--no-dry-run], [--skip-dry-run]  \n                                                 # Default: false\n\nClear all cached definitions\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "cache",
+        "help",
+        "clear",
+        "extra"
+      ],
+      "stdout": "Usage:\n  ukiryu cache clear\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]  \n                                                 # Default: false\n  [--dry-run], [--no-dry-run], [--skip-dry-run]  \n                                                 # Default: false\n\nClear all cached definitions\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "cache",
+        "help",
+        "info"
+      ],
+      "stdout": "Usage:\n  ukiryu cache info\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]  \n                                                 # Default: false\n  [--dry-run], [--no-dry-run], [--skip-dry-run]  \n                                                 # Default: false\n\nShow cache information\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "cache",
+        "info",
+        "--help"
+      ],
+      "stdout": "Usage:\n  ukiryu cache info\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]  \n                                                 # Default: false\n  [--dry-run], [--no-dry-run], [--skip-dry-run]  \n                                                 # Default: false\n\nShow cache information\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "cache",
+        "info",
+        "-h"
+      ],
+      "stdout": "Usage:\n  ukiryu cache info\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]  \n                                                 # Default: false\n  [--dry-run], [--no-dry-run], [--skip-dry-run]  \n                                                 # Default: false\n\nShow cache information\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "cache",
+        "--help",
+        "info"
+      ],
+      "stdout": "Usage:\n  ukiryu cache info\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]  \n                                                 # Default: false\n  [--dry-run], [--no-dry-run], [--skip-dry-run]  \n                                                 # Default: false\n\nShow cache information\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "cache",
+        "help",
+        "info",
+        "extra"
+      ],
+      "stdout": "Usage:\n  ukiryu cache info\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]  \n                                                 # Default: false\n  [--dry-run], [--no-dry-run], [--skip-dry-run]  \n                                                 # Default: false\n\nShow cache information\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "cache",
+        "help",
+        "stats"
+      ],
+      "stdout": "Usage:\n  ukiryu cache stats\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]  \n                                                 # Default: false\n  [--dry-run], [--no-dry-run], [--skip-dry-run]  \n                                                 # Default: false\n\nShow detailed cache statistics\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "cache",
+        "stats",
+        "--help"
+      ],
+      "stdout": "Usage:\n  ukiryu cache stats\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]  \n                                                 # Default: false\n  [--dry-run], [--no-dry-run], [--skip-dry-run]  \n                                                 # Default: false\n\nShow detailed cache statistics\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "cache",
+        "stats",
+        "-h"
+      ],
+      "stdout": "Usage:\n  ukiryu cache stats\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]  \n                                                 # Default: false\n  [--dry-run], [--no-dry-run], [--skip-dry-run]  \n                                                 # Default: false\n\nShow detailed cache statistics\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "cache",
+        "--help",
+        "stats"
+      ],
+      "stdout": "Usage:\n  ukiryu cache stats\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]  \n                                                 # Default: false\n  [--dry-run], [--no-dry-run], [--skip-dry-run]  \n                                                 # Default: false\n\nShow detailed cache statistics\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "cache",
+        "help",
+        "stats",
+        "extra"
+      ],
+      "stdout": "Usage:\n  ukiryu cache stats\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]  \n                                                 # Default: false\n  [--dry-run], [--no-dry-run], [--skip-dry-run]  \n                                                 # Default: false\n\nShow detailed cache statistics\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "--help"
+      ],
+      "stdout": "Commands:\n  ukiryu definitions add SOURCE      # Add definition to user library\n  ukiryu definitions help [COMMAND]  # Describe subcommands or one specific subcommand\n  ukiryu definitions info TOOL       # Show definition details\n  ukiryu definitions list            # List all discovered definitions\n  ukiryu definitions path            # Show definition search paths\n  ukiryu definitions remove TOOL     # Remove definition from user library\n  ukiryu definitions_command tree    # Print a tree of all available commands\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "-h"
+      ],
+      "stdout": "Commands:\n  ukiryu definitions add SOURCE      # Add definition to user library\n  ukiryu definitions help [COMMAND]  # Describe subcommands or one specific subcommand\n  ukiryu definitions info TOOL       # Show definition details\n  ukiryu definitions list            # List all discovered definitions\n  ukiryu definitions path            # Show definition search paths\n  ukiryu definitions remove TOOL     # Remove definition from user library\n  ukiryu definitions_command tree    # Print a tree of all available commands\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "help"
+      ],
+      "stdout": "Commands:\n  ukiryu definitions add SOURCE      # Add definition to user library\n  ukiryu definitions help [COMMAND]  # Describe subcommands or one specific subcommand\n  ukiryu definitions info TOOL       # Show definition details\n  ukiryu definitions list            # List all discovered definitions\n  ukiryu definitions path            # Show definition search paths\n  ukiryu definitions remove TOOL     # Remove definition from user library\n  ukiryu definitions_command tree    # Print a tree of all available commands\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "hel"
+      ],
+      "stdout": "Commands:\n  ukiryu definitions add SOURCE      # Add definition to user library\n  ukiryu definitions help [COMMAND]  # Describe subcommands or one specific subcommand\n  ukiryu definitions info TOOL       # Show definition details\n  ukiryu definitions list            # List all discovered definitions\n  ukiryu definitions path            # Show definition search paths\n  ukiryu definitions remove TOOL     # Remove definition from user library\n  ukiryu definitions_command tree    # Print a tree of all available commands\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "help",
+        "help"
+      ],
+      "stdout": "Usage:\n  ukiryu definitions help [COMMAND]\n\nDescribe subcommands or one specific subcommand\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "help",
+        "tree"
+      ],
+      "stdout": "Usage:\n  ukiryu tree\n\nPrint a tree of all available commands\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "help",
+        "nosuch"
+      ],
+      "stdout": "",
+      "stderr": "Could not find command \"nosuch\".\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "definitions",
+        "nosuch",
+        "--help"
+      ],
+      "stdout": "",
+      "stderr": "Could not find command \"nosuch\".\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "definitions",
+        "help",
+        "add"
+      ],
+      "stdout": "Usage:\n  ukiryu definitions add SOURCE\n\nOptions:\n  -n, [--name=NAME]        # Tool name (auto-detected from file if not specified)\n  -V, [--version=VERSION]  # Version (auto-detected from file if not specified)\n\nAdd definition to user library\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "add",
+        "--help"
+      ],
+      "stdout": "Usage:\n  ukiryu definitions add SOURCE\n\nOptions:\n  -n, [--name=NAME]        # Tool name (auto-detected from file if not specified)\n  -V, [--version=VERSION]  # Version (auto-detected from file if not specified)\n\nAdd definition to user library\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "add",
+        "-h"
+      ],
+      "stdout": "Usage:\n  ukiryu definitions add SOURCE\n\nOptions:\n  -n, [--name=NAME]        # Tool name (auto-detected from file if not specified)\n  -V, [--version=VERSION]  # Version (auto-detected from file if not specified)\n\nAdd definition to user library\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "--help",
+        "add"
+      ],
+      "stdout": "Usage:\n  ukiryu definitions add SOURCE\n\nOptions:\n  -n, [--name=NAME]        # Tool name (auto-detected from file if not specified)\n  -V, [--version=VERSION]  # Version (auto-detected from file if not specified)\n\nAdd definition to user library\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "help",
+        "add",
+        "extra"
+      ],
+      "stdout": "Usage:\n  ukiryu definitions add SOURCE\n\nOptions:\n  -n, [--name=NAME]        # Tool name (auto-detected from file if not specified)\n  -V, [--version=VERSION]  # Version (auto-detected from file if not specified)\n\nAdd definition to user library\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "help",
+        "info"
+      ],
+      "stdout": "Usage:\n  ukiryu definitions info TOOL\n\nOptions:\n  -v, [--version=VERSION]  # Specific version to show (shows best available if not specified)\n\nShow definition details\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "info",
+        "--help"
+      ],
+      "stdout": "Usage:\n  ukiryu definitions info TOOL\n\nOptions:\n  -v, [--version=VERSION]  # Specific version to show (shows best available if not specified)\n\nShow definition details\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "info",
+        "-h"
+      ],
+      "stdout": "Usage:\n  ukiryu definitions info TOOL\n\nOptions:\n  -v, [--version=VERSION]  # Specific version to show (shows best available if not specified)\n\nShow definition details\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "--help",
+        "info"
+      ],
+      "stdout": "Usage:\n  ukiryu definitions info TOOL\n\nOptions:\n  -v, [--version=VERSION]  # Specific version to show (shows best available if not specified)\n\nShow definition details\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "help",
+        "info",
+        "extra"
+      ],
+      "stdout": "Usage:\n  ukiryu definitions info TOOL\n\nOptions:\n  -v, [--version=VERSION]  # Specific version to show (shows best available if not specified)\n\nShow definition details\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "help",
+        "list"
+      ],
+      "stdout": "Usage:\n  ukiryu definitions list\n\nOptions:\n  -v, [--verbose], [--no-verbose], [--skip-verbose]  # Show detailed information\n                                                     # Default: false\n\nList all discovered definitions\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "list",
+        "--help"
+      ],
+      "stdout": "Usage:\n  ukiryu definitions list\n\nOptions:\n  -v, [--verbose], [--no-verbose], [--skip-verbose]  # Show detailed information\n                                                     # Default: false\n\nList all discovered definitions\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "list",
+        "-h"
+      ],
+      "stdout": "Usage:\n  ukiryu definitions list\n\nOptions:\n  -v, [--verbose], [--no-verbose], [--skip-verbose]  # Show detailed information\n                                                     # Default: false\n\nList all discovered definitions\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "--help",
+        "list"
+      ],
+      "stdout": "Usage:\n  ukiryu definitions list\n\nOptions:\n  -v, [--verbose], [--no-verbose], [--skip-verbose]  # Show detailed information\n                                                     # Default: false\n\nList all discovered definitions\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "help",
+        "list",
+        "extra"
+      ],
+      "stdout": "Usage:\n  ukiryu definitions list\n\nOptions:\n  -v, [--verbose], [--no-verbose], [--skip-verbose]  # Show detailed information\n                                                     # Default: false\n\nList all discovered definitions\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "help",
+        "path"
+      ],
+      "stdout": "Usage:\n  ukiryu definitions path\n\nShow definition search paths\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "path",
+        "--help"
+      ],
+      "stdout": "Usage:\n  ukiryu definitions path\n\nShow definition search paths\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "path",
+        "-h"
+      ],
+      "stdout": "Usage:\n  ukiryu definitions path\n\nShow definition search paths\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "--help",
+        "path"
+      ],
+      "stdout": "Usage:\n  ukiryu definitions path\n\nShow definition search paths\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "help",
+        "path",
+        "extra"
+      ],
+      "stdout": "Usage:\n  ukiryu definitions path\n\nShow definition search paths\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "help",
+        "remove"
+      ],
+      "stdout": "Usage:\n  ukiryu definitions remove TOOL\n\nOptions:\n  -v, [--version=VERSION]  # Specific version to remove (removes all if not specified)\n  -f, [--force]            # Skip confirmation prompt\n                           # Default: false\n\nRemove definition from user library\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "remove",
+        "--help"
+      ],
+      "stdout": "Usage:\n  ukiryu definitions remove TOOL\n\nOptions:\n  -v, [--version=VERSION]  # Specific version to remove (removes all if not specified)\n  -f, [--force]            # Skip confirmation prompt\n                           # Default: false\n\nRemove definition from user library\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "remove",
+        "-h"
+      ],
+      "stdout": "Usage:\n  ukiryu definitions remove TOOL\n\nOptions:\n  -v, [--version=VERSION]  # Specific version to remove (removes all if not specified)\n  -f, [--force]            # Skip confirmation prompt\n                           # Default: false\n\nRemove definition from user library\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "--help",
+        "remove"
+      ],
+      "stdout": "Usage:\n  ukiryu definitions remove TOOL\n\nOptions:\n  -v, [--version=VERSION]  # Specific version to remove (removes all if not specified)\n  -f, [--force]            # Skip confirmation prompt\n                           # Default: false\n\nRemove definition from user library\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "definitions",
+        "help",
+        "remove",
+        "extra"
+      ],
+      "stdout": "Usage:\n  ukiryu definitions remove TOOL\n\nOptions:\n  -v, [--version=VERSION]  # Specific version to remove (removes all if not specified)\n  -f, [--force]            # Skip confirmation prompt\n                           # Default: false\n\nRemove definition from user library\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "validate"
+      ],
+      "stdout": "Commands:\n  ukiryu validate all             # Validate all definitions in register\n  ukiryu validate file PATH       # Validate a definition file\n  ukiryu validate help [COMMAND]  # Describe subcommands or one specific subcommand\n  ukiryu validate string YAML     # Validate a YAML string\n  ukiryu validate_command tree    # Print a tree of all available commands\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]           \n                                                          # Default: false\n  [--format=FORMAT]                                       \n                                                          # Default: text\n                                                          # Possible values: text, json\n  [--schema=SCHEMA]                                       # Path to JSON Schema file\n  [--strict], [--no-strict], [--skip-strict]              # Treat warnings as errors\n                                                          # Default: false\n  [--executable], [--no-executable], [--skip-executable]  # Test executable against actual tool\n                                                          # Default: false\n  [--all], [--no-all], [--skip-all]                       # Enable all validations (schema + executable + smoke tests)\n                                                          # Default: false\n  [--register=REGISTER]                                   # Path to tool register\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "validate",
+        "--help"
+      ],
+      "stdout": "Commands:\n  ukiryu validate all             # Validate all definitions in register\n  ukiryu validate file PATH       # Validate a definition file\n  ukiryu validate help [COMMAND]  # Describe subcommands or one specific subcommand\n  ukiryu validate string YAML     # Validate a YAML string\n  ukiryu validate_command tree    # Print a tree of all available commands\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]           \n                                                          # Default: false\n  [--format=FORMAT]                                       \n                                                          # Default: text\n                                                          # Possible values: text, json\n  [--schema=SCHEMA]                                       # Path to JSON Schema file\n  [--strict], [--no-strict], [--skip-strict]              # Treat warnings as errors\n                                                          # Default: false\n  [--executable], [--no-executable], [--skip-executable]  # Test executable against actual tool\n                                                          # Default: false\n  [--all], [--no-all], [--skip-all]                       # Enable all validations (schema + executable + smoke tests)\n                                                          # Default: false\n  [--register=REGISTER]                                   # Path to tool register\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "validate",
+        "-h"
+      ],
+      "stdout": "Commands:\n  ukiryu validate all             # Validate all definitions in register\n  ukiryu validate file PATH       # Validate a definition file\n  ukiryu validate help [COMMAND]  # Describe subcommands or one specific subcommand\n  ukiryu validate string YAML     # Validate a YAML string\n  ukiryu validate_command tree    # Print a tree of all available commands\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]           \n                                                          # Default: false\n  [--format=FORMAT]                                       \n                                                          # Default: text\n                                                          # Possible values: text, json\n  [--schema=SCHEMA]                                       # Path to JSON Schema file\n  [--strict], [--no-strict], [--skip-strict]              # Treat warnings as errors\n                                                          # Default: false\n  [--executable], [--no-executable], [--skip-executable]  # Test executable against actual tool\n                                                          # Default: false\n  [--all], [--no-all], [--skip-all]                       # Enable all validations (schema + executable + smoke tests)\n                                                          # Default: false\n  [--register=REGISTER]                                   # Path to tool register\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "validate",
+        "help"
+      ],
+      "stdout": "Commands:\n  ukiryu validate all             # Validate all definitions in register\n  ukiryu validate file PATH       # Validate a definition file\n  ukiryu validate help [COMMAND]  # Describe subcommands or one specific subcommand\n  ukiryu validate string YAML     # Validate a YAML string\n  ukiryu validate_command tree    # Print a tree of all available commands\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]           \n                                                          # Default: false\n  [--format=FORMAT]                                       \n                                                          # Default: text\n                                                          # Possible values: text, json\n  [--schema=SCHEMA]                                       # Path to JSON Schema file\n  [--strict], [--no-strict], [--skip-strict]              # Treat warnings as errors\n                                                          # Default: false\n  [--executable], [--no-executable], [--skip-executable]  # Test executable against actual tool\n                                                          # Default: false\n  [--all], [--no-all], [--skip-all]                       # Enable all validations (schema + executable + smoke tests)\n                                                          # Default: false\n  [--register=REGISTER]                                   # Path to tool register\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "validate",
+        "hel"
+      ],
+      "stdout": "Commands:\n  ukiryu validate all             # Validate all definitions in register\n  ukiryu validate file PATH       # Validate a definition file\n  ukiryu validate help [COMMAND]  # Describe subcommands or one specific subcommand\n  ukiryu validate string YAML     # Validate a YAML string\n  ukiryu validate_command tree    # Print a tree of all available commands\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]           \n                                                          # Default: false\n  [--format=FORMAT]                                       \n                                                          # Default: text\n                                                          # Possible values: text, json\n  [--schema=SCHEMA]                                       # Path to JSON Schema file\n  [--strict], [--no-strict], [--skip-strict]              # Treat warnings as errors\n                                                          # Default: false\n  [--executable], [--no-executable], [--skip-executable]  # Test executable against actual tool\n                                                          # Default: false\n  [--all], [--no-all], [--skip-all]                       # Enable all validations (schema + executable + smoke tests)\n                                                          # Default: false\n  [--register=REGISTER]                                   # Path to tool register\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "validate",
+        "help",
+        "help"
+      ],
+      "stdout": "Usage:\n  ukiryu validate help [COMMAND]\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]           \n                                                          # Default: false\n  [--format=FORMAT]                                       \n                                                          # Default: text\n                                                          # Possible values: text, json\n  [--schema=SCHEMA]                                       # Path to JSON Schema file\n  [--strict], [--no-strict], [--skip-strict]              # Treat warnings as errors\n                                                          # Default: false\n  [--executable], [--no-executable], [--skip-executable]  # Test executable against actual tool\n                                                          # Default: false\n  [--all], [--no-all], [--skip-all]                       # Enable all validations (schema + executable + smoke tests)\n                                                          # Default: false\n  [--register=REGISTER]                                   # Path to tool register\n\nDescribe subcommands or one specific subcommand\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "validate",
+        "help",
+        "tree"
+      ],
+      "stdout": "Usage:\n  ukiryu tree\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]           \n                                                          # Default: false\n  [--format=FORMAT]                                       \n                                                          # Default: text\n                                                          # Possible values: text, json\n  [--schema=SCHEMA]                                       # Path to JSON Schema file\n  [--strict], [--no-strict], [--skip-strict]              # Treat warnings as errors\n                                                          # Default: false\n  [--executable], [--no-executable], [--skip-executable]  # Test executable against actual tool\n                                                          # Default: false\n  [--all], [--no-all], [--skip-all]                       # Enable all validations (schema + executable + smoke tests)\n                                                          # Default: false\n  [--register=REGISTER]                                   # Path to tool register\n\nPrint a tree of all available commands\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "validate",
+        "help",
+        "nosuch"
+      ],
+      "stdout": "",
+      "stderr": "Could not find command \"nosuch\".\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "validate",
+        "nosuch",
+        "--help"
+      ],
+      "stdout": "",
+      "stderr": "Could not find command \"nosuch\".\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "validate",
+        "help",
+        "all"
+      ],
+      "stdout": "Usage:\n  ukiryu validate all\n\nOptions:\n  [--register=REGISTER]                                   # Register path\n  [--verbose], [--no-verbose], [--skip-verbose]           \n                                                          # Default: false\n  [--format=FORMAT]                                       \n                                                          # Default: text\n                                                          # Possible values: text, json\n  [--schema=SCHEMA]                                       # Path to JSON Schema file\n  [--strict], [--no-strict], [--skip-strict]              # Treat warnings as errors\n                                                          # Default: false\n  [--executable], [--no-executable], [--skip-executable]  # Test executable against actual tool\n                                                          # Default: false\n  [--all], [--no-all], [--skip-all]                       # Enable all validations (schema + executable + smoke tests)\n                                                          # Default: false\n  [--register=REGISTER]                                   # Path to tool register\n\nValidate all definitions in register\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "validate",
+        "all",
+        "--help"
+      ],
+      "stdout": "Usage:\n  ukiryu validate all\n\nOptions:\n  [--register=REGISTER]                                   # Register path\n  [--verbose], [--no-verbose], [--skip-verbose]           \n                                                          # Default: false\n  [--format=FORMAT]                                       \n                                                          # Default: text\n                                                          # Possible values: text, json\n  [--schema=SCHEMA]                                       # Path to JSON Schema file\n  [--strict], [--no-strict], [--skip-strict]              # Treat warnings as errors\n                                                          # Default: false\n  [--executable], [--no-executable], [--skip-executable]  # Test executable against actual tool\n                                                          # Default: false\n  [--all], [--no-all], [--skip-all]                       # Enable all validations (schema + executable + smoke tests)\n                                                          # Default: false\n  [--register=REGISTER]                                   # Path to tool register\n\nValidate all definitions in register\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "validate",
+        "all",
+        "-h"
+      ],
+      "stdout": "Usage:\n  ukiryu validate all\n\nOptions:\n  [--register=REGISTER]                                   # Register path\n  [--verbose], [--no-verbose], [--skip-verbose]           \n                                                          # Default: false\n  [--format=FORMAT]                                       \n                                                          # Default: text\n                                                          # Possible values: text, json\n  [--schema=SCHEMA]                                       # Path to JSON Schema file\n  [--strict], [--no-strict], [--skip-strict]              # Treat warnings as errors\n                                                          # Default: false\n  [--executable], [--no-executable], [--skip-executable]  # Test executable against actual tool\n                                                          # Default: false\n  [--all], [--no-all], [--skip-all]                       # Enable all validations (schema + executable + smoke tests)\n                                                          # Default: false\n  [--register=REGISTER]                                   # Path to tool register\n\nValidate all definitions in register\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "validate",
+        "--help",
+        "all"
+      ],
+      "stdout": "Usage:\n  ukiryu validate all\n\nOptions:\n  [--register=REGISTER]                                   # Register path\n  [--verbose], [--no-verbose], [--skip-verbose]           \n                                                          # Default: false\n  [--format=FORMAT]                                       \n                                                          # Default: text\n                                                          # Possible values: text, json\n  [--schema=SCHEMA]                                       # Path to JSON Schema file\n  [--strict], [--no-strict], [--skip-strict]              # Treat warnings as errors\n                                                          # Default: false\n  [--executable], [--no-executable], [--skip-executable]  # Test executable against actual tool\n                                                          # Default: false\n  [--all], [--no-all], [--skip-all]                       # Enable all validations (schema + executable + smoke tests)\n                                                          # Default: false\n  [--register=REGISTER]                                   # Path to tool register\n\nValidate all definitions in register\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "validate",
+        "help",
+        "all",
+        "extra"
+      ],
+      "stdout": "Usage:\n  ukiryu validate all\n\nOptions:\n  [--register=REGISTER]                                   # Register path\n  [--verbose], [--no-verbose], [--skip-verbose]           \n                                                          # Default: false\n  [--format=FORMAT]                                       \n                                                          # Default: text\n                                                          # Possible values: text, json\n  [--schema=SCHEMA]                                       # Path to JSON Schema file\n  [--strict], [--no-strict], [--skip-strict]              # Treat warnings as errors\n                                                          # Default: false\n  [--executable], [--no-executable], [--skip-executable]  # Test executable against actual tool\n                                                          # Default: false\n  [--all], [--no-all], [--skip-all]                       # Enable all validations (schema + executable + smoke tests)\n                                                          # Default: false\n  [--register=REGISTER]                                   # Path to tool register\n\nValidate all definitions in register\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "validate",
+        "help",
+        "file"
+      ],
+      "stdout": "Usage:\n  ukiryu validate file PATH\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]           \n                                                          # Default: false\n  [--format=FORMAT]                                       \n                                                          # Default: text\n                                                          # Possible values: text, json\n  [--schema=SCHEMA]                                       # Path to JSON Schema file\n  [--strict], [--no-strict], [--skip-strict]              # Treat warnings as errors\n                                                          # Default: false\n  [--executable], [--no-executable], [--skip-executable]  # Test executable against actual tool\n                                                          # Default: false\n  [--all], [--no-all], [--skip-all]                       # Enable all validations (schema + executable + smoke tests)\n                                                          # Default: false\n  [--register=REGISTER]                                   # Path to tool register\n\nValidate a definition file\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "validate",
+        "file",
+        "--help"
+      ],
+      "stdout": "Usage:\n  ukiryu validate file PATH\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]           \n                                                          # Default: false\n  [--format=FORMAT]                                       \n                                                          # Default: text\n                                                          # Possible values: text, json\n  [--schema=SCHEMA]                                       # Path to JSON Schema file\n  [--strict], [--no-strict], [--skip-strict]              # Treat warnings as errors\n                                                          # Default: false\n  [--executable], [--no-executable], [--skip-executable]  # Test executable against actual tool\n                                                          # Default: false\n  [--all], [--no-all], [--skip-all]                       # Enable all validations (schema + executable + smoke tests)\n                                                          # Default: false\n  [--register=REGISTER]                                   # Path to tool register\n\nValidate a definition file\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "validate",
+        "file",
+        "-h"
+      ],
+      "stdout": "Usage:\n  ukiryu validate file PATH\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]           \n                                                          # Default: false\n  [--format=FORMAT]                                       \n                                                          # Default: text\n                                                          # Possible values: text, json\n  [--schema=SCHEMA]                                       # Path to JSON Schema file\n  [--strict], [--no-strict], [--skip-strict]              # Treat warnings as errors\n                                                          # Default: false\n  [--executable], [--no-executable], [--skip-executable]  # Test executable against actual tool\n                                                          # Default: false\n  [--all], [--no-all], [--skip-all]                       # Enable all validations (schema + executable + smoke tests)\n                                                          # Default: false\n  [--register=REGISTER]                                   # Path to tool register\n\nValidate a definition file\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "validate",
+        "--help",
+        "file"
+      ],
+      "stdout": "Usage:\n  ukiryu validate file PATH\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]           \n                                                          # Default: false\n  [--format=FORMAT]                                       \n                                                          # Default: text\n                                                          # Possible values: text, json\n  [--schema=SCHEMA]                                       # Path to JSON Schema file\n  [--strict], [--no-strict], [--skip-strict]              # Treat warnings as errors\n                                                          # Default: false\n  [--executable], [--no-executable], [--skip-executable]  # Test executable against actual tool\n                                                          # Default: false\n  [--all], [--no-all], [--skip-all]                       # Enable all validations (schema + executable + smoke tests)\n                                                          # Default: false\n  [--register=REGISTER]                                   # Path to tool register\n\nValidate a definition file\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "validate",
+        "help",
+        "file",
+        "extra"
+      ],
+      "stdout": "Usage:\n  ukiryu validate file PATH\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]           \n                                                          # Default: false\n  [--format=FORMAT]                                       \n                                                          # Default: text\n                                                          # Possible values: text, json\n  [--schema=SCHEMA]                                       # Path to JSON Schema file\n  [--strict], [--no-strict], [--skip-strict]              # Treat warnings as errors\n                                                          # Default: false\n  [--executable], [--no-executable], [--skip-executable]  # Test executable against actual tool\n                                                          # Default: false\n  [--all], [--no-all], [--skip-all]                       # Enable all validations (schema + executable + smoke tests)\n                                                          # Default: false\n  [--register=REGISTER]                                   # Path to tool register\n\nValidate a definition file\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "validate",
+        "help",
+        "string"
+      ],
+      "stdout": "Usage:\n  ukiryu validate string YAML\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]           \n                                                          # Default: false\n  [--format=FORMAT]                                       \n                                                          # Default: text\n                                                          # Possible values: text, json\n  [--schema=SCHEMA]                                       # Path to JSON Schema file\n  [--strict], [--no-strict], [--skip-strict]              # Treat warnings as errors\n                                                          # Default: false\n  [--executable], [--no-executable], [--skip-executable]  # Test executable against actual tool\n                                                          # Default: false\n  [--all], [--no-all], [--skip-all]                       # Enable all validations (schema + executable + smoke tests)\n                                                          # Default: false\n  [--register=REGISTER]                                   # Path to tool register\n\nValidate a YAML string\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "validate",
+        "string",
+        "--help"
+      ],
+      "stdout": "Usage:\n  ukiryu validate string YAML\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]           \n                                                          # Default: false\n  [--format=FORMAT]                                       \n                                                          # Default: text\n                                                          # Possible values: text, json\n  [--schema=SCHEMA]                                       # Path to JSON Schema file\n  [--strict], [--no-strict], [--skip-strict]              # Treat warnings as errors\n                                                          # Default: false\n  [--executable], [--no-executable], [--skip-executable]  # Test executable against actual tool\n                                                          # Default: false\n  [--all], [--no-all], [--skip-all]                       # Enable all validations (schema + executable + smoke tests)\n                                                          # Default: false\n  [--register=REGISTER]                                   # Path to tool register\n\nValidate a YAML string\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "validate",
+        "string",
+        "-h"
+      ],
+      "stdout": "Usage:\n  ukiryu validate string YAML\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]           \n                                                          # Default: false\n  [--format=FORMAT]                                       \n                                                          # Default: text\n                                                          # Possible values: text, json\n  [--schema=SCHEMA]                                       # Path to JSON Schema file\n  [--strict], [--no-strict], [--skip-strict]              # Treat warnings as errors\n                                                          # Default: false\n  [--executable], [--no-executable], [--skip-executable]  # Test executable against actual tool\n                                                          # Default: false\n  [--all], [--no-all], [--skip-all]                       # Enable all validations (schema + executable + smoke tests)\n                                                          # Default: false\n  [--register=REGISTER]                                   # Path to tool register\n\nValidate a YAML string\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "validate",
+        "--help",
+        "string"
+      ],
+      "stdout": "Usage:\n  ukiryu validate string YAML\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]           \n                                                          # Default: false\n  [--format=FORMAT]                                       \n                                                          # Default: text\n                                                          # Possible values: text, json\n  [--schema=SCHEMA]                                       # Path to JSON Schema file\n  [--strict], [--no-strict], [--skip-strict]              # Treat warnings as errors\n                                                          # Default: false\n  [--executable], [--no-executable], [--skip-executable]  # Test executable against actual tool\n                                                          # Default: false\n  [--all], [--no-all], [--skip-all]                       # Enable all validations (schema + executable + smoke tests)\n                                                          # Default: false\n  [--register=REGISTER]                                   # Path to tool register\n\nValidate a YAML string\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "validate",
+        "help",
+        "string",
+        "extra"
+      ],
+      "stdout": "Usage:\n  ukiryu validate string YAML\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]           \n                                                          # Default: false\n  [--format=FORMAT]                                       \n                                                          # Default: text\n                                                          # Possible values: text, json\n  [--schema=SCHEMA]                                       # Path to JSON Schema file\n  [--strict], [--no-strict], [--skip-strict]              # Treat warnings as errors\n                                                          # Default: false\n  [--executable], [--no-executable], [--skip-executable]  # Test executable against actual tool\n                                                          # Default: false\n  [--all], [--no-all], [--skip-all]                       # Enable all validations (schema + executable + smoke tests)\n                                                          # Default: false\n  [--register=REGISTER]                                   # Path to tool register\n\nValidate a YAML string\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "cache",
+        "nosuch"
+      ],
+      "stdout": "",
+      "stderr": "Could not find command \"nosuch\".\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "validate",
+        "nosuch"
+      ],
+      "stdout": "",
+      "stderr": "Could not find command \"nosuch\".\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "definitions",
+        "nosuch"
+      ],
+      "stdout": "",
+      "stderr": "ERROR: \"ukiryu definitions list\" was called with arguments [\"nosuch\"]\nUsage: \"ukiryu definitions list\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "definitions",
+        "nosuch",
+        "a"
+      ],
+      "stdout": "",
+      "stderr": "ERROR: \"ukiryu definitions list\" was called with arguments [\"nosuch\", \"a\"]\nUsage: \"ukiryu definitions list\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "cache",
+        "clear",
+        "x"
+      ],
+      "stdout": "",
+      "stderr": "ERROR: \"ukiryu cache clear\" was called with arguments [\"x\"]\nUsage: \"ukiryu cache clear\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "cache",
+        "info",
+        "x"
+      ],
+      "stdout": "",
+      "stderr": "ERROR: \"ukiryu cache info\" was called with arguments [\"x\"]\nUsage: \"ukiryu cache info\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "cache",
+        "stats",
+        "x"
+      ],
+      "stdout": "",
+      "stderr": "ERROR: \"ukiryu cache stats\" was called with arguments [\"x\"]\nUsage: \"ukiryu cache stats\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "cache",
+        "clear",
+        "x",
+        "y"
+      ],
+      "stdout": "",
+      "stderr": "ERROR: \"ukiryu cache clear\" was called with arguments [\"x\", \"y\"]\nUsage: \"ukiryu cache clear\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "definitions",
+        "add"
+      ],
+      "stdout": "",
+      "stderr": "ERROR: \"ukiryu definitions add\" was called with no arguments\nUsage: \"ukiryu definitions add SOURCE\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "definitions",
+        "add",
+        "a",
+        "b"
+      ],
+      "stdout": "",
+      "stderr": "ERROR: \"ukiryu definitions add\" was called with arguments [\"a\", \"b\"]\nUsage: \"ukiryu definitions add SOURCE\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "definitions",
+        "remove"
+      ],
+      "stdout": "",
+      "stderr": "ERROR: \"ukiryu definitions remove\" was called with no arguments\nUsage: \"ukiryu definitions remove TOOL\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "definitions",
+        "info"
+      ],
+      "stdout": "",
+      "stderr": "ERROR: \"ukiryu definitions info\" was called with no arguments\nUsage: \"ukiryu definitions info TOOL\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "definitions",
+        "list",
+        "extra"
+      ],
+      "stdout": "",
+      "stderr": "ERROR: \"ukiryu definitions list\" was called with arguments [\"extra\"]\nUsage: \"ukiryu definitions list\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "definitions",
+        "path",
+        "x"
+      ],
+      "stdout": "",
+      "stderr": "ERROR: \"ukiryu definitions path\" was called with arguments [\"x\"]\nUsage: \"ukiryu definitions path\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "definitions",
+        "rem"
+      ],
+      "stdout": "",
+      "stderr": "ERROR: \"ukiryu definitions remove\" was called with no arguments\nUsage: \"ukiryu definitions remove TOOL\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "definitions",
+        "inf",
+        "a",
+        "b"
+      ],
+      "stdout": "",
+      "stderr": "ERROR: \"ukiryu definitions info\" was called with arguments [\"a\", \"b\"]\nUsage: \"ukiryu definitions info TOOL\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "validate",
+        "file"
+      ],
+      "stdout": "",
+      "stderr": "ERROR: \"ukiryu validate file\" was called with no arguments\nUsage: \"ukiryu validate file PATH\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "validate",
+        "f"
+      ],
+      "stdout": "",
+      "stderr": "ERROR: \"ukiryu validate file\" was called with no arguments\nUsage: \"ukiryu validate file PATH\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "validate",
+        "file",
+        "a",
+        "b"
+      ],
+      "stdout": "",
+      "stderr": "ERROR: \"ukiryu validate file\" was called with arguments [\"a\", \"b\"]\nUsage: \"ukiryu validate file PATH\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "validate",
+        "string"
+      ],
+      "stdout": "",
+      "stderr": "ERROR: \"ukiryu validate string\" was called with no arguments\nUsage: \"ukiryu validate string YAML\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "validate",
+        "all",
+        "x"
+      ],
+      "stdout": "",
+      "stderr": "ERROR: \"ukiryu validate all\" was called with arguments [\"x\"]\nUsage: \"ukiryu validate all\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "validate",
+        "lin"
+      ],
+      "stdout": "",
+      "stderr": "Could not find command \"lin\".\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "validate",
+        "lint"
+      ],
+      "stdout": "",
+      "stderr": "Could not find command \"lint\".\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "--help"
+      ],
+      "stdout": "ukiryu commands:\n  ukiryu cache [ACTION]                       # Manage definition cache\n  ukiryu commands TOOL                        # List all commands available for a tool\n  ukiryu config [ACTION] [KEY] [VALUE]        # Manage configuration (list, get, set, unset)\n  ukiryu definitions [COMMAND]                # Manage tool definitions\n  ukiryu describe TOOL [COMMAND]              # Show comprehensive documentation for a tool or sp...\n  ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]  # Execute a tool command inline\n  ukiryu extract TOOL                         # Extract tool definition from an installed CLI tool\n  ukiryu help [COMMAND]                       # Describe available commands or one specific command\n  ukiryu info [TOOL]                          # Show detailed information about a tool\n  ukiryu list                                 # List all available tools in the register\n  ukiryu opts TOOL [COMMAND]                  # Show options for a tool or specific command\n  ukiryu register [SUBCOMMAND]                # Manage the tool register\n  ukiryu resolve TOOL [VERSION]               # Resolve which definition would be used for a tool\n  ukiryu run-file REQUEST_FILE                # Execute a Ukiryu Structured Execution Request fro...\n  ukiryu system [SUBCOMMAND]                  # Show system information (shells, etc.)\n  ukiryu tree                                 # Print a tree of all available commands\n  ukiryu validate [COMMAND]                   # Validate tool definitions\n  ukiryu version                              # Show Ukiryu version\n  ukiryu which IDENTIFIER                     # Show which tool implementation would be selected\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "-h"
+      ],
+      "stdout": "ukiryu commands:\n  ukiryu cache [ACTION]                       # Manage definition cache\n  ukiryu commands TOOL                        # List all commands available for a tool\n  ukiryu config [ACTION] [KEY] [VALUE]        # Manage configuration (list, get, set, unset)\n  ukiryu definitions [COMMAND]                # Manage tool definitions\n  ukiryu describe TOOL [COMMAND]              # Show comprehensive documentation for a tool or sp...\n  ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]  # Execute a tool command inline\n  ukiryu extract TOOL                         # Extract tool definition from an installed CLI tool\n  ukiryu help [COMMAND]                       # Describe available commands or one specific command\n  ukiryu info [TOOL]                          # Show detailed information about a tool\n  ukiryu list                                 # List all available tools in the register\n  ukiryu opts TOOL [COMMAND]                  # Show options for a tool or specific command\n  ukiryu register [SUBCOMMAND]                # Manage the tool register\n  ukiryu resolve TOOL [VERSION]               # Resolve which definition would be used for a tool\n  ukiryu run-file REQUEST_FILE                # Execute a Ukiryu Structured Execution Request fro...\n  ukiryu system [SUBCOMMAND]                  # Show system information (shells, etc.)\n  ukiryu tree                                 # Print a tree of all available commands\n  ukiryu validate [COMMAND]                   # Validate tool definitions\n  ukiryu version                              # Show Ukiryu version\n  ukiryu which IDENTIFIER                     # Show which tool implementation would be selected\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "-?"
+      ],
+      "stdout": "ukiryu commands:\n  ukiryu cache [ACTION]                       # Manage definition cache\n  ukiryu commands TOOL                        # List all commands available for a tool\n  ukiryu config [ACTION] [KEY] [VALUE]        # Manage configuration (list, get, set, unset)\n  ukiryu definitions [COMMAND]                # Manage tool definitions\n  ukiryu describe TOOL [COMMAND]              # Show comprehensive documentation for a tool or sp...\n  ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]  # Execute a tool command inline\n  ukiryu extract TOOL                         # Extract tool definition from an installed CLI tool\n  ukiryu help [COMMAND]                       # Describe available commands or one specific command\n  ukiryu info [TOOL]                          # Show detailed information about a tool\n  ukiryu list                                 # List all available tools in the register\n  ukiryu opts TOOL [COMMAND]                  # Show options for a tool or specific command\n  ukiryu register [SUBCOMMAND]                # Manage the tool register\n  ukiryu resolve TOOL [VERSION]               # Resolve which definition would be used for a tool\n  ukiryu run-file REQUEST_FILE                # Execute a Ukiryu Structured Execution Request fro...\n  ukiryu system [SUBCOMMAND]                  # Show system information (shells, etc.)\n  ukiryu tree                                 # Print a tree of all available commands\n  ukiryu validate [COMMAND]                   # Validate tool definitions\n  ukiryu version                              # Show Ukiryu version\n  ukiryu which IDENTIFIER                     # Show which tool implementation would be selected\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "-D"
+      ],
+      "stdout": "ukiryu commands:\n  ukiryu cache [ACTION]                       # Manage definition cache\n  ukiryu commands TOOL                        # List all commands available for a tool\n  ukiryu config [ACTION] [KEY] [VALUE]        # Manage configuration (list, get, set, unset)\n  ukiryu definitions [COMMAND]                # Manage tool definitions\n  ukiryu describe TOOL [COMMAND]              # Show comprehensive documentation for a tool or sp...\n  ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]  # Execute a tool command inline\n  ukiryu extract TOOL                         # Extract tool definition from an installed CLI tool\n  ukiryu help [COMMAND]                       # Describe available commands or one specific command\n  ukiryu info [TOOL]                          # Show detailed information about a tool\n  ukiryu list                                 # List all available tools in the register\n  ukiryu opts TOOL [COMMAND]                  # Show options for a tool or specific command\n  ukiryu register [SUBCOMMAND]                # Manage the tool register\n  ukiryu resolve TOOL [VERSION]               # Resolve which definition would be used for a tool\n  ukiryu run-file REQUEST_FILE                # Execute a Ukiryu Structured Execution Request fro...\n  ukiryu system [SUBCOMMAND]                  # Show system information (shells, etc.)\n  ukiryu tree                                 # Print a tree of all available commands\n  ukiryu validate [COMMAND]                   # Validate tool definitions\n  ukiryu version                              # Show Ukiryu version\n  ukiryu which IDENTIFIER                     # Show which tool implementation would be selected\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "-h",
+        "list"
+      ],
+      "stdout": "Usage:\n  ukiryu list\n\nOptions:\n  -r, [--register=REGISTER]  # Path to tool register\n\nList all available tools in the register\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "--help",
+        "exec"
+      ],
+      "stdout": "Usage:\n  ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]\n\nOptions:\n  -r, [--register=REGISTER]                          # Path to tool register\n  -d, [--definition=DEFINITION]                      # Path to tool definition file\n  -f, [--format=FORMAT]                              # Response format (yaml, json, table, raw)\n                                                     # Default: yaml\n  -o, [--output=OUTPUT]                              # Output file for response (default: stdout)\n  -D, [--dry-run], [--no-dry-run], [--skip-dry-run]  # Show execution request without executing\n                                                     # Default: false\n  -s, [--shell=SHELL]                                # Shell to use for command execution (bash, zsh, fish, sh, powershell, cmd)\n      [--stdin], [--no-stdin], [--skip-stdin]        # Read input from stdin (pass to command)\n                                                     # Default: false\n      [--raw], [--no-raw], [--skip-raw]              # Output raw stdout/stderr (for pipe composition)\n                                                     # Default: false\n\nExecute a tool command inline\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "--help",
+        "cache"
+      ],
+      "stdout": "Commands:\n  ukiryu cache clear           # Clear all cached definitions\n  ukiryu cache help [COMMAND]  # Describe subcommands or one specific subcommand\n  ukiryu cache info            # Show cache information\n  ukiryu cache stats           # Show detailed cache statistics\n  ukiryu cache_command tree    # Print a tree of all available commands\n\nOptions:\n  [--verbose], [--no-verbose], [--skip-verbose]  \n                                                 # Default: false\n  [--dry-run], [--no-dry-run], [--skip-dry-run]  \n                                                 # Default: false\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "--help",
+        "nosuch"
+      ],
+      "stdout": "",
+      "stderr": "Could not find command \"nosuch\".\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "--bogus",
+        "--help"
+      ],
+      "stdout": "ukiryu commands:\n  ukiryu cache [ACTION]                       # Manage definition cache\n  ukiryu commands TOOL                        # List all commands available for a tool\n  ukiryu config [ACTION] [KEY] [VALUE]        # Manage configuration (list, get, set, unset)\n  ukiryu definitions [COMMAND]                # Manage tool definitions\n  ukiryu describe TOOL [COMMAND]              # Show comprehensive documentation for a tool or sp...\n  ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]  # Execute a tool command inline\n  ukiryu extract TOOL                         # Extract tool definition from an installed CLI tool\n  ukiryu help [COMMAND]                       # Describe available commands or one specific command\n  ukiryu info [TOOL]                          # Show detailed information about a tool\n  ukiryu list                                 # List all available tools in the register\n  ukiryu opts TOOL [COMMAND]                  # Show options for a tool or specific command\n  ukiryu register [SUBCOMMAND]                # Manage the tool register\n  ukiryu resolve TOOL [VERSION]               # Resolve which definition would be used for a tool\n  ukiryu run-file REQUEST_FILE                # Execute a Ukiryu Structured Execution Request fro...\n  ukiryu system [SUBCOMMAND]                  # Show system information (shells, etc.)\n  ukiryu tree                                 # Print a tree of all available commands\n  ukiryu validate [COMMAND]                   # Validate tool definitions\n  ukiryu version                              # Show Ukiryu version\n  ukiryu which IDENTIFIER                     # Show which tool implementation would be selected\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "--bogus",
+        "--help",
+        "list"
+      ],
+      "stdout": "Usage:\n  ukiryu list\n\nOptions:\n  -r, [--register=REGISTER]  # Path to tool register\n\nList all available tools in the register\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "--bogus",
+        "list"
+      ],
+      "stdout": "",
+      "stderr": "Unknown switches \"--bogus\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "--bogus",
+        "a",
+        "b"
+      ],
+      "stdout": "",
+      "stderr": "Unknown switches \"--bogus\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "-x"
+      ],
+      "stdout": "",
+      "stderr": "Unknown switches \"-x\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "--version"
+      ],
+      "stdout": "",
+      "stderr": "Unknown switches \"--version\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "-v"
+      ],
+      "stdout": "",
+      "stderr": "Unknown switches \"-v\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "--bogus"
+      ],
+      "stdout": "",
+      "stderr": "Unknown switches \"--bogus\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "-"
+      ],
+      "stdout": "",
+      "stderr": "Unknown switches \"-\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "--bogus",
+        "-x"
+      ],
+      "stdout": "",
+      "stderr": "Unknown switches \"--bogus\", \"-x\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "commands",
+        "--help"
+      ],
+      "stdout": "Usage:\n  ukiryu commands TOOL\n\nOptions:\n  -r, [--register=REGISTER]  # Path to tool register\n\nList all commands available for a tool\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "commands",
+        "-h"
+      ],
+      "stdout": "Usage:\n  ukiryu commands TOOL\n\nOptions:\n  -r, [--register=REGISTER]  # Path to tool register\n\nList all commands available for a tool\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "config",
+        "--help"
+      ],
+      "stdout": "Usage:\n  ukiryu config [ACTION] [KEY] [VALUE]\n\nOptions:\n  -r, [--register=REGISTER]  # Path to tool register\n\nManage configuration (list, get, set, unset)\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "config",
+        "-h"
+      ],
+      "stdout": "Usage:\n  ukiryu config [ACTION] [KEY] [VALUE]\n\nOptions:\n  -r, [--register=REGISTER]  # Path to tool register\n\nManage configuration (list, get, set, unset)\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "describe",
+        "--help"
+      ],
+      "stdout": "Usage:\n  ukiryu describe TOOL [COMMAND]\n\nOptions:\n  -r, [--register=REGISTER]  # Path to tool register\n  -f, [--format=FORMAT]      # Output format (text, yaml, json)\n                             # Default: text\n\nShow comprehensive documentation for a tool or specific command\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "describe",
+        "-h"
+      ],
+      "stdout": "Usage:\n  ukiryu describe TOOL [COMMAND]\n\nOptions:\n  -r, [--register=REGISTER]  # Path to tool register\n  -f, [--format=FORMAT]      # Output format (text, yaml, json)\n                             # Default: text\n\nShow comprehensive documentation for a tool or specific command\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "exec",
+        "--help"
+      ],
+      "stdout": "Usage:\n  ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]\n\nOptions:\n  -r, [--register=REGISTER]                          # Path to tool register\n  -d, [--definition=DEFINITION]                      # Path to tool definition file\n  -f, [--format=FORMAT]                              # Response format (yaml, json, table, raw)\n                                                     # Default: yaml\n  -o, [--output=OUTPUT]                              # Output file for response (default: stdout)\n  -D, [--dry-run], [--no-dry-run], [--skip-dry-run]  # Show execution request without executing\n                                                     # Default: false\n  -s, [--shell=SHELL]                                # Shell to use for command execution (bash, zsh, fish, sh, powershell, cmd)\n      [--stdin], [--no-stdin], [--skip-stdin]        # Read input from stdin (pass to command)\n                                                     # Default: false\n      [--raw], [--no-raw], [--skip-raw]              # Output raw stdout/stderr (for pipe composition)\n                                                     # Default: false\n\nExecute a tool command inline\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "exec",
+        "-h"
+      ],
+      "stdout": "Usage:\n  ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]\n\nOptions:\n  -r, [--register=REGISTER]                          # Path to tool register\n  -d, [--definition=DEFINITION]                      # Path to tool definition file\n  -f, [--format=FORMAT]                              # Response format (yaml, json, table, raw)\n                                                     # Default: yaml\n  -o, [--output=OUTPUT]                              # Output file for response (default: stdout)\n  -D, [--dry-run], [--no-dry-run], [--skip-dry-run]  # Show execution request without executing\n                                                     # Default: false\n  -s, [--shell=SHELL]                                # Shell to use for command execution (bash, zsh, fish, sh, powershell, cmd)\n      [--stdin], [--no-stdin], [--skip-stdin]        # Read input from stdin (pass to command)\n                                                     # Default: false\n      [--raw], [--no-raw], [--skip-raw]              # Output raw stdout/stderr (for pipe composition)\n                                                     # Default: false\n\nExecute a tool command inline\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "extract",
+        "--help"
+      ],
+      "stdout": "Usage:\n  ukiryu extract TOOL\n\nOptions:\n  -o, [--output=OUTPUT]                              # Output file for extracted definition\n  -m, [--method=METHOD]                              # Extraction method (auto, native, help)\n                                                     # Default: auto\n  -v, [--verbose], [--no-verbose], [--skip-verbose]  # Enable verbose output\n                                                     # Default: false\n\nExtract tool definition from an installed CLI tool\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "extract",
+        "-h"
+      ],
+      "stdout": "Usage:\n  ukiryu extract TOOL\n\nOptions:\n  -o, [--output=OUTPUT]                              # Output file for extracted definition\n  -m, [--method=METHOD]                              # Extraction method (auto, native, help)\n                                                     # Default: auto\n  -v, [--verbose], [--no-verbose], [--skip-verbose]  # Enable verbose output\n                                                     # Default: false\n\nExtract tool definition from an installed CLI tool\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "--help"
+      ],
+      "stdout": "ukiryu commands:\n  ukiryu cache [ACTION]                       # Manage definition cache\n  ukiryu commands TOOL                        # List all commands available for a tool\n  ukiryu config [ACTION] [KEY] [VALUE]        # Manage configuration (list, get, set, unset)\n  ukiryu definitions [COMMAND]                # Manage tool definitions\n  ukiryu describe TOOL [COMMAND]              # Show comprehensive documentation for a tool or sp...\n  ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]  # Execute a tool command inline\n  ukiryu extract TOOL                         # Extract tool definition from an installed CLI tool\n  ukiryu help [COMMAND]                       # Describe available commands or one specific command\n  ukiryu info [TOOL]                          # Show detailed information about a tool\n  ukiryu list                                 # List all available tools in the register\n  ukiryu opts TOOL [COMMAND]                  # Show options for a tool or specific command\n  ukiryu register [SUBCOMMAND]                # Manage the tool register\n  ukiryu resolve TOOL [VERSION]               # Resolve which definition would be used for a tool\n  ukiryu run-file REQUEST_FILE                # Execute a Ukiryu Structured Execution Request fro...\n  ukiryu system [SUBCOMMAND]                  # Show system information (shells, etc.)\n  ukiryu tree                                 # Print a tree of all available commands\n  ukiryu validate [COMMAND]                   # Validate tool definitions\n  ukiryu version                              # Show Ukiryu version\n  ukiryu which IDENTIFIER                     # Show which tool implementation would be selected\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "help",
+        "-h"
+      ],
+      "stdout": "ukiryu commands:\n  ukiryu cache [ACTION]                       # Manage definition cache\n  ukiryu commands TOOL                        # List all commands available for a tool\n  ukiryu config [ACTION] [KEY] [VALUE]        # Manage configuration (list, get, set, unset)\n  ukiryu definitions [COMMAND]                # Manage tool definitions\n  ukiryu describe TOOL [COMMAND]              # Show comprehensive documentation for a tool or sp...\n  ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]  # Execute a tool command inline\n  ukiryu extract TOOL                         # Extract tool definition from an installed CLI tool\n  ukiryu help [COMMAND]                       # Describe available commands or one specific command\n  ukiryu info [TOOL]                          # Show detailed information about a tool\n  ukiryu list                                 # List all available tools in the register\n  ukiryu opts TOOL [COMMAND]                  # Show options for a tool or specific command\n  ukiryu register [SUBCOMMAND]                # Manage the tool register\n  ukiryu resolve TOOL [VERSION]               # Resolve which definition would be used for a tool\n  ukiryu run-file REQUEST_FILE                # Execute a Ukiryu Structured Execution Request fro...\n  ukiryu system [SUBCOMMAND]                  # Show system information (shells, etc.)\n  ukiryu tree                                 # Print a tree of all available commands\n  ukiryu validate [COMMAND]                   # Validate tool definitions\n  ukiryu version                              # Show Ukiryu version\n  ukiryu which IDENTIFIER                     # Show which tool implementation would be selected\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "info",
+        "--help"
+      ],
+      "stdout": "Usage:\n  ukiryu info [TOOL]\n\nOptions:\n  -r, [--register=REGISTER]              # Path to tool register\n      [--all], [--no-all], [--skip-all]  # Show all implementations for interfaces\n                                         # Default: false\n\nShow detailed information about a tool\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "info",
+        "-h"
+      ],
+      "stdout": "Usage:\n  ukiryu info [TOOL]\n\nOptions:\n  -r, [--register=REGISTER]              # Path to tool register\n      [--all], [--no-all], [--skip-all]  # Show all implementations for interfaces\n                                         # Default: false\n\nShow detailed information about a tool\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "list",
+        "--help"
+      ],
+      "stdout": "Usage:\n  ukiryu list\n\nOptions:\n  -r, [--register=REGISTER]  # Path to tool register\n\nList all available tools in the register\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "list",
+        "-h"
+      ],
+      "stdout": "Usage:\n  ukiryu list\n\nOptions:\n  -r, [--register=REGISTER]  # Path to tool register\n\nList all available tools in the register\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "opts",
+        "--help"
+      ],
+      "stdout": "Usage:\n  ukiryu opts TOOL [COMMAND]\n\nOptions:\n  -r, [--register=REGISTER]  # Path to tool register\n\nShow options for a tool or specific command\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "opts",
+        "-h"
+      ],
+      "stdout": "Usage:\n  ukiryu opts TOOL [COMMAND]\n\nOptions:\n  -r, [--register=REGISTER]  # Path to tool register\n\nShow options for a tool or specific command\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "register",
+        "--help"
+      ],
+      "stdout": "Usage:\n  ukiryu register [SUBCOMMAND]\n\nOptions:\n  -f, [--force]                                      # Force re-clone the register\n                                                     # Default: false\n  -v, [--verbose], [--no-verbose], [--skip-verbose]  # Show verbose output\n                                                     # Default: false\n\nManage the tool register\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "register",
+        "-h"
+      ],
+      "stdout": "Usage:\n  ukiryu register [SUBCOMMAND]\n\nOptions:\n  -f, [--force]                                      # Force re-clone the register\n                                                     # Default: false\n  -v, [--verbose], [--no-verbose], [--skip-verbose]  # Show verbose output\n                                                     # Default: false\n\nManage the tool register\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "resolve",
+        "--help"
+      ],
+      "stdout": "Usage:\n  ukiryu resolve TOOL [VERSION]\n\nResolve which definition would be used for a tool\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "resolve",
+        "-h"
+      ],
+      "stdout": "Usage:\n  ukiryu resolve TOOL [VERSION]\n\nResolve which definition would be used for a tool\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "run-file",
+        "--help"
+      ],
+      "stdout": "Usage:\n  ukiryu run-file REQUEST_FILE\n\nOptions:\n  -r, [--register=REGISTER]                          # Path to tool register\n  -o, [--output=OUTPUT]                              # Output file for response (default: stdout)\n  -f, [--format=FORMAT]                              # Response format (yaml, json, table, raw)\n                                                     # Default: yaml\n  -d, [--dry-run], [--no-dry-run], [--skip-dry-run]  # Show execution request without executing\n                                                     # Default: false\n      [--shell=SHELL]                                # Shell to use for command execution (bash, zsh, fish, sh, powershell, cmd)\n\nExecute a Ukiryu Structured Execution Request from a YAML file\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "run-file",
+        "-h"
+      ],
+      "stdout": "Usage:\n  ukiryu run-file REQUEST_FILE\n\nOptions:\n  -r, [--register=REGISTER]                          # Path to tool register\n  -o, [--output=OUTPUT]                              # Output file for response (default: stdout)\n  -f, [--format=FORMAT]                              # Response format (yaml, json, table, raw)\n                                                     # Default: yaml\n  -d, [--dry-run], [--no-dry-run], [--skip-dry-run]  # Show execution request without executing\n                                                     # Default: false\n      [--shell=SHELL]                                # Shell to use for command execution (bash, zsh, fish, sh, powershell, cmd)\n\nExecute a Ukiryu Structured Execution Request from a YAML file\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "system",
+        "--help"
+      ],
+      "stdout": "Usage:\n  ukiryu system [SUBCOMMAND]\n\nOptions:\n  -r, [--register=REGISTER]  # Path to tool register\n\nShow system information (shells, etc.)\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "system",
+        "-h"
+      ],
+      "stdout": "Usage:\n  ukiryu system [SUBCOMMAND]\n\nOptions:\n  -r, [--register=REGISTER]  # Path to tool register\n\nShow system information (shells, etc.)\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "tree",
+        "--help"
+      ],
+      "stdout": "Usage:\n  ukiryu tree\n\nPrint a tree of all available commands\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "tree",
+        "-h"
+      ],
+      "stdout": "Usage:\n  ukiryu tree\n\nPrint a tree of all available commands\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "version",
+        "--help"
+      ],
+      "stdout": "Usage:\n  ukiryu version\n\nShow Ukiryu version\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "version",
+        "-h"
+      ],
+      "stdout": "Usage:\n  ukiryu version\n\nShow Ukiryu version\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "which",
+        "--help"
+      ],
+      "stdout": "Usage:\n  ukiryu which IDENTIFIER\n\nOptions:\n  -r, [--register=REGISTER]  # Path to tool register\n      [--platform=PLATFORM]  # Platform to check (macos, linux, windows)\n      [--shell=SHELL]        # Shell to check (bash, zsh, fish, sh, powershell, cmd)\n\nShow which tool implementation would be selected\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "which",
+        "-h"
+      ],
+      "stdout": "Usage:\n  ukiryu which IDENTIFIER\n\nOptions:\n  -r, [--register=REGISTER]  # Path to tool register\n      [--platform=PLATFORM]  # Platform to check (macos, linux, windows)\n      [--shell=SHELL]        # Shell to check (bash, zsh, fish, sh, powershell, cmd)\n\nShow which tool implementation would be selected\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "list",
+        "foo",
+        "-h"
+      ],
+      "stdout": "Usage:\n  ukiryu list\n\nOptions:\n  -r, [--register=REGISTER]  # Path to tool register\n\nList all available tools in the register\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "list",
+        "-h",
+        "--bogus"
+      ],
+      "stdout": "Usage:\n  ukiryu list\n\nOptions:\n  -r, [--register=REGISTER]  # Path to tool register\n\nList all available tools in the register\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "list",
+        "--bogus",
+        "--help"
+      ],
+      "stdout": "Usage:\n  ukiryu list\n\nOptions:\n  -r, [--register=REGISTER]  # Path to tool register\n\nList all available tools in the register\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "--help",
+        "list",
+        "foo"
+      ],
+      "stdout": "Usage:\n  ukiryu list\n\nOptions:\n  -r, [--register=REGISTER]  # Path to tool register\n\nList all available tools in the register\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "list",
+        "--bogus"
+      ],
+      "stdout": "",
+      "stderr": "Unknown switches \"--bogus\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "version",
+        "--bogus"
+      ],
+      "stdout": "",
+      "stderr": "Unknown switches \"--bogus\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "tree",
+        "--verbose"
+      ],
+      "stdout": "",
+      "stderr": "Unknown switches \"--verbose\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "list",
+        "--regster"
+      ],
+      "stdout": "",
+      "stderr": "Unknown switches \"--regster\"\nDid you mean?  \"--register\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "register",
+        "--forc"
+      ],
+      "stdout": "",
+      "stderr": "Unknown switches \"--forc\"\nDid you mean?  \"--force\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "exec",
+        "--dry-rn",
+        "x"
+      ],
+      "stdout": "",
+      "stderr": "Unknown switches \"--dry-rn\"\nDid you mean?  \"--dry-run\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "info",
+        "--al"
+      ],
+      "stdout": "",
+      "stderr": "Unknown switches \"--al\"\nDid you mean?  \"--all\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "list",
+        "--bogus",
+        "x"
+      ],
+      "stdout": "",
+      "stderr": "Unknown switches \"--bogus\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "list",
+        "-x"
+      ],
+      "stdout": "",
+      "stderr": "Unknown switches \"-x\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "list",
+        "-xy"
+      ],
+      "stdout": "",
+      "stderr": "Unknown switches \"-xy\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "extract",
+        "-z",
+        "a"
+      ],
+      "stdout": "",
+      "stderr": "Unknown switches \"-z\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "exec",
+        "tool",
+        "--bogus=1"
+      ],
+      "stdout": "",
+      "stderr": "Unknown switches \"--bogus=1\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "opts",
+        "--register"
+      ],
+      "stdout": "",
+      "stderr": "Missing required argument for 'opts'. Check the command syntax with: ukiryu help opts\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "list",
+        "--register=/x",
+        "extra"
+      ],
+      "stdout": "",
+      "stderr": "Invalid number of arguments for 'list'. Check the command syntax with: ukiryu help list\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "list",
+        "--no-bogus"
+      ],
+      "stdout": "",
+      "stderr": "Unknown switches \"--no-bogus\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "info",
+        "--all=maybe",
+        "x"
+      ],
+      "stdout": "",
+      "stderr": "Invalid number of arguments for 'info'. Check the command syntax with: ukiryu help info\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "version",
+        "x"
+      ],
+      "stdout": "",
+      "stderr": "Invalid number of arguments for 'version'. Check the command syntax with: ukiryu help version\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "list",
+        "x"
+      ],
+      "stdout": "",
+      "stderr": "Invalid number of arguments for 'list'. Check the command syntax with: ukiryu help list\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "tree",
+        "x"
+      ],
+      "stdout": "",
+      "stderr": "Invalid number of arguments for 'tree'. Check the command syntax with: ukiryu help tree\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "info",
+        "a",
+        "b"
+      ],
+      "stdout": "",
+      "stderr": "Invalid number of arguments for 'info'. Check the command syntax with: ukiryu help info\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "info",
+        "a",
+        "--all",
+        "b"
+      ],
+      "stdout": "",
+      "stderr": "Invalid number of arguments for 'info'. Check the command syntax with: ukiryu help info\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "info",
+        "--all",
+        "false",
+        "a",
+        "b"
+      ],
+      "stdout": "",
+      "stderr": "Invalid number of arguments for 'info'. Check the command syntax with: ukiryu help info\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "commands"
+      ],
+      "stdout": "",
+      "stderr": "Missing required argument for 'commands'. Check the command syntax with: ukiryu help commands\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "commands",
+        "a",
+        "b"
+      ],
+      "stdout": "",
+      "stderr": "Invalid number of arguments for 'commands'. Check the command syntax with: ukiryu help commands\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "opts"
+      ],
+      "stdout": "",
+      "stderr": "Missing required argument for 'opts'. Check the command syntax with: ukiryu help opts\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "opts",
+        "a",
+        "b",
+        "c"
+      ],
+      "stdout": "",
+      "stderr": "Invalid number of arguments for 'opts'. Check the command syntax with: ukiryu help opts\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "describe"
+      ],
+      "stdout": "",
+      "stderr": "Missing required argument for 'describe'. Check the command syntax with: ukiryu help describe\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "describe",
+        "a",
+        "b",
+        "c"
+      ],
+      "stdout": "",
+      "stderr": "Invalid number of arguments for 'describe'. Check the command syntax with: ukiryu help describe\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "describe",
+        "--format",
+        "json"
+      ],
+      "stdout": "",
+      "stderr": "Missing required argument for 'describe'. Check the command syntax with: ukiryu help describe\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "resolve"
+      ],
+      "stdout": "",
+      "stderr": "Missing required argument for 'resolve'. Check the command syntax with: ukiryu help resolve\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "resolve",
+        "a",
+        "b",
+        "c"
+      ],
+      "stdout": "",
+      "stderr": "Invalid number of arguments for 'resolve'. Check the command syntax with: ukiryu help resolve\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "which"
+      ],
+      "stdout": "",
+      "stderr": "Missing required argument for 'which'. Check the command syntax with: ukiryu help which\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "which",
+        "a",
+        "b"
+      ],
+      "stdout": "",
+      "stderr": "Invalid number of arguments for 'which'. Check the command syntax with: ukiryu help which\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "extract"
+      ],
+      "stdout": "",
+      "stderr": "Missing required argument for 'extract'. Check the command syntax with: ukiryu help extract\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "extract",
+        "a",
+        "b"
+      ],
+      "stdout": "",
+      "stderr": "Invalid number of arguments for 'extract'. Check the command syntax with: ukiryu help extract\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "run-file"
+      ],
+      "stdout": "",
+      "stderr": "Missing required argument for 'run_file'. Check the command syntax with: ukiryu help run_file\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "run-file",
+        "a",
+        "b"
+      ],
+      "stdout": "",
+      "stderr": "Invalid number of arguments for 'run_file'. Check the command syntax with: ukiryu help run_file\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "run_file"
+      ],
+      "stdout": "",
+      "stderr": "Missing required argument for 'run_file'. Check the command syntax with: ukiryu help run_file\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "exec"
+      ],
+      "stdout": "",
+      "stderr": "Missing required argument for 'exec'. Check the command syntax with: ukiryu help exec\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "exec",
+        "--dry-run"
+      ],
+      "stdout": "",
+      "stderr": "Missing required argument for 'exec'. Check the command syntax with: ukiryu help exec\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "exec",
+        "-D"
+      ],
+      "stdout": "",
+      "stderr": "Missing required argument for 'exec'. Check the command syntax with: ukiryu help exec\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "config",
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "stdout": "",
+      "stderr": "Invalid number of arguments for 'config'. Check the command syntax with: ukiryu help config\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "system",
+        "a",
+        "b"
+      ],
+      "stdout": "",
+      "stderr": "Invalid number of arguments for 'system'. Check the command syntax with: ukiryu help system\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "register",
+        "a",
+        "b"
+      ],
+      "stdout": "",
+      "stderr": "Invalid number of arguments for 'register'. Check the command syntax with: ukiryu help register\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "register",
+        "--force",
+        "x",
+        "y"
+      ],
+      "stdout": "",
+      "stderr": "Invalid number of arguments for 'register'. Check the command syntax with: ukiryu help register\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "bogus"
+      ],
+      "stdout": "",
+      "stderr": "Could not find command \"bogus\".\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "bogus",
+        "--help"
+      ],
+      "stdout": "",
+      "stderr": "Could not find command \"bogus\".\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "lst"
+      ],
+      "stdout": "",
+      "stderr": "Could not find command \"lst\".\nDid you mean?  \"list\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "foo-bar"
+      ],
+      "stdout": "",
+      "stderr": "Could not find command \"foo-bar\".\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "Cache"
+      ],
+      "stdout": "",
+      "stderr": "Could not find command \"Cache\".\nDid you mean?  \"cache\"\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "c"
+      ],
+      "stdout": "",
+      "stderr": "Ambiguous command c matches [cache, commands, config]\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "co"
+      ],
+      "stdout": "",
+      "stderr": "Ambiguous command co matches [commands, config]\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "d"
+      ],
+      "stdout": "",
+      "stderr": "Ambiguous command d matches [definitions, describe]\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "e"
+      ],
+      "stdout": "",
+      "stderr": "Ambiguous command e matches [exec, extract]\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "r"
+      ],
+      "stdout": "",
+      "stderr": "Ambiguous command r matches [register, resolve, run_file]\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "re"
+      ],
+      "stdout": "",
+      "stderr": "Ambiguous command re matches [register, resolve]\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "v"
+      ],
+      "stdout": "",
+      "stderr": "Ambiguous command v matches [validate, version]\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "s"
+      ],
+      "stdout": "\u001b[36mAvailable shells\u001b[0m\n\n  The following shells are installed and supported on this platform:\n\n\u001b[2m    No supported shells detected\u001b[0m\n\n\u001b[36mAdditional supported shells\u001b[0m\n\n  These shells are supported but not currently installed:\n\n\u001b[2m    • unix\u001b[0m\n\u001b[2m    • powershell - PowerShell command-line shell\u001b[0m\n\n\u001b[36mNot available on this platform\u001b[0m\n\n  These shells are not supported on this platform:\n\n\u001b[2m    • windows\u001b[0m\n\u001b[2m    • bash - GNU Bourne Again SHell\u001b[0m\n\u001b[2m    • zsh - Z shell\u001b[0m\n\u001b[2m    • fish - Friendly interactive shell\u001b[0m\n\u001b[2m    • sh - POSIX shell\u001b[0m\n\u001b[2m    • dash\u001b[0m\n\u001b[2m    • tcsh\u001b[0m\n\u001b[2m    • cmd - Windows Command Prompt\u001b[0m\n\n\u001b[2mPlatform: linux\u001b[0m\n\u001b[2mCurrent shell: bash\u001b[0m\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "i"
+      ],
+      "stdout": "ukiryu commands:\n  ukiryu cache [ACTION]                       # Manage definition cache\n  ukiryu commands TOOL                        # List all commands available for a tool\n  ukiryu config [ACTION] [KEY] [VALUE]        # Manage configuration (list, get, set, unset)\n  ukiryu definitions [COMMAND]                # Manage tool definitions\n  ukiryu describe TOOL [COMMAND]              # Show comprehensive documentation for a tool or sp...\n  ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]  # Execute a tool command inline\n  ukiryu extract TOOL                         # Extract tool definition from an installed CLI tool\n  ukiryu help [COMMAND]                       # Describe available commands or one specific command\n  ukiryu info [TOOL]                          # Show detailed information about a tool\n  ukiryu list                                 # List all available tools in the register\n  ukiryu opts TOOL [COMMAND]                  # Show options for a tool or specific command\n  ukiryu register [SUBCOMMAND]                # Manage the tool register\n  ukiryu resolve TOOL [VERSION]               # Resolve which definition would be used for a tool\n  ukiryu run-file REQUEST_FILE                # Execute a Ukiryu Structured Execution Request fro...\n  ukiryu system [SUBCOMMAND]                  # Show system information (shells, etc.)\n  ukiryu tree                                 # Print a tree of all available commands\n  ukiryu validate [COMMAND]                   # Validate tool definitions\n  ukiryu version                              # Show Ukiryu version\n  ukiryu which IDENTIFIER                     # Show which tool implementation would be selected\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "h"
+      ],
+      "stdout": "ukiryu commands:\n  ukiryu cache [ACTION]                       # Manage definition cache\n  ukiryu commands TOOL                        # List all commands available for a tool\n  ukiryu config [ACTION] [KEY] [VALUE]        # Manage configuration (list, get, set, unset)\n  ukiryu definitions [COMMAND]                # Manage tool definitions\n  ukiryu describe TOOL [COMMAND]              # Show comprehensive documentation for a tool or sp...\n  ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]  # Execute a tool command inline\n  ukiryu extract TOOL                         # Extract tool definition from an installed CLI tool\n  ukiryu help [COMMAND]                       # Describe available commands or one specific command\n  ukiryu info [TOOL]                          # Show detailed information about a tool\n  ukiryu list                                 # List all available tools in the register\n  ukiryu opts TOOL [COMMAND]                  # Show options for a tool or specific command\n  ukiryu register [SUBCOMMAND]                # Manage the tool register\n  ukiryu resolve TOOL [VERSION]               # Resolve which definition would be used for a tool\n  ukiryu run-file REQUEST_FILE                # Execute a Ukiryu Structured Execution Request fro...\n  ukiryu system [SUBCOMMAND]                  # Show system information (shells, etc.)\n  ukiryu tree                                 # Print a tree of all available commands\n  ukiryu validate [COMMAND]                   # Validate tool definitions\n  ukiryu version                              # Show Ukiryu version\n  ukiryu which IDENTIFIER                     # Show which tool implementation would be selected\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "he"
+      ],
+      "stdout": "ukiryu commands:\n  ukiryu cache [ACTION]                       # Manage definition cache\n  ukiryu commands TOOL                        # List all commands available for a tool\n  ukiryu config [ACTION] [KEY] [VALUE]        # Manage configuration (list, get, set, unset)\n  ukiryu definitions [COMMAND]                # Manage tool definitions\n  ukiryu describe TOOL [COMMAND]              # Show comprehensive documentation for a tool or sp...\n  ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]  # Execute a tool command inline\n  ukiryu extract TOOL                         # Extract tool definition from an installed CLI tool\n  ukiryu help [COMMAND]                       # Describe available commands or one specific command\n  ukiryu info [TOOL]                          # Show detailed information about a tool\n  ukiryu list                                 # List all available tools in the register\n  ukiryu opts TOOL [COMMAND]                  # Show options for a tool or specific command\n  ukiryu register [SUBCOMMAND]                # Manage the tool register\n  ukiryu resolve TOOL [VERSION]               # Resolve which definition would be used for a tool\n  ukiryu run-file REQUEST_FILE                # Execute a Ukiryu Structured Execution Request fro...\n  ukiryu system [SUBCOMMAND]                  # Show system information (shells, etc.)\n  ukiryu tree                                 # Print a tree of all available commands\n  ukiryu validate [COMMAND]                   # Validate tool definitions\n  ukiryu version                              # Show Ukiryu version\n  ukiryu which IDENTIFIER                     # Show which tool implementation would be selected\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "hel"
+      ],
+      "stdout": "ukiryu commands:\n  ukiryu cache [ACTION]                       # Manage definition cache\n  ukiryu commands TOOL                        # List all commands available for a tool\n  ukiryu config [ACTION] [KEY] [VALUE]        # Manage configuration (list, get, set, unset)\n  ukiryu definitions [COMMAND]                # Manage tool definitions\n  ukiryu describe TOOL [COMMAND]              # Show comprehensive documentation for a tool or sp...\n  ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]  # Execute a tool command inline\n  ukiryu extract TOOL                         # Extract tool definition from an installed CLI tool\n  ukiryu help [COMMAND]                       # Describe available commands or one specific command\n  ukiryu info [TOOL]                          # Show detailed information about a tool\n  ukiryu list                                 # List all available tools in the register\n  ukiryu opts TOOL [COMMAND]                  # Show options for a tool or specific command\n  ukiryu register [SUBCOMMAND]                # Manage the tool register\n  ukiryu resolve TOOL [VERSION]               # Resolve which definition would be used for a tool\n  ukiryu run-file REQUEST_FILE                # Execute a Ukiryu Structured Execution Request fro...\n  ukiryu system [SUBCOMMAND]                  # Show system information (shells, etc.)\n  ukiryu tree                                 # Print a tree of all available commands\n  ukiryu validate [COMMAND]                   # Validate tool definitions\n  ukiryu version                              # Show Ukiryu version\n  ukiryu which IDENTIFIER                     # Show which tool implementation would be selected\n\n",
+      "stderr": "",
+      "exit": 0
+    },
+    {
+      "argv": [
+        "docs"
+      ],
+      "stdout": "",
+      "stderr": "Could not find command \"docs\".\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "docs",
+        "generate",
+        "x"
+      ],
+      "stdout": "",
+      "stderr": "Could not find command \"docs\".\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "run"
+      ],
+      "stdout": "",
+      "stderr": "Missing required argument for 'run_file'. Check the command syntax with: ukiryu help run_file\n",
+      "exit": 1
+    },
+    {
+      "argv": [
+        "run",
+        "x",
+        "y"
+      ],
+      "stdout": "",
+      "stderr": "Invalid number of arguments for 'run_file'. Check the command syntax with: ukiryu help run_file\n",
+      "exit": 1
+    }
+  ]
+}

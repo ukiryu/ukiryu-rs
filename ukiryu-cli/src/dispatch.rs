@@ -66,23 +66,39 @@ where
     T: Into<OsString> + Clone,
 {
     let args: Vec<OsString> = args.into_iter().map(Into::into).collect();
-    // Thor's own `help [COMMAND]` replaces clap's help subcommand.
-    if args
-        .get(1)
-        .is_some_and(|verb| verb.to_str() == Some("help"))
+    // Thor decides help, `-h`, unknown or ambiguous commands, unknown switches
+    // and argument counts before any command runs (`crate::thor`); what it
+    // cannot model goes on to the clap grammar.
+    let args = match args
+        .iter()
+        .skip(1)
+        .map(|a| a.to_str().map(str::to_owned))
+        .collect::<Option<Vec<String>>>()
     {
-        let target = args.get(2).and_then(|name| name.to_str());
-        let help = match (args.len(), target) {
-            (2, _) => Some(thor_command_list(
-                std::env::var("THOR_COLUMNS").ok().as_deref(),
-            )),
-            (_, Some("exec")) => Some(THOR_EXEC_HELP.to_owned()),
-            _ => None,
-        };
-        if let Some(help) = help {
-            return io.perform(&[OutputWrite::Stdout(help)]).unwrap_or(0);
+        None => args,
+        Some(words) => {
+            match crate::thor::preempt(&words, std::env::var("THOR_COLUMNS").ok().as_deref()) {
+                crate::thor::Preempt::Output {
+                    stdout,
+                    stderr,
+                    code,
+                } => {
+                    if !stdout.is_empty() {
+                        let _ = io.perform(&[OutputWrite::Stdout(stdout)]);
+                    }
+                    if !stderr.is_empty() {
+                        io.stderr(&stderr);
+                    }
+                    return code;
+                }
+                crate::thor::Preempt::Pass(words) => {
+                    let mut passed = vec![args[0].clone()];
+                    passed.extend(words.into_iter().map(OsString::from));
+                    passed
+                }
+            }
         }
-    }
+    };
     let matches = match crate::arguments::command().try_get_matches_from(args) {
         Ok(matches) => matches,
         Err(error) => return parse_error(error, io),
@@ -694,32 +710,11 @@ impl Confirm for StdinConfirm {
     }
 }
 
-/// Thor's `ukiryu help exec`, captured from the pinned exe/ukiryu.
-const THOR_EXEC_HELP: &str = "Usage:
-  ukiryu exec TOOL [COMMAND] [KEY=VALUE ...]
-
-Options:
-  -r, [--register=REGISTER]                          # Path to tool register
-  -d, [--definition=DEFINITION]                      # Path to tool definition file
-  -f, [--format=FORMAT]                              # Response format (yaml, json, table, raw)
-                                                     # Default: yaml
-  -o, [--output=OUTPUT]                              # Output file for response (default: stdout)
-  -D, [--dry-run], [--no-dry-run], [--skip-dry-run]  # Show execution request without executing
-                                                     # Default: false
-  -s, [--shell=SHELL]                                # Shell to use for command execution (bash, zsh, fish, sh, powershell, cmd)
-      [--stdin], [--no-stdin], [--skip-stdin]        # Read input from stdin (pass to command)
-                                                     # Default: false
-      [--raw], [--no-raw], [--skip-raw]              # Output raw stdout/stderr (for pipe composition)
-                                                     # Default: false
-
-Execute a tool command inline
-";
-
 /// Thor's `ukiryu help` listing (`Thor.help`: `print_table(list, indent: 2,
 /// truncate: true)` then a blank line), captured from the pinned exe/ukiryu.
 /// `width` is `THOR_COLUMNS`; without it Thor asks the terminal, and 80 is
 /// what a non-terminal reports. A width under 10 also means 80.
-fn thor_command_list(width: Option<&str>) -> String {
+pub(crate) fn thor_command_list(width: Option<&str>) -> String {
     const ROWS: [(&str, &str); 18] = [
         ("ukiryu cache [ACTION]", "Manage definition cache"),
         (
