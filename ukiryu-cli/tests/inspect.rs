@@ -1,4 +1,5 @@
-//! `version`, `system` and `config get|set|unset` against Ruby CLI goldens.
+//! `version`, `system` and `config get|set|unset` against Ruby CLI goldens
+//! (`config list` and the register-backed verbs are in `inspect_remainder.rs`).
 //!
 //! `inspect_goldens.json` holds stdout, stderr, exit status and the files
 //! left under `$HOME` for each case, captured from the pinned Ruby CLI with a
@@ -128,7 +129,7 @@ fn dispatch(
                 arg(sub, "key").as_deref(),
                 arg(sub, "value").as_deref(),
             )
-            .expect("config list has no handler yet");
+            .expect("every config action has a handler");
             inspect::config(input, &ctx)
         }
         other => panic!("unexpected verb {other}"),
@@ -314,9 +315,13 @@ fn goldens_replay() {
 }
 
 #[test]
-fn config_list_has_no_handler_yet() {
-    assert_eq!(ConfigInput::from_arguments(None, None, None), None);
-    assert_eq!(ConfigInput::from_arguments(Some("list"), None, None), None);
+fn config_action_words_map_to_actions() {
+    assert_eq!(
+        ConfigInput::from_arguments(None, None, None),
+        Some(ConfigInput {
+            action: ConfigAction::List
+        })
+    );
     assert_eq!(
         ConfigInput::from_arguments(Some("get"), Some("format"), None),
         Some(ConfigInput {
