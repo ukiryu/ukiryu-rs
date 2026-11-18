@@ -1,0 +1,57 @@
+name: Shipped artifact replay
+
+# Replays the conformance corpus against the BUILT artifacts of the same run
+# (the linux x86_64 CLI archive and the wasm package), not the source tree.
+# Callable from release-train.yml and from shipped-replay-pr.yml. Replays only:
+# nothing is published and no secrets are used.
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: shipped-replay-${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cli:
+    name: Replay corpus against the CLI archive
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: ukiryu-cli-x86_64-unknown-linux-gnu
+          path: downloaded-cli
+      - name: Extract the archive and replay cli-output rows
+        run: |
+          set -euo pipefail
+          archive=$(ls downloaded-cli/*.tar.gz)
+          (cd downloaded-cli && sha256sum -c SHA256SUMS)
+          mkdir extracted
+          tar -xzf "$archive" -C extracted
+          binary=$(find extracted -maxdepth 2 -type f -name ukiryu)
+          test -n "$binary"
+          chmod +x "$binary"
+          python3 tests/shipped-replay/cli.py "$binary" corpus/conformance
+
+  wasm:
+    name: Replay corpus against the wasm package
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/download-artifact@v4
+        with:
+          name: core-wasm-node-web
+          path: downloaded-wasm
+      - name: Replay escape rows through the downloaded package
+        run: |
+          set -euo pipefail
+          python3 scripts/verify-wasm-artifacts.py downloaded-wasm
+          node tests/shipped-replay/wasm.mjs downloaded-wasm

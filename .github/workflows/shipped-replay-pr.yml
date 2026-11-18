@@ -1,0 +1,22 @@
+name: Shipped artifact replay (PR)
+
+# Builds the Linux CLI and wasm artifacts with the reusable workflows and replays
+# the corpus against them. Runs when the replay itself changes, or on demand.
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/shipped-replay*.yml'
+      - 'tests/shipped-replay/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cli-binaries:
+    uses: ./.github/workflows/cli-binaries.yml
+  wasm:
+    uses: ./.github/workflows/wasm.yml
+  replay:
+    needs: [cli-binaries, wasm]
+    uses: ./.github/workflows/shipped-replay.yml

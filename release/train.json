@@ -21,5 +21,6 @@
     "train version number (all runtimes share it)",
     "first-publish of crates.io / rubygems / PyPI / npm packages (owner publishes)",
     "version floors: MSRV, Ruby, Python, Node"
-  ]
+  ],
+  "shipped_replay": {"workflow": "shipped-replay.yml", "artifacts": ["ukiryu-cli-x86_64-unknown-linux-gnu", "core-wasm-node-web"], "pins": {"cli-output": 21, "escape": 18600}, "note": "Replays the corpus against the built artifacts; sibling runtimes replay in their own pack workflows (ukiryu-ruby#2, ukiryu-ts#2)."}
 }

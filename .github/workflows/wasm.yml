@@ -7,7 +7,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: wasm-${{ github.event_name }}-${{ github.ref }}
+  group: wasm-${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
   floor:
