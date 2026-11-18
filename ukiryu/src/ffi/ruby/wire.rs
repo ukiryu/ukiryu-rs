@@ -11,6 +11,11 @@
 //! | `version`        | `Ukiryu::Native.core_version`, `.abi_version`               |
 //! | `parse_yaml`     | `Ukiryu::Native.parse_yaml(yaml)`                           |
 //! | `resolve_config` | `Ukiryu::Native.resolve_config(environment, programmatic, cli)` |
+//! | any (JSON text)  | `Ukiryu::Native.json(request)`                              |
+//!
+//! `json` is the C ABI's `ukiryu_json` in process: request bytes in, the reply
+//! JSON text out, so a runtime built on the JSON transport can load this
+//! extension in place of the cdylib without changing a byte of either side.
 use super::config::{symbol_attribute, typed_config_value};
 use super::errors::wire_error;
 use super::values::{from_ruby, to_ruby};
@@ -27,7 +32,23 @@ pub(super) fn define(_ruby: &Ruby, native: RModule) -> Result<(), Error> {
     native.define_module_function("parse_yaml", function!(parse_yaml, 1))?;
     native.define_module_function("resolve_config", function!(resolve_config, 3))?;
     native.define_module_function("escape", function!(escape, 3))?;
+    native.define_module_function("json", function!(json_text, 1))?;
     Ok(())
+}
+
+/// `Ukiryu::Native.json(request)`: what `ukiryu_json` answers for the same
+/// bytes. The request String's bytes go to [`crate::wire::process`] as they
+/// are (any encoding; invalid JSON or UTF-8 is the wire's INVALID_REQUEST),
+/// and the reply is the serialized envelope as a UTF-8 String. An `ok:false`
+/// reply is returned, not raised, and a core panic becomes the same
+/// INTERNAL_ERROR envelope the C ABI returns.
+fn json_text(request: RString) -> String {
+    // SAFETY: the bytes are copied before any Ruby API runs, so the GC cannot
+    // move or free the buffer while the slice is alive.
+    let bytes = unsafe { request.as_slice() }.to_vec();
+    std::panic::catch_unwind(|| crate::wire::process(&bytes))
+        .unwrap_or_else(|_| crate::wire::failure("INTERNAL_ERROR", "internal core panic"))
+        .to_string()
 }
 
 /// Dispatches one wire request; the `ok:false` envelope raises.
