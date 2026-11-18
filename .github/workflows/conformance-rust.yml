@@ -1,0 +1,41 @@
+name: Conformance (Rust core)
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: conformance-rust-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  corpus:
+    name: Corpus through the Rust core (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15-intel, windows-2022]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.95.0
+      - name: Run every applicable corpus row through the core
+        shell: bash
+        run: |
+          export UKIRYU_CONFORMANCE_DIR="$GITHUB_WORKSPACE/corpus/conformance"
+          export UKIRYU_CONFORMANCE_REPORT="$RUNNER_TEMP/conformance-report.json"
+          cargo test -p ukiryu --locked --test conformance -- --nocapture
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: conformance-rust-${{ matrix.os }}
+          path: ${{ runner.temp }}/conformance-report.json
+          if-no-files-found: warn
