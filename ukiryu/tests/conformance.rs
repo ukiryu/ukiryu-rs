@@ -1456,15 +1456,34 @@ fn negative_controls_reject_r2_rule_violations() {
     expect_problem(&c, "more than one comparison rule", "overlapping rules");
 
     // A yaml-reader error migration must freeze its category and stage.
+    // migrated.json carries no yaml-reader entry today, so add one without
+    // `detail` on a frozen Psych error row.
+    let yid = "yaml.load.schemas-v1-tool-schema";
+    let yrow = rows
+        .iter()
+        .find(|r| r.id == yid)
+        .expect("yaml-reader control row");
     let mut c = base.clone();
     if let Some(Oj::Arr(entries)) = field_mut(&mut c.migrated, "rows") {
-        for e in entries.iter_mut() {
-            if e.get("basis") == Some(&Oj::s("yaml-reader")) {
-                if let Oj::Obj(pairs) = e {
-                    pairs.retain(|(k, _)| k != "detail");
-                }
-            }
-        }
+        entries.push(Oj::obj(vec![
+            ("id", Oj::s(yid)),
+            ("basis", Oj::s("yaml-reader")),
+            ("trace", Oj::s("#23")),
+            (
+                "frozen_expect_sha256",
+                Oj::s(sha256::hex(canonical(&yrow.expect).as_bytes())),
+            ),
+            (
+                "expect",
+                Oj::obj(vec![(
+                    "error",
+                    Oj::obj(vec![
+                        ("class", Oj::s("Psych::SyntaxError")),
+                        ("message", Oj::s("negative control")),
+                    ]),
+                )]),
+            ),
+        ]));
     }
     expect_problem(
         &c,
