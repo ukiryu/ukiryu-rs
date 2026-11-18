@@ -306,6 +306,27 @@ end
 version = wire.call({ op: 'version' })
 check('correspondence', 'version', NATIVE.core_version == version['version'] && NATIVE.abi_version == version['abi_version'] &&
       c_abi.call == NATIVE.abi_version, "#{NATIVE.core_version}/#{NATIVE.abi_version} vs #{version.inspect}")
+# Native.json is ukiryu_json in process: the same reply text for the same bytes,
+# failures included.
+c_text = lambda do |bytes|
+  reply = c_json.call(bytes, bytes.bytesize)
+  begin
+    reply.to_s.force_encoding(Encoding::UTF_8)
+  ensure
+    c_free.call(reply)
+  end
+end
+json_requests = [
+  JSON.generate({ op: 'version' }), JSON.generate({ op: 'parse_yaml', yaml: "b: 1\na: [x, 2]\n" }),
+  JSON.generate({ op: 'escape', shell: 'bash', operation: { method: 'quote', string: "a b'c" } }),
+  JSON.generate({ op: 'no_such_op' }), '{"op":', '', "\xFF".b, JSON.generate({ op: 'parse_yaml', yaml: 'Ω: x' })
+]
+json_requests.each_with_index do |request, index|
+  native_text = raised { NATIVE.json(request) } || NATIVE.json(request)
+  expected = c_text.call(request)
+  check('correspondence', "json.#{index}", native_text == expected && native_text.encoding == Encoding::UTF_8,
+        "native #{native_text.inspect}, c #{expected.inspect}")
+end
 yaml_docs = [
   "b: 1\na: [1, 2.5, null, true]\n", "v: 123456789012345678901234567890\n", "- x\n- {y: z}\n",
   "v: .inf\n", "1: a\n", "v: !custom x\n", "v: [1, 2\n", '', "Ω: \"\\0\"\n"
