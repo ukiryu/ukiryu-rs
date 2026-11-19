@@ -43,12 +43,206 @@
   },
   "cases": [
     {
-      "id": "spec-valid",
+      "id": "alias-value",
+      "load": {
+        "error": {
+          "class": "Thor::Error"
+        }
+      }
+    },
+    {
+      "id": "all-missing-mapping",
+      "load": {
+        "error": {
+          "class": "RuntimeError"
+        }
+      }
+    },
+    {
+      "id": "anchor-only",
+      "build_args": {
+        "ok": []
+      }
+    },
+    {
+      "id": "arguments-bool-key",
+      "build_args": {
+        "error": {
+          "class": "NoMethodError",
+          "message": "undefined method 'to_sym' for true"
+        }
+      }
+    },
+    {
+      "id": "arguments-duplicate-key",
       "build_args": {
         "ok": [
-          "spec/fixtures/input.png",
-          "spec/fixtures/output.jpg"
+          "second"
         ]
+      }
+    },
+    {
+      "id": "arguments-empty-mapping",
+      "build_args": {
+        "ok": []
+      }
+    },
+    {
+      "id": "arguments-empty-sequence",
+      "load": {
+        "error": {
+          "class": "RuntimeError"
+        }
+      }
+    },
+    {
+      "id": "arguments-empty-string",
+      "load": {
+        "error": {
+          "class": "RuntimeError"
+        }
+      }
+    },
+    {
+      "id": "arguments-empty-value",
+      "load": {
+        "error": {
+          "class": "RuntimeError"
+        }
+      }
+    },
+    {
+      "id": "arguments-false",
+      "load": {
+        "error": {
+          "class": "RuntimeError"
+        }
+      }
+    },
+    {
+      "id": "arguments-false-key",
+      "build_args": {
+        "error": {
+          "class": "NoMethodError",
+          "message": "undefined method 'to_sym' for false"
+        }
+      }
+    },
+    {
+      "id": "arguments-float-key",
+      "build_args": {
+        "error": {
+          "class": "NoMethodError",
+          "message": "undefined method 'to_sym' for an instance of Float"
+        }
+      }
+    },
+    {
+      "id": "arguments-key-collision",
+      "build_args": {
+        "ok": [
+          "symbol"
+        ]
+      }
+    },
+    {
+      "id": "arguments-key-types",
+      "build_args": {
+        "error": {
+          "class": "NoMethodError",
+          "message": "undefined method 'to_sym' for an instance of Integer"
+        }
+      }
+    },
+    {
+      "id": "arguments-mapping-key",
+      "build_args": {
+        "error": {
+          "class": "NoMethodError",
+          "message": "undefined method 'to_sym' for an instance of Hash"
+        }
+      }
+    },
+    {
+      "id": "arguments-missing",
+      "load": {
+        "error": {
+          "class": "RuntimeError"
+        }
+      }
+    },
+    {
+      "id": "arguments-nested",
+      "build_args": {
+        "ok": []
+      }
+    },
+    {
+      "id": "arguments-null",
+      "load": {
+        "error": {
+          "class": "RuntimeError"
+        }
+      }
+    },
+    {
+      "id": "arguments-null-key",
+      "build_args": {
+        "error": {
+          "class": "NoMethodError",
+          "message": "undefined method 'to_sym' for nil"
+        }
+      }
+    },
+    {
+      "id": "arguments-quoted-number-key",
+      "build_args": {
+        "ok": []
+      }
+    },
+    {
+      "id": "arguments-scalar",
+      "load": {
+        "error": {
+          "class": "RuntimeError"
+        }
+      }
+    },
+    {
+      "id": "arguments-scalars",
+      "build_args": {
+        "ok": []
+      }
+    },
+    {
+      "id": "arguments-sequence-key",
+      "build_args": {
+        "error": {
+          "class": "NoMethodError",
+          "message": "undefined method 'to_sym' for an instance of Array"
+        }
+      }
+    },
+    {
+      "id": "arguments-zero",
+      "load": {
+        "error": {
+          "class": "RuntimeError"
+        }
+      }
+    },
+    {
+      "id": "binary-tag",
+      "build_args": {
+        "ok": []
+      }
+    },
+    {
+      "id": "bom-prefixed",
+      "load": {
+        "error": {
+          "class": "RuntimeError"
+        }
       }
     },
     {
@@ -65,15 +259,316 @@
       }
     },
     {
-      "id": "arguments-key-collision",
+      "id": "command-false",
+      "load": {
+        "error": {
+          "class": "RuntimeError"
+        }
+      }
+    },
+    {
+      "id": "command-missing",
+      "load": {
+        "error": {
+          "class": "RuntimeError"
+        }
+      }
+    },
+    {
+      "id": "command-null",
+      "load": {
+        "error": {
+          "class": "RuntimeError"
+        }
+      }
+    },
+    {
+      "id": "command-yes",
       "build_args": {
-        "ok": [
-          "symbol"
-        ]
+        "ok": []
+      }
+    },
+    {
+      "id": "comment-only",
+      "load": {
+        "error": {
+          "class": "RuntimeError"
+        }
+      }
+    },
+    {
+      "id": "core-str-tag",
+      "build_args": {
+        "ok": []
+      }
+    },
+    {
+      "id": "custom-scalar-tag",
+      "build_args": {
+        "ok": []
+      }
+    },
+    {
+      "id": "date-value",
+      "load": {
+        "error": {
+          "class": "Thor::Error"
+        }
+      }
+    },
+    {
+      "id": "duplicate-top-level-key",
+      "build_args": {
+        "ok": []
+      }
+    },
+    {
+      "id": "empty-file",
+      "load": {
+        "error": {
+          "class": "RuntimeError"
+        }
+      }
+    },
+    {
+      "id": "explicit-null-document",
+      "load": {
+        "error": {
+          "class": "RuntimeError"
+        }
       }
     },
     {
       "id": "extra-top-level-fields",
+      "build_args": {
+        "ok": []
+      }
+    },
+    {
+      "id": "flow-scalar-continuation-unindented",
+      "build_args": {
+        "ok": []
+      }
+    },
+    {
+      "id": "invalid-utf8",
+      "load": {
+        "error": {
+          "class": "Thor::Error"
+        }
+      }
+    },
+    {
+      "id": "multiple-documents",
+      "build_args": {
+        "ok": []
+      }
+    },
+    {
+      "id": "quoted-date",
+      "build_args": {
+        "ok": []
+      }
+    },
+    {
+      "id": "ruby-object-tag",
+      "load": {
+        "error": {
+          "class": "Thor::Error"
+        }
+      }
+    },
+    {
+      "id": "ruby-symbol-tag",
+      "build_args": {
+        "ok": []
+      }
+    },
+    {
+      "id": "scalar-document",
+      "load": {
+        "error": {
+          "class": "RuntimeError"
+        }
+      }
+    },
+    {
+      "id": "sequence-document",
+      "load": {
+        "error": {
+          "class": "RuntimeError"
+        }
+      }
+    },
+    {
+      "id": "spec-arguments-sequence",
+      "load": {
+        "error": {
+          "class": "RuntimeError"
+        }
+      }
+    },
+    {
+      "id": "spec-missing-fields",
+      "load": {
+        "error": {
+          "class": "RuntimeError"
+        }
+      }
+    },
+    {
+      "id": "spec-valid",
+      "build_args": {
+        "ok": [
+          "spec/fixtures/input.png",
+          "spec/fixtures/output.jpg"
+        ]
+      }
+    },
+    {
+      "id": "syntax-bad-indent",
+      "load": {
+        "error": {
+          "class": "Thor::Error"
+        }
+      }
+    },
+    {
+      "id": "syntax-tab-indent",
+      "load": {
+        "error": {
+          "class": "Thor::Error"
+        }
+      }
+    },
+    {
+      "id": "syntax-unclosed-flow",
+      "load": {
+        "error": {
+          "class": "Thor::Error"
+        }
+      }
+    },
+    {
+      "id": "syntax-unclosed-quote",
+      "load": {
+        "error": {
+          "class": "Thor::Error"
+        }
+      }
+    },
+    {
+      "id": "timestamp-value",
+      "load": {
+        "error": {
+          "class": "Thor::Error"
+        }
+      }
+    },
+    {
+      "id": "tool-and-arguments-missing",
+      "load": {
+        "error": {
+          "class": "RuntimeError"
+        }
+      }
+    },
+    {
+      "id": "tool-empty-string",
+      "build_args": {
+        "ok": []
+      }
+    },
+    {
+      "id": "tool-empty-value",
+      "load": {
+        "error": {
+          "class": "RuntimeError"
+        }
+      }
+    },
+    {
+      "id": "tool-false",
+      "load": {
+        "error": {
+          "class": "RuntimeError"
+        }
+      }
+    },
+    {
+      "id": "tool-mapping",
+      "build_args": {
+        "ok": []
+      }
+    },
+    {
+      "id": "tool-missing",
+      "load": {
+        "error": {
+          "class": "RuntimeError"
+        }
+      }
+    },
+    {
+      "id": "tool-no",
+      "load": {
+        "error": {
+          "class": "RuntimeError"
+        }
+      }
+    },
+    {
+      "id": "tool-null-word",
+      "load": {
+        "error": {
+          "class": "RuntimeError"
+        }
+      }
+    },
+    {
+      "id": "tool-off",
+      "load": {
+        "error": {
+          "class": "RuntimeError"
+        }
+      }
+    },
+    {
+      "id": "tool-quoted-false",
+      "build_args": {
+        "ok": []
+      }
+    },
+    {
+      "id": "tool-sequence",
+      "build_args": {
+        "ok": []
+      }
+    },
+    {
+      "id": "tool-symbol-key",
+      "load": {
+        "error": {
+          "class": "RuntimeError"
+        }
+      }
+    },
+    {
+      "id": "tool-symbol-value",
+      "build_args": {
+        "ok": []
+      }
+    },
+    {
+      "id": "tool-tilde",
+      "load": {
+        "error": {
+          "class": "RuntimeError"
+        }
+      }
+    },
+    {
+      "id": "tool-zero",
       "build_args": {
         "ok": []
       }

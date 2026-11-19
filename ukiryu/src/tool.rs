@@ -62,8 +62,9 @@ use std::rc::Rc;
 use crate::cache::{cache_key_for, RuntimeDefaults, ToolCache, ToolKeyOptions};
 use crate::errors::ErrorKind;
 use crate::executable::{
-    find_with_info, resolve_executable_name, AliasProbe, Discovered, DiscoveryContext,
-    ExecutableInfo, NoAliases, NoSystemCommands, Platform, SystemCommandRunner,
+    build as build_discovered, find_in_search_paths, find_with_info, resolve_executable_name,
+    AliasProbe, Discovered, DiscoveryContext, ExecutableInfo, ExecutableSource, NoAliases,
+    NoSystemCommands, Platform, SystemCommandRunner,
 };
 use crate::executor::ExecuteError;
 use crate::models::{CommandDefinition, PlatformProfile, Text, ToolDefinition};
@@ -260,7 +261,18 @@ impl Tool {
             .flatten()
             .filter_map(text)
             .collect();
-        find_with_info(context, tool_name, &alias_names, aliases, system)
+        find_with_info(context, tool_name, &alias_names, aliases, system).or_else(|| {
+            // Not in the Ruby source (ukiryu/ukiryu#18): the definition's
+            // `search_paths` for this platform, after everything else failed.
+            if !context.definition_search_paths() {
+                return None;
+            }
+            let entries = self
+                .definition
+                .search_paths_for(context.platform().as_str());
+            find_in_search_paths(context.platform(), &entries)
+                .map(|path| build_discovered(context, path, ExecutableSource::SearchPath, None))
+        })
     }
 
     /// `#profile`: the definition the tool was built from.

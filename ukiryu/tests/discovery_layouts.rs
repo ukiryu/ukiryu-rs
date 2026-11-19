@@ -12,8 +12,9 @@
 //!
 //! The pinned Ruby has no `.app/Contents/MacOS` probing and no Program Files
 //! probing: the cases show that those directories are found only when they are
-//! on `PATH` or in `additional_paths`. Whether that should change is an owner
-//! decision and is not decided here.
+//! on `PATH` or in `additional_paths`. The port's opt-in fallback to a
+//! definition's `search_paths` (ukiryu/ukiryu#18) is off for these explicit
+//! contexts and is covered by `definition_search_paths.rs`.
 
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicUsize, Ordering};
