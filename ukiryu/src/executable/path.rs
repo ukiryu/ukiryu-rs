@@ -14,6 +14,7 @@ pub struct DiscoveryContext {
     shell: String,
     search_dirs: Vec<String>,
     extensions: Vec<String>,
+    definition_search_paths: bool,
 }
 
 impl DiscoveryContext {
@@ -31,6 +32,7 @@ impl DiscoveryContext {
             shell: shell.into(),
             search_dirs: split_search_path(platform, path),
             extensions: path_extensions(platform, pathext),
+            definition_search_paths: false,
         }
     }
 
@@ -40,6 +42,21 @@ impl DiscoveryContext {
         let path = std::env::var("PATH").ok();
         let pathext = std::env::var("PATHEXT").ok();
         Self::new(platform, shell, path.as_deref(), pathext.as_deref())
+            .with_definition_search_paths(true)
+    }
+
+    /// Whether a tool may fall back to its definition's `search_paths` when
+    /// the Ruby chain finds nothing (see [`super::find_in_search_paths`]).
+    /// Those entries are absolute host paths, outside the snapshot this
+    /// context holds, so [`DiscoveryContext::new`] leaves it off and
+    /// [`DiscoveryContext::from_process_env`] turns it on.
+    pub fn with_definition_search_paths(mut self, enabled: bool) -> Self {
+        self.definition_search_paths = enabled;
+        self
+    }
+
+    pub fn definition_search_paths(&self) -> bool {
+        self.definition_search_paths
     }
 
     pub fn platform(&self) -> Platform {

@@ -14,6 +14,8 @@ pub const INTERNAL_COMMAND_TIMEOUT_SECS: u64 = 5;
 pub enum ExecutableSource {
     Path,
     Alias,
+    /// A definition `search_paths` entry (not in the Ruby source).
+    SearchPath,
 }
 
 impl ExecutableSource {
@@ -22,6 +24,7 @@ impl ExecutableSource {
         match self {
             ExecutableSource::Path => "path",
             ExecutableSource::Alias => "alias",
+            ExecutableSource::SearchPath => "search_path",
         }
     }
 }
@@ -40,6 +43,9 @@ impl ExecutableInfo {
     pub fn description(&self) -> String {
         match self.source {
             ExecutableSource::Path => format!("Found in PATH at {}", self.path),
+            ExecutableSource::SearchPath => {
+                format!("Found in definition search_paths at {}", self.path)
+            }
             ExecutableSource::Alias => format!(
                 "Shell alias in {}: {}",
                 self.shell,
@@ -162,7 +168,7 @@ pub fn resolve_executable_name<'a>(
     command_profile_executable_name.unwrap_or(profile_name)
 }
 
-fn build(
+pub(crate) fn build(
     context: &DiscoveryContext,
     path: String,
     source: ExecutableSource,
