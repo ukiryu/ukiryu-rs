@@ -16,13 +16,15 @@
 //! | Hash with only String keys | a JSON object |
 //! | any other Hash | `{"$map": [[key, value], ...]}` |
 //!
-//! An object is a tag exactly when it has one key and that key starts with
-//! `$`, as in the oracle's `Codec.decode`; an object with more keys is a
-//! plain Hash even when its keys start with `$` (`$schema`, `$id`). A Hash
-//! whose only key is a tag name ([`TAGS`]) is written as `$map`, so it reads
-//! back as itself. A Hash whose only key is any other `$` name (`$ref`) is
-//! written as the plain object the oracle writes, and reading that object
-//! back is an error, as it is in the oracle.
+//! An object is a tag exactly when it has one key and that key is a tag
+//! name ([`TAGS`]); an object with more keys is a plain Hash even when its
+//! keys start with `$` (`$schema`, `$id`). A Hash whose only key is a tag
+//! name is written as `$map`, so it reads back as itself. A Hash whose only
+//! key is any other `$` name (`$ref`) is written as the plain object the
+//! oracle writes, and it reads back as that Hash. Here the core is more
+//! lenient than the oracle's `Codec.decode`, which rejects such an object
+//! as an unknown tag, so that a JSON schema's `{"$ref": ...}` crosses the
+//! wire in every runtime.
 //!
 //! Nothing is converted through a lossy form: a JSON number with a fraction
 //! or exponent is rejected (a Float must be `$float`), a `$float` must be the
@@ -123,11 +125,16 @@ impl<'de> Visitor<'de> for TypedVisitor {
             return integer::<A::Error>(&text);
         }
         let mut pairs = if first.starts_with('$') {
-            // The oracle's rule: an object is a tag exactly when it has one
-            // key and that key starts with `$`. With more keys it is a plain
-            // Hash, `$` keys and all.
+            // An object is a tag exactly when it has one key and that key
+            // is a tag name. With more keys, or with one `$` key that is not
+            // a tag name (`$ref`), it is a plain Hash, `$` keys and all.
             let inner: Json = map.next_value()?;
             let Some(second) = map.next_key::<String>()? else {
+                if !TAGS.contains(&first.as_str()) {
+                    let Typed(value) =
+                        Typed::deserialize(inner).map_err(<A::Error as de::Error>::custom)?;
+                    return Ok(Value::Hash(vec![(Value::String(first), value)]));
+                }
                 return tagged(&first, inner).map_err(<A::Error as de::Error>::custom);
             };
             let Typed(value) =
@@ -164,9 +171,7 @@ fn push_unique<E: de::Error>(
     Ok(())
 }
 
-/// The value of a one-key object whose key starts with `$`. As in the
-/// oracle's `Codec.decode`, an unknown tag is an error, never a Hash: a
-/// Hash whose only key starts with `$` cannot be sent as a plain object.
+/// The value of a one-key object whose key is a tag name ([`TAGS`]).
 fn tagged(name: &str, inner: Json) -> Result<Value, String> {
     if name == "$map" {
         let pairs = Vec::<(Typed, Typed)>::deserialize(inner).map_err(|e| e.to_string())?;
@@ -211,9 +216,7 @@ fn tag(name: &str, inner: &Json) -> Result<Value, String> {
                 .map(Value::String)
                 .map_err(|_| "a non-UTF-8 string cannot be a parameter value here".to_owned())
         }
-        other => Err(format!(
-            "unknown value tag {other}; a Hash whose only key is {other} must be sent as $map"
-        )),
+        other => Err(format!("unknown value tag {other}")),
     }
 }
 
