@@ -1,0 +1,231 @@
+{
+  "oracle": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+  "ruby": "4.0.1",
+  "engine": "ruby",
+  "host": "x86_64-linux",
+  "generator_commit": "a73885d0f3f0a4add06fff5e51a653dcf663851c",
+  "generator_sha256": "c8833b3a9ee8213b00a282116c57cdb8fe75fbfae1d79dc4c563c85ffaeb7bc7",
+  "jq": "jq-1.6",
+  "spec_sha256": "02d2655bb929f12651e1f02a43ffbb59aab50b45b31ba73c0c0057c262554d46",
+  "file_content": "{\"file\":\"content\"}",
+  "direct_content": "{\"test\":\"value\"}",
+  "rows": [
+    {
+      "id": "flag_pipe",
+      "args": [
+        "--stdin",
+        "filter=\".test\"",
+        "--format=json"
+      ],
+      "stdin": "{\"test\":\"value\"}",
+      "kind": "json",
+      "expected": {
+        "command_stdout": "\"value\"\n",
+        "exit_status": 0
+      }
+    },
+    {
+      "id": "multiline",
+      "args": [
+        "--stdin",
+        "filter=\".lines\"",
+        "--format=json"
+      ],
+      "stdin": "{\n\"lines\":[\"line1\",\"line2\",\"line3\"]\n}",
+      "kind": "json",
+      "expected": {
+        "command_stdout": "[\n  \"line1\",\n  \"line2\",\n  \"line3\"\n]\n",
+        "exit_status": 0
+      }
+    },
+    {
+      "id": "dash_pipe",
+      "args": [
+        "stdin=-",
+        "filter=\".foo\"",
+        "--format=json"
+      ],
+      "stdin": "{\"foo\":\"bar\"}",
+      "kind": "json",
+      "expected": {
+        "command_stdout": "\"bar\"\n",
+        "exit_status": 0
+      }
+    },
+    {
+      "id": "flag_equivalence",
+      "args": [
+        "stdin=-",
+        "filter=\".test\"",
+        "--format=json"
+      ],
+      "stdin": "{\"test\":\"value\"}",
+      "kind": "json",
+      "expected": {
+        "command_stdout": "\"value\"\n",
+        "exit_status": 0
+      }
+    },
+    {
+      "id": "file",
+      "args": [
+        "stdin=@{dir}/input.json",
+        "filter=\".file\"",
+        "--format=json"
+      ],
+      "stdin": null,
+      "kind": "json",
+      "expected": {
+        "command_stdout": "\"content\"\n",
+        "exit_status": 0
+      }
+    },
+    {
+      "id": "missing_file",
+      "args": [
+        "stdin=@{dir}/absent.json",
+        "filter=\".\""
+      ],
+      "stdin": null,
+      "kind": "missing",
+      "expected": {
+        "file_not_found": true,
+        "exit_status": 1
+      }
+    },
+    {
+      "id": "direct_data",
+      "args": [
+        "stdin=@{dir}/direct.json",
+        "filter=.test",
+        "--format=json"
+      ],
+      "stdin": null,
+      "kind": "json",
+      "expected": {
+        "command_stdout": "\"value\"\n",
+        "exit_status": 0
+      }
+    },
+    {
+      "id": "preview",
+      "args": [
+        "--stdin",
+        "-D",
+        "filter=\".\""
+      ],
+      "stdin": "{\"test\":\"value\"}",
+      "kind": "preview",
+      "expected": {
+        "DRY RUN": true,
+        "stdin:": true,
+        "test": true,
+        "value": true,
+        "exit_status": 0
+      }
+    },
+    {
+      "id": "long_preview",
+      "args": [
+        "--stdin",
+        "-D",
+        "filter=\".\""
+      ],
+      "stdin": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "kind": "long_preview",
+      "expected": {
+        "ellipsis": true,
+        "full_input": false,
+        "exit_status": 0
+      }
+    },
+    {
+      "id": "json",
+      "args": [
+        "--stdin",
+        "filter=\".test\"",
+        "--format=json"
+      ],
+      "stdin": "{\"test\":\"value\"}",
+      "kind": "json",
+      "expected": {
+        "command_stdout": "\"value\"\n",
+        "exit_status": 0
+      }
+    },
+    {
+      "id": "yaml",
+      "args": [
+        "--stdin",
+        "filter=\".test\"",
+        "--format=yaml"
+      ],
+      "stdin": "{\"test\":\"value\"}",
+      "kind": "yaml",
+      "expected": {
+        "stdout_label": true,
+        "value": true,
+        "exit_status": 0
+      }
+    },
+    {
+      "id": "pipeline",
+      "args": [
+        "--stdin",
+        "filter=.items",
+        "--format=json"
+      ],
+      "stdin": "{\"items\":[1,2,3]}",
+      "kind": "pipeline",
+      "expected": {
+        "array": true,
+        "exit_status": 0
+      }
+    },
+    {
+      "id": "curl_output",
+      "args": [
+        "--stdin",
+        "filter=.slideshow.title",
+        "--format=json"
+      ],
+      "stdin": "{\"slideshow\":{\"title\":\"Test Presentation\"}}",
+      "kind": "json",
+      "expected": {
+        "command_stdout": "\"Test Presentation\"\n",
+        "exit_status": 0
+      }
+    },
+    {
+      "id": "raw",
+      "args": [
+        "--stdin",
+        "--raw",
+        "filter=\".test\""
+      ],
+      "stdin": "{\"test\":\"value\"}",
+      "kind": "raw",
+      "expected": {
+        "stdout": "\"value\"\n",
+        "stderr": "",
+        "exit_status": 0
+      }
+    },
+    {
+      "id": "raw_error",
+      "args": [
+        "--stdin",
+        "--raw",
+        "filter=\".foo[bar\""
+      ],
+      "stdin": "{}",
+      "kind": "error",
+      "expected": {
+        "stderr_nonempty": true,
+        "error": true,
+        "syntax_error": true,
+        "exit_status": 0
+      }
+    }
+  ]
+}
