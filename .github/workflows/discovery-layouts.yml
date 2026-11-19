@@ -14,6 +14,9 @@ on:
       - 'ukiryu/src/executable/**'
       - 'ukiryu/src/tool/bundled.rs'
       - 'ukiryu/tests/discovery_layouts*'
+      - 'ukiryu/tests/definition_search_paths.rs'
+      - 'ukiryu/src/models/tool_definition.rs'
+      - 'ukiryu/src/tool.rs'
       - '.github/workflows/discovery-layouts.yml'
   pull_request:
     paths:
@@ -21,6 +24,9 @@ on:
       - 'ukiryu/src/executable/**'
       - 'ukiryu/src/tool/bundled.rs'
       - 'ukiryu/tests/discovery_layouts*'
+      - 'ukiryu/tests/definition_search_paths.rs'
+      - 'ukiryu/src/models/tool_definition.rs'
+      - 'ukiryu/src/tool.rs'
       - '.github/workflows/discovery-layouts.yml'
 
 concurrency:
@@ -49,6 +55,7 @@ jobs:
         run: |
           set -o pipefail
           cargo test -p ukiryu --locked --no-fail-fast --test discovery_layouts --test executable_discovery \
+            --test definition_search_paths \
             -- --nocapture --test-threads=1 2>&1 | tee "$RUNNER_TEMP/discovery-layouts.log"
       - name: Upload log
         if: always()

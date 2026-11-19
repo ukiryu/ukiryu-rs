@@ -67,6 +67,12 @@ pub struct ToolDefinition {
         skip_serializing_if = "omit_model"
     )]
     pub components: Option<Box<Components>>,
+    /// YAML key `search_paths` (`{platform => [path, ...]}`). The Ruby model
+    /// has no such attribute, so it is read but never written back:
+    /// serialized definitions stay as Ruby writes them. Used by executable
+    /// discovery after the Ruby chain finds nothing (ukiryu/ukiryu#18).
+    #[serde(default, skip_serializing)]
+    pub search_paths: Option<Value>,
 }
 
 impl Default for ToolDefinition {
@@ -84,6 +90,7 @@ impl Default for ToolDefinition {
             profiles: None,
             version_detection: None,
             components: None,
+            search_paths: None,
         }
     }
 }
@@ -187,6 +194,33 @@ impl ToolDefinition {
         self.ukiryu_schema
             .as_ref()
             .is_some_and(|s| s.eq_str(version))
+    }
+}
+
+impl ToolDefinition {
+    /// The `search_paths` entries for `platform` (`linux`, `macos`,
+    /// `windows`), in order. Anything that is not a mapping of names to
+    /// lists of strings yields no entries.
+    pub fn search_paths_for(&self, platform: &str) -> Vec<String> {
+        let Some(Value::Hash(pairs)) = &self.search_paths else {
+            return Vec::new();
+        };
+        pairs
+            .iter()
+            .find(|(key, _)| matches!(key, Value::String(k) | Value::Symbol(k) if k == platform))
+            .and_then(|(_, entries)| match entries {
+                Value::Array(items) => Some(
+                    items
+                        .iter()
+                        .filter_map(|item| match item {
+                            Value::String(path) => Some(path.clone()),
+                            _ => None,
+                        })
+                        .collect(),
+                ),
+                _ => None,
+            })
+            .unwrap_or_default()
     }
 }
 
