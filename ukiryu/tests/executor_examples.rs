@@ -16,21 +16,41 @@ fn golden() -> Value {
 
 #[test]
 fn command_building_matches_executor_examples() {
+    let platform = if cfg!(target_os = "macos") {
+        Platform::Macos
+    } else {
+        Platform::Linux
+    };
+    let context = DiscoveryContext::from_process_env(platform, "bash");
     for row in golden()["commands"].as_array().unwrap() {
-        let request = ExecuteRequest::new(
-            row["executable"].as_str().unwrap(),
-            row["arguments"]
-                .as_array()
-                .unwrap()
-                .iter()
-                .map(|a| a.as_str().unwrap().to_owned())
-                .collect(),
-            Environment::new(),
-            ShellName::Bash,
-            Seconds::Int(30),
+        let request = |executable: &str| {
+            ExecuteRequest::new(
+                executable,
+                row["arguments"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .map(|a| a.as_str().unwrap().to_owned())
+                    .collect(),
+                Environment::new(),
+                ShellName::Bash,
+                Seconds::Int(30),
+            )
+        };
+        let captured_executable = row["executable"].as_str().unwrap();
+        assert_eq!(
+            request(captured_executable).command_line(),
+            row["command"],
+            "{row}"
         );
-        assert_eq!(request.command_line(), row["command"], "{row}");
-        let execution = execute(request).unwrap();
+        // Keep the captured command bytes above. The oracle's absolute echo
+        // path is host-specific; execute the same program found on this host.
+        let executable = if std::path::Path::new(captured_executable).is_absolute() {
+            find_in_path(&context, "echo", &[]).expect("echo executable on PATH")
+        } else {
+            captured_executable.to_owned()
+        };
+        let execution = execute(request(&executable)).unwrap();
         let hex = |bytes: &[u8]| bytes.iter().map(|b| format!("{b:02x}")).collect::<String>();
         assert_eq!(hex(execution.result.stdout()), row["stdout_hex"], "{row}");
         assert_eq!(hex(execution.result.stderr()), row["stderr_hex"], "{row}");
