@@ -13,22 +13,25 @@
 //!   draft-07, which includes all four bundled schemas, fails with
 //!   `JSON::Schema::SchemaError: Schema not found: ...`. This module
 //!   reproduces that; it does not validate draft-07.
-//! - Only the draft-04/draft-06 keywords listed in the engine are
-//!   evaluated. Everything else the gem would act on (regular expressions,
-//!   `date-time`/`ipv4`/`ipv6` formats, schema `id`s, external `$ref`s, the
-//!   draft-01..03 dialects, string schemas that the gem reads from a file or
-//!   URL) is reported as [`SchemaError::Unsupported`] instead of guessed.
+//! - Draft-03, draft-04 and draft-06 keyword subsets are implemented,
+//!   including property-level required, extends/disallow, IDs, local file
+//!   references, JSON/file string schemas and date-time/IP formats. Other
+//!   unimplemented keywords and malformed JSON resource diagnostics raise
+//!   [`SchemaError::Unsupported`]; they are never silently accepted.
 //! - No network access and no remote schema download: the original
 //!   `DefinitionValidator` falls back to downloading a schema when none is
 //!   given; that path is not ported. Its structural checks are not schema
 //!   validation and are not provided here.
 
 mod data;
+mod date_time;
 mod digest;
 mod engine;
 mod inspect_table;
+mod ip;
 mod json;
 mod psych;
+mod resources;
 mod uri;
 
 pub mod bundled;
@@ -62,6 +65,10 @@ pub enum SchemaError {
     Schema { message: String },
     /// `JSON::Schema::SchemaParseError`.
     SchemaParse { message: String },
+    /// `JSON::Schema::ReadFailed` for a referenced local file.
+    ReadFailed { message: String },
+    /// IPAddr errors which json-schema does not rescue.
+    IpAddress { prefix: bool, message: String },
     /// `Errno::*` while reading a schema file.
     Io { errno: String, message: String },
     /// Behaviour of the original that this port does not reproduce.
@@ -84,6 +91,13 @@ impl SchemaError {
             SchemaError::AliasesNotEnabled => "Psych::AliasesNotEnabled".to_owned(),
             SchemaError::Schema { .. } => "JSON::Schema::SchemaError".to_owned(),
             SchemaError::SchemaParse { .. } => "JSON::Schema::SchemaParseError".to_owned(),
+            SchemaError::ReadFailed { .. } => "JSON::Schema::ReadFailed".to_owned(),
+            SchemaError::IpAddress { prefix, .. } => if *prefix {
+                "IPAddr::InvalidPrefixError"
+            } else {
+                "IPAddr::InvalidAddressError"
+            }
+            .to_owned(),
             SchemaError::Io { errno, .. } => format!("Errno::{errno}"),
             SchemaError::Unsupported { .. } => return None,
         })
@@ -95,6 +109,8 @@ impl SchemaError {
             SchemaError::YamlSyntax { message }
             | SchemaError::Schema { message }
             | SchemaError::SchemaParse { message }
+            | SchemaError::ReadFailed { message }
+            | SchemaError::IpAddress { message, .. }
             | SchemaError::Io { message, .. } => message.clone(),
             SchemaError::DisallowedClass { class } => {
                 format!("Tried to load unspecified class: {class}")
@@ -355,10 +371,16 @@ fn run(schema: &Data, data: &Data, strict: bool) -> Result<Vec<engine::VErr>, Sc
             stringify(schema)?,
             digest::uuid_v5_nil(&json::dump(schema)?),
         ),
-        Data::String(_) => return Err(SchemaError::unsupported(
-            "string schema",
-            "the gem parses a string schema as JSON or reads it from a file or URL; not reproduced",
-        )),
+        Data::String(text) => {
+            if let Some(parsed) = json::parse(text) {
+                let uuid = digest::uuid_v5_nil(text);
+                (stringify(&parsed)?, uuid)
+            } else {
+                let parsed = resources::read(text)?;
+                let path = resources::local_path(text)?;
+                (stringify(&parsed)?, resources::file_uri(&path))
+            }
+        }
         _ => {
             return Err(SchemaError::SchemaParse {
                 message: "Invalid schema - must be either a string or a hash".to_owned(),

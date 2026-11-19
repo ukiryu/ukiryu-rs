@@ -41,11 +41,6 @@ const DIVERGENCES: &[(&str, Divergence, &str)] = &[
         Divergence::Unsupported,
         "Time#to_s of a YAML timestamp is not reproduced",
     ),
-    (
-        "schema.draft3_unsupported",
-        Divergence::Unsupported,
-        "the draft-03 dialect is not ported by the schema engine",
-    ),
 ];
 
 /// Cases whose oracle behaviour is platform specific (captured on Linux).

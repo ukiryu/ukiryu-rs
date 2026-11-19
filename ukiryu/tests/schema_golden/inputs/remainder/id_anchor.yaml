@@ -1,0 +1,1 @@
+{"id": "http://example.com/root", "definitions": {"n": {"id": "#number", "type": "integer"}}, "properties": {"n": {"$ref": "#number"}}}

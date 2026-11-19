@@ -1,0 +1,1 @@
+{"$schema": "http://json-schema.org/draft-03/schema#", "properties": {"a": {"type": "string", "required": false}, "b": {"type": "string", "required": null}, "c": {"type": "string", "required": 0}}}

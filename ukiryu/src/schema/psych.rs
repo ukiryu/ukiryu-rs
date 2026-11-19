@@ -511,7 +511,11 @@ fn time_fields_valid(s: &str) -> bool {
         nums.next().unwrap_or(0),
         nums.next().unwrap_or(0),
     );
-    (1..=12).contains(&m) && (1..=31).contains(&d) && h <= 24 && mi <= 59 && se <= 60
+    (1..=12).contains(&m)
+        && (1..=31).contains(&d)
+        && (h < 24 || (h == 24 && mi == 0 && se == 0))
+        && mi <= 59
+        && se <= 60
 }
 
 /// Psych date: `^\d{4}-(?:1[012]|0\d|\d)-(?:[12]\d|3[01]|0\d|\d)$`.

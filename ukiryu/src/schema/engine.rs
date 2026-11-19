@@ -1,6 +1,6 @@
-//! `JSON::Validator.fully_validate` of json-schema 6.2.1, for the draft-04
-//! and draft-06 keyword sets that the gem implements, evaluated in schema
-//! key order with the gem's exact messages.
+//! `JSON::Validator.fully_validate` of json-schema 6.2.1, for draft-03,
+//! draft-04 and draft-06 keyword subsets, evaluated in schema key order
+//! with the gem's exact messages.
 //!
 //! Every input the port does not reproduce is an explicit
 //! [`SchemaError::Unsupported`]; nothing is silently skipped.
@@ -9,13 +9,15 @@ use super::data::{bigint_to_f64, num_cmp, Data};
 use super::uri;
 use super::SchemaError;
 use crate::types::onig::OnigRegex;
-use std::collections::HashSet;
+use std::cell::RefCell;
+use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 
 const INDENT: &str = "    ";
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Dialect {
+    Draft3,
     Draft4,
     Draft6,
 }
@@ -124,9 +126,11 @@ fn unsupported(feature: &str, detail: impl Into<String>) -> SchemaError {
 }
 
 pub(crate) struct Validation<'s> {
-    root: &'s Data,
     root_uri: Rc<str>,
     strict: bool,
+    active: HashSet<(*const Data, *const Data)>,
+    locations: RefCell<HashMap<*const Data, Rc<str>>>,
+    schemas: RefCell<HashMap<String, (&'s Data, Dialect)>>,
     walked: HashSet<*const Data>,
     errors: Vec<VErr>,
 }
@@ -140,16 +144,28 @@ pub(crate) fn fully_validate(
     data: impl FnOnce() -> Result<Data, SchemaError>,
     strict: bool,
 ) -> Result<Vec<VErr>, SchemaError> {
+    let resources = super::resources::load(schema, root_uri)?;
     let mut v = Validation {
-        root: schema,
         root_uri: Rc::from(root_uri),
         strict,
+        active: HashSet::new(),
+        locations: RefCell::new(HashMap::new()),
+        schemas: RefCell::new(HashMap::new()),
         walked: HashSet::new(),
         errors: Vec::new(),
     };
     let root = v.new_schema(schema, v.root_uri.clone(), Dialect::Draft6)?;
     v.walked.insert(schema as *const Data);
     v.build(&root)?;
+    for (name, node) in &resources {
+        let resource = v.new_schema(node, Rc::from(name.as_str()), Dialect::Draft6)?;
+        v.schemas.borrow_mut().insert(
+            name.trim_end_matches('#').to_owned(),
+            (node, resource.dialect),
+        );
+        v.walked.insert(node as *const Data);
+        v.build(&resource)?;
+    }
     // The gem prepares the data only after the schema is built.
     let data = data()?;
     v.validate(&root, &data, &[])?;
@@ -185,11 +201,11 @@ fn resolve_dialect(value: &Data) -> Result<Dialect, SchemaError> {
         p.path
     );
     match key.as_str() {
+        "http://json-schema.org/draft-03/schema" => Ok(Dialect::Draft3),
         "http://json-schema.org/draft-04/schema" => Ok(Dialect::Draft4),
         "http://json-schema.org/draft-06/schema" => Ok(Dialect::Draft6),
         "http://json-schema.org/draft-01/schema"
         | "http://json-schema.org/draft-02/schema"
-        | "http://json-schema.org/draft-03/schema"
         | "http://json-schema.org/draft-01/hyper-schema"
         | "http://json-schema.org/draft-02/hyper-schema"
         | "http://json-schema.org/draft-03/hyper-schema"
@@ -281,16 +297,30 @@ impl<'s> Validation<'s> {
                 ),
             ));
         };
-        if let Some(Data::String(id)) = get(pairs, "id") {
-            return Err(unsupported(
-                "id",
-                format!("schema ids rebase the schema URI ({id:?}); not reproduced"),
-            ));
-        }
+        let known = self.locations.borrow().get(&(node as *const Data)).cloned();
+        let uri = if let Some(known) =
+            known.filter(|_| matches!(get(pairs, "id"), Some(Data::String(id)) if !id.is_empty()))
+        {
+            known
+        } else {
+            let resolved = match get(pairs, "id") {
+                Some(Data::String(id)) => Rc::from(uri::schema_id(&uri, id)?),
+                _ => uri,
+            };
+            self.locations
+                .borrow_mut()
+                .entry(node as *const Data)
+                .or_insert_with(|| resolved.clone());
+            resolved
+        };
         let dialect = match get(pairs, "$schema") {
             Some(v) if v.truthy() => resolve_dialect(v)?,
             _ => parent,
         };
+        self.schemas
+            .borrow_mut()
+            .entry(uri.trim_end_matches('#').to_owned())
+            .or_insert((node, dialect));
         Ok(Ctx {
             pairs,
             node,
@@ -317,7 +347,7 @@ impl<'s> Validation<'s> {
             }
         }
         if let Some(e) = ctx.get("extends") {
-            if matches!(e, Data::String(_) | Data::Array(_)) {
+            if matches!(e, Data::String(_)) {
                 return Err(unsupported("extends", "extends is not reproduced"));
             }
         }
@@ -354,7 +384,7 @@ impl<'s> Validation<'s> {
                 self.handle(ctx, v)?;
             }
         }
-        for key in ["allOf", "anyOf", "oneOf", "not"] {
+        for key in ["allOf", "anyOf", "oneOf", "not", "extends"] {
             if let Some(Data::Array(items)) = ctx.get(key) {
                 for item in items {
                     self.handle(ctx, item)?;
@@ -380,13 +410,10 @@ impl<'s> Validation<'s> {
                 "a non-string $ref raises TypeError; not reproduced",
             ));
         };
-        let before = s.split('#').next().unwrap_or("");
-        if !before.is_empty() || s.contains(['\n', '\r']) {
+        if s.contains(['\n', '\r']) {
             return Err(unsupported(
                 "$ref",
-                format!(
-                    "the external reference {s:?} makes the oracle read a file or the network; not reproduced"
-                ),
+                "multiline schema references are not reproduced",
             ));
         }
         Ok(())
@@ -417,9 +444,30 @@ impl<'s> Validation<'s> {
         data: &Data,
         frags: &[String],
     ) -> Result<(), SchemaError> {
+        let key = (ctx.node as *const Data, data as *const Data);
+        if self.active.len() >= 256 || !self.active.insert(key) {
+            return Err(unsupported(
+                "schema recursion",
+                "non-progressing reference cycle or schema nesting deeper than 256",
+            ));
+        }
+        let result = self.validate_inner(ctx, data, frags);
+        self.active.remove(&key);
+        result
+    }
+
+    fn validate_inner(
+        &mut self,
+        ctx: &Ctx<'s>,
+        data: &Data,
+        frags: &[String],
+    ) -> Result<(), SchemaError> {
         for (k, v) in ctx.pairs {
             let Data::String(key) = k else { continue };
             match key.as_str() {
+                "allOf" | "anyOf" | "oneOf" | "not" | "required" | "minProperties"
+                | "maxProperties"
+                    if ctx.dialect == Dialect::Draft3 => {}
                 "type" => self.type_attr(ctx, v, data, frags)?,
                 "allOf" => self.all_of(ctx, v, data, frags)?,
                 "anyOf" => self.any_of(ctx, v, data, frags)?,
@@ -436,6 +484,10 @@ impl<'s> Validation<'s> {
                 "additionalProperties" => self.additional_properties(ctx, v, data, frags)?,
                 "items" => self.items(ctx, v, data, frags)?,
                 "$ref" => self.ref_attr(ctx, v, data, frags)?,
+                "extends" if ctx.dialect == Dialect::Draft3 => self.extends(ctx, v, data, frags)?,
+                "disallow" if ctx.dialect == Dialect::Draft3 => {
+                    self.disallow(ctx, v, data, frags)?
+                }
                 "disallow" | "extends" => {
                     return Err(unsupported(key, format!("{key} is not reproduced")))
                 }
@@ -472,7 +524,7 @@ impl<'s> Validation<'s> {
     fn type_attr(
         &mut self,
         ctx: &Ctx<'s>,
-        types: &Data,
+        types: &'s Data,
         data: &Data,
         frags: &[String],
     ) -> Result<(), SchemaError> {
@@ -480,8 +532,23 @@ impl<'s> Validation<'s> {
             Data::Array(items) => (items.iter().collect(), true),
             other => (vec![other], false),
         };
-        if list.iter().any(|t| valid_for_type(data, Some(t))) {
-            return Ok(());
+        let mut sub_errors = Vec::new();
+        for (i, ty) in list.iter().enumerate() {
+            if matches!(ty, Data::Hash(_)) && ctx.dialect == Dialect::Draft3 {
+                if !union {
+                    continue;
+                }
+                let child = self.new_schema(ty, ctx.uri.clone(), ctx.dialect)?;
+                let pre = self.errors.len();
+                self.validate(&child, data, frags)?;
+                let errors = self.pop_since(pre);
+                if errors.is_empty() {
+                    return Ok(());
+                }
+                sub_errors.push((format!("type #{i}"), errors));
+            } else if valid_for_type(data, Some(ty)) {
+                return Ok(());
+            }
         }
         let names: Vec<String> = list
             .iter()
@@ -502,6 +569,78 @@ impl<'s> Validation<'s> {
             names.join(", ")
         );
         self.push(ctx, message, frags, Attr::Type, Vec::new());
+        self.errors.last_mut().expect("just pushed").sub_errors = sub_errors;
+        Ok(())
+    }
+
+    fn extends(
+        &mut self,
+        ctx: &Ctx<'s>,
+        list: &'s Data,
+        data: &Data,
+        frags: &[String],
+    ) -> Result<(), SchemaError> {
+        match list {
+            Data::Hash(_) => {
+                let child = self.new_schema(list, ctx.uri.clone(), ctx.dialect)?;
+                self.validate(&child, data, frags)
+            }
+            Data::Array(items) => {
+                for item in items {
+                    let child = self.new_schema(item, ctx.uri.clone(), ctx.dialect)?;
+                    self.validate(&child, data, frags)?;
+                }
+                Ok(())
+            }
+            _ => Err(unsupported(
+                "extends",
+                "non-object/non-array extends is not reproduced",
+            )),
+        }
+    }
+
+    fn disallow(
+        &mut self,
+        ctx: &Ctx<'s>,
+        types: &'s Data,
+        data: &Data,
+        frags: &[String],
+    ) -> Result<(), SchemaError> {
+        let list: Vec<&Data> = match types {
+            Data::Array(items) => items.iter().collect(),
+            other => vec![other],
+        };
+        let mut matched = false;
+        for ty in &list {
+            if matches!(ty, Data::Hash(_)) {
+                let child = self.new_schema(ty, ctx.uri.clone(), ctx.dialect)?;
+                let pre = self.errors.len();
+                self.validate(&child, data, frags)?;
+                matched |= self.pop_since(pre).is_empty();
+            } else {
+                matched |= valid_for_type(data, Some(ty));
+            }
+        }
+        if matched {
+            let names = list
+                .iter()
+                .map(|t| match t {
+                    Data::String(s) => s.as_str(),
+                    _ => "(schema)",
+                })
+                .collect::<Vec<_>>()
+                .join(", ");
+            self.push(
+                ctx,
+                format!(
+                    "The property '{}' matched one or more of the following types: {names}",
+                    build_fragment(frags)
+                ),
+                frags,
+                Attr::Type,
+                Vec::new(),
+            );
+        }
         Ok(())
     }
 
@@ -554,7 +693,15 @@ impl<'s> Validation<'s> {
         for (name, sub) in schema_props {
             let name = name.ruby_to_s()?;
             let present = get(pairs, &name);
-            if self.strict && present.is_none() {
+            let required = if ctx.dialect == Dialect::Draft3 {
+                let Data::Hash(sub) = sub else {
+                    return Err(unsupported("properties", "a non-object property schema"));
+                };
+                get(sub, "required").map_or(self.strict, Data::truthy)
+            } else {
+                self.strict
+            };
+            if required && present.is_none() {
                 let message = format!(
                     "The property '{}' did not contain a required property of '{name}'",
                     build_fragment(frags)
@@ -705,8 +852,29 @@ impl<'s> Validation<'s> {
     ) -> Result<(), SchemaError> {
         self.check_local_ref(r)?;
         let Data::String(s) = r else { unreachable!() };
-        let fragment = uri::unescape(s.split_once('#').map_or("", |(_, f)| f));
-        let mut target: &'s Data = self.root;
+        let resolved = uri::resolve(&ctx.uri, s)?;
+        let (name, fragment) = resolved.split_once('#').unwrap_or((&resolved, ""));
+        let fragment = uri::unescape(fragment);
+        let (mut target, dialect) = self.schemas.borrow().get(name).copied().ok_or_else(|| {
+            unsupported(
+                "schema resource",
+                format!("unregistered schema resource {name:?}"),
+            )
+        })?;
+        let target_uri = self
+            .locations
+            .borrow()
+            .get(&(target as *const Data))
+            .cloned()
+            .unwrap_or_else(|| self.root_uri.clone());
+        let diagnostic_uri = if target_uri.as_ref() == name
+            && !name.contains("://")
+            && super::resources::local_path(name).is_ok_and(|p| p.is_file())
+        {
+            super::resources::file_uri(&super::resources::local_path(name)?)
+        } else {
+            target_uri.to_string()
+        };
         let mut path = String::new();
         for seg in fragment.split('/') {
             if seg.is_empty() {
@@ -735,14 +903,22 @@ impl<'s> Validation<'s> {
                     return Err(SchemaError::Schema {
                         message: format!(
                             "The fragment '{path}' does not exist on schema {}",
-                            self.root_uri
+                            diagnostic_uri
                         ),
                     })
                 }
             }
         }
-        let base = ctx.uri.trim_end_matches('#');
-        let child = self.new_schema(target, Rc::from(format!("{base}#")), ctx.dialect)?;
+        let uri = if resolved.contains('#') {
+            format!("{}#", target_uri.trim_end_matches('#'))
+        } else {
+            target_uri.to_string()
+        };
+        let mut child = self.new_schema(target, Rc::from(uri.as_str()), dialect)?;
+        // The referenced fragment keeps the resource URI, unless it declares an ID.
+        if !matches!(child.get("id"), Some(Data::String(id)) if !id.is_empty()) {
+            child.uri = Rc::from(uri);
+        }
         self.validate(&child, data, frags)
     }
 
@@ -981,11 +1157,20 @@ impl<'s> Validation<'s> {
                     self.push(ctx, message, frags, Attr::Format, Vec::new());
                 }
             }
-            f @ ("date-time" | "ipv4" | "ipv6") => {
-                return Err(unsupported(
-                    "format",
-                    format!("format {f} (Ruby DateTime/IPAddr parsing) is not reproduced"),
-                ))
+            "date-time" if !super::date_time::valid(text) => {
+                let message = format!(
+                    "The property '{}' must be a valid RFC3339 date/time string",
+                    build_fragment(frags)
+                );
+                self.push(ctx, message, frags, Attr::Format, Vec::new());
+            }
+            f @ ("ipv4" | "ipv6") if !super::ip::valid(text, f == "ipv6")? => {
+                let version = if f == "ipv6" { 6 } else { 4 };
+                let message = format!(
+                    "The property '{}' must be a valid IPv{version} address",
+                    build_fragment(frags)
+                );
+                self.push(ctx, message, frags, Attr::Format, Vec::new());
             }
             _ => {}
         }

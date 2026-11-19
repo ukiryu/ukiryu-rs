@@ -1,0 +1,1 @@
+{"id": "http://example.com/a/b/root", "properties": {"n": {"id": "../../n#named", "type": "integer"}, "m": {"id": "/abs", "type": "integer"}}}

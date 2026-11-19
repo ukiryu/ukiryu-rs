@@ -1,0 +1,1 @@
+{"type":"object","properties":{"n":{"type":"integer"}},"required":["n"],"definitions":{"n":{"type":"integer"}}}

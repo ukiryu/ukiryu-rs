@@ -1,0 +1,3692 @@
+[
+  {
+    "id": "remainder.ipv4.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"127.0.0.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"127.0.0.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"0.0.0.0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"0.0.0.0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.2.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"255.255.255.255\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.2.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"255.255.255.255\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.3.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"256.1.1.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.3.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"256.1.1.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.4.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"127.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.4.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"127.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.5.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"2130706433\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.5.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"2130706433\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.6.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"0177.0.0.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.6.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"0177.0.0.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.7.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"127.000.0.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.7.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"127.000.0.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.8.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"0x7f.0.0.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.8.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"0x7f.0.0.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.9.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/24\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.9.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/24\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.10.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/255.255.255.0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.10.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/255.255.255.0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.11.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/33\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.11.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/33\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.12.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.12.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.13.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/01\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.13.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/01\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.14.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/255.0.255.0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.14.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/255.0.255.0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.15.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.15.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.16.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.16.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.17.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"2001:db8::1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.17.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"2001:db8::1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.18.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::ffff:192.0.2.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.18.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::ffff:192.0.2.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.19.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"[::1]\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.19.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"[::1]\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.20.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"fe80::1%eth0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.20.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"fe80::1%eth0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.21.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"fe80::1%1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.21.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"fe80::1%1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.22.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"2001:db8::1/64\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.22.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"2001:db8::1/64\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.23.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::/0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.23.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::/0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.24.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::1/129\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.24.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::1/129\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.25.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::1/ffff:ffff:ffff:ffff::\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.25.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::1/ffff:ffff:ffff:ffff::\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.26.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \" ::1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.26.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \" ::1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.27.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::1 \"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.27.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::1 \"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.28.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::1\\n\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.28.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::1\\n\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.29.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4\\n\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.29.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4\\n\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.30.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4:80\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.30.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4:80\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.31.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.31.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.32.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"g::1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.32.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"g::1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.33.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::ffff:192.000.2.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.33.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::ffff:192.000.2.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.34.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": 12}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.34.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": 12}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.35.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": null}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.35.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": null}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.36.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": true}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.36.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": true}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.37.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": []}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.37.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": []}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4.38.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": {}}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4.38.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": {}}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"127.0.0.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"127.0.0.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"0.0.0.0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"0.0.0.0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.2.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"255.255.255.255\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.2.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"255.255.255.255\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.3.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"256.1.1.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.3.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"256.1.1.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.4.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"127.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.4.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"127.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.5.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"2130706433\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.5.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"2130706433\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.6.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"0177.0.0.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.6.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"0177.0.0.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.7.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"127.000.0.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.7.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"127.000.0.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.8.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"0x7f.0.0.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.8.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"0x7f.0.0.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.9.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/24\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.9.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/24\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.10.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/255.255.255.0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.10.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/255.255.255.0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.11.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/33\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.11.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/33\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.12.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.12.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.13.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/01\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.13.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/01\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.14.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/255.0.255.0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.14.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/255.0.255.0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.15.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.15.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.16.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.16.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.17.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"2001:db8::1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.17.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"2001:db8::1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.18.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::ffff:192.0.2.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.18.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::ffff:192.0.2.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.19.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"[::1]\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.19.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"[::1]\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.20.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"fe80::1%eth0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.20.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"fe80::1%eth0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.21.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"fe80::1%1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.21.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"fe80::1%1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.22.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"2001:db8::1/64\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.22.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"2001:db8::1/64\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.23.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::/0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.23.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::/0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.24.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::1/129\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.24.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::1/129\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.25.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::1/ffff:ffff:ffff:ffff::\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.25.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::1/ffff:ffff:ffff:ffff::\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.26.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \" ::1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.26.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \" ::1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.27.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::1 \"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.27.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::1 \"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.28.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::1\\n\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.28.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::1\\n\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.29.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4\\n\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.29.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4\\n\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.30.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4:80\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.30.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4:80\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.31.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.31.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.32.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"g::1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.32.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"g::1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.33.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::ffff:192.000.2.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.33.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::ffff:192.000.2.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.34.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": 12}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.34.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": 12}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.35.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": null}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.35.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": null}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.36.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": true}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.36.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": true}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.37.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": []}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.37.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": []}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6.38.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": {}}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6.38.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": {}}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.draft3.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.draft3.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.draft3.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"name\": \"a\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.draft3.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"name\": \"a\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.draft3.2.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"name\": 5, \"age\": -1, \"extra\": 1}\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.draft3.2.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"name\": 5, \"age\": -1, \"extra\": 1}\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.draft3.3.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"name\": \"a\", \"tag\": null}\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.draft3.3.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"name\": \"a\", \"tag\": null}\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.draft3.4.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "[]\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.draft3.4.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "[]\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.draft3.5.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "null\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.draft3.5.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "null\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.draft3_disallow.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "\"x\"\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3_disallow.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.draft3_disallow.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "\"x\"\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3_disallow.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.draft3_disallow.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "1\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3_disallow.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.draft3_disallow.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "1\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3_disallow.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.draft3_disallow.2.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "true\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3_disallow.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.draft3_disallow.2.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "true\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3_disallow.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.draft3_disallow.3.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3_disallow.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.draft3_disallow.3.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3_disallow.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.draft3_disallow.4.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "[]\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3_disallow.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.draft3_disallow.4.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "[]\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3_disallow.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.draft3_extends.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3_extends.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.draft3_extends.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3_extends.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.draft3_extends.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"a\": 2, \"b\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3_extends.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.draft3_extends.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"a\": 2, \"b\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3_extends.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.draft3_extends.2.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"a\": \"x\", \"b\": 1}\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3_extends.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.draft3_extends.2.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"a\": \"x\", \"b\": 1}\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3_extends.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.draft3_union.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "\"x\"\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3_union.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.draft3_union.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "\"x\"\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3_union.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.draft3_union.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "0\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3_union.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.draft3_union.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "0\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3_union.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.draft3_union.2.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "3\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3_union.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.draft3_union.2.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "3\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3_union.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.draft3_union.3.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "false\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3_union.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.draft3_union.3.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "false\n",
+      "schema": "tests/schema_golden/inputs/remainder/draft3_union.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.id_root.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_root.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.id_root.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_root.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.id_root.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"name\": 2}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_root.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.id_root.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"name\": 2}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_root.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.id_root.2.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"name\": \"ok\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_root.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.id_root.2.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"name\": \"ok\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_root.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.id_nested.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_nested.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.id_nested.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_nested.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.id_nested.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"name\": 2, \"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_nested.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.id_nested.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"name\": 2, \"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_nested.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.id_anchor.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_anchor.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.id_anchor.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_anchor.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.id_anchor.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_anchor.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.id_anchor.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_anchor.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.id_anchor.2.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": 2}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_anchor.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.id_anchor.2.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": 2}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_anchor.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.id_relative.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_relative.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.id_relative.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_relative.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.id_relative.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"name\": 2}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_relative.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.id_relative.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"name\": 2}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_relative.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.external_missing.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/external_missing.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.external_missing.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/external_missing.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.external_file.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/external_file.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.external_file.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/external_file.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.external_file.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": 2}\n",
+      "schema": "tests/schema_golden/inputs/remainder/external_file.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.external_file.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": 2}\n",
+      "schema": "tests/schema_golden/inputs/remainder/external_file.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.external_file.2.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/external_file.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.external_file.2.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/external_file.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.string_file.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/string_file.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.string_file.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/string_file.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.string_file.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": 2}\n",
+      "schema": "tests/schema_golden/inputs/remainder/string_file.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.string_file.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": 2}\n",
+      "schema": "tests/schema_golden/inputs/remainder/string_file.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.string_json.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/string_json.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.string_json.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/string_json.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.string_json.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": 2}\n",
+      "schema": "tests/schema_golden/inputs/remainder/string_json.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.string_json.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": 2}\n",
+      "schema": "tests/schema_golden/inputs/remainder/string_json.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.string_json.2.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/string_json.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.string_json.2.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/string_json.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.required_false.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/required_false.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.required_false.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/required_false.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.required_false.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"a\": 1, \"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/required_false.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.required_false.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"a\": 1, \"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/required_false.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.required_false.2.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "1\n",
+      "schema": "tests/schema_golden/inputs/remainder/required_false.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.required_false.2.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "1\n",
+      "schema": "tests/schema_golden/inputs/remainder/required_false.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.required_false.3.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "\"x\"\n",
+      "schema": "tests/schema_golden/inputs/remainder/required_false.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.required_false.3.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "\"x\"\n",
+      "schema": "tests/schema_golden/inputs/remainder/required_false.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.d3_ignore.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_ignore.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.d3_ignore.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_ignore.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.d3_ignore.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"a\": 1, \"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_ignore.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.d3_ignore.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"a\": 1, \"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_ignore.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.d3_ignore.2.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "1\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_ignore.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.d3_ignore.2.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "1\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_ignore.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.d3_ignore.3.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "\"x\"\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_ignore.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.d3_ignore.3.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "\"x\"\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_ignore.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.id_fragment.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_fragment.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.id_fragment.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_fragment.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.id_fragment.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"a\": 1, \"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_fragment.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.id_fragment.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"a\": 1, \"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_fragment.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.id_fragment.2.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "1\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_fragment.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.id_fragment.2.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "1\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_fragment.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.id_fragment.3.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "\"x\"\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_fragment.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.id_fragment.3.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "\"x\"\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_fragment.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.id_localref.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_localref.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.id_localref.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_localref.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.id_localref.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"a\": 1, \"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_localref.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.id_localref.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"a\": 1, \"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_localref.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.id_localref.2.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "1\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_localref.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.id_localref.2.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "1\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_localref.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.id_localref.3.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "\"x\"\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_localref.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.id_localref.3.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "\"x\"\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_localref.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.id_rebased_ref.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_rebased_ref.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.id_rebased_ref.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_rebased_ref.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.id_rebased_ref.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"a\": 1, \"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_rebased_ref.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.id_rebased_ref.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"a\": 1, \"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_rebased_ref.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.id_rebased_ref.2.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "1\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_rebased_ref.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.id_rebased_ref.2.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "1\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_rebased_ref.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.id_rebased_ref.3.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "\"x\"\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_rebased_ref.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.id_rebased_ref.3.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "\"x\"\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_rebased_ref.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.d3_typehash.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_typehash.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.d3_typehash.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_typehash.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.d3_typehash.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"a\": 1, \"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_typehash.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.d3_typehash.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"a\": 1, \"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_typehash.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.d3_typehash.2.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "1\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_typehash.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.d3_typehash.2.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "1\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_typehash.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.d3_typehash.3.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "\"x\"\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_typehash.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.d3_typehash.3.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "\"x\"\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_typehash.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.d3_disallowhash.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_disallowhash.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.d3_disallowhash.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_disallowhash.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.d3_disallowhash.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"a\": 1, \"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_disallowhash.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.d3_disallowhash.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"a\": 1, \"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_disallowhash.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.d3_disallowhash.2.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "1\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_disallowhash.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.d3_disallowhash.2.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "1\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_disallowhash.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.d3_disallowhash.3.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "\"x\"\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_disallowhash.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.d3_disallowhash.3.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "\"x\"\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_disallowhash.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.d3_extends_hash.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_extends_hash.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.d3_extends_hash.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_extends_hash.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.d3_extends_hash.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"a\": 1, \"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_extends_hash.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.d3_extends_hash.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"a\": 1, \"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_extends_hash.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.d3_extends_hash.2.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "1\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_extends_hash.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.d3_extends_hash.2.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "1\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_extends_hash.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.d3_extends_hash.3.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "\"x\"\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_extends_hash.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.d3_extends_hash.3.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "\"x\"\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_extends_hash.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.id_empty.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_empty.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.id_empty.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_empty.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.id_empty.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"a\": 1, \"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_empty.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.id_empty.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"a\": 1, \"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_empty.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.id_empty.2.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "1\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_empty.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.id_empty.2.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "1\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_empty.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.id_empty.3.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "\"x\"\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_empty.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.id_empty.3.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "\"x\"\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_empty.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.string_file_validate.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/string_file_validate.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.string_file_validate.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/string_file_validate.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.string_file_validate.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"a\": 1, \"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/string_file_validate.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.string_file_validate.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"a\": 1, \"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/string_file_validate.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.string_file_validate.2.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "1\n",
+      "schema": "tests/schema_golden/inputs/remainder/string_file_validate.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.string_file_validate.2.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "1\n",
+      "schema": "tests/schema_golden/inputs/remainder/string_file_validate.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.string_file_validate.3.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "\"x\"\n",
+      "schema": "tests/schema_golden/inputs/remainder/string_file_validate.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.string_file_validate.3.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "\"x\"\n",
+      "schema": "tests/schema_golden/inputs/remainder/string_file_validate.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/-1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/-1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.2.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/+1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.2.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/+1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.3.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/24/3\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.3.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/24/3\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.4.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/255.255.0.00\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.4.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/255.255.0.00\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.5.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"[127.0.0.1]\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.5.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"[127.0.0.1]\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.6.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"[fe80::1%eth0]\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.6.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"[fe80::1%eth0]\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.7.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"fe80::1%\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.7.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"fe80::1%\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.8.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"fe80::1%foo%bar\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.8.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"fe80::1%foo%bar\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.9.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::ffff:999.00.1.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.9.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::ffff:999.00.1.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.10.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::ffff:01.2.3.4\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.10.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::ffff:01.2.3.4\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.11.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1234:5678:9abc:def0:1234:5678:9abc:def0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.11.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1234:5678:9abc:def0:1234:5678:9abc:def0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.12.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::/128\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.12.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::/128\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.13.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::/ffff::\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.13.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::/ffff::\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.14.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::/255.255.255.0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.14.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::/255.255.255.0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.15.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"00.999.1.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv4_edges.15.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"00.999.1.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv4_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/-1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/-1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.2.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/+1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.2.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/+1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.3.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/24/3\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.3.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/24/3\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.4.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/255.255.0.00\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.4.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1.2.3.4/255.255.0.00\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.5.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"[127.0.0.1]\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.5.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"[127.0.0.1]\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.6.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"[fe80::1%eth0]\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.6.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"[fe80::1%eth0]\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.7.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"fe80::1%\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.7.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"fe80::1%\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.8.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"fe80::1%foo%bar\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.8.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"fe80::1%foo%bar\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.9.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::ffff:999.00.1.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.9.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::ffff:999.00.1.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.10.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::ffff:01.2.3.4\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.10.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::ffff:01.2.3.4\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.11.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1234:5678:9abc:def0:1234:5678:9abc:def0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.11.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"1234:5678:9abc:def0:1234:5678:9abc:def0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.12.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::/128\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.12.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::/128\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.13.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::/ffff::\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.13.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::/ffff::\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.14.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::/255.255.255.0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.14.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"::/255.255.255.0\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.15.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"00.999.1.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ipv6_edges.15.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"address\": \"00.999.1.1\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ipv6_edges.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.string_pretty.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "1\n",
+      "schema": "tests/schema_golden/inputs/remainder/string_pretty.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.string_pretty.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "1\n",
+      "schema": "tests/schema_golden/inputs/remainder/string_pretty.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.string_pretty.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "false\n",
+      "schema": "tests/schema_golden/inputs/remainder/string_pretty.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.string_pretty.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "false\n",
+      "schema": "tests/schema_golden/inputs/remainder/string_pretty.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.d3_disallow_single.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "1\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_disallow_single.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.d3_disallow_single.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "1\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_disallow_single.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.d3_disallow_single.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "\"a\"\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_disallow_single.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.d3_disallow_single.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "\"a\"\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_disallow_single.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.d3_limits.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": 2, \"s\": \"x\", \"array\": [1]}\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_limits.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.d3_limits.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": 2, \"s\": \"x\", \"array\": [1]}\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_limits.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.d3_limits.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": 3, \"s\": \"ok\", \"array\": [1, 2]}\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_limits.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.d3_limits.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": 3, \"s\": \"ok\", \"array\": [1, 2]}\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_limits.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.d3_nested_d4.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": {}}\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_nested_d4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.d3_nested_d4.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": {}}\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_nested_d4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.d3_nested_d4.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": {\"a\": 1}}\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_nested_d4.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.d3_nested_d4.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": {\"a\": 1}}\n",
+      "schema": "tests/schema_golden/inputs/remainder/d3_nested_d4.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.id_dots.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": \"x\", \"m\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_dots.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.id_dots.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": \"x\", \"m\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_dots.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.external_fragment_missing.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/external_fragment_missing.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.external_fragment_missing.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{}\n",
+      "schema": "tests/schema_golden/inputs/remainder/external_fragment_missing.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.external_fragment_missing.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/external_fragment_missing.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.external_fragment_missing.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/external_fragment_missing.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.ref_recursive.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": 1, \"child\": {\"n\": \"x\"}}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ref_recursive.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.ref_recursive.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": 1, \"child\": {\"n\": \"x\"}}\n",
+      "schema": "tests/schema_golden/inputs/remainder/ref_recursive.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.external_multiple.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": \"x\", \"s\": 1}\n",
+      "schema": "tests/schema_golden/inputs/remainder/external_multiple.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.external_multiple.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": \"x\", \"s\": 1}\n",
+      "schema": "tests/schema_golden/inputs/remainder/external_multiple.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.external_multiple.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": 1, \"s\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/external_multiple.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.external_multiple.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": 1, \"s\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/external_multiple.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.external_nested.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"s\": 1}\n",
+      "schema": "tests/schema_golden/inputs/remainder/external_nested.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.external_nested.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"s\": 1}\n",
+      "schema": "tests/schema_golden/inputs/remainder/external_nested.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.external_nested.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"s\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/external_nested.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.external_nested.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"s\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/external_nested.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.id_registered_http.0.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_registered_http.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.id_registered_http.0.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": \"x\"}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_registered_http.yaml",
+      "strict": true
+    }
+  },
+  {
+    "id": "remainder.id_registered_http.1.False",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": 1}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_registered_http.yaml",
+      "strict": false
+    }
+  },
+  {
+    "id": "remainder.id_registered_http.1.True",
+    "op": "validate_profile",
+    "input": {
+      "yaml": "{\"n\": 1}\n",
+      "schema": "tests/schema_golden/inputs/remainder/id_registered_http.yaml",
+      "strict": true
+    }
+  }
+]
