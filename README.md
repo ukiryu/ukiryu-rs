@@ -49,6 +49,25 @@ The reference's JSON transport profile gives Ruby symbols textual values. It is
 separate from the shared corpus's richer typed value profile; neither establishes
 full Ruby API or cross-runtime parity by itself.
 
+## CLI help wording
+
+The Rust CLI replaces the Ruby CLI's Thor parser with clap, but it keeps
+Thor's help text wherever the Ruby CLI has one. `ukiryu help`, `ukiryu help
+VERB`, `ukiryu GROUP help SUB` and `-h` or `--help` on a Ruby verb print the
+same bytes as the pinned Ruby CLI (ukiryu `ab6df35`, Thor 1.5.0, Ruby 4.0.1).
+The captured screens are in `ukiryu-cli/src/thor_help.rs`, and
+`ukiryu-cli/tests/thor_data/cases.json` checks them, along with the unknown
+command and wrong argument count messages.
+
+clap's own help wording appears in only two places. The first is the `lint`
+verb, which the Ruby CLI does not have. The second is command lines that the
+Thor model passes on without an answer: arguments after `--`, numeric
+switches, non-ASCII text, unusual switch spellings and switches given to a
+command group. In those cases the layout and phrasing come from clap. Verbs,
+option names, short aliases, defaults, argument order and exit codes are the
+same as in the Ruby CLI. `--version` is also new: the Ruby CLI rejects it,
+while the binary keeps it for release checks.
+
 ## C boundary
 
 `ukiryu-ffi/include/ukiryu.h` specifies ABI1. Input is borrowed UTF-8 JSON with an
