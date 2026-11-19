@@ -57,6 +57,10 @@ const OPEN: &[(&str, &str)] = &[
         "runfile_execute_json",
         "NoMethodError for stdin= names an anonymous options class by address",
     ),
+    (
+        "runfile_execute_table",
+        "NoMethodError for stdin= names an anonymous options class by address",
+    ),
 ];
 
 /// Recorded deviations from the source (they must run, not match).

@@ -1779,6 +1779,134 @@
    "files": {}
   },
   {
+   "id": "runfile_dry_run_table",
+   "area": "runfile-dry",
+   "args": [
+    "run-file",
+    "req_ok.yaml",
+    "--dry-run",
+    "--format",
+    "table"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "\u001b[33mDRY RUN - Ukiryu Structured Execution Request:\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mTool: cat\u001b[0m\n\u001b[36mCommand: concatenate\u001b[0m\n\u001b[36mArguments:\u001b[0m\n\u001b[37m  number: true\u001b[0m\n\u001b[37m  stdin: \"hi\\n\"\u001b[0m\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "runfile_dry_run_types_table",
+   "area": "runfile-dry",
+   "args": [
+    "run-file",
+    "runfile_dry_run_types.yaml",
+    "--dry-run",
+    "--format",
+    "table"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "\u001b[33mDRY RUN - Ukiryu Structured Execution Request:\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[36mTool: 12\u001b[0m\n\u001b[36mCommand: sym\u001b[0m\n\u001b[36mArguments:\u001b[0m\n\u001b[37m  a: 1\u001b[0m\n\u001b[37m  b: \"two\"\u001b[0m\n\u001b[37m  c: [1, 2]\u001b[0m\n\u001b[37m  d: {\"x\" => \"y\"}\u001b[0m\n\u001b[37m  e: nil\u001b[0m\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "runfile_execute_table",
+   "area": "runfile-gate",
+   "args": [
+    "run-file",
+    "req_ok.yaml",
+    "--format",
+    "table"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "✗ Command failed: Unexpected error: NoMethodError: undefined method 'stdin=' for an instance of #<Class:0x00007bbd43ca9078>\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "runfile_execute_no_stdin_table",
+   "area": "runfile-run",
+   "args": [
+    "run-file",
+    "req_nostdin.yaml",
+    "--format",
+    "table"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "✗ Command failed: Invalid arguments: wrong number of arguments (given 2, expected 1; required keyword: execution_timeout)\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "runfile_unknown_tool_table",
+   "area": "runfile-gate",
+   "args": [
+    "run-file",
+    "req_unknown.yaml",
+    "--format",
+    "table"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "✗ Command failed: Ukiryu::Tool not found: Tool not found: nosuchtool\n",
+   "stderr": "",
+   "status": 0,
+   "files": {}
+  },
+  {
+   "id": "runfile_missing_table",
+   "area": "runfile-pre",
+   "args": [
+    "run-file",
+    "nope.yaml",
+    "--format",
+    "table"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "",
+   "stderr": "Request file not found: nope.yaml\n",
+   "status": 1,
+   "files": {}
+  },
+  {
+   "id": "runfile_not_mapping_table",
+   "area": "runfile-pre",
+   "args": [
+    "run-file",
+    "runfile_not_mapping.yaml",
+    "--format",
+    "table"
+   ],
+   "stdin": null,
+   "env": {},
+   "pty": false,
+   "note": null,
+   "stdout": "",
+   "stderr": "[RuntimeError] Request must be a YAML object (hash)\n",
+   "status": 1,
+   "files": {}
+  },
+  {
    "id": "cache_clear_tty_xterm",
    "area": "cache",
    "args": [

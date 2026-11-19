@@ -39,7 +39,8 @@
 //!   `ExecutionError` has no `#result`.
 //! - stdin is written while output is read, so large inputs do not block.
 //! - The timeout must be a positive, finite number. The source treats `0` as
-//!   "no limit" and raises `ArgumentError` for a negative value.
+//!   "no limit"; here it is refused (decision D1: the timeout is required).
+//!   A negative value is refused with the source's `ArgumentError` message.
 //! - Output is kept as bytes ([`Execution::stdout`]). The result's streams
 //!   are the bytes Ruby reads from the pipe (on Windows, CR LF becomes LF),
 //!   never decoded or replaced; invalid UTF-8 stays. As in the source, a
@@ -262,6 +263,14 @@ impl ExecuteError {
 impl fmt::Display for ExecuteError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            // A negative value is the one the source rejects too
+            // (`Timeout.timeout`'s ArgumentError); its message is kept.
+            ExecuteError::InvalidTimeout(Seconds::Int(i)) if *i < 0 => {
+                f.write_str("Timeout sec must be a non-negative number")
+            }
+            ExecuteError::InvalidTimeout(Seconds::Float(x)) if *x < 0.0 => {
+                f.write_str("Timeout sec must be a non-negative number")
+            }
             ExecuteError::InvalidTimeout(timeout) => write!(
                 f,
                 "timeout must be a positive, finite number of seconds (got {})",

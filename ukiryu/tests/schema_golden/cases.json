@@ -104,6 +104,7 @@
       "tests/schema_golden/inputs/synthetic/null.yaml": "73cafed4c2cba0743097670a0615e4958fd6ddae0ea12b077bffcc3581e9afd2",
       "tests/schema_golden/inputs/synthetic/number.yaml": "084c799cd551dd1d8d5c5f9a5d593b2e931f5e36122ee5c793c1d08a19839cc0",
       "tests/schema_golden/inputs/synthetic/pattern.yaml": "e312d5f613f382d47e2d41120f118d5575a6d293b9faf7c355839e85330443fc",
+      "tests/schema_golden/inputs/synthetic/pattern_ruby.yaml": "cbbf663482883d52dd2cad0e9e594bc925293d162301fd8b90d6fd1a65ee7ff7",
       "tests/schema_golden/inputs/synthetic/scalar.yaml": "5891b5b522d5df086d0ff0b110fbd9d21bb4fc7163af34d08286a2e846f6be03",
       "tests/schema_golden/inputs/synthetic/true.yaml": "a17fcf0a2f50e2d495e4f90ce263410edc183add6c62699a2facbccf60410f74",
       "tests/schema_golden/inputs/synthetic/union_subschema.yaml": "8be5432317988481b62a46124723140c72a9a60501541f8e43d007329a60d11a",
@@ -3886,6 +3887,240 @@
       "expect": {
         "ok": [
           "The property '#/version' value \"2.0\" did not match the regex '^1\\.0$' in schema 1567d985-8ef1-5ecb-900c-b2147444837b"
+        ]
+      }
+    },
+    {
+      "id": "dialect.pattern.match.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "version: '1.0'\n",
+        "schema": "tests/schema_golden/inputs/synthetic/pattern.yaml"
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "dialect.pattern.match.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "version: '1.0'\n",
+        "schema": "tests/schema_golden/inputs/synthetic/pattern.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "dialect.pattern.multiline.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "version: \"x\\n1.0\\ny\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/pattern.yaml"
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "dialect.pattern.multiline.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "version: \"x\\n1.0\\ny\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/pattern.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "dialect.pattern.not-string.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "version: 1.0\n",
+        "schema": "tests/schema_golden/inputs/synthetic/pattern.yaml"
+      },
+      "expect": {
+        "ok": [
+          "The property '#/version' of type number did not match the following type: string in schema 1567d985-8ef1-5ecb-900c-b2147444837b"
+        ]
+      }
+    },
+    {
+      "id": "dialect.pattern.not-string.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "version: 1.0\n",
+        "schema": "tests/schema_golden/inputs/synthetic/pattern.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/version' of type number did not match the following type: string in schema 1567d985-8ef1-5ecb-900c-b2147444837b"
+        ]
+      }
+    },
+    {
+      "id": "dialect.pattern.inspect.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "version: \"a\\\"b\\tc\\u00e9\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/pattern.yaml"
+      },
+      "expect": {
+        "ok": [
+          "The property '#/version' value \"a\\\"b\\tcé\" did not match the regex '^1\\.0$' in schema 1567d985-8ef1-5ecb-900c-b2147444837b"
+        ]
+      }
+    },
+    {
+      "id": "dialect.pattern.inspect.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "version: \"a\\\"b\\tc\\u00e9\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/pattern.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/version' value \"a\\\"b\\tcé\" did not match the regex '^1\\.0$' in schema 1567d985-8ef1-5ecb-900c-b2147444837b"
+        ]
+      }
+    },
+    {
+      "id": "dialect.pattern_ruby.hex-good.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "name: 0fA9\n",
+        "schema": "tests/schema_golden/inputs/synthetic/pattern_ruby.yaml"
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "dialect.pattern_ruby.hex-good.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "name: 0fA9\n",
+        "schema": "tests/schema_golden/inputs/synthetic/pattern_ruby.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/' did not contain a required property of 'word' in schema 2fa19725-225a-5914-87d0-f017c26803b5"
+        ]
+      }
+    },
+    {
+      "id": "dialect.pattern_ruby.hex-bad.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "name: 0fg9\n",
+        "schema": "tests/schema_golden/inputs/synthetic/pattern_ruby.yaml"
+      },
+      "expect": {
+        "ok": [
+          "The property '#/name' value \"0fg9\" did not match the regex '\\A\\h+\\z' in schema 2fa19725-225a-5914-87d0-f017c26803b5"
+        ]
+      }
+    },
+    {
+      "id": "dialect.pattern_ruby.hex-bad.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "name: 0fg9\n",
+        "schema": "tests/schema_golden/inputs/synthetic/pattern_ruby.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/name' value \"0fg9\" did not match the regex '\\A\\h+\\z' in schema 2fa19725-225a-5914-87d0-f017c26803b5",
+          "The property '#/' did not contain a required property of 'word' in schema 2fa19725-225a-5914-87d0-f017c26803b5"
+        ]
+      }
+    },
+    {
+      "id": "dialect.pattern_ruby.hex-trailing-newline.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "name: \"0f\\n\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/pattern_ruby.yaml"
+      },
+      "expect": {
+        "ok": [
+          "The property '#/name' value \"0f\\n\" did not match the regex '\\A\\h+\\z' in schema 2fa19725-225a-5914-87d0-f017c26803b5"
+        ]
+      }
+    },
+    {
+      "id": "dialect.pattern_ruby.hex-trailing-newline.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "name: \"0f\\n\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/pattern_ruby.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/name' value \"0f\\n\" did not match the regex '\\A\\h+\\z' in schema 2fa19725-225a-5914-87d0-f017c26803b5",
+          "The property '#/' did not contain a required property of 'word' in schema 2fa19725-225a-5914-87d0-f017c26803b5"
+        ]
+      }
+    },
+    {
+      "id": "dialect.pattern_ruby.fold-good.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "word: STRASSE\n",
+        "schema": "tests/schema_golden/inputs/synthetic/pattern_ruby.yaml"
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "dialect.pattern_ruby.fold-good.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "word: STRASSE\n",
+        "schema": "tests/schema_golden/inputs/synthetic/pattern_ruby.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/' did not contain a required property of 'name' in schema 2fa19725-225a-5914-87d0-f017c26803b5"
+        ]
+      }
+    },
+    {
+      "id": "dialect.pattern_ruby.fold-bad.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "word: strase\n",
+        "schema": "tests/schema_golden/inputs/synthetic/pattern_ruby.yaml"
+      },
+      "expect": {
+        "ok": [
+          "The property '#/word' value \"strase\" did not match the regex '(?i)^straße$' in schema 2fa19725-225a-5914-87d0-f017c26803b5"
+        ]
+      }
+    },
+    {
+      "id": "dialect.pattern_ruby.fold-bad.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "word: strase\n",
+        "schema": "tests/schema_golden/inputs/synthetic/pattern_ruby.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/' did not contain a required property of 'name' in schema 2fa19725-225a-5914-87d0-f017c26803b5",
+          "The property '#/word' value \"strase\" did not match the regex '(?i)^straße$' in schema 2fa19725-225a-5914-87d0-f017c26803b5"
         ]
       }
     },

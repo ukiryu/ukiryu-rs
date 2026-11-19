@@ -1,0 +1,4 @@
+type: object
+properties:
+  name: {type: string, pattern: '\A\h+\z'}
+  word: {type: string, pattern: '(?i)^straße$'}

@@ -8,6 +8,7 @@
 use super::data::{bigint_to_f64, num_cmp, Data};
 use super::uri;
 use super::SchemaError;
+use crate::types::onig::OnigRegex;
 use std::collections::HashSet;
 use std::rc::Rc;
 
@@ -31,6 +32,7 @@ enum Attr {
     Not,
     Enum,
     Format,
+    Pattern,
     Limit,
 }
 
@@ -452,12 +454,7 @@ impl<'s> Validation<'s> {
                 "multipleOf" if matches!(data, Data::Integer(_) | Data::Float(_)) => {
                     return Err(unsupported(key, "multipleOf is not reproduced"))
                 }
-                "pattern" if matches!(data, Data::String(_)) => {
-                    return Err(unsupported(
-                        key,
-                        "Ruby (Onigmo) regular expressions are not reproduced",
-                    ))
-                }
+                "pattern" => self.pattern_attr(ctx, v, data, frags)?,
                 "patternProperties" | "dependencies" if matches!(data, Data::Hash(_)) => {
                     return Err(unsupported(key, format!("{key} is not reproduced")))
                 }
@@ -991,6 +988,48 @@ impl<'s> Validation<'s> {
                 ))
             }
             _ => {}
+        }
+        Ok(())
+    }
+
+    /// `PatternAttribute`: `Regexp.new(pattern).match(data)` for a String,
+    /// with Ruby's Onigmo. A pattern Ruby would not compile is refused.
+    fn pattern_attr(
+        &mut self,
+        ctx: &Ctx<'s>,
+        pattern: &Data,
+        data: &Data,
+        frags: &[String],
+    ) -> Result<(), SchemaError> {
+        let Data::String(text) = data else {
+            return Ok(());
+        };
+        let Data::String(source) = pattern else {
+            return Err(unsupported(
+                "pattern",
+                "Regexp.new with a non-String pattern is not reproduced",
+            ));
+        };
+        let regex = OnigRegex::compile(source, 0).map_err(|e| {
+            unsupported(
+                "pattern",
+                format!("Regexp.new raises for {source:?} ({e}); not reproduced"),
+            )
+        })?;
+        let Some(matched) = regex.is_match(text) else {
+            return Err(unsupported(
+                "pattern",
+                "Onigmo reported a match error; not reproduced",
+            ));
+        };
+        if !matched {
+            let message = format!(
+                "The property '{}' value {} did not match the regex '{}'",
+                build_fragment(frags),
+                data.ruby_inspect()?,
+                source
+            );
+            self.push(ctx, message, frags, Attr::Pattern, Vec::new());
         }
         Ok(())
     }
