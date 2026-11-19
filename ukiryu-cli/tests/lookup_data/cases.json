@@ -1,0 +1,283 @@
+{
+  "source": {
+    "repository": "ukiryu/ukiryu",
+    "revision": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+    "ruby": "ruby 4.0.1",
+    "lockfile_sha256": "b099e607637e0f01f924266c43139cf2bb953c93ee3845cf2a5b6b0692c29518",
+    "generator_sha256": "cfd09d26b1cb0c26a6a1ac477868d6ae726242c3c3a8156347264cb0d3c93fb7"
+  },
+  "cases": [
+    {
+      "id": "which_exact",
+      "args": [
+        "which",
+        "beta"
+      ],
+      "executables": [
+        "beta"
+      ],
+      "implements": {},
+      "profiles": [],
+      "status": 0,
+      "stdout": "\u001b[37m\u001b[0m\n\u001b[36mResolving: beta\u001b[0m\n\u001b[37m  Platform: linux\u001b[0m\n\u001b[37m  Shell: bash\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[32mMatch type: Exact name match\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mSelected tool:\u001b[0m\n\u001b[37m  Tool: beta\u001b[0m\n\u001b[37m  Implements: [\"beta\"]\u001b[0m\n\u001b[37m  Profile: unix\u001b[0m\n\u001b[2m    Platforms: macos, linux\u001b[0m\n\u001b[2m    Shells: bash, sh\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[32mStatus: AVAILABLE\u001b[0m\n\u001b[37m  Executable: {root}/bin/beta\u001b[0m\n\u001b[37m  Version: 2.1\u001b[0m\n",
+      "stderr": ""
+    },
+    {
+      "id": "which_unavailable",
+      "args": [
+        "which",
+        "zeta"
+      ],
+      "executables": [],
+      "implements": {},
+      "profiles": [],
+      "status": 0,
+      "stdout": "\u001b[37m\u001b[0m\n\u001b[36mResolving: zeta\u001b[0m\n\u001b[37m  Platform: linux\u001b[0m\n\u001b[37m  Shell: bash\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[32mMatch type: Exact name match\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mSelected tool:\u001b[0m\n\u001b[37m  Tool: zeta\u001b[0m\n\u001b[37m  Implements: [\"zeta\"]\u001b[0m\n\u001b[37m  Profile: unix\u001b[0m\n\u001b[2m    Platforms: macos, linux\u001b[0m\n\u001b[2m    Shells: bash, sh\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[31mStatus: NOT AVAILABLE\u001b[0m\n\u001b[2m  Tool is not installed or not in PATH\u001b[0m\n",
+      "stderr": ""
+    },
+    {
+      "id": "which_alias",
+      "args": [
+        "which",
+        "zt"
+      ],
+      "executables": [
+        "zeta"
+      ],
+      "implements": {},
+      "profiles": [
+        "beta",
+        "zeta"
+      ],
+      "status": 0,
+      "stdout": "\u001b[37m\u001b[0m\n\u001b[36mResolving: zt\u001b[0m\n\u001b[37m  Platform: linux\u001b[0m\n\u001b[37m  Shell: bash\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[32mMatch type: alias match\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mSelected tool:\u001b[0m\n\u001b[37m  Query: zt\u001b[0m\n\u001b[37m  Resolved to: zeta\u001b[0m\n\u001b[37m  Implements: [\"zeta\"]\u001b[0m\n\u001b[37m  Profile: unix\u001b[0m\n\u001b[2m    Platforms: macos, linux\u001b[0m\n\u001b[2m    Shells: bash, sh\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[32mStatus: AVAILABLE\u001b[0m\n\u001b[37m  Executable: {root}/bin/zeta\u001b[0m\n\u001b[37m  Version: 1.0\u001b[0m\n",
+      "stderr": ""
+    },
+    {
+      "id": "which_alias_without_profiles",
+      "args": [
+        "which",
+        "zt"
+      ],
+      "executables": [
+        "zeta"
+      ],
+      "implements": {},
+      "profiles": [],
+      "status": 1,
+      "stdout": "\u001b[37m\u001b[0m\n\u001b[36mResolving: zt\u001b[0m\n\u001b[37m  Platform: linux\u001b[0m\n\u001b[37m  Shell: bash\u001b[0m\n\u001b[37m\u001b[0m\n",
+      "stderr": "No tool found for: zt\nAvailable tools: beta, zeta\n"
+    },
+    {
+      "id": "which_interface_without_profiles",
+      "args": [
+        "which",
+        "reader/1.0"
+      ],
+      "executables": [
+        "zeta"
+      ],
+      "implements": {
+        "zeta": "reader/1.0"
+      },
+      "profiles": [],
+      "status": 1,
+      "stdout": "\u001b[37m\u001b[0m\n\u001b[36mResolving: reader/1.0\u001b[0m\n\u001b[37m  Platform: linux\u001b[0m\n\u001b[37m  Shell: bash\u001b[0m\n\u001b[37m\u001b[0m\n",
+      "stderr": "No tool found for: reader/1.0\nAvailable tools: beta, zeta\n"
+    },
+    {
+      "id": "which_interface",
+      "args": [
+        "which",
+        "reader/1.0"
+      ],
+      "executables": [
+        "zeta"
+      ],
+      "implements": {
+        "zeta": "reader/1.0"
+      },
+      "profiles": [
+        "beta",
+        "zeta"
+      ],
+      "status": 0,
+      "stdout": "\u001b[37m\u001b[0m\n\u001b[36mResolving: reader/1.0\u001b[0m\n\u001b[37m  Platform: linux\u001b[0m\n\u001b[37m  Shell: bash\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[32mMatch type: interface match\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mSelected tool:\u001b[0m\n\u001b[37m  Query: reader/1.0\u001b[0m\n\u001b[37m  Resolved to: zeta\u001b[0m\n\u001b[37m  Implements: [\"zeta\"]\u001b[0m\n\u001b[37m  Profile: unix\u001b[0m\n\u001b[2m    Platforms: macos, linux\u001b[0m\n\u001b[2m    Shells: bash, sh\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[32mStatus: AVAILABLE\u001b[0m\n\u001b[37m  Executable: {root}/bin/zeta\u001b[0m\n\u001b[37m  Version: 1.0\u001b[0m\n",
+      "stderr": ""
+    },
+    {
+      "id": "which_prefers_available",
+      "args": [
+        "which",
+        "reader/1.0"
+      ],
+      "executables": [
+        "zeta"
+      ],
+      "implements": {
+        "beta": "reader/1.0",
+        "zeta": "reader/1.0"
+      },
+      "profiles": [
+        "beta",
+        "zeta"
+      ],
+      "status": 0,
+      "stdout": "\u001b[37m\u001b[0m\n\u001b[36mResolving: reader/1.0\u001b[0m\n\u001b[37m  Platform: linux\u001b[0m\n\u001b[37m  Shell: bash\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[32mMatch type: interface match\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mSelected tool:\u001b[0m\n\u001b[37m  Query: reader/1.0\u001b[0m\n\u001b[37m  Resolved to: zeta\u001b[0m\n\u001b[37m  Implements: [\"zeta\"]\u001b[0m\n\u001b[37m  Profile: unix\u001b[0m\n\u001b[2m    Platforms: macos, linux\u001b[0m\n\u001b[2m    Shells: bash, sh\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[32mStatus: AVAILABLE\u001b[0m\n\u001b[37m  Executable: {root}/bin/zeta\u001b[0m\n\u001b[37m  Version: 1.0\u001b[0m\n",
+      "stderr": ""
+    },
+    {
+      "id": "which_no_available",
+      "args": [
+        "which",
+        "reader/1.0"
+      ],
+      "executables": [],
+      "implements": {
+        "beta": "reader/1.0",
+        "zeta": "reader/1.0"
+      },
+      "profiles": [
+        "beta",
+        "zeta"
+      ],
+      "status": 0,
+      "stdout": "\u001b[37m\u001b[0m\n\u001b[36mResolving: reader/1.0\u001b[0m\n\u001b[37m  Platform: linux\u001b[0m\n\u001b[37m  Shell: bash\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[32mMatch type: interface match\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mSelected tool:\u001b[0m\n\u001b[37m  Query: reader/1.0\u001b[0m\n\u001b[37m  Resolved to: beta\u001b[0m\n\u001b[37m  Implements: [\"beta\"]\u001b[0m\n\u001b[37m  Profile: unix\u001b[0m\n\u001b[2m    Platforms: macos, linux\u001b[0m\n\u001b[2m    Shells: bash, sh\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[31mStatus: NOT AVAILABLE\u001b[0m\n\u001b[2m  Tool is not installed or not in PATH\u001b[0m\n",
+      "stderr": ""
+    },
+    {
+      "id": "which_missing",
+      "args": [
+        "which",
+        "missing"
+      ],
+      "executables": [],
+      "implements": {},
+      "profiles": [],
+      "status": 1,
+      "stdout": "\u001b[37m\u001b[0m\n\u001b[36mResolving: missing\u001b[0m\n\u001b[37m  Platform: linux\u001b[0m\n\u001b[37m  Shell: bash\u001b[0m\n\u001b[37m\u001b[0m\n",
+      "stderr": "No tool found for: missing\nAvailable tools: beta, zeta\n"
+    },
+    {
+      "id": "which_platform",
+      "args": [
+        "which",
+        "zeta",
+        "--platform",
+        "windows"
+      ],
+      "executables": [],
+      "implements": {},
+      "profiles": [],
+      "status": 1,
+      "stdout": "\u001b[37m\u001b[0m\n\u001b[36mResolving: zeta\u001b[0m\n\u001b[37m  Platform: windows\u001b[0m\n\u001b[37m  Shell: bash\u001b[0m\n\u001b[37m\u001b[0m\n",
+      "stderr": "No tool found for: zeta\nAvailable tools: beta, zeta\n"
+    },
+    {
+      "id": "which_shell",
+      "args": [
+        "which",
+        "zeta",
+        "--shell",
+        "sh"
+      ],
+      "executables": [
+        "zeta"
+      ],
+      "implements": {},
+      "profiles": [],
+      "status": 0,
+      "stdout": "\u001b[37m\u001b[0m\n\u001b[36mResolving: zeta\u001b[0m\n\u001b[37m  Platform: linux\u001b[0m\n\u001b[37m  Shell: sh\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[32mMatch type: Exact name match\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[33mSelected tool:\u001b[0m\n\u001b[37m  Tool: zeta\u001b[0m\n\u001b[37m  Implements: [\"zeta\"]\u001b[0m\n\u001b[37m  Profile: unix\u001b[0m\n\u001b[2m    Platforms: macos, linux\u001b[0m\n\u001b[2m    Shells: bash, sh\u001b[0m\n\u001b[37m\u001b[0m\n\u001b[32mStatus: AVAILABLE\u001b[0m\n\u001b[37m  Executable: {root}/bin/zeta\u001b[0m\n\u001b[37m  Version: 1.0\u001b[0m\n",
+      "stderr": ""
+    },
+    {
+      "id": "which_unknown_platform",
+      "args": [
+        "which",
+        "zeta",
+        "--platform",
+        "unknown"
+      ],
+      "executables": [],
+      "implements": {},
+      "profiles": [],
+      "status": 1,
+      "stdout": "\u001b[37m\u001b[0m\n\u001b[36mResolving: zeta\u001b[0m\n\u001b[37m  Platform: unknown\u001b[0m\n\u001b[37m  Shell: bash\u001b[0m\n\u001b[37m\u001b[0m\n",
+      "stderr": "No tool found for: zeta\nAvailable tools: beta, zeta\n"
+    },
+    {
+      "id": "which_unknown_shell",
+      "args": [
+        "which",
+        "zeta",
+        "--shell",
+        "unknown"
+      ],
+      "executables": [],
+      "implements": {},
+      "profiles": [],
+      "status": 1,
+      "stdout": "\u001b[37m\u001b[0m\n\u001b[36mResolving: zeta\u001b[0m\n\u001b[37m  Platform: linux\u001b[0m\n\u001b[37m  Shell: unknown\u001b[0m\n\u001b[37m\u001b[0m\n",
+      "stderr": "No tool found for: zeta\nAvailable tools: beta, zeta\n"
+    },
+    {
+      "id": "list_orphan",
+      "args": [
+        "list"
+      ],
+      "executables": [
+        "beta",
+        "zeta"
+      ],
+      "implements": {},
+      "profiles": [],
+      "status": 0,
+      "stdout": "\u001b[36mAvailable tools (2):\u001b[0m\n\u001b[36m  beta/1.0:\u001b[0m\n\u001b[32m    [\u2713]  beta                 v2.1\u001b[0m\n\u001b[31m  [?] zeta                 error: Tool not found: zeta\u001b[0m\n",
+      "stderr": ""
+    },
+    {
+      "id": "list_interface_fallback",
+      "args": [
+        "list"
+      ],
+      "executables": [
+        "beta",
+        "zeta"
+      ],
+      "implements": {
+        "beta": "zeta/1.0"
+      },
+      "profiles": [],
+      "status": 0,
+      "stdout": "\u001b[36mAvailable tools (2):\u001b[0m\n\u001b[36m  zeta/1.0:\u001b[0m\n\u001b[32m    [\u2713]  beta                 v2.1\u001b[0m\n\u001b[31m    [?] zeta                 error: Tool not found: zeta\u001b[0m\n",
+      "stderr": ""
+    },
+    {
+      "id": "exec_help_missing",
+      "args": [
+        "exec",
+        "missing",
+        "help"
+      ],
+      "executables": [],
+      "implements": {},
+      "profiles": [],
+      "status": 1,
+      "stdout": "",
+      "stderr": "Ukiryu::Tool not found: missing\nAvailable tools: cat\n"
+    },
+    {
+      "id": "exec_default_missing",
+      "args": [
+        "exec",
+        "missing"
+      ],
+      "executables": [],
+      "implements": {},
+      "profiles": [],
+      "status": 1,
+      "stdout": "",
+      "stderr": "Ukiryu::Tool not found: missing\n"
+    }
+  ]
+}

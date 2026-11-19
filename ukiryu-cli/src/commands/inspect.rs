@@ -1,5 +1,5 @@
 //! `ukiryu version`, `ukiryu system`, `ukiryu config`, `list`, `commands`, `info`,
-//! `opts`, `register` and `resolve`; `which` is gated.
+//! `opts`, `register`, `resolve` and `which`.
 //!
 //! Source: ukiryu `lib/ukiryu/cli_commands/{base,version,system,config,list,commands,info,opts,register,resolve}_command.rb`
 //! at ab6df353c6dc2d7faf7817a86aafcafa82579896. These verbs print with
@@ -24,9 +24,6 @@
 //! (`Tool.find_by`), [`Discovery`] and [`VersionResolver`].
 //!
 //! Not covered here:
-//! - `which` is gated ([`which`] returns [`InspectError::Gated`]), and so is
-//!   the interface path of `list` (a tool whose own version file is missing).
-//!   They need core APIs that are not wired here yet: [`FIND_BY_NEEDS`].
 //! - `config get|set|unset` run `setup_register` first in the source, which
 //!   can clone the default register into `~/.ukiryu/register`. That bootstrap
 //!   does not change their output and is not performed here; `config list`,
@@ -56,9 +53,7 @@ use ukiryu::environment::Environment;
 use ukiryu::executable::{find_in_path, DiscoveryContext, Platform};
 use ukiryu::extractors::base::ProcessHost;
 use ukiryu::extractors::man::{FileSystem, ManPageParser};
-use ukiryu::models::{
-    Attr, CommandDefinition, ModelError, Text, ToolMetadata, Value as ModelValue,
-};
+use ukiryu::models::{Attr, CommandDefinition, Text, Value as ModelValue};
 use ukiryu::register::{self, Git, Register};
 use ukiryu::register_lookup::{self, LookupError};
 use ukiryu::render::OutputWrite;
@@ -836,39 +831,6 @@ fn setup_register(
     })
 }
 
-/// `Register.load_tool_metadata(name)` for a name the register lists: the
-/// tool's own version file. `None` is the source's interface fallback (the
-/// version file is missing or empty), which needs [`FIND_BY_NEEDS`]. The error
-/// is the Ruby class and message.
-fn tool_metadata(
-    register: &Register,
-    name: &str,
-) -> Result<Option<ToolMetadata>, (&'static str, String)> {
-    let yaml = match register.load_tool_yaml(name, None) {
-        Ok(Some(yaml)) => yaml,
-        Ok(None) => return Ok(None),
-        Err(error) => return Err((error.class_name(), error.to_string())),
-    };
-    let tree: yeptris::Value =
-        ukiryu::from_yaml(&yaml).map_err(|e| ("Psych::SyntaxError", e.to_string()))?;
-    if matches!(tree, yeptris::Value::Null | yeptris::Value::Bool(false)) {
-        return Ok(None);
-    }
-    let model_error = |e: ModelError| (e.ruby_class(), e.message);
-    let hash = ModelValue::from_yaml_value(&tree).map_err(model_error)?;
-    ToolMetadata::from_hash(&hash, name, register.path().to_str())
-        .map(Some)
-        .map_err(model_error)
-}
-
-/// The core APIs `which` and the interface path of `list` need and that are
-/// not wired into these handlers yet.
-pub const FIND_BY_NEEDS: &str = "core APIs that do not exist yet: the register scanner \
-     (routing::RegisterTool values built from a Register's tools directory for routing::ToolIndex), \
-     Tool.find_by (ToolFinder.find_by: interface and alias lookup), \
-     the Register.load_tool_metadata interface fallback, \
-     and ToolDefinition#compatible_profile with Tools::Generator.load_tool_definition (used by which)";
-
 fn gated(what: &str, needs: &str, partial: Vec<OutputWrite>) -> InspectError {
     InspectError::Gated {
         what: what.to_owned(),
@@ -1133,31 +1095,16 @@ pub fn list(ctx: &HandlerContext) -> Result<CommandOutcome, InspectError> {
 
     let mut interfaces: Vec<(String, Vec<String>)> = Vec::new();
     let mut standalone: Vec<String> = Vec::new();
+    let index = register_lookup::load_tool_index(&register);
     for name in &tools {
-        match tool_metadata(&register, name) {
-            Ok(Some(metadata)) => match txt(&metadata.implements) {
-                Some(interface) => {
-                    match interfaces.iter_mut().find(|(known, _)| *known == interface) {
-                        Some((_, impls)) => impls.push(name.clone()),
-                        None => interfaces.push((interface, vec![name.clone()])),
-                    }
-                }
-                None => standalone.push(name.clone()),
+        let metadata = register_lookup::load_tool_metadata(&register, &index, name)
+            .map_err(|error| lookup_failure(error, out.writes.clone()))?;
+        match metadata.and_then(|metadata| txt(&metadata.implements)) {
+            Some(interface) => match interfaces.iter_mut().find(|(known, _)| *known == interface) {
+                Some((_, implementations)) => implementations.push(name.clone()),
+                None => interfaces.push((interface, vec![name.clone()])),
             },
-            Ok(None) => {
-                return Err(gated(
-                    &format!("list (interface lookup for {name})"),
-                    FIND_BY_NEEDS,
-                    out.writes,
-                ))
-            }
-            Err((class, message)) => {
-                return Err(InspectError::Raised {
-                    class,
-                    message,
-                    partial: out.writes,
-                })
-            }
+            None => standalone.push(name.clone()),
         }
     }
 
@@ -1933,11 +1880,8 @@ fn opts_command(out: &mut Out, title: &str, command: &CommandDefinition) -> Resu
     Ok(())
 }
 
-/// `which` falls back to interface and alias discovery and reads
-/// `compatible_profile`: gated, see [`FIND_BY_NEEDS`].
-pub fn which(_input: WhichInput, _ctx: &HandlerContext) -> Result<CommandOutcome, InspectError> {
-    Err(gated("which", FIND_BY_NEEDS, Vec::new()))
-}
+mod which;
+pub use which::which;
 
 // --------------------------------------------------------------- register
 

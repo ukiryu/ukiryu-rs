@@ -23,7 +23,7 @@ use crate::commands::execute::{
 };
 use crate::commands::inspect::{
     self, CommandsInput, ConfigInput, HandlerContext, InfoInput, InspectError, OptsInput,
-    RegisterInput, ResolveInput, SystemInput, VersionInput,
+    RegisterInput, ResolveInput, SystemInput, VersionInput, WhichInput,
 };
 use crate::commands::CommandOutcome;
 use clap::error::ErrorKind;
@@ -40,10 +40,6 @@ use ukiryu::runtime::{Clock, Host, Runtime};
 
 /// Exit status of a verb whose handler is not integrated in this build.
 pub const GATED_EXIT: i32 = 2;
-
-/// Verbs of the source CLI whose handlers are not merged yet, with the
-/// component they wait for.
-const GATED_VERBS: [(&str, &str); 1] = [("which", "the register and tool APIs (K22-CLI-INSPECT)")];
 
 /// Run the CLI over `args` (including the program name) and return the exit
 /// status. All output goes to the process's stdout, stderr and files.
@@ -259,16 +255,19 @@ fn dispatch(verb: &str, sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Fai
         "exec" => exec(sub, io),
         "run-file" => run_file(sub, io),
         "cache" => cache(sub, io),
-        other => {
-            let needs = GATED_VERBS
-                .iter()
-                .find(|(name, _)| *name == other)
-                .map_or("its handler", |(_, needs)| *needs);
-            Err(Failure::Gated {
-                what: other.to_owned(),
-                needs,
-            })
+        "which" => {
+            let ctx = handler_context(text(sub, "register")?)?;
+            let input = WhichInput {
+                identifier: required(sub, "identifier")?,
+                platform: text(sub, "platform")?,
+                shell: text(sub, "shell")?,
+            };
+            inspect_outcome(inspect::which(input, &ctx), io)
         }
+        other => Err(Failure::Gated {
+            what: other.to_owned(),
+            needs: "its handler",
+        }),
     }
 }
 

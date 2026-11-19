@@ -15,8 +15,9 @@
 //! `formatted_duration`, the table's `Duration:`) are masked on both sides.
 //!
 //! Cases listed in [`OPEN`] must end in `Gated`/`Unsupported`; cases in
-//! [`UNQUALIFIED`] are recorded deviations from the source and only have to
-//! run. Every other case must match exactly.
+//! [`YEPTRIS_DIAGNOSTICS`] keep separate exact target parser diagnostics;
+//! their exit status and diagnostic prefix still match Ruby. Every other
+//! case must match exactly.
 #![cfg(target_os = "linux")]
 
 use serde_json::Value as Json;
@@ -38,14 +39,6 @@ use ukiryu_cli::commands::CommandOutcome;
 /// end in `ExecuteError::Gated` or `ExecuteError::Unsupported`.
 const OPEN: &[(&str, &str)] = &[
     (
-        "exec_register_no_command",
-        "default command from Register.load_tool_metadata (ToolMetadata#default_command)",
-    ),
-    (
-        "exec_help_register",
-        "exec help resolves the tool with Tool.find_by",
-    ),
-    (
         "exec_register_unknown_param",
         "NoMethodError names an anonymous options class by address",
     ),
@@ -63,11 +56,9 @@ const OPEN: &[(&str, &str)] = &[
     ),
 ];
 
-/// Recorded deviations from the source (they must run, not match).
-const UNQUALIFIED: &[(&str, &str)] = &[(
-    "runfile_invalid_yaml",
-    "the YAML diagnostic is the Yeptris parser's, not libyaml's",
-)];
+/// Exact diagnostics from the mandated Yeptris parser, recorded separately
+/// from the frozen libyaml observations. These are target checks, not byte parity.
+const YEPTRIS_DIAGNOSTICS: &str = include_str!("execute_data/yeptris_diagnostics.json");
 
 fn cases() -> Json {
     let text = include_str!("execute_data/cases.json");
@@ -401,7 +392,8 @@ fn execute_cases_match_ruby_captures() {
             fs::create_dir_all(root.join(d)).unwrap();
         }
         let open = OPEN.iter().any(|(c, _)| *c == id);
-        let unqualified = UNQUALIFIED.iter().any(|(c, _)| *c == id);
+        let diagnostics: Json = serde_json::from_str(YEPTRIS_DIAGNOSTICS).unwrap();
+        let diagnostic = diagnostics.get(id);
         match run_case(case, &root) {
             Outcome::Open(reason) if open => {
                 counts[1] += 1;
@@ -411,7 +403,17 @@ fn execute_cases_match_ruby_captures() {
             Outcome::Shown(_) if open => {
                 failures.push(format!("{id}: listed as open but produced an outcome"))
             }
-            Outcome::Shown(_) if unqualified => counts[2] += 1,
+            Outcome::Shown(shown) if diagnostic.is_some() => {
+                let want = expected(case);
+                assert_eq!(shown.status, want.status, "{id}");
+                assert_eq!(shown.stdout, want.stdout, "{id}");
+                assert!(
+                    want.stderr.starts_with("Invalid YAML in request file: "),
+                    "{id}"
+                );
+                assert_eq!(shown.stderr, diagnostic.unwrap().as_str().unwrap(), "{id}");
+                counts[2] += 1;
+            }
             Outcome::Shown(shown) => {
                 let want = expected(case);
                 if same(&want, &shown) {
