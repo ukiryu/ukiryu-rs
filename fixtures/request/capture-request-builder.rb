@@ -46,11 +46,19 @@ COMMAND = {
 command = Ukiryu::CliCommands::RunFileCommand.allocate
 definition = Ukiryu::Models::CommandDefinition.from_yaml(COMMAND.to_yaml)
 cases_dir = File.join(__dir__, 'cases')
-ids = %w[spec-valid builder-convert arguments-key-collision extra-top-level-fields]
+# Every request fixture in cases/ (the run-file corpus), in file-name order.
+# A request that RunFileCommand#load_execution_request rejects never reaches
+# the builder; only its error class is recorded under "load" (reference.json
+# holds the full load outcome and message), and there is no builder outcome.
+ids = Dir.children(cases_dir).select { |f| f.end_with?('.yaml') }.map { |f| f.delete_suffix('.yaml') }.sort
 cases = ids.map do |id|
-  request = command.send(:load_execution_request, File.join(cases_dir, "#{id}.yaml"))
-  params = command.send(:stringify_keys, request['arguments'])
+  request = begin
+    command.send(:load_execution_request, File.join(cases_dir, "#{id}.yaml"))
+  rescue StandardError => e
+    next { 'id' => id, 'load' => { 'error' => { 'class' => e.class.name } } }
+  end
   outcome = begin
+    params = command.send(:stringify_keys, request['arguments'])
     { 'ok' => Harness.new(:bash, :linux).build_args(definition, params) }
   rescue StandardError => e
     { 'error' => { 'class' => e.class.name, 'message' => e.message } }
