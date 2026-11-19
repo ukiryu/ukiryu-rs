@@ -1,0 +1,271 @@
+{
+  "oracle": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+  "ruby": "4.0.1",
+  "engine": "ruby",
+  "host": "x86_64-linux",
+  "generator_commit": "a73885d0f3f0a4add06fff5e51a653dcf663851c",
+  "generator_sha256": "40d6dcb60c1d9559fb4f6e0f9f6c669d3f60523712ccc1f0d43e46991bb64b7b",
+  "spec_sha256": {
+    "spec/ukiryu/executor_spec.rb": "baa49011899293b209b946e380a72ce734c636a8c03bd977bc87762ecc2a23d5",
+    "spec/ukiryu/executor_stdin_spec.rb": "bb8a1cd0423118c3c8258de46e5994102a37ea3e6326ead45f7d300f5d5ec19b",
+    "spec/ukiryu/cli_stdin_spec.rb": "02d2655bb929f12651e1f02a43ffbb59aab50b45b31ba73c0c0057c262554d46"
+  },
+  "examples": [
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:1:1:1]",
+      "full_description": "Ukiryu::Executor.execute with valid command executes successfully and returns Result"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:1:1:2]",
+      "full_description": "Ukiryu::Executor.execute with valid command captures stdout"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:1:1:3]",
+      "full_description": "Ukiryu::Executor.execute with valid command captures exit status"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:1:1:4]",
+      "full_description": "Ukiryu::Executor.execute with valid command captures metadata with timing"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:1:2:1]",
+      "full_description": "Ukiryu::Executor.execute with timeout option uses custom timeout when specified"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:1:2:2]",
+      "full_description": "Ukiryu::Executor.execute with timeout option raises TimeoutError when command exceeds timeout"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:1:3:1]",
+      "full_description": "Ukiryu::Executor.execute with environment variables passes environment variables to command"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:1:3:2]",
+      "full_description": "Ukiryu::Executor.execute with environment variables merges with existing environment"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:1:4:1]",
+      "full_description": "Ukiryu::Executor.execute with working directory option changes to specified directory before execution"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:1:5:1]",
+      "full_description": "Ukiryu::Executor.execute with allow_failure option returns Result with non-zero exit status instead of raising"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:1:5:2]",
+      "full_description": "Ukiryu::Executor.execute with allow_failure option raises ExecutionError when command fails and allow_failure is false"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:1:5:3]",
+      "full_description": "Ukiryu::Executor.execute with allow_failure option includes stderr in error message"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:1:6:1]",
+      "full_description": "Ukiryu::Executor.execute error formatting includes executable name in error message"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:1:6:2]",
+      "full_description": "Ukiryu::Executor.execute error formatting includes exit status in error message"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:1:7:1]",
+      "full_description": "Ukiryu::Executor.execute command building builds appropriate command for the shell"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:1:7:2]",
+      "full_description": "Ukiryu::Executor.execute command building includes executable path in CommandInfo"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:2:1:1]",
+      "full_description": "Ukiryu::Executor.find_executable with common executables finds executables in PATH"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:2:1:2]",
+      "full_description": "Ukiryu::Executor.find_executable with common executables returns nil for non-existent command"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:2:2:1]",
+      "full_description": "Ukiryu::Executor.find_executable with additional search paths searches in additional paths"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:2:2:2]",
+      "full_description": "Ukiryu::Executor.find_executable with additional search paths prioritizes additional paths when specified"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:3:1]",
+      "full_description": "Ukiryu::Executor.build_command joins executable and arguments properly"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:3:2]",
+      "full_description": "Ukiryu::Executor.build_command formats path for the shell"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:4:1]",
+      "full_description": "Ukiryu::Executor.prepare_environment includes user-specified variables"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:4:2]",
+      "full_description": "Ukiryu::Executor.prepare_environment preserves existing environment"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:4:3]",
+      "full_description": "Ukiryu::Executor.prepare_environment merges shell-specific headless environment"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:5:1:1]",
+      "full_description": "Ukiryu::Executor.extract_status when process exited normally returns exit status"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:5:2:1]",
+      "full_description": "Ukiryu::Executor.extract_status when process terminated by signal returns 128 + signal number"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:5:3:1]",
+      "full_description": "Ukiryu::Executor.extract_status when process was stopped returns 128 + stop signal"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:5:4:1]",
+      "full_description": "Ukiryu::Executor.extract_status with unknown status returns 1 as failure code"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:6:1]",
+      "full_description": "Ukiryu::Executor integration tests handles multiple rapid executions"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:6:2]",
+      "full_description": "Ukiryu::Executor integration tests handles commands with special characters in arguments"
+    },
+    {
+      "id": "./spec/ukiryu/executor_spec.rb[1:6:3]",
+      "full_description": "Ukiryu::Executor integration tests properly escapes special shell characters"
+    },
+    {
+      "id": "./spec/ukiryu/executor_stdin_spec.rb[1:1:1:1]",
+      "full_description": "Ukiryu::Executor.execute with stdin with string stdin data passes stdin data to the command"
+    },
+    {
+      "id": "./spec/ukiryu/executor_stdin_spec.rb[1:1:1:2]",
+      "full_description": "Ukiryu::Executor.execute with stdin with string stdin data passes multi-line stdin data"
+    },
+    {
+      "id": "./spec/ukiryu/executor_stdin_spec.rb[1:1:1:3]",
+      "full_description": "Ukiryu::Executor.execute with stdin with string stdin data passes binary stdin data"
+    },
+    {
+      "id": "./spec/ukiryu/executor_stdin_spec.rb[1:1:2:1]",
+      "full_description": "Ukiryu::Executor.execute with stdin with IO object stdin reads from file IO object"
+    },
+    {
+      "id": "./spec/ukiryu/executor_stdin_spec.rb[1:1:2:2]",
+      "full_description": "Ukiryu::Executor.execute with stdin with IO object stdin reads from pipe IO object"
+    },
+    {
+      "id": "./spec/ukiryu/executor_stdin_spec.rb[1:1:3:1]",
+      "full_description": "Ukiryu::Executor.execute with stdin with commands that close stdin early handles Errno::EPIPE gracefully"
+    },
+    {
+      "id": "./spec/ukiryu/cli_stdin_spec.rb[1:1:1]",
+      "full_description": "Ukiryu::CliCommands::RunCommand stdin handling --stdin flag reads from stdin pipe"
+    },
+    {
+      "id": "./spec/ukiryu/cli_stdin_spec.rb[1:1:2]",
+      "full_description": "Ukiryu::CliCommands::RunCommand stdin handling --stdin flag handles multi-line JSON from stdin"
+    },
+    {
+      "id": "./spec/ukiryu/cli_stdin_spec.rb[1:2:1]",
+      "full_description": "Ukiryu::CliCommands::RunCommand stdin handling stdin=- parameter reads from stdin pipe when stdin=- is specified"
+    },
+    {
+      "id": "./spec/ukiryu/cli_stdin_spec.rb[1:2:2]",
+      "full_description": "Ukiryu::CliCommands::RunCommand stdin handling stdin=- parameter is equivalent to --stdin flag"
+    },
+    {
+      "id": "./spec/ukiryu/cli_stdin_spec.rb[1:3:1]",
+      "full_description": "Ukiryu::CliCommands::RunCommand stdin handling stdin=@filename parameter reads from file when stdin=@filename is specified"
+    },
+    {
+      "id": "./spec/ukiryu/cli_stdin_spec.rb[1:3:2]",
+      "full_description": "Ukiryu::CliCommands::RunCommand stdin handling stdin=@filename parameter shows error when file does not exist"
+    },
+    {
+      "id": "./spec/ukiryu/cli_stdin_spec.rb[1:4:1]",
+      "full_description": "Ukiryu::CliCommands::RunCommand stdin handling stdin=data parameter passes data directly to command stdin"
+    },
+    {
+      "id": "./spec/ukiryu/cli_stdin_spec.rb[1:5:1]",
+      "full_description": "Ukiryu::CliCommands::RunCommand stdin handling dry-run mode with stdin shows preview of stdin data"
+    },
+    {
+      "id": "./spec/ukiryu/cli_stdin_spec.rb[1:5:2]",
+      "full_description": "Ukiryu::CliCommands::RunCommand stdin handling dry-run mode with stdin truncates long stdin preview"
+    },
+    {
+      "id": "./spec/ukiryu/cli_stdin_spec.rb[1:6:1]",
+      "full_description": "Ukiryu::CliCommands::RunCommand stdin handling format options with stdin outputs JSON format with stdin"
+    },
+    {
+      "id": "./spec/ukiryu/cli_stdin_spec.rb[1:6:2]",
+      "full_description": "Ukiryu::CliCommands::RunCommand stdin handling format options with stdin outputs YAML format with stdin"
+    },
+    {
+      "id": "./spec/ukiryu/cli_stdin_spec.rb[1:7:1]",
+      "full_description": "Ukiryu::CliCommands::RunCommand stdin handling composition with other commands can pipe output to another command"
+    },
+    {
+      "id": "./spec/ukiryu/cli_stdin_spec.rb[1:7:2]",
+      "full_description": "Ukiryu::CliCommands::RunCommand stdin handling composition with other commands can process output from curl"
+    },
+    {
+      "id": "./spec/ukiryu/cli_stdin_spec.rb[1:8:1]",
+      "full_description": "Ukiryu::CliCommands::RunCommand stdin handling with --raw output format outputs only the command stdout without wrapping"
+    },
+    {
+      "id": "./spec/ukiryu/cli_stdin_spec.rb[1:8:2]",
+      "full_description": "Ukiryu::CliCommands::RunCommand stdin handling with --raw output format passes through stderr to actual stderr"
+    }
+  ],
+  "pipe": {
+    "stdout_hex": "706970652064617461",
+    "stderr_hex": "",
+    "exit_status": 0
+  },
+  "commands": [
+    {
+      "executable": "echo",
+      "arguments": [
+        "hello",
+        "world"
+      ],
+      "command": "'echo' 'hello' 'world'",
+      "stdout_hex": "68656c6c6f20776f726c640a",
+      "stderr_hex": "",
+      "exit_status": 0
+    },
+    {
+      "executable": "/usr/bin/echo",
+      "arguments": [
+        "hello world",
+        "test's",
+        "$HOME; & | *"
+      ],
+      "command": "'/usr/bin/echo' 'hello world' 'test'\\''s' '$HOME; & | *'",
+      "stdout_hex": "68656c6c6f20776f726c64207465737427732024484f4d453b2026207c202a0a",
+      "stderr_hex": "",
+      "exit_status": 0
+    }
+  ],
+  "lookup": [
+    {
+      "command": "common",
+      "found": "<ROOT>/path/common"
+    },
+    {
+      "command": "absent",
+      "found": null
+    },
+    {
+      "command": "extra_only",
+      "found": "<ROOT>/extra/extra_only"
+    }
+  ]
+}

@@ -586,9 +586,56 @@ fn stdin_from_reader() {
         "stdin_io_file",
         &run(bash("/bin/cat", &[], Seconds::Int(90)).stdin_reader(file)),
     );
-    let pipe_like = std::io::Cursor::new(b"pipe data".to_vec());
-    let execution = run(bash("/bin/cat", &[], Seconds::Int(90)).stdin_reader(pipe_like));
-    assert_eq!(execution.result.stdout(), b"pipe data");
+    // A producer remains alive until the executor reads its first chunk.
+    // This exercises a real OS pipe, including data that is not available
+    // when stdin_reader is called; a Cursor cannot cover that contract.
+    use std::io::{Read, Write};
+    use std::process::{Command, Stdio};
+    use std::sync::mpsc::{self, Sender};
+
+    struct LivePipe {
+        reader: std::process::ChildStdout,
+        first_read: Option<Sender<()>>,
+    }
+    impl Read for LivePipe {
+        fn read(&mut self, bytes: &mut [u8]) -> std::io::Result<usize> {
+            let count = self.reader.read(bytes)?;
+            if count > 0 {
+                if let Some(signal) = self.first_read.take() {
+                    signal.send(()).expect("producer controller");
+                }
+            }
+            Ok(count)
+        }
+    }
+
+    let mut producer = Command::new("sh")
+        .args(["-c", "printf pipe; read -r release; printf ' data'"])
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .expect("spawn real pipe producer");
+    let (signal, first_read) = mpsc::channel();
+    let reader = LivePipe {
+        reader: producer.stdout.take().unwrap(),
+        first_read: Some(signal),
+    };
+    let mut release = producer.stdin.take().unwrap();
+    let controller = std::thread::spawn(move || {
+        first_read
+            .recv_timeout(Duration::from_secs(10))
+            .expect("executor must start reading the live pipe");
+        release.write_all(b"continue\n").expect("release producer");
+    });
+    let execution = run(bash("/bin/cat", &[], Seconds::Int(90)).stdin_reader(reader));
+    controller.join().expect("producer controller panicked");
+    assert!(producer.wait().expect("reap producer").success());
+    let captured: Value =
+        serde_json::from_str(include_str!("executor_data/source_examples.json")).unwrap();
+    let expected = &captured["pipe"];
+    assert_eq!(hex(execution.result.stdout()), expected["stdout_hex"]);
+    assert_eq!(hex(execution.result.stderr()), expected["stderr_hex"]);
+    assert_eq!(execution.result.exit_status(), expected["exit_status"]);
 }
 
 #[test]
