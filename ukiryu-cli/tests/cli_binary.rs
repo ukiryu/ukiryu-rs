@@ -554,12 +554,13 @@ fn author_target_trace_rows_through_the_binary_unqualified() {
 /// Execute rows the handlers gate (the handler test's `OPEN`): the binary
 /// must exit with the gated status and report it, never succeed.
 #[cfg(target_os = "linux")]
-const EXECUTE_GATED: [&str; 5] = [
+const EXECUTE_GATED: [&str; 6] = [
     "exec_register_no_command",
     "exec_help_register",
     "exec_register_unknown_param",
     "runfile_execute",
     "runfile_execute_json",
+    "runfile_execute_table",
 ];
 
 /// Recorded deviation: the YAML diagnostic is the Yeptris parser's, not
@@ -786,7 +787,7 @@ fn execute_cases_through_the_binary() {
     assert_eq!(counts.gated, EXECUTE_GATED.len(), "{counts:?}");
     assert_eq!(counts.unqualified, EXECUTE_UNQUALIFIED.len(), "{counts:?}");
     assert_eq!(counts.terminal, 12, "{counts:?}");
-    assert_eq!(counts.exact, 79, "{counts:?}");
+    assert_eq!(counts.exact, 85, "{counts:?}");
 }
 
 // ------------------------------------------------------------------ grammar
