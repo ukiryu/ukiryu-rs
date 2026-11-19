@@ -16,7 +16,8 @@
 //! | `validate` | `Type.validate`, `DefinitionValidator.validate_string` ([`ops`]) |
 //! | `schema` | `SchemaValidator.validate_profile`, `JSON::Validator.fully_validate` ([`ops`]) |
 //! | `results` | exit-code meanings of a tool's commands ([`ops`]) |
-//! | `lint` | `DefinitionLinter.lint_string` ([`document`]) |
+//! | `lint` | `DefinitionLinter.lint_string` and native `lint_file` ([`document`]) |
+//! | `definition` | native definition loading/cache, discovery, version resolution and docs ([`definition`]) |
 //! | `yaml` | `YAML.safe_load`, model `from_yaml` and `to_yaml` ([`document`]) |
 //! | `find_by` | `Tool.find_by` over a register, native builds only ([`native`]); its value is a tool identity or `null` |
 //! | `execute` | `Tool#execute`, native builds only ([`native`]); its value is a [`results`] payload |
@@ -24,6 +25,8 @@
 //!
 //! Register directories and process execution exist only in native builds:
 //! [`native`] is not compiled for WebAssembly.
+#[cfg(not(target_arch = "wasm32"))]
+pub mod definition;
 pub mod document;
 pub mod error;
 #[cfg(not(target_arch = "wasm32"))]
@@ -41,6 +44,8 @@ use serde_json::{json, Value};
 #[serde(tag = "op", rename_all = "snake_case", deny_unknown_fields)]
 enum Request {
     Version,
+    #[cfg(not(target_arch = "wasm32"))]
+    Definition(definition::DefinitionRequest),
     Escape(portable::EscapeRequest),
     Resolve(Box<ops::ResolveRequest>),
     Build(Box<ops::BuildRequest>),
@@ -92,6 +97,8 @@ pub fn process(input: &[u8]) -> Value {
         Request::FindBy(request) => native::find_by(*request),
         #[cfg(not(target_arch = "wasm32"))]
         Request::Executor(request) => native::executor(*request),
+        #[cfg(not(target_arch = "wasm32"))]
+        Request::Definition(request) => definition::process(request),
         Request::Version => json!({"ok":true,"version":crate::VERSION,"abi_version":1}),
         Request::ParseYaml { yaml } => parse_yaml_json(&yaml),
         Request::ResolveConfig {

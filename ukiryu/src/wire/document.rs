@@ -26,19 +26,25 @@ use crate::types::Value;
 pub enum LintRequest {
     /// `DefinitionLinter.lint_string(yaml).to_h`.
     String { yaml: String },
+    /// `DefinitionLinter.lint_file(path).to_h`, including missing-file issues.
+    #[cfg(not(target_arch = "wasm32"))]
+    File { path: String },
 }
 
 pub fn lint(request: LintRequest) -> Json {
-    match request {
-        LintRequest::String { yaml } => match DefinitionLinter::lint_string(&yaml, None) {
-            Ok(result) => match encoded(&lint_hash(&result)) {
-                Ok(value) => json!({"ok": true, "value": value}),
-                Err(error) => error,
-            },
-            Err(error) => match error.ruby_class() {
-                Some(class) => ruby(class, error.message()),
-                None => transport("NOT_PORTED", error.message()),
-            },
+    let result = match request {
+        LintRequest::String { yaml } => DefinitionLinter::lint_string(&yaml, None),
+        #[cfg(not(target_arch = "wasm32"))]
+        LintRequest::File { path } => DefinitionLinter::lint_file(&path, None),
+    };
+    match result {
+        Ok(result) => match encoded(&lint_hash(&result)) {
+            Ok(value) => json!({"ok": true, "value": value}),
+            Err(error) => error,
+        },
+        Err(error) => match error.ruby_class() {
+            Some(class) => ruby(class, error.message()),
+            None => transport("NOT_PORTED", error.message()),
         },
     }
 }
