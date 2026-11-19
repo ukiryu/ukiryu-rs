@@ -277,6 +277,17 @@ pub enum ResolveRequest {
     },
     /// `Tool.get`: the loaded tool's identity, profile and executable.
     Tool(ToolRequest),
+    /// The resolved native definition and selected profile, for binding model views.
+    ToolProfile(ToolRequest),
+    /// Classic OOP generation loads a raw register definition, not Tool.get's
+    /// implementation-conversion chain. Range-only indexes can return no YAML.
+    #[cfg(not(target_arch = "wasm32"))]
+    ToolClass {
+        register: String,
+        tool: String,
+        platform: String,
+        shell: String,
+    },
 }
 
 /// A Ruby value as a version-range input.
@@ -466,6 +477,19 @@ pub fn resolve(request: ResolveRequest) -> Json {
             version,
         } => version_spec(&index, &implementation, &version),
         ResolveRequest::Tool(request) => load_tool(&request).map(|tool| tool_identity(&tool)),
+        #[cfg(not(target_arch = "wasm32"))]
+        ResolveRequest::ToolClass {
+            register,
+            tool,
+            platform,
+            shell,
+        } => super::native::tool_class(&register, &tool, &platform, &shell),
+        ResolveRequest::ToolProfile(request) => load_tool(&request).and_then(|tool| {
+            let definition = tool.definition().to_hash().map_err(|e| model_error(&e))?;
+            let definition =
+                value::encode(&definition).map_err(|e| ruby(value::EncodeError::CLASS, e))?;
+            Ok(json!({"definition": definition, "profile_index": tool.profile_index()}))
+        }),
     };
     match result {
         Ok(value) => json!({"ok": true, "value": value}),

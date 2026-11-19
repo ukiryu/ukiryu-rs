@@ -12,7 +12,10 @@ use super::error::{model_error, ruby, schema_error, transport};
 use super::value::{encode, EncodeError};
 use crate::definition::linter::{DefinitionLinter, LintResult};
 use crate::definition::LintIssueHash;
-use crate::models::{Model, ToolDefinition};
+use crate::models::{
+    ArgumentDefinition, CommandDefinition, FlagDefinition, Model, OptionDefinition,
+    PlatformProfile, ToolDefinition,
+};
 use crate::schema::{self, Data, Permitted, SchemaError};
 use crate::types::Value;
 
@@ -105,6 +108,13 @@ pub enum YamlRequest {
     /// `Ukiryu::Models::<model>.from_yaml(yaml).to_yaml` for a lutaml model
     /// (`ToolDefinition`), emitted by the core's Yeptris engine.
     ModelToYaml { model: String, yaml: String },
+    /// Native model fields in the typed wire encoding, after core casting/defaults.
+    ModelRead { model: String, yaml: String },
+    /// Native model YAML from a binding view; serialization stays in the core.
+    ModelDump {
+        model: String,
+        value: super::value::Typed,
+    },
 }
 
 pub fn yaml(request: YamlRequest) -> Json {
@@ -115,18 +125,81 @@ pub fn yaml(request: YamlRequest) -> Json {
             .and_then(|v| encoded(&v)),
         #[cfg(not(target_arch = "wasm32"))]
         YamlRequest::ModelLoad { model, path } => snapshot::load(&model, &path),
-        YamlRequest::ModelToYaml { model, yaml } => match model.as_str() {
-            "ToolDefinition" => ToolDefinition::from_yaml(&yaml)
-                .and_then(|m| m.to_yaml())
-                .map(Json::String)
-                .map_err(|e| model_error(&e)),
-            other => Err(unknown_model(other)),
-        },
+        YamlRequest::ModelToYaml { model, yaml } => model_yaml(&model, &yaml),
+        YamlRequest::ModelRead { model, yaml } => model_read(&model, &yaml),
+        YamlRequest::ModelDump { model, value } => model_dump(&model, &value.0),
     };
     match value {
         Ok(value) => json!({"ok": true, "value": value}),
         Err(error) => error,
     }
+}
+
+// The same serde models handle both bindings and core callers. No second YAML
+// mapping or runtime serializer is introduced by exposing these views.
+macro_rules! dispatch_model {
+    ($name:expr, $kind:ident, $body:expr) => {
+        match $name {
+            "ToolDefinition" => {
+                type $kind = ToolDefinition;
+                $body
+            }
+            "PlatformProfile" => {
+                type $kind = PlatformProfile;
+                $body
+            }
+            "CommandDefinition" => {
+                type $kind = CommandDefinition;
+                $body
+            }
+            "ArgumentDefinition" => {
+                type $kind = ArgumentDefinition;
+                $body
+            }
+            "OptionDefinition" => {
+                type $kind = OptionDefinition;
+                $body
+            }
+            "FlagDefinition" => {
+                type $kind = FlagDefinition;
+                $body
+            }
+            other => Err(unknown_model(other)),
+        }
+    };
+}
+
+fn model_yaml(name: &str, yaml: &str) -> Result<Json, Json> {
+    dispatch_model!(
+        name,
+        M,
+        M::from_yaml(yaml)
+            .and_then(|m| m.to_yaml())
+            .map(Json::String)
+            .map_err(|e| model_error(&e))
+    )
+}
+
+fn model_read(name: &str, yaml: &str) -> Result<Json, Json> {
+    dispatch_model!(
+        name,
+        M,
+        M::from_yaml(yaml)
+            .and_then(|m| m.to_hash())
+            .map_err(|e| model_error(&e))
+            .and_then(|v| encoded(&v))
+    )
+}
+
+fn model_dump(name: &str, value: &Value) -> Result<Json, Json> {
+    dispatch_model!(
+        name,
+        M,
+        M::from_ruby(value)
+            .and_then(|m| m.to_yaml())
+            .map(Json::String)
+            .map_err(|e| model_error(&e))
+    )
 }
 
 /// A core reader failure with `detail`: the failure category and the

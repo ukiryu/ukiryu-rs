@@ -15,7 +15,7 @@ use crate::environment::Environment;
 use crate::executable::DiscoveryContext as PathContext;
 use crate::execution::Seconds;
 use crate::extractors::base::ProcessHost;
-use crate::models::ToolDefinition;
+use crate::models::{Model, ToolDefinition};
 use crate::register::{DiscoveryContext, Git, Register};
 use crate::register_lookup::{find_by_input, load_tool_index, Identifier, LookupError, Target};
 use crate::runtime::{native_platform, ShellName};
@@ -76,6 +76,41 @@ pub(super) fn register_tool(
     let source = RegisterSource::new(Register::at(register), host, runner);
     let cache = ToolCache::new();
     tool::get(&source, &cache, name, options).map_err(|e| tool_error(&e))
+}
+
+/// Definition used by the classic generated OOP classes. Keep the raw YAML
+/// loader distinct from Tool.get: it lists only equals-version entries.
+pub(super) fn tool_class(
+    register: &str,
+    name: &str,
+    platform: &str,
+    shell: &str,
+) -> Result<Json, Json> {
+    let yaml = Register::at(register)
+        .load_tool_yaml(name, None)
+        .map_err(|e| ruby(e.class_name(), e.to_string()))?
+        .ok_or_else(|| not_found(name))?;
+    let mut definition =
+        ToolDefinition::from_yaml(&yaml).map_err(|e| super::error::model_error(&e))?;
+    definition.resolve_inheritance();
+    let selected = definition
+        .compatible_profile(platform, shell)
+        .map_err(|e| super::error::model_error(&e))?;
+    let index = selected.and_then(|selected| {
+        definition
+            .profiles
+            .as_ref()
+            .and_then(|profiles| profiles.iter().position(|p| std::ptr::eq(p, selected)))
+    });
+    let fields = definition
+        .to_hash()
+        .map_err(|e| super::error::model_error(&e))?;
+    let fields =
+        super::value::encode(&fields).map_err(|e| ruby(super::value::EncodeError::CLASS, e))?;
+    let yaml = definition
+        .to_yaml()
+        .map_err(|e| super::error::model_error(&e))?;
+    Ok(json!({"definition": fields, "profile_index": index, "yaml": yaml}))
 }
 
 #[derive(Debug, Deserialize)]
