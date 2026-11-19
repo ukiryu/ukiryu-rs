@@ -1,0 +1,314 @@
+{
+  "oracle": {
+    "repo": "ukiryu/ukiryu",
+    "sha": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+    "ruby": "ruby 4.0.1 (2026-01-13 revision e04267a14b) +PRISM [x86_64-linux]",
+    "capture_script": "ukiryu/tests/executor_data/capture/capture_executor_wire.rb"
+  },
+  "rows": [
+    {
+      "case": {
+        "id": "echo",
+        "executable": "echo",
+        "args": [
+          "hello",
+          "world"
+        ],
+        "env": {},
+        "shell": "bash",
+        "timeout": 30
+      },
+      "ruby": {
+        "outcome": "result",
+        "stdout": "hello world\n",
+        "stderr": "",
+        "status": 0,
+        "success": true,
+        "executable": "echo",
+        "arguments": [
+          "hello",
+          "world"
+        ],
+        "full_command": "'echo' 'hello' 'world'",
+        "shell": "bash",
+        "tool_name": null,
+        "command_name": null,
+        "timeout": 30
+      }
+    },
+    {
+      "case": {
+        "id": "env_var",
+        "executable": "sh",
+        "args": [
+          "-c",
+          "echo \"$WIRE_VAR\""
+        ],
+        "env": {
+          "WIRE_VAR": "a b"
+        },
+        "shell": "bash",
+        "timeout": 30
+      },
+      "ruby": {
+        "outcome": "result",
+        "stdout": "a b\n",
+        "stderr": "",
+        "status": 0,
+        "success": true,
+        "executable": "sh",
+        "arguments": [
+          "-c",
+          "echo \"$WIRE_VAR\""
+        ],
+        "full_command": "'sh' '-c' 'echo \"$WIRE_VAR\"'",
+        "shell": "bash",
+        "tool_name": null,
+        "command_name": null,
+        "timeout": 30
+      }
+    },
+    {
+      "case": {
+        "id": "stdin",
+        "executable": "cat",
+        "env": {},
+        "shell": "bash",
+        "timeout": 30,
+        "stdin": "line 1\nline 2"
+      },
+      "ruby": {
+        "outcome": "result",
+        "stdout": "line 1\nline 2",
+        "stderr": "",
+        "status": 0,
+        "success": true,
+        "executable": "cat",
+        "arguments": [],
+        "full_command": "'cat'",
+        "shell": "bash",
+        "tool_name": null,
+        "command_name": null,
+        "timeout": 30
+      }
+    },
+    {
+      "case": {
+        "id": "cwd",
+        "executable": "cat",
+        "args": [
+          "in.txt"
+        ],
+        "env": {},
+        "shell": "bash",
+        "timeout": 30,
+        "cwd": true
+      },
+      "ruby": {
+        "outcome": "result",
+        "stdout": "file content",
+        "stderr": "",
+        "status": 0,
+        "success": true,
+        "executable": "cat",
+        "arguments": [
+          "in.txt"
+        ],
+        "full_command": "'cat' 'in.txt'",
+        "shell": "bash",
+        "tool_name": null,
+        "command_name": null,
+        "timeout": 30
+      }
+    },
+    {
+      "case": {
+        "id": "names",
+        "executable": "echo",
+        "args": [
+          "x"
+        ],
+        "env": {},
+        "shell": "sh",
+        "timeout": 30,
+        "tool_name": "echo",
+        "command_name": "say"
+      },
+      "ruby": {
+        "outcome": "result",
+        "stdout": "x\n",
+        "stderr": "",
+        "status": 0,
+        "success": true,
+        "executable": "echo",
+        "arguments": [
+          "x"
+        ],
+        "full_command": "'echo' 'x'",
+        "shell": "sh",
+        "tool_name": "echo",
+        "command_name": "say",
+        "timeout": 30
+      }
+    },
+    {
+      "case": {
+        "id": "allow_failure",
+        "executable": "sh",
+        "args": [
+          "-c",
+          "echo out; echo err >&2; exit 42"
+        ],
+        "env": {},
+        "shell": "bash",
+        "timeout": 30,
+        "allow_failure": true
+      },
+      "ruby": {
+        "outcome": "result",
+        "stdout": "out\n",
+        "stderr": "err\n",
+        "status": 42,
+        "success": false,
+        "executable": "sh",
+        "arguments": [
+          "-c",
+          "echo out; echo err >&2; exit 42"
+        ],
+        "full_command": "'sh' '-c' 'echo out; echo err >&2; exit 42'",
+        "shell": "bash",
+        "tool_name": null,
+        "command_name": null,
+        "timeout": 30
+      }
+    },
+    {
+      "case": {
+        "id": "failure",
+        "executable": "sh",
+        "args": [
+          "-c",
+          "echo err >&2; exit 3"
+        ],
+        "env": {},
+        "shell": "bash",
+        "timeout": 30
+      },
+      "ruby": {
+        "outcome": "raise",
+        "class": "Ukiryu::Errors::ExecutionError",
+        "message": "Command failed: sh\n\nCommand: 'sh' '-c' 'echo err >&2; exit 3'\nExit status: 3\n\nSTDOUT:\n\n\nSTDERR:\nerr"
+      }
+    },
+    {
+      "case": {
+        "id": "float_timeout",
+        "executable": "echo",
+        "args": [
+          "x"
+        ],
+        "env": {},
+        "shell": "bash",
+        "timeout": 2.5
+      },
+      "ruby": {
+        "outcome": "result",
+        "stdout": "x\n",
+        "stderr": "",
+        "status": 0,
+        "success": true,
+        "executable": "echo",
+        "arguments": [
+          "x"
+        ],
+        "full_command": "'echo' 'x'",
+        "shell": "bash",
+        "tool_name": null,
+        "command_name": null,
+        "timeout": 2.5
+      }
+    },
+    {
+      "case": {
+        "id": "timed_out",
+        "executable": "sleep",
+        "args": [
+          "5"
+        ],
+        "env": {},
+        "shell": "bash",
+        "timeout": 1
+      },
+      "ruby": {
+        "outcome": "raise",
+        "class": "Ukiryu::Errors::TimeoutError",
+        "message": "Command timed out after 1 seconds: sleep"
+      }
+    },
+    {
+      "case": {
+        "id": "missing_shell",
+        "executable": "echo",
+        "env": {},
+        "timeout": 30
+      },
+      "ruby": {
+        "outcome": "raise",
+        "class": "ArgumentError",
+        "message": "shell is required - specify :shell option (e.g., shell: :bash)"
+      }
+    },
+    {
+      "case": {
+        "id": "missing_timeout",
+        "executable": "echo",
+        "env": {},
+        "shell": "bash"
+      },
+      "ruby": {
+        "outcome": "raise",
+        "class": "ArgumentError",
+        "message": "timeout is required - specify :timeout option (e.g., timeout: 90)"
+      }
+    },
+    {
+      "case": {
+        "id": "missing_both",
+        "executable": "echo",
+        "env": {}
+      },
+      "ruby": {
+        "outcome": "raise",
+        "class": "ArgumentError",
+        "message": "shell is required - specify :shell option (e.g., shell: :bash)"
+      }
+    },
+    {
+      "case": {
+        "id": "unknown_shell",
+        "executable": "echo",
+        "env": {},
+        "shell": "nosuch",
+        "timeout": 30
+      },
+      "ruby": {
+        "outcome": "raise",
+        "class": "Ukiryu::Errors::UnknownShellError",
+        "message": "Unknown shell: nosuch"
+      }
+    },
+    {
+      "case": {
+        "id": "unknown_shell_no_timeout",
+        "executable": "echo",
+        "env": {},
+        "shell": "nosuch"
+      },
+      "ruby": {
+        "outcome": "raise",
+        "class": "ArgumentError",
+        "message": "timeout is required - specify :timeout option (e.g., timeout: 90)"
+      }
+    }
+  ]
+}
