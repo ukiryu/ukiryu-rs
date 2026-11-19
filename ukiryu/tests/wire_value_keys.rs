@@ -72,23 +72,33 @@ fn objects_with_more_than_one_key_are_plain_hashes() {
         .contains("duplicate key"));
 }
 
-/// Oracle probe: a lone unknown `$` key raises `ArgumentError: unknown tag`.
+/// A lone `$` key that is not a tag name reads as a plain Hash. The oracle
+/// raises `ArgumentError: unknown tag` here; the corpus readers do not, so
+/// that a JSON schema's `$ref` object decodes in every runtime.
 #[test]
-fn a_lone_unknown_dollar_key_is_an_unknown_tag() {
-    for text in [r#"{"$foo":1}"#, r#"{"$":1}"#, r##"{"$ref":"#/x"}"##] {
-        let error = decode(text).unwrap_err();
-        assert!(error.contains("unknown value tag"), "{text}: {error}");
+fn a_lone_unknown_dollar_key_reads_as_a_hash() {
+    for (text, key, value) in [
+        (r#"{"$foo":1}"#, "$foo", Value::int(1)),
+        (r#"{"$":1}"#, "$", Value::int(1)),
+        (r##"{"$ref":"#/x"}"##, "$ref", s("#/x")),
+        (
+            r#"{"$ref":{"$sym":"a"}}"#,
+            "$ref",
+            Value::Symbol("a".to_owned()),
+        ),
+    ] {
+        assert_eq!(decode(text), Ok(hash(&[(key, value)])), "{text}");
     }
 }
 
 /// The oracle writes `{"$ref" => "#/x"}` as `{"$ref":"#/x"}` (14 yaml.load
 /// rows of the corpus hold such objects), so the encoder writes those bytes
-/// too; reading them back is an error, as it is in the oracle.
+/// too, and they read back as the same Hash.
 #[test]
 fn a_lone_other_dollar_key_is_written_as_the_oracle_writes_it() {
     let value = hash(&[("$ref", s("#/x"))]);
     assert_eq!(encode(&value).unwrap(), json!({"$ref": "#/x"}));
-    assert!(decode(&encode(&value).unwrap().to_string()).is_err());
+    assert_eq!(round_trip(&value), value);
 }
 
 /// A Hash whose only key is a tag name is written as `$map`, which the
@@ -158,10 +168,10 @@ fn holds_lone_unknown_key(value: &Json) -> bool {
 
 /// Every plain object in the corpus that has a `$` key among others
 /// (`$schema`, `$id`, `$self`) reads as a Hash and is written back as the
-/// same object, unless it holds a lone `$ref` object somewhere inside,
-/// which the oracle's decoder rejects too.
+/// same object, including those that hold a lone `$ref` object inside
+/// (the oracle's decoder rejects those; the corpus readers do not).
 #[test]
-fn corpus_objects_with_dollar_keys_read_as_the_oracle_reads_them() {
+fn corpus_objects_with_dollar_keys_read_as_hashes() {
     let cases = Path::new(env!("CARGO_MANIFEST_DIR")).join("../corpus/conformance/cases");
     let mut found = Vec::new();
     for entry in std::fs::read_dir(&cases).unwrap() {
@@ -175,21 +185,20 @@ fn corpus_objects_with_dollar_keys_read_as_the_oracle_reads_them() {
             }
         }
     }
-    let (mut read, mut rejected) = (0, 0);
+    let (mut read, mut with_lone_key) = (0, 0);
     for object in found {
-        let decoded = decode(&object.to_string());
+        let value = decode(&object.to_string()).unwrap_or_else(|e| panic!("{object}: {e}"));
+        assert!(matches!(value, Value::Hash(_)), "{object}");
+        assert_eq!(encode(&value).unwrap(), object);
+        read += 1;
         if holds_lone_unknown_key(&object) {
-            let error = decoded.expect_err(&object.to_string());
-            assert!(error.contains("unknown value tag"), "{error}");
-            rejected += 1;
-        } else {
-            let value = decoded.unwrap_or_else(|e| panic!("{object}: {e}"));
-            assert!(matches!(value, Value::Hash(_)), "{object}");
-            assert_eq!(encode(&value).unwrap(), object);
-            read += 1;
+            with_lone_key += 1;
         }
     }
-    assert!(read > 0 && rejected > 0, "read {read}, rejected {rejected}");
+    assert!(
+        read > 0 && with_lone_key > 0,
+        "read {read}, with lone key {with_lone_key}"
+    );
 }
 
 /// Through the wire: `Type.validate` returns a Hash as given, so a Hash
@@ -201,6 +210,8 @@ fn dollar_key_hashes_cross_the_wire_unchanged() {
         json!({"$schema": "s", "$id": "i"}),
         json!({"$map": [["$sym", "a"]]}),
         json!({"$map": [["$map", []]]}),
+        json!({"$ref": "#/x"}),
+        json!({"properties": {"a": {"$ref": "#/definitions/a"}}}),
     ] {
         let request =
             json!({"op": "validate", "method": "type", "value": value, "type": {"$sym": "hash"}});
@@ -208,7 +219,4 @@ fn dollar_key_hashes_cross_the_wire_unchanged() {
         assert_eq!(reply["ok"], true, "{value}: {reply}");
         assert_eq!(reply["value"], value, "{value}");
     }
-    let request = json!({"op": "validate", "method": "type", "value": {"$ref": "#/x"}, "type": {"$sym": "hash"}});
-    let reply = ukiryu::wire::process(request.to_string().as_bytes());
-    assert_eq!(reply["error"]["code"], "INVALID_REQUEST", "{reply}");
 }

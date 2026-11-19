@@ -133,19 +133,21 @@ Values use JSON, with tags for values JSON cannot carry losslessly:
 A float is never equal to an integer: `[0.0, 1.0]` and `[0, 1]` are
 different values. Numeric YAML map keys stay numeric through `$map`.
 
-A JSON object is a tag exactly when it has one key and that key starts
-with `$`. An object with more keys is a map with string keys, even when
-some of them start with `$` (`{"$schema": ..., "$id": ...}`). A one-key
-object whose key is not a tag above is an error to read, never a map.
+A JSON object is a tag exactly when it has one key and that key is one
+of the tag names above. An object with more keys is a map with string
+keys, even when some of them start with `$` (`{"$schema": ..., "$id": ...}`).
+A one-key object whose key starts with `$` but is not a tag name is also
+a map with string keys (`{"$ref": "#/x"}`).
 
 The oracle writes every map with string keys as a JSON object, so a map
 whose only key starts with `$` comes out in the tag form. A JSON-schema
-`{"$ref": "..."}` appears that way in `yaml.load` rows, and the
-oracle's own decoder rejects it as an unknown tag. A map whose only key
-is a tag name (`{"$sym" => "x"}`) would read back as that tag; no input
-of this corpus holds one. A writer that needs such a map read back sends
-it as `{"$map": [["$ref", "..."]]}`, which the oracle also reads as the map.
-The Rust core keeps the oracle's bytes for any other `$` key, so its
+`{"$ref": "..."}` appears that way in `yaml.load` rows. The oracle's own
+decoder rejects it as an unknown tag; readers of this corpus read it as
+the map, so those rows decode to the value the oracle loaded. A map whose
+only key is a tag name (`{"$sym" => "x"}`) would read back as that tag; no
+input of this corpus holds one. A writer that needs such a map read back
+sends it as `{"$map": [["$sym", "x"]]}`, which the oracle also reads as the
+map. The Rust core keeps the oracle's bytes for any other `$` key, so its
 replies match every row.
 
 For a map whose only key is a tag name, the Rust core deliberately
@@ -158,7 +160,7 @@ oracle writes `{"$sym": "x"}`. A probe of `Codec` at ab6df353 with Ruby
 | `{"$sym" => "x"}` | `{"$sym":"x"}` | `:x` |
 | `{"$bytes" => "ff"}` | `{"$bytes":"ff"}` | `"\xFF"` |
 | `{"$map" => []}` | `{"$map":[]}` | `{}` |
-| `{"$ref" => 1}`-like (`{"$foo" => 1}`) | `{"$foo":1}` | `ArgumentError: unknown tag $foo` |
+| `{"$ref" => 1}`-like (`{"$foo" => 1}`) | `{"$foo":1}` | `ArgumentError: unknown tag $foo` (corpus readers: `{"$foo" => 1}`) |
 | (decode only) `{"$map":[["$sym","x"]]}` | | `{"$sym" => "x"}` |
 
 The oracle's bytes for such a map decode to a different value, while
