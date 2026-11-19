@@ -58,11 +58,6 @@ const DIVERGENCES: &[(&str, Divergence, &str)] = &[
         "external $ref: the gem reads a file",
     ),
     (
-        "dialect.pattern.present.",
-        Divergence::Unsupported,
-        "Ruby regular expressions are not ported",
-    ),
-    (
         "draft6.stamp-",
         Divergence::Unsupported,
         "format date-time (Ruby DateTime.rfc3339) is not ported",
