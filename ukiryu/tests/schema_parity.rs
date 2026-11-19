@@ -57,11 +57,6 @@ const DIVERGENCES: &[(&str, Divergence, &str)] = &[
         Divergence::Unsupported,
         "external $ref: the gem reads a file",
     ),
-    (
-        "draft6.stamp-",
-        Divergence::Unsupported,
-        "format date-time (Ruby DateTime.rfc3339) is not ported",
-    ),
 ];
 
 fn crate_dir() -> PathBuf {

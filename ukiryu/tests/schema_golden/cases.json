@@ -110,7 +110,19 @@
       "tests/schema_golden/inputs/synthetic/union_subschema.yaml": "8be5432317988481b62a46124723140c72a9a60501541f8e43d007329a60d11a",
       "tests/schema_golden/inputs/synthetic/unknown_dialect.yaml": "a7a0c5780eb4fbb1fc8dd0ff521a17c91771bc45ad2cd7e729a45080841af694",
       "tests/schema_golden/inputs/synthetic/uri_format.yaml": "6bf3c2f0c9c2cff69e59280ee21c4ed98c0ce8f5ed408970e2157feb59a57339",
-      "tests/schema_golden/inputs/synthetic/with_id.yaml": "c273ecc2ad91ffb6ff67db0c4c355aa1c628402d6aa69f8512b976ba50a15b0e"
+      "tests/schema_golden/inputs/synthetic/with_id.yaml": "c273ecc2ad91ffb6ff67db0c4c355aa1c628402d6aa69f8512b976ba50a15b0e",
+      "tests/schema_golden/inputs/synthetic/date_time.yaml": "3a5a5d50157337853dc070c7ebfa2b3f23bd6e4432dc8a7e756abfd1ff85d544"
+    },
+    "date_time_capture": {
+      "script": "tests/schema_golden/capture_date_time.rb",
+      "inputs": "tests/schema_golden/date_time_inputs.json",
+      "oracle": "ukiryu/ukiryu ab6df353c6dc2d7faf7817a86aafcafa82579896",
+      "ruby": "4.0.1",
+      "date": "3.6.0",
+      "json-schema": "6.2.1",
+      "oracle_lockfile_sha256": "b099e607637e0f01f924266c43139cf2bb953c93ee3845cf2a5b6b0692c29518",
+      "rows": 102,
+      "rows_sha256": "b991c0543b5e0620ab366d58af92cfc22899f86030b3bab247e0b088476686cb"
     }
   },
   "cases": [
@@ -7035,6 +7047,1322 @@
           "class": "JSON::Schema::SchemaError",
           "message": "Schema not found: http://json-schema.org/draft-07/schema#"
         }
+      }
+    },
+    {
+      "id": "datetime.0.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.0.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.1.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01t10:00:00z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.1.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01t10:00:00z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.2.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01 10:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.2.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01 10:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.3.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.3.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.4.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.4.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.5.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-02-29T10:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.5.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-02-29T10:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.6.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2023-02-29T10:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.6.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2023-02-29T10:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.7.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-02-30T10:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.7.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-02-30T10:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.8.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T24:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.8.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T24:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.9.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T24:00:01Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.9.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T24:00:01Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.9.unquoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: 2024-01-01T24:00:01Z\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.9.unquoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: 2024-01-01T24:00:01Z\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.10.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:60Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.10.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:60Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.11.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:61Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.11.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:61Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.12.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00+24:00\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.12.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00+24:00\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.13.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00+23:59\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.13.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00+23:59\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.14.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00+01:60\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.14.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00+01:60\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.15.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00-00:00\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.15.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00-00:00\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.16.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"0000-01-01T00:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.16.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"0000-01-01T00:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.17.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"1582-10-10T00:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.17.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"1582-10-10T00:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.18.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"1500-02-29T00:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.18.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"1500-02-29T00:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.19.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-1-01T00:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.19.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-1-01T00:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.20.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"20240101T100000Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.20.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"20240101T100000Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.21.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00+0100\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.21.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00+0100\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.22.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00.123Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.22.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00.123Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.23.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00,123Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.23.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00,123Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.24.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \" 2024-01-01T10:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.24.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \" 2024-01-01T10:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.25.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00Z \"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.25.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00Z \"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.26.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00Z\\n\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.26.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00Z\\n\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.27.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00Zgarbage\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.27.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00Zgarbage\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.28.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00.Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.28.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00.Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.29.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.29.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.30.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.30.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.31.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"-0001-02-29T00:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.31.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"-0001-02-29T00:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.32.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"-0004-02-29T00:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.32.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"-0004-02-29T00:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.33.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"1582-10-04T00:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.33.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"1582-10-04T00:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.34.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"1582-10-15T00:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.34.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"1582-10-15T00:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.35.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T24:00:00.1Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.35.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T24:00:00.1Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.36.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T24:00:00.0Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.36.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T24:00:00.0Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.37.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T24:00:60Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.37.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T24:00:60Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.37.unquoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: 2024-01-01T24:00:60Z\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.37.unquoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: 2024-01-01T24:00:60Z\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.38.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:60:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.38.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:60:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.39.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00+99:99\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.39.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00+99:99\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.40.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01\\n10:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.40.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01\\n10:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.41.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \" 2024-01-01T10:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.41.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \" 2024-01-01T10:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.42.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00.11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.42.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"2024-01-01T10:00:00.11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.43.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"                                                                                                              2024-01-01T10:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.43.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: \"                                                                                                              2024-01-01T10:00:00Z\"\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": [
+          "The property '#/stamp' must be a valid RFC3339 date/time string in schema 9c1d2f57-02aa-5964-8409-5b79d089c142"
+        ]
+      }
+    },
+    {
+      "id": "datetime.44.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: null\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.44.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: null\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.45.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: true\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.45.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: true\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.46.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: 5\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.46.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: 5\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.47.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: [\"not-a-string\"]\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.47.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: [\"not-a-string\"]\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.48.quoted.nonstrict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: {\"nested\":\"value\"}\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": false
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "datetime.48.quoted.strict",
+      "op": "validate_profile",
+      "input": {
+        "yaml": "stamp: {\"nested\":\"value\"}\n",
+        "schema": "tests/schema_golden/inputs/synthetic/date_time.yaml",
+        "strict": true
+      },
+      "expect": {
+        "ok": []
       }
     }
   ]

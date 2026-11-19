@@ -14,8 +14,8 @@
 //!   `JSON::Schema::SchemaError: Schema not found: ...`. This module
 //!   reproduces that; it does not validate draft-07.
 //! - Only the draft-04/draft-06 keywords listed in the engine are
-//!   evaluated. Everything else the gem would act on (regular expressions,
-//!   `date-time`/`ipv4`/`ipv6` formats, schema `id`s, external `$ref`s, the
+//!   evaluated. Everything else the gem would act on (`ipv4`/`ipv6` formats,
+//!   schema `id`s, external `$ref`s, the
 //!   draft-01..03 dialects, string schemas that the gem reads from a file or
 //!   URL) is reported as [`SchemaError::Unsupported`] instead of guessed.
 //! - No network access and no remote schema download: the original
@@ -24,6 +24,7 @@
 //!   validation and are not provided here.
 
 mod data;
+mod date_time;
 mod digest;
 mod engine;
 mod inspect_table;

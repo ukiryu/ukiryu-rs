@@ -981,7 +981,14 @@ impl<'s> Validation<'s> {
                     self.push(ctx, message, frags, Attr::Format, Vec::new());
                 }
             }
-            f @ ("date-time" | "ipv4" | "ipv6") => {
+            "date-time" if !super::date_time::valid(text) => {
+                let message = format!(
+                    "The property '{}' must be a valid RFC3339 date/time string",
+                    build_fragment(frags)
+                );
+                self.push(ctx, message, frags, Attr::Format, Vec::new());
+            }
+            f @ ("ipv4" | "ipv6") => {
                 return Err(unsupported(
                     "format",
                     format!("format {f} (Ruby DateTime/IPAddr parsing) is not reproduced"),
