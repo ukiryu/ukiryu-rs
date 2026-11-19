@@ -91,6 +91,7 @@ use ukiryu::models::error::ModelErrorKind;
 use ukiryu::models::tool_definition::ToolDefinition;
 use ukiryu::models::{CommandDefinition, ErrorResponse, ExecutionResultParts, SuccessResponse};
 use ukiryu::register::{self, Register};
+use ukiryu::register_lookup;
 use ukiryu::render::{
     output_response, render_dry_run, DryRunStyle, InspectValue, OutputFormat, OutputWrite,
     PaintSupport, RenderError, RenderSettings,
@@ -132,8 +133,8 @@ impl ExecuteContext {
 /// Why a handler produced no outcome.
 #[derive(Clone, Debug, PartialEq)]
 pub enum ExecuteError {
-    /// The step needs register behaviour that is not ported (default-command
-    /// metadata, `Tool.find_by`, the default register's auto-clone).
+    /// The step needs the default register's auto-clone, which this handler
+    /// does not perform.
     /// `partial` holds the writes made before the step.
     Gated {
         stage: &'static str,
@@ -178,6 +179,9 @@ impl ExecuteError {
     /// (`[Class] message`); for the other variants a plain description.
     pub fn friendly_message(&self) -> String {
         match self {
+            ExecuteError::Raised { class, message, .. } if class == "Thor::Error" => {
+                message.clone()
+            }
             ExecuteError::Raised { class, message, .. } => format!("[{class}] {message}"),
             other => other.to_string(),
         }
@@ -217,9 +221,6 @@ impl From<RenderError> for ExecuteError {
         }
     }
 }
-
-const REGISTER_DETAIL: &str =
-    "Register.load_tool_metadata and Tool.find_by (ToolFinder) are not ported";
 
 // ------------------------------------------------------------- configuration
 
@@ -388,10 +389,6 @@ impl Out {
             writes: self.writes,
             exit_code: 1,
         }
-    }
-
-    pub(crate) fn take(self) -> Vec<OutputWrite> {
-        self.writes
     }
 }
 
@@ -885,6 +882,16 @@ pub(crate) struct Registry {
 }
 
 impl Registry {
+    fn register(&self, partial: &[OutputWrite]) -> Result<Register, ExecuteError> {
+        self.path.as_ref().map(Register::at).ok_or_else(|| {
+            ExecuteError::gated(
+                "Register.default (auto-clone)",
+                "no register exists and cloning the default register is not performed",
+                partial.to_vec(),
+            )
+        })
+    }
+
     /// `config.register` when that directory exists, else the default
     /// register resolved without cloning (`UKIRYU_REGISTER`, then
     /// `~/.ukiryu/register` when it has a valid structure).
@@ -1016,11 +1023,23 @@ fn resolve_default_command(
     config: &OverrideResolver,
 ) -> Result<String, ExecuteError> {
     let Some(path) = input.definition.as_deref() else {
-        return Err(ExecuteError::gated(
-            "Register.load_tool_metadata (default command)",
-            REGISTER_DETAIL,
-            Vec::new(),
-        ));
+        let options = tool_options(&ctx.host, config_string(config, "shell"))?;
+        let registry = Registry::new(ctx, config, options.shell);
+        let register = registry.register(&[])?;
+        let index = register_lookup::load_tool_index(&register);
+        let metadata = register_lookup::load_tool_metadata(&register, &index, &input.tool)
+            .map_err(raised_lookup_error)?;
+        return metadata
+            .map(|metadata| metadata.default_command())
+            .transpose()
+            .map_err(|error| ExecuteError::raised(error.ruby_class(), error.message))?
+            .flatten()
+            .ok_or_else(|| {
+                ExecuteError::raised(
+                    "Thor::Error",
+                    format!("Ukiryu::Tool not found: {}", input.tool),
+                )
+            });
     };
     let definition = load_definition(path).map_err(raised_definition_error)?;
     let options = tool_options(&ctx.host, config_string(config, "shell"))?;
@@ -1048,6 +1067,10 @@ fn raised_tool_error(e: ToolError) -> ExecuteError {
     ExecuteError::raised(class, e.to_string())
 }
 
+fn raised_lookup_error(error: register_lookup::LookupError) -> ExecuteError {
+    ExecuteError::raised(error.class_name(), error.to_string())
+}
+
 /// A definition load failure inside `execute_request`'s `begin`: none of
 /// the definition errors has its own `rescue`, so they reach the
 /// `StandardError` branch (`ArgumentError` its own).
@@ -1067,16 +1090,40 @@ fn show_tool_help(
     config: &OverrideResolver,
     mut out: Out,
 ) -> Result<CommandOutcome, ExecuteError> {
-    let Some(path) = input.definition.as_deref() else {
-        return Err(ExecuteError::gated(
-            "Tool.find_by (exec help)",
-            REGISTER_DETAIL,
-            out.take(),
-        ));
-    };
-    let definition = load_definition(path).map_err(raised_definition_error)?;
     let options = tool_options(&ctx.host, config_string(config, "shell"))?;
-    let tool = Tool::new(definition, &options).map_err(raised_tool_error)?;
+    let tool = if let Some(path) = input.definition.as_deref() {
+        let definition = load_definition(path).map_err(raised_definition_error)?;
+        Rc::new(Tool::new(definition, &options).map_err(raised_tool_error)?)
+    } else {
+        let registry = Registry::new(ctx, config, options.shell);
+        let register = registry.register(&out.writes)?;
+        let index = register_lookup::load_tool_index(&register);
+        let source = RegisterSource::new(
+            register.clone(),
+            ctx.host.platform,
+            ProcessHost::new(Environment::new(), options.shell),
+        );
+        match register_lookup::find_by(
+            &register,
+            &index,
+            &source,
+            &registry.cache,
+            &input.tool,
+            &options,
+            &options,
+        )
+        .map_err(raised_lookup_error)?
+        {
+            Some(tool) => tool,
+            None => {
+                return Ok(out.error(&format!(
+                    "Ukiryu::Tool not found: {}\nAvailable tools: {}",
+                    input.tool,
+                    register.tool_names().join(", ")
+                )))
+            }
+        }
+    };
     let text = |t: &Option<ukiryu::models::value::Text>| t.as_ref().map(|t| t.to_ruby_s());
     let profile = tool.definition();
     let name = tool.name().unwrap_or_default();

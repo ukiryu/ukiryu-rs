@@ -554,9 +554,7 @@ fn author_target_trace_rows_through_the_binary_unqualified() {
 /// Execute rows the handlers gate (the handler test's `OPEN`): the binary
 /// must exit with the gated status and report it, never succeed.
 #[cfg(target_os = "linux")]
-const EXECUTE_GATED: [&str; 6] = [
-    "exec_register_no_command",
-    "exec_help_register",
+const EXECUTE_GATED: [&str; 4] = [
     "exec_register_unknown_param",
     "runfile_execute",
     "runfile_execute_json",
@@ -564,7 +562,8 @@ const EXECUTE_GATED: [&str; 6] = [
 ];
 
 /// Recorded deviation: the YAML diagnostic is the Yeptris parser's, not
-/// libyaml's. The row must run, not match.
+/// libyaml's. An exact Yeptris golden is checked separately; it is not
+/// claimed as Ruby byte parity.
 #[cfg(target_os = "linux")]
 const EXECUTE_UNQUALIFIED: [&str; 1] = ["runfile_invalid_yaml"];
 
@@ -736,11 +735,21 @@ fn replay_execute() -> (ExecuteCounts, Vec<String>) {
             continue;
         }
         if EXECUTE_UNQUALIFIED.contains(&id) {
-            if got.code == GATED_EXIT {
-                failures.push(format!("{id}: gated, but it must run"));
-            } else {
-                counts.unqualified += 1;
-            }
+            let diagnostics: Value =
+                serde_json::from_str(include_str!("execute_data/yeptris_diagnostics.json"))
+                    .unwrap();
+            assert_eq!(
+                i64::from(got.code),
+                case["status"].as_i64().unwrap(),
+                "{id}"
+            );
+            assert_eq!(stdout, case["stdout"].as_str().unwrap(), "{id}");
+            assert!(case["stderr"]
+                .as_str()
+                .unwrap()
+                .starts_with("Invalid YAML in request file: "));
+            assert_eq!(stderr, diagnostics[id].as_str().unwrap(), "{id}");
+            counts.unqualified += 1;
             continue;
         }
         let want_stdout = mask_timing(case["stdout"].as_str().unwrap_or(""));
@@ -787,7 +796,7 @@ fn execute_cases_through_the_binary() {
     assert_eq!(counts.gated, EXECUTE_GATED.len(), "{counts:?}");
     assert_eq!(counts.unqualified, EXECUTE_UNQUALIFIED.len(), "{counts:?}");
     assert_eq!(counts.terminal, 12, "{counts:?}");
-    assert_eq!(counts.exact, 85, "{counts:?}");
+    assert_eq!(counts.exact, 87, "{counts:?}");
 }
 
 // ------------------------------------------------------------------ grammar
@@ -806,17 +815,15 @@ fn simple(args: &[&str]) -> Output {
 }
 
 #[test]
-fn verbs_without_a_merged_handler_fail_gated() {
-    for args in [&["describe", "ls"][..], &["which", "ls"]] {
-        let got = simple(args);
-        assert_eq!(got.code, GATED_EXIT, "{args:?}: {}", got.stderr);
-        assert_eq!(got.stdout, "", "{args:?}");
-        assert!(
-            got.stderr.starts_with("ukiryu: '") && got.stderr.contains("not available"),
-            "{args:?}: {:?}",
-            got.stderr
-        );
-    }
+fn describe_without_a_register_fails_gated() {
+    let got = simple(&["describe", "ls"]);
+    assert_eq!(got.code, GATED_EXIT, "{}", got.stderr);
+    assert_eq!(got.stdout, "");
+    assert!(
+        got.stderr.starts_with("ukiryu: '") && got.stderr.contains("not available"),
+        "{:?}",
+        got.stderr
+    );
 }
 
 #[test]
@@ -1444,53 +1451,6 @@ fn corpus_cli_output_rows_of_the_remainder_verbs() {
     }
     assert_eq!(seen, CORPUS_REMAINDER_ROWS, "corpus rows replayed");
     assert!(failures.is_empty(), "{}", failures.join("\n\n"));
-}
-
-/// The interface path of `list` needs `Tool.find_by`: the binary prints the
-/// tools listed before it, then stops with the gated status.
-#[cfg(target_os = "linux")]
-#[test]
-fn list_stops_gated_at_an_interface_lookup() {
-    let root = scratch("remainder-list-gated");
-    let register = root.join("register");
-    copy_tree(
-        &Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/inspect_data/register"),
-        &register,
-        SystemTime::now(),
-    );
-    std::fs::write(
-        register.join("tools/zeta/index.yaml"),
-        "---\nukiryu_schema: '1.0'\nname: zeta\ninterface: zeta\nimplementations: []\n",
-    )
-    .unwrap();
-    let bin = root.join("bin");
-    std::fs::create_dir_all(&bin).unwrap();
-    for b in ["bash", "sh", "which", "beta", "zeta"] {
-        install_executable(&bin, b);
-    }
-    let s = |p: &Path| p.to_str().unwrap().to_owned();
-    let env = vec![
-        ("HOME".to_owned(), s(&root)),
-        ("PATH".to_owned(), s(&bin)),
-        ("TZ".to_owned(), "UTC".to_owned()),
-        ("SHELL".to_owned(), "/bin/bash".to_owned()),
-        ("UKIRYU_REGISTER".to_owned(), s(&register)),
-    ];
-    let got = run(&["list".to_owned()], &env, &root, None);
-    assert_eq!(got.code, GATED_EXIT, "{:?} {:?}", got.stdout, got.stderr);
-    // The header printed before the lookup comes first.
-    assert!(
-        got.stdout.contains("Available tools (2):"),
-        "{:?}",
-        got.stdout
-    );
-    assert!(
-        got.stderr
-            .starts_with("ukiryu: 'list (interface lookup for zeta)' is not available"),
-        "{:?}",
-        got.stderr
-    );
-    let _ = std::fs::remove_dir_all(&root);
 }
 
 // ------------------------------------------------------------ exec stdin step

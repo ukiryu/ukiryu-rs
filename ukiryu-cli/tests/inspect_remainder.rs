@@ -1,5 +1,5 @@
 //! `config list`, `list`, `commands`, `register` and `resolve` against Ruby CLI
-//! goldens, plus the gate of `which` (`info` and `opts` are replayed by
+//! goldens (`which`, `info` and `opts` are replayed by
 //! `cli_binary.rs`).
 //!
 //! `inspect_remainder_goldens.json` holds stdout, stderr, exit status and the
@@ -33,7 +33,7 @@ use ukiryu::render::OutputWrite;
 use ukiryu::runtime::{Host, ShellError};
 use ukiryu_cli::commands::inspect::{
     self, CommandsInput, ConfigAction, ConfigInput, HandlerContext, InspectError, RegisterInput,
-    ResolveInput, WhichInput, FIND_BY_NEEDS,
+    ResolveInput,
 };
 use ukiryu_cli::commands::CommandOutcome;
 
@@ -397,64 +397,6 @@ fn context(sandbox: &Sandbox) -> HandlerContext {
         host: sandbox.host(&[("UKIRYU_REGISTER".to_owned(), sandbox.register.clone())]),
         register: None,
     }
-}
-
-#[test]
-fn which_is_gated_with_the_missing_apis() {
-    let sandbox = Sandbox::new("gated");
-    copy_tree(&fixture_register(), Path::new(&sandbox.register));
-    let ctx = context(&sandbox);
-    let errors = [inspect::which(
-        WhichInput {
-            identifier: "beta".to_owned(),
-            platform: None,
-            shell: None,
-        },
-        &ctx,
-    )];
-    for result in errors {
-        let error = result.expect_err("a gated verb never succeeds");
-        let message = error.friendly_message();
-        assert!(
-            message.contains("is not available in this build yet"),
-            "{message}"
-        );
-        for api in [
-            "register scanner",
-            "Tool.find_by",
-            "load_tool_metadata",
-            "compatible_profile",
-        ] {
-            assert!(message.contains(api), "{api}: {message}");
-        }
-        assert!(error.partial().is_empty());
-    }
-    assert!(FIND_BY_NEEDS.contains("Tool.find_by"));
-}
-
-#[test]
-fn list_gates_a_tool_without_a_version_file() {
-    let sandbox = Sandbox::new("orphan");
-    copy_tree(&fixture_register(), Path::new(&sandbox.register));
-    // No version spec: the source would fall back to interface discovery.
-    fs::write(
-        Path::new(&sandbox.register).join("tools/zeta/index.yaml"),
-        "---\nukiryu_schema: '1.0'\nname: zeta\ninterface: zeta\nimplementations: []\n",
-    )
-    .unwrap();
-    let error = inspect::list(&context(&sandbox)).expect_err("gated, not a success");
-    let InspectError::Gated {
-        what,
-        needs,
-        partial,
-    } = &error
-    else {
-        panic!("{error:?}")
-    };
-    assert_eq!(what, "list (interface lookup for zeta)");
-    assert_eq!(needs, FIND_BY_NEEDS);
-    // The header was printed before the lookup.
-    assert!(apply(partial).stdout.contains("Available tools (2):"));
 }
 
 #[test]

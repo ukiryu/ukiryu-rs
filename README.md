@@ -68,6 +68,25 @@ option names, short aliases, defaults, argument order and exit codes are the
 same as in the Ruby CLI. `--version` is also new: the Ruby CLI rejects it,
 while the binary keeps it for release checks.
 
+## CLI lookup parity
+
+`which` resolves exact names and compatible interface/alias candidates through
+core register APIs, preferring an installed candidate. `list` uses the metadata
+interface fallback when a tool's version file is missing. Register-backed
+`exec TOOL help` and default-command lookup also use the core lookup APIs.
+
+`ukiryu-cli/tests/lookup_data/cases.json` freezes 17 measured Ruby CLI cases
+from `ab6df353` (Ruby 4.0.1). Regenerate it from a clean oracle checkout with
+`scripts/capture-cli-lookup.py ORACLE --ruby RUBY --output OUTPUT` using the
+oracle's locked bundle. The tests compare streams and exit codes exactly.
+
+Issue ukiryu/ukiryu#22 remains open: four execute captures include anonymous
+Ruby class addresses in unknown-setter errors. Those paths explicitly refuse
+execution rather than invent a Ruby object address. Invalid request YAML keeps
+the mandated Yeptris parser's diagnostic, checked exactly in
+`execute_data/yeptris_diagnostics.json`; the Ruby exit code and diagnostic
+prefix also match. This engine diagnostic is not a Ruby byte-parity claim.
+
 ## C boundary
 
 `ukiryu-ffi/include/ukiryu.h` specifies ABI1. Input is borrowed UTF-8 JSON with an
