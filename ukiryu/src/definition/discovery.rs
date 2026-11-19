@@ -337,7 +337,10 @@ impl Discovery {
 
     /// `determine_source_type(path)`: substring tests on the expanded path.
     pub fn determine_source_type(&self, path: &str) -> SourceKind {
-        let expanded = expand_path(Path::new(path));
+        // Ruby's File.expand_path uses forward slashes on Windows too.
+        // PathBuf emits backslashes there, which cannot contain an XDG path
+        // supplied by Ruby (for example, Dir.mktmpdir).
+        let expanded = expand_path(Path::new(path)).replace(std::path::MAIN_SEPARATOR, "/");
         if expanded.contains(&self.xdg_data_home()) {
             SourceKind::User
         } else if expanded.contains("/opt/") {
