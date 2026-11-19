@@ -78,7 +78,15 @@ fn run(args: &[String], env: &[(String, String)], cwd: &Path, stdin: Option<&str
     {
         let mut pipe = child.stdin.take().unwrap();
         if let Some(text) = stdin {
-            pipe.write_all(text.as_bytes()).unwrap();
+            // The binary may exit before reading stdin; the closed pipe is
+            // then expected, and its status and output are still checked.
+            if let Err(err) = pipe.write_all(text.as_bytes()) {
+                assert_eq!(
+                    err.kind(),
+                    std::io::ErrorKind::BrokenPipe,
+                    "write stdin: {err}"
+                );
+            }
         }
     }
     let out = child.wait_with_output().unwrap();
