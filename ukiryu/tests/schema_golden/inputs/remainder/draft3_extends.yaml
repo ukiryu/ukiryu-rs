@@ -1,0 +1,1 @@
+{"$schema": "http://json-schema.org/draft-03/schema#", "type": "object", "extends": [{"required": ["a"], "properties": {"a": {"type": "string", "required": true}}}, {"properties": {"b": {"type": "integer", "required": true}}}]}

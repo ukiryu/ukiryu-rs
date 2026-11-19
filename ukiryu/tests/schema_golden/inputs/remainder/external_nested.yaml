@@ -1,0 +1,1 @@
+{"properties": {"s": {"$ref": "tests/schema_golden/inputs/remainder/nested.json"}}}

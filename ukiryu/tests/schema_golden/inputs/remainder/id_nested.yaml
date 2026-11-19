@@ -1,0 +1,1 @@
+{"id": "http://example.com/schemas/root.json", "properties": {"name": {"id": "child.json", "type": "string"}, "n": {"id": "../number.json#tag", "type": "integer"}}}

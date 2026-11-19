@@ -169,6 +169,83 @@ pub(crate) fn addressable_parses(s: &str) -> bool {
     true
 }
 
+/// Resolve a schema URI reference. Relative schema identifiers stay relative,
+/// as Addressable does when the parent is a generated UUID, not a file URI.
+pub(super) fn resolve(base: &str, reference: &str) -> Result<String, super::SchemaError> {
+    if reference.contains(['\r', '\n']) || !addressable_parses(reference) {
+        return Err(super::SchemaError::unsupported(
+            "schema URI",
+            "invalid or multiline URI",
+        ));
+    }
+    let r = split(reference);
+    if r.scheme.is_some() {
+        return Ok(reference.to_owned());
+    }
+    let b = split(base);
+    if reference.starts_with('#') {
+        return Ok(format!(
+            "{}{reference}",
+            base.split('#').next().unwrap_or(base)
+        ));
+    }
+    let scheme = b.scheme.map(|s| format!("{s}:")).unwrap_or_default();
+    if reference.starts_with("//") {
+        return Ok(format!("{scheme}{reference}"));
+    }
+    let authority = b.authority.map(|a| format!("//{a}")).unwrap_or_default();
+    let suffix = &reference[r.path.len()..];
+    let path = if r.path.starts_with('/') {
+        r.path.to_owned()
+    } else if r.path.is_empty() {
+        b.path.to_owned()
+    } else {
+        let parent = b
+            .path
+            .rsplit_once('/')
+            .map(|(p, _)| format!("{p}/"))
+            .unwrap_or_else(|| {
+                if b.authority.is_some() {
+                    "/".into()
+                } else {
+                    String::new()
+                }
+            });
+        format!("{parent}{}", r.path)
+    };
+    let absolute = path.starts_with('/');
+    let trailing = path.ends_with('/') || path.ends_with("/.") || path.ends_with("/..");
+    let mut segments = Vec::new();
+    for segment in path.split('/') {
+        match segment {
+            "" | "." => {}
+            ".." if segments.last().is_some_and(|s| *s != "..") => {
+                segments.pop();
+            }
+            ".." if !absolute => segments.push(segment),
+            ".." => {}
+            _ => segments.push(segment),
+        }
+    }
+    let mut path = format!("{}{}", if absolute { "/" } else { "" }, segments.join("/"));
+    if trailing && !path.ends_with('/') {
+        path.push('/');
+    }
+    Ok(format!("{scheme}{authority}{path}{suffix}"))
+}
+
+/// json-schema discards the fragment's contents on schema IDs, retaining '#'.
+pub(super) fn schema_id(base: &str, id: &str) -> Result<String, super::SchemaError> {
+    if id.is_empty() {
+        return Ok(base.into());
+    }
+    let resolved = resolve(base, id)?;
+    Ok(match resolved.split_once('#') {
+        Some((uri, _)) => format!("{uri}#"),
+        None => resolved,
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

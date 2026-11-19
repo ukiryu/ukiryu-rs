@@ -20,9 +20,6 @@ use ukiryu::schema::{
 enum Divergence {
     /// Same Ruby error class; the message is the YAML engine's, not Psych's.
     YamlMessage,
-    /// The port refuses the input (`SchemaError::Unsupported`) instead of
-    /// emulating what the oracle does.
-    Unsupported,
 }
 
 /// Every declared divergence, by case-id prefix.
@@ -36,26 +33,6 @@ const DIVERGENCES: &[(&str, Divergence, &str)] = &[
         "load.invalid.",
         Divergence::YamlMessage,
         "invalid YAML schema: message wording",
-    ),
-    (
-        "load.scalar.",
-        Divergence::Unsupported,
-        "string schema: the gem reads a file named by the string",
-    ),
-    (
-        "dialect.draft3.",
-        Divergence::Unsupported,
-        "draft-03 dialect is not ported",
-    ),
-    (
-        "dialect.with_id.",
-        Divergence::Unsupported,
-        "schema id rebasing is not ported",
-    ),
-    (
-        "dialect.external_ref.",
-        Divergence::Unsupported,
-        "external $ref: the gem reads a file",
     ),
 ];
 
@@ -77,7 +54,15 @@ fn abs(rel: &str) -> PathBuf {
 }
 
 fn fill(s: &str) -> String {
-    s.replace("${CRATE}", &crate_dir().to_string_lossy())
+    let path = crate_dir().to_string_lossy().replace('\\', "/");
+    let file_uri = format!(
+        "file://{}{}",
+        if path.starts_with('/') { "" } else { "/" },
+        path
+    );
+    s.replace("${CRATE_FILE_URI}", &file_uri)
+        .replace("${CRATE_PATH}", &path)
+        .replace("${CRATE}", &crate_dir().to_string_lossy())
 }
 
 fn expected(case: &Value) -> Value {
@@ -189,13 +174,6 @@ fn golden_cases_match_the_oracle() {
                 *counts.entry("yaml-message").or_default() += 1;
                 want["error"]["class"] == "Psych::SyntaxError"
                     && got["error"]["class"] == "Psych::SyntaxError"
-            }
-            Some(Divergence::Unsupported) => {
-                *counts.entry("unsupported").or_default() += 1;
-                got["error"]["class"].is_null()
-                    && got["error"]["message"]
-                        .as_str()
-                        .is_some_and(|m| m.starts_with("unsupported ("))
             }
         };
         if !ok {
@@ -354,4 +332,20 @@ fn sha256_hex(data: &[u8]) -> String {
         }
     }
     h.iter().map(|v| format!("{v:08x}")).collect()
+}
+
+#[test]
+fn network_schemas_remain_explicit_and_cycles_terminate() {
+    for yaml in [
+        "type: object\nproperties:\n  n: {$ref: 'http://127.0.0.1:9/schema.json'}\n",
+        "https://127.0.0.1:9/schema.json\n",
+        "$ref: '#'\n",
+    ] {
+        let schema = safe_load(yaml, Permitted::NONE).unwrap();
+        let document = safe_load("{}", Permitted::DOCUMENT).unwrap();
+        assert!(matches!(
+            definition_schema_report(&document, &schema),
+            Err(SchemaError::Unsupported { .. })
+        ));
+    }
 }

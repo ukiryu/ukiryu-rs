@@ -1,0 +1,1 @@
+{"$schema": "http://json-schema.org/draft-03/schema#", "type": "object", "properties": {"name": {"type": "string", "required": true}, "age": {"type": "integer", "minimum": 0}, "tag": {"type": "string", "required": false}}, "required": ["ghost"]}
