@@ -498,8 +498,13 @@ else
   no_timeout = raised { jq.execute(:process, stdin: '1', filter: '.') }
   check('tool', 'execute.timeout-required', no_timeout.instance_of?(ArgumentError) &&
                                             no_timeout.message.include?('execution_timeout'), no_timeout.inspect)
-  bad_timeout = raised { jq.execute(:process, stdin: '1', filter: '.', execution_timeout: 0) }
-  check('tool', 'execute.timeout-nonpositive', bad_timeout.instance_of?(ArgumentError), bad_timeout.inspect)
+  [0, 0.0].each do |timeout|
+    unbounded = jq.execute(:process, stdin: '1', filter: '.', execution_timeout: timeout)
+    check('tool', "execute.timeout-zero.#{timeout.inspect}", unbounded.success? && unbounded.output == '1',
+          unbounded.inspect)
+  end
+  bad_timeout = raised { jq.execute(:process, stdin: '1', filter: '.', execution_timeout: -1) }
+  check('tool', 'execute.timeout-negative', bad_timeout.instance_of?(ArgumentError), bad_timeout.inspect)
   unknown = raised { jq.execute(:nosuch, execution_timeout: 5) }
   check('tool', 'execute.unknown-command', unknown.instance_of?(ArgumentError), unknown.inspect)
 end

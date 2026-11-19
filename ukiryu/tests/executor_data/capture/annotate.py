@@ -12,7 +12,7 @@ A = {
   'missing_shell': {'contract': 'migrated', 'trace': D1, 'target': 'ExecuteRequest::new requires the shell; ExecutionContext::run_settings returns MissingSetting::Shell with the same text'},
   'missing_timeout': {'contract': 'migrated', 'trace': D1, 'target': 'ExecuteRequest::new requires the timeout; ExecutionContext::run_settings returns MissingSetting::Timeout with the same text'},
   'missing_env_defaults': {'contract': 'migrated', 'trace': D1, 'target': 'ExecuteRequest::new requires an Environment; an empty one gives this result'},
-  'timeout_zero_runs_unbounded': {'contract': 'migrated', 'trace': D1, 'target': 'ExecuteError::InvalidTimeout (0 would disable the required timeout)'},
+  'timeout_zero_runs_unbounded': PARITY,
   'timeout_negative': {'contract': 'migrated', 'trace': D1, 'target': 'ExecuteError::InvalidTimeout'},
   'timeout_sleep_10': {'contract': 'migrated', 'trace': KILL, 'target': 'same class and message; timeout attribute is set; the child is killed at the deadline (source waits ~10 s for natural exit)'},
   'timeout_int_message': {'contract': 'migrated', 'trace': KILL, 'target': 'same class and message; timeout attribute is set; killed at the deadline'},
