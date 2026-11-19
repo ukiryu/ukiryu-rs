@@ -20,6 +20,7 @@
 //! | `yaml` | `YAML.safe_load`, model `from_yaml` and `to_yaml` ([`document`]) |
 //! | `find_by` | `Tool.find_by` over a register, native builds only ([`native`]); its value is a tool identity or `null` |
 //! | `execute` | `Tool#execute`, native builds only ([`native`]); its value is a [`results`] payload |
+//! | `executor` | `Executor.execute(executable, args, env:, shell:, timeout:)` with no tool, native builds only ([`native`]); its value is a [`results`] payload |
 //!
 //! Register directories and process execution exist only in native builds:
 //! [`native`] is not compiled for WebAssembly.
@@ -52,6 +53,8 @@ enum Request {
     Execute(Box<native::ExecuteRequest>),
     #[cfg(not(target_arch = "wasm32"))]
     FindBy(Box<native::FindByRequest>),
+    #[cfg(not(target_arch = "wasm32"))]
+    Executor(Box<native::ExecutorRequest>),
     ParseYaml {
         yaml: String,
     },
@@ -87,6 +90,8 @@ pub fn process(input: &[u8]) -> Value {
         Request::Execute(request) => native::execute(*request),
         #[cfg(not(target_arch = "wasm32"))]
         Request::FindBy(request) => native::find_by(*request),
+        #[cfg(not(target_arch = "wasm32"))]
+        Request::Executor(request) => native::executor(*request),
         Request::Version => json!({"ok":true,"version":crate::VERSION,"abi_version":1}),
         Request::ParseYaml { yaml } => parse_yaml_json(&yaml),
         Request::ResolveConfig {

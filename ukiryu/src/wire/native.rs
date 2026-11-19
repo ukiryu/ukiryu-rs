@@ -195,6 +195,85 @@ fn run(request: ExecuteRequest) -> Result<Json, Json> {
     }
 }
 
+// ---------------------------------------------------------------- executor
+
+/// `Executor.execute(executable, args, env:, shell:, timeout:, ...)`: one
+/// command run through a shell, with no tool definition.
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ExecutorRequest {
+    pub executable: String,
+    #[serde(default)]
+    pub args: Vec<String>,
+    /// The environment the run's variables are applied over (required, D1).
+    pub env: BTreeMap<String, String>,
+    /// A concrete shell name. Absent, the source's `ArgumentError`.
+    #[serde(default)]
+    pub shell: Option<String>,
+    /// Seconds: an Integer or a `$float`. Absent, the source's
+    /// `ArgumentError`.
+    #[serde(default)]
+    pub timeout: Option<Typed>,
+    #[serde(default)]
+    pub cwd: Option<String>,
+    /// A string or `{"$bytes": hex}`.
+    #[serde(default)]
+    pub stdin: Option<StdinBytes>,
+    #[serde(default)]
+    pub tool_name: Option<String>,
+    #[serde(default)]
+    pub command_name: Option<String>,
+    #[serde(default)]
+    pub allow_failure: bool,
+}
+
+/// The `executor` op. Checks run in the source's order: shell given,
+/// timeout given, shell known, then the run.
+pub fn executor(request: ExecutorRequest) -> Json {
+    match run_executor(request) {
+        Ok(value) => json!({"ok": true, "value": value}),
+        Err(error) => error,
+    }
+}
+
+fn run_executor(request: ExecutorRequest) -> Result<Json, Json> {
+    use crate::execution_context::MissingSetting;
+    use crate::runtime::ShellSource;
+    let shell = request
+        .shell
+        .ok_or_else(|| ruby("ArgumentError", MissingSetting::Shell))?;
+    let timeout = request
+        .timeout
+        .ok_or_else(|| ruby("ArgumentError", MissingSetting::Timeout))?;
+    let timeout = self::timeout(&timeout.0)?;
+    let shell = ShellName::parse(&shell, ShellSource::Explicit)
+        .map_err(|e| ruby("Ukiryu::Errors::UnknownShellError", e))?;
+    let mut execute = crate::executor::ExecuteRequest::new(
+        request.executable,
+        request.args,
+        Environment::from_pairs(request.env),
+        shell,
+        timeout,
+    )
+    .allow_failure(request.allow_failure);
+    if let Some(cwd) = request.cwd {
+        execute = execute.cwd(cwd);
+    }
+    if let Some(StdinBytes(bytes)) = request.stdin {
+        execute = execute.stdin_bytes(bytes);
+    }
+    if let Some(name) = request.tool_name {
+        execute = execute.tool_name(name);
+    }
+    if let Some(name) = request.command_name {
+        execute = execute.command_name(name);
+    }
+    match crate::executor::execute(execute) {
+        Ok(run) => Ok(super::results::execution(&run)),
+        Err(error) => Err(execute_error(&error)),
+    }
+}
+
 // ---------------------------------------------------------------- find_by
 
 /// Where the register comes from.
