@@ -66,6 +66,10 @@ fn hex(bytes: &[u8]) -> String {
 
 /// Compares a returned result with a `result` row.
 fn assert_result(id: &str, execution: &Execution) {
+    assert_result_with_timeout(id, execution, seconds(&row(id)["timeout"]));
+}
+
+fn assert_result_with_timeout(id: &str, execution: &Execution, timeout: Seconds) {
     let row = row(id);
     assert_eq!(row["outcome"], "result", "{id}");
     let result = &execution.result;
@@ -108,11 +112,7 @@ fn assert_result(id: &str, execution: &Execution) {
     );
     let shell = row["shell"].as_str().unwrap().trim_start_matches(':');
     assert_eq!(info.shell.as_deref(), Some(shell), "{id}");
-    assert_eq!(
-        result.metadata.timeout,
-        Some(seconds(&row["timeout"])),
-        "{id}"
-    );
+    assert_eq!(result.metadata.timeout, Some(timeout), "{id}");
     assert!(result.started_at().is_some() && result.finished_at().is_some());
     assert!(result.duration().unwrap() >= 0.0, "{id} duration");
 }
@@ -186,16 +186,14 @@ fn explicit_empty_environment_matches_source_default() {
 }
 
 #[test]
-fn non_positive_or_non_finite_timeouts_are_rejected() {
+fn negative_or_non_finite_timeouts_are_rejected() {
     assert_eq!(row("timeout_zero_runs_unbounded")["outcome"], "result");
     assert_eq!(
         row("timeout_negative")["message"],
         "Timeout sec must be a non-negative number"
     );
     for timeout in [
-        Seconds::Int(0),
         Seconds::Int(-1),
-        Seconds::Float(0.0),
         Seconds::Float(-0.5),
         Seconds::Float(f64::NAN),
         Seconds::Float(f64::INFINITY),
@@ -213,6 +211,15 @@ fn non_positive_or_non_finite_timeouts_are_rejected() {
             }
             other => panic!("{timeout:?}: {other:?}"),
         }
+    }
+}
+
+#[test]
+fn zero_timeout_runs_without_a_deadline() {
+    for timeout in [Seconds::Int(0), Seconds::Float(0.0), Seconds::Float(-0.0)] {
+        let execution = run(bash("sh", &["-c", "sleep 0.2; echo done"], timeout));
+        assert_result_with_timeout("timeout_zero_runs_unbounded", &execution, timeout);
+        assert!(execution.result.duration().unwrap() >= 0.2);
     }
 }
 

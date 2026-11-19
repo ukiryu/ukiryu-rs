@@ -1,5 +1,5 @@
 //! Spawning one process with concurrent stdin feeding and stdout/stderr
-//! capture, bounded by a deadline.
+//! capture, with an optional deadline.
 //!
 //! Each pipe has its own thread, so a child that fills one pipe while the
 //! executor is busy with another never blocks (the source writes all of
@@ -72,9 +72,9 @@ impl Tree {
     }
 }
 
-pub(super) fn run(spec: Spec, timeout: Duration) -> Result<Finished, RunError> {
+pub(super) fn run(spec: Spec, timeout: Option<Duration>) -> Result<Finished, RunError> {
     let start = Instant::now();
-    let deadline = start.checked_add(timeout);
+    let deadline = timeout.and_then(|timeout| start.checked_add(timeout));
 
     let (program, rest) = spec
         .argv

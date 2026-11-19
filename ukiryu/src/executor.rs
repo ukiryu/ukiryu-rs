@@ -38,8 +38,8 @@
 //! - A failed run keeps its result ([`ExecuteError::Failed`]); the source's
 //!   `ExecutionError` has no `#result`.
 //! - stdin is written while output is read, so large inputs do not block.
-//! - The timeout must be a positive, finite number. The source treats `0` as
-//!   "no limit"; here it is refused (decision D1: the timeout is required).
+//! - Timeouts must be finite and non-negative. As in Ruby, an explicit zero
+//!   means no deadline; the timeout argument is still required (D1).
 //!   A negative value is refused with the source's `ArgumentError` message.
 //! - Output is kept as bytes ([`Execution::stdout`]). The result's streams
 //!   are the bytes Ruby reads from the pipe (on Windows, CR LF becomes LF),
@@ -219,7 +219,7 @@ pub struct Execution {
 /// Why a run produced no successful [`Execution`].
 #[derive(Debug)]
 pub enum ExecuteError {
-    /// The timeout is not a positive, finite number of seconds.
+    /// The timeout is not a non-negative, finite number of seconds.
     InvalidTimeout(Seconds),
     /// A Unix shell is not on the search path. The message is the source's
     /// `RuntimeError` text.
@@ -273,7 +273,7 @@ impl fmt::Display for ExecuteError {
             }
             ExecuteError::InvalidTimeout(timeout) => write!(
                 f,
-                "timeout must be a positive, finite number of seconds (got {})",
+                "timeout must be a non-negative, finite number of seconds (got {})",
                 timeout.to_ruby_s()
             ),
             ExecuteError::ShellNotFound { message, .. } => f.write_str(message),
@@ -442,7 +442,10 @@ fn pipe_text(bytes: &[u8], windows: bool) -> Vec<u8> {
 }
 
 /// The run limit for a timeout value.
-fn timeout_duration(timeout: Seconds) -> Result<Duration, ExecuteError> {
+fn timeout_duration(timeout: Seconds) -> Result<Option<Duration>, ExecuteError> {
+    if matches!(timeout, Seconds::Int(0)) || matches!(timeout, Seconds::Float(f) if f == 0.0) {
+        return Ok(None);
+    }
     let seconds = match timeout {
         Seconds::Int(i) if i > 0 => Some(Duration::from_secs(i.unsigned_abs())),
         Seconds::Float(f) if f.is_finite() && f > 0.0 => Duration::try_from_secs_f64(f).ok(),
@@ -450,6 +453,7 @@ fn timeout_duration(timeout: Seconds) -> Result<Duration, ExecuteError> {
     };
     seconds
         .filter(|d| !d.is_zero())
+        .map(Some)
         .ok_or(ExecuteError::InvalidTimeout(timeout))
 }
 
