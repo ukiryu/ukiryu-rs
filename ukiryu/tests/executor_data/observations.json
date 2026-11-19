@@ -87,9 +87,7 @@
       "timeout": 0,
       "started_at_class": "Time",
       "elapsed_lt_2s": true,
-      "contract": "migrated",
-      "trace": "D1 (DECISIONS.md); ukiryu/ukiryu#20, #29",
-      "target": "ExecuteError::InvalidTimeout (0 would disable the required timeout)"
+      "contract": "parity"
     },
     {
       "id": "timeout_negative",
