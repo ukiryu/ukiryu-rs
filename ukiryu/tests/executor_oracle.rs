@@ -201,8 +201,15 @@ fn non_positive_or_non_finite_timeouts_are_rejected() {
         Seconds::Float(f64::INFINITY),
     ] {
         match execute(bash("echo", &["x"], timeout)) {
-            Err(ExecuteError::InvalidTimeout(t)) => {
-                assert_eq!(format!("{t:?}"), format!("{timeout:?}"))
+            Err(error @ ExecuteError::InvalidTimeout(t)) => {
+                assert_eq!(format!("{t:?}"), format!("{timeout:?}"));
+                // The source raises the same ArgumentError for a negative value.
+                if matches!(timeout, Seconds::Int(-1) | Seconds::Float(-0.5)) {
+                    assert_eq!(
+                        error.to_string(),
+                        row("timeout_negative")["message"].as_str().unwrap()
+                    );
+                }
             }
             other => panic!("{timeout:?}: {other:?}"),
         }
