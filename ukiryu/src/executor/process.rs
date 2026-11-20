@@ -204,6 +204,8 @@ fn spawn_writer(mut pipe: ChildStdin, input: Stdin) -> Receiver<io::Result<()>> 
             Stdin::Bytes(bytes) => pipe.write_all(&bytes),
             Stdin::Reader(mut reader) => io::copy(&mut reader, &mut pipe).map(|_| ()),
         };
+        // WASM has no native stdin handle (its ChildStdin has no Drop).
+        #[cfg(not(target_arch = "wasm32"))]
         drop(pipe);
         // A child that stops reading early closes the pipe; the source
         // ignores that (`rescue Errno::EPIPE`).

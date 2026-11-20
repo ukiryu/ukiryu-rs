@@ -226,6 +226,17 @@ impl Tool {
         aliases: &mut dyn AliasProbe,
         system: &mut dyn SystemCommandRunner,
     ) -> Result<Tool, ToolError> {
+        let mut tool = Self::from_snapshot(definition, options, None)?;
+        tool.executable = tool.find_executable(&options.discovery_context(), aliases, system);
+        Ok(tool)
+    }
+
+    /// Construct from explicit executable discovery facts, with no host probing.
+    pub fn from_snapshot(
+        definition: ToolDefinition,
+        options: &ToolOptions,
+        executable: Option<Discovered>,
+    ) -> Result<Tool, ToolError> {
         let profile =
             resolution::find_command_profile(&definition, options.platform, options.shell)?;
         let selected = definition
@@ -239,16 +250,14 @@ impl Tool {
                 message: "undefined method 'name' for nil".into(),
             });
         }
-        let mut tool = Tool {
+        Ok(Tool {
             definition,
             profile,
             platform: options.platform,
             shell: options.shell,
             version: options.version.clone(),
-            executable: None,
-        };
-        tool.executable = tool.find_executable(&options.discovery_context(), aliases, system);
-        Ok(tool)
+            executable,
+        })
     }
 
     /// `ExecutableDiscovery#find_executable`.
