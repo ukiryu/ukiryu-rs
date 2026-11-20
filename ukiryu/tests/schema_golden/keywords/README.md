@@ -65,3 +65,10 @@ arithmetic stays symbolic. This fixture does not specify ambient heap exhaustion
 for otherwise representable allocations, user-configured BigDecimal modes,
 Regexp timeouts or non-UTF-8 diagnostic output. Resource transport and YAML
 value-spelling boundaries remain separate work.
+
+The replay keeps the captured POSIX absolute-path spelling for scalar String
+`extends` under the URN base. A Windows drive prefix would change that input
+from `urn:/path` to `C:/path`, bypassing the captured missing-file behavior.
+File-based cases continue to use the actual host path and file URI; no rows
+are skipped or expected results changed. The fixture expansion regression
+checks both `C:/x.json` and `C:\\x.json` on every platform.
