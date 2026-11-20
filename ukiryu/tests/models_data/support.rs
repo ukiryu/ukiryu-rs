@@ -120,10 +120,10 @@ pub fn attr_text(v: &Attr<Text>) -> Json {
     enc_text(v.get())
 }
 pub fn attr_bool(v: &Attr<bool>) -> Json {
-    v.get().map_or(Json::Null, |b| json!(b))
+    enc(&v.to_ruby_value())
 }
 pub fn attr_int(v: &Attr<i64>) -> Json {
-    v.get().map_or(Json::Null, |i| json!(i))
+    enc(&v.to_ruby_value())
 }
 pub fn attr_float(v: &Attr<f64>) -> Json {
     v.get()
@@ -135,8 +135,8 @@ pub fn attr_hash(v: &Attr<Value>) -> Json {
 pub fn opt_hash(v: &Option<Value>) -> Json {
     v.as_ref().map_or(Json::Null, enc)
 }
-pub fn opt_int(v: &Option<i64>) -> Json {
-    v.map_or(Json::Null, |i| json!(i))
+pub fn opt_int(v: &Option<Attr<i64>>) -> Json {
+    v.as_ref().map_or(Json::Null, attr_int)
 }
 pub fn opt_float(v: &Option<f64>) -> Json {
     v.map_or(Json::Null, |f| json!({ "$float": float_to_s(f) }))
@@ -146,12 +146,12 @@ pub fn text_list(v: &Option<Vec<Text>>) -> Json {
         Json::Array(items.iter().map(|t| enc(&t.to_ruby_value())).collect())
     })
 }
-pub fn int_list(v: &Option<Vec<Option<i64>>>) -> Json {
+pub fn int_list(v: &Option<Vec<Option<Attr<i64>>>>) -> Json {
     v.as_ref().map_or(Json::Null, |items| {
         Json::Array(
             items
                 .iter()
-                .map(|i| i.map_or(Json::Null, |i| json!(i)))
+                .map(|i| i.as_ref().map_or(Json::Null, attr_int))
                 .collect(),
         )
     })
@@ -159,8 +159,13 @@ pub fn int_list(v: &Option<Vec<Option<i64>>>) -> Json {
 pub fn model<T: Model>(v: &Option<Box<T>>) -> Json {
     v.as_ref().map_or(Json::Null, |m| enc_model(&**m))
 }
-pub fn model_list<T: Model>(v: &Option<Vec<T>>) -> Json {
+pub fn model_list<T: Model>(v: &Option<Vec<Option<T>>>) -> Json {
     v.as_ref().map_or(Json::Null, |items| {
-        Json::Array(items.iter().map(enc_model).collect())
+        Json::Array(
+            items
+                .iter()
+                .map(|m| m.as_ref().map_or(Json::Null, enc_model))
+                .collect(),
+        )
     })
 }

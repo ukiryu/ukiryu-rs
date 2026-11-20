@@ -309,14 +309,16 @@ impl Out {
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct VersionInput;
 
+/// The pinned CLI compatibility version (ukiryu/ukiryu ab6df353), kept
+/// separate from the development crate version. cli-output.version is a
+/// byte-exact oracle row; changing the package's version must not rewrite it.
+pub const CLI_VERSION: &str = "0.3.1";
+
 /// `VersionCommand#run`: `Ukiryu version <VERSION>` in cyan.
 pub fn version(_input: VersionInput, ctx: &HandlerContext) -> Result<CommandOutcome, InspectError> {
     let config = ctx.configuration()?;
     let mut out = Out::new(colors_disabled(&config));
-    out.say(
-        &format!("Ukiryu version {}", ukiryu::VERSION),
-        Some(Color::Cyan),
-    );
+    out.say(&format!("Ukiryu version {CLI_VERSION}"), Some(Color::Cyan));
     Ok(out.done())
 }
 
@@ -1572,6 +1574,7 @@ fn join_texts(items: &[Text], separator: &str) -> String {
             Text::Str(s) => s.clone(),
             Text::Nil => String::new(),
             Text::List(inner) => ukiryu::types::ruby::join(inner, separator),
+            Text::Hash(_) => item.to_ruby_s(),
         })
         .collect();
     parts.join(separator)
@@ -1592,6 +1595,7 @@ fn ljust_text(value: &Option<Text>, fallback: &str) -> Result<String, String> {
         None | Some(Text::Nil) => Ok(fallback.to_owned()),
         Some(Text::Str(s)) => Ok(s.clone()),
         Some(Text::List(_)) => Err("undefined method 'ljust' for an instance of Array".to_owned()),
+        Some(Text::Hash(_)) => Err("undefined method 'ljust' for an instance of Hash".to_owned()),
     }
 }
 
@@ -1708,6 +1712,11 @@ pub fn info(input: InfoInput, ctx: &HandlerContext) -> Result<CommandOutcome, In
             Some(Color::Yellow),
         );
         for prof in profiles {
+            let prof = prof.as_ref().ok_or_else(|| InspectError::Raised {
+                class: "NoMethodError",
+                message: "undefined method 'platforms' for nil".into(),
+                partial: out.writes.clone(),
+            })?;
             let all = [Text::new("all")];
             let platforms = join_texts(prof.platforms.as_deref().unwrap_or(&all), ", ");
             let shells = join_texts(prof.shells.as_deref().unwrap_or(&all), ", ");
@@ -1761,6 +1770,11 @@ pub fn opts(input: OptsInput, ctx: &HandlerContext) -> Result<CommandOutcome, In
         // `find` block still runs and raises for a command without a String
         // name before a match.
         for command in commands {
+            let command = command.as_ref().ok_or_else(|| InspectError::Raised {
+                class: "NoMethodError",
+                message: "undefined method 'name' for nil".into(),
+                partial: out.writes.clone(),
+            })?;
             let command_name = command.name.clone().unwrap_or(Text::Nil);
             if command_name.to_ruby_s() == wanted {
                 break;
@@ -1777,6 +1791,11 @@ pub fn opts(input: OptsInput, ctx: &HandlerContext) -> Result<CommandOutcome, In
     }
 
     for command in commands {
+        let command = command.as_ref().ok_or_else(|| InspectError::Raised {
+            class: "NoMethodError",
+            message: "undefined method 'name' for nil".into(),
+            partial: out.writes.clone(),
+        })?;
         if let Err(message) = opts_command(&mut out, name, command) {
             return Err(InspectError::Raised {
                 class: "NoMethodError",
@@ -1801,6 +1820,7 @@ fn opts_command(out: &mut Out, title: &str, command: &CommandDefinition) -> Resu
         out.clear();
         out.say("Arguments:", Some(Color::Yellow));
         for argument in arguments {
+            let argument = argument.as_ref().ok_or("undefined method 'name' for nil")?;
             let name = txt(&argument.name).unwrap_or_else(|| "unnamed".to_owned());
             let kind = attr_txt(&argument.r#type).unwrap_or_else(|| "unknown".to_owned());
             let position = attr_txt(&argument.position).unwrap_or_else(|| "default".to_owned());
@@ -1834,6 +1854,7 @@ fn opts_command(out: &mut Out, title: &str, command: &CommandDefinition) -> Resu
         out.clear();
         out.say(heading, Some(Color::Yellow));
         for option in options {
+            let option = option.as_ref().ok_or("undefined method 'name' for nil")?;
             let name = ljust_text(&option.name, "unnamed")?;
             let cli = txt(&option.cli).unwrap_or_else(|| "N/A".to_owned());
             let kind = attr_txt(&option.r#type).unwrap_or_else(|| "unknown".to_owned());
@@ -1851,7 +1872,7 @@ fn opts_command(out: &mut Out, title: &str, command: &CommandDefinition) -> Resu
             if let Some(range) = option.range.as_deref() {
                 let range: Vec<String> = range
                     .iter()
-                    .map(|bound| bound.map(|b| b.to_string()).unwrap_or_default())
+                    .map(|bound| bound.as_ref().map(|b| b.to_string()).unwrap_or_default())
                     .collect();
                 out.say(
                     &format!("    Range: {}", range.join("..")),
@@ -1865,6 +1886,7 @@ fn opts_command(out: &mut Out, title: &str, command: &CommandDefinition) -> Resu
         out.clear();
         out.say("Flags:", Some(Color::Yellow));
         for flag in flags {
+            let flag = flag.as_ref().ok_or("undefined method 'name' for nil")?;
             let name = txt(&flag.name).unwrap_or_else(|| "unnamed".to_owned());
             let cli = ljust_text(&flag.cli, "N/A")?;
             let default = match flag.default.get() {

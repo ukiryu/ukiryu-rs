@@ -228,6 +228,17 @@ impl Tool {
     ) -> Result<Tool, ToolError> {
         let profile =
             resolution::find_command_profile(&definition, options.platform, options.shell)?;
+        let selected = definition
+            .profiles
+            .as_ref()
+            .and_then(|p| p[profile].as_ref())
+            .expect("profile validated");
+        if selected.commands.iter().flatten().any(Option::is_none) {
+            return Err(ToolError::Ruby {
+                class: "NoMethodError",
+                message: "undefined method 'name' for nil".into(),
+            });
+        }
         let mut tool = Tool {
             definition,
             profile,
@@ -282,11 +293,12 @@ impl Tool {
 
     /// The selected command profile (`@command_profile`).
     pub fn command_profile(&self) -> &PlatformProfile {
-        &self
-            .definition
+        self.definition
             .profiles
             .as_ref()
             .expect("profile chosen at construction")[self.profile]
+            .as_ref()
+            .expect("profile validated at construction")
     }
 
     /// Index of the selected profile in the definition's `profiles`.
@@ -358,16 +370,20 @@ impl Tool {
     }
 
     /// `#commands`.
-    pub fn commands(&self) -> &[CommandDefinition] {
+    pub fn commands(&self) -> Vec<&CommandDefinition> {
         self.command_profile()
             .commands
-            .as_deref()
-            .unwrap_or_default()
+            .iter()
+            .flatten()
+            .flatten()
+            .collect()
     }
 
     /// `#command_definition(name)`.
     pub fn command_definition(&self, name: &str) -> Option<&CommandDefinition> {
-        self.command_profile().command(name)
+        self.command_profile()
+            .command(name)
+            .expect("commands validated at construction")
     }
 
     /// `#command?(name)`.
@@ -381,6 +397,7 @@ impl Tool {
         let profile = self.command_profile();
         let command = profile
             .command(command_name)
+            .expect("commands validated at construction")
             .and_then(|c| c.exit_codes.as_deref());
         crate::execution::exit_code_meaning(status, command, profile.exit_codes.as_deref())
     }

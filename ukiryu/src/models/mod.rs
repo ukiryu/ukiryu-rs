@@ -7,9 +7,10 @@
 //! single-value wrapping for collections) live in [`attr`]. Plain Ruby
 //! classes that hold raw YAML Hashes keep them as [`Value`].
 //!
-//! Where lutaml keeps an uncastable raw object (for example a mapping in a
-//! `:string` attribute or `"off"` in a `:boolean` attribute) the port fails
-//! with [`ModelErrorKind::Unsupported`] instead of guessing a type.
+//! Raw Hashes in string fields, uncast scalar reader values, and nil model
+//! collection entries are preserved. [`Attr::get`] exposes the typed view;
+//! [`Attr::raw_value`] exposes retained values outside that type. Serde follows
+//! Lutaml's output casts and omission rules independently of the reader value.
 //!
 //! Out of scope here (host probing, detection and execution): the defaults
 //! of `ToolDefinition#compatible_profile`, `RunEnvironment.collect` and the

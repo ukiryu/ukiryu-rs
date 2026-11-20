@@ -373,7 +373,11 @@ mod snapshot {
                 (
                     "@detection_methods",
                     match &vd.detection_methods {
-                        Some(ms) => Json::Array(ms.iter().map(method).collect::<Result<_, _>>()?),
+                        Some(ms) => Json::Array(
+                            ms.iter()
+                                .map(|m| m.as_ref().map_or(Ok(Json::Null), method))
+                                .collect::<Result<_, _>>()?,
+                        ),
                         None => Json::Null,
                     },
                 ),

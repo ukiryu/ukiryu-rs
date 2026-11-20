@@ -92,15 +92,18 @@ pub(super) fn tool_class(
         .ok_or_else(|| not_found(name))?;
     let mut definition =
         ToolDefinition::from_yaml(&yaml).map_err(|e| super::error::model_error(&e))?;
-    definition.resolve_inheritance();
+    definition
+        .resolve_inheritance()
+        .map_err(|e| super::error::model_error(&e))?;
     let selected = definition
         .compatible_profile(platform, shell)
         .map_err(|e| super::error::model_error(&e))?;
     let index = selected.and_then(|selected| {
-        definition
-            .profiles
-            .as_ref()
-            .and_then(|profiles| profiles.iter().position(|p| std::ptr::eq(p, selected)))
+        definition.profiles.as_ref().and_then(|profiles| {
+            profiles
+                .iter()
+                .position(|p| p.as_ref().is_some_and(|p| std::ptr::eq(p, selected)))
+        })
     });
     let fields = definition
         .to_hash()
