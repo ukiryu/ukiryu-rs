@@ -63,7 +63,9 @@ run config unset format;      check "config unset" 0 "Unset format" ""
 run config unset format;      check "config unset absent key" 1 "" "Key not set in persistent config: format"
 run config set format;        check "config set without value" 1 "" "Usage: ukiryu config set <key> <value>"
 cd "$W/author"
-run validate file defs/convert.yaml; check "validate file" 0 "Valid" ""
+# This legacy fixture passes the pinned local schema. The live remote v1
+# schema requires execution_profiles and Ruby rejects it there too.
+run validate file defs/convert.yaml --schema schema/tool.schema.yaml; check "validate file" 0 "Valid" ""
 cd "$W/exec"
 run exec cat concatenate --dry-run --raw --definition defs/cat.yaml; check "exec --dry-run" 0 "DRY RUN" ""
 run exec cat concatenate --format xml --definition defs/cat.yaml; check "exec rejects invalid --format" 1 "" "Invalid format: xml"
