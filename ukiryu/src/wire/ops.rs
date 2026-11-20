@@ -13,9 +13,10 @@ use super::error::{model_error, range_error, ruby, schema_error, tool_error, tra
 use super::value::{self, Typed};
 use crate::definition::definition_validator::{self, SchemaStage, ValidationReport};
 use crate::definition::ValidatorEnv;
+use crate::environment::Environment;
 use crate::executable::Platform;
 use crate::models::{ImplementationIndex, ImplementationVersion, Interface, Model, ToolDefinition};
-use crate::runtime::{ShellName, ShellSource};
+use crate::runtime::{detect_shell, ShellError, ShellName, ShellSource};
 use crate::schema::{self, DefinitionSchemaFormat, Permitted, ValidateOptions};
 use crate::tool::{BuiltCommand, Tool, ToolError, ToolOptions};
 use crate::tool_loader::{self, LoadError};
@@ -254,6 +255,12 @@ pub fn build(request: BuildRequest) -> Json {
 #[derive(Debug, Deserialize)]
 #[serde(tag = "method", rename_all = "snake_case", deny_unknown_fields)]
 pub enum ResolveRequest {
+    /// Strict D2 shell detection over an explicit platform and complete
+    /// environment snapshot. Null values are unset; nothing is inherited.
+    ShellDetect {
+        platform: String,
+        env: serde_json::Map<String, Json>,
+    },
     /// `Tool::Loader.extract_version_from_pattern(output, pattern)`.
     ExtractVersion {
         output: Option<VersionOutput>,
@@ -460,8 +467,60 @@ pub(super) fn tool_identity(tool: &Tool) -> Json {
     })
 }
 
+/// `Shell.detect` / `Shell.shell_class`, with the recorded D2 migrations.
+/// The host environment, file system and PATH are never consulted.
+fn shell_detect(platform: &str, vars: &serde_json::Map<String, Json>) -> Result<Json, Json> {
+    let platform = Platform::from_name(platform)
+        .ok_or_else(|| transport("INVALID_ARGUMENT", format!("Unknown platform: {platform}")))?;
+    let mut env = Environment::new();
+    for (name, value) in vars {
+        match value {
+            Json::Null => {}
+            Json::String(text) => env = env.set(name, text),
+            _ => {
+                return Err(transport(
+                    "INVALID_ARGUMENT",
+                    format!("env {name} must be string or null"),
+                ))
+            }
+        }
+    }
+    let shell = detect_shell(platform, &env).map_err(|error| {
+        let (variant, stage) = match &error {
+            ShellError::Unknown { source, .. } => ("Unknown", Some(source)),
+            ShellError::PlatformGroup { source, .. } => ("PlatformGroup", Some(source)),
+            ShellError::Missing { .. } => ("Missing", None),
+        };
+        let stage = match stage {
+            Some(ShellSource::Explicit) => "Explicit",
+            Some(ShellSource::Configured) => "Configured",
+            Some(ShellSource::TestOverride) => "TestOverride",
+            Some(ShellSource::ShellVariable) => "ShellVariable",
+            None => "Detection",
+        };
+        let mut reply = ruby("Ukiryu::Errors::UnknownShellError", error.to_string());
+        reply["error"]["detail"] =
+            json!({"code": "UnknownShell", "variant": variant, "stage": stage});
+        reply
+    })?;
+    let class = match shell {
+        ShellName::Bash => "Bash",
+        ShellName::Zsh => "Zsh",
+        ShellName::Fish => "Fish",
+        ShellName::Sh => "Sh",
+        ShellName::Dash => "Dash",
+        ShellName::Tcsh => "Tcsh",
+        ShellName::PowerShell => "PowerShell",
+        ShellName::Cmd => "Cmd",
+    };
+    Ok(
+        json!({"detect": json!({"$sym": shell.as_str()}), "shell_class": format!("Ukiryu::Shell::{class}")}),
+    )
+}
+
 pub fn resolve(request: ResolveRequest) -> Json {
     let result = match request {
+        ResolveRequest::ShellDetect { platform, env } => shell_detect(&platform, &env),
         ResolveRequest::ExtractVersion { output, pattern } => {
             extract_version(output, pattern.as_deref())
         }

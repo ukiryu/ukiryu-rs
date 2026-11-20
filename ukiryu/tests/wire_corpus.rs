@@ -9,8 +9,8 @@
 //! and passed as the request's document text or path. Error rows compare the
 //! reply's `source_class` and message with the row's class and message.
 //!
-//! Not dispatched here: `resolve.shell_detect` (owner decision D2 is open and
-//! the wire has no host shell detection), and the kinds other cards own
+//! `resolve.shell_detect` runs separately in `wire_shell_detect.rs` over
+//! explicit virtual platforms. Other kinds run in their own consumers
 //! (`escape` in `wire_escape.rs`, `lint`, `yaml`, `cli-output`).
 use serde_json::{json, Value};
 use std::collections::BTreeMap;
