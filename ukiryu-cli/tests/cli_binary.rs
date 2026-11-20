@@ -38,7 +38,6 @@
 //!   and asserted by number, and the handler test `execute.rs` replays them.
 //!
 //! Recorded deviations (all decided outside this file):
-//! - the version line carries `ukiryu::VERSION` (D3), not the gem's 0.3.1;
 //! - shell detection is strict (DECISIONS.md D2): inspect rows with a `note`
 //!   expect the shell error after the same partial output, and extract rows
 //!   set `SHELL=/bin/bash` where Ruby searched PATH for bash;
@@ -63,8 +62,6 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use ukiryu_cli::dispatch::GATED_EXIT;
 
 const BIN: &str = env!("CARGO_BIN_EXE_ukiryu");
-#[cfg(target_os = "linux")]
-const RUBY_VERSION_LINE: &str = "Ukiryu version 0.3.1";
 
 struct Output {
     stdout: String,
@@ -205,10 +202,6 @@ fn inspect_goldens_through_the_binary() {
                 .replace("{HOME}", &s(&home))
                 .replace("{BIN}", &s(&bin))
                 .replace("{REGISTER}", &s(&register))
-                .replace(
-                    RUBY_VERSION_LINE,
-                    &format!("Ukiryu version {}", ukiryu::VERSION),
-                )
         };
         let (want_out, want_err) = (subst(&case["stdout"]), subst(&case["stderr"]));
         let want_code = case["exit"].as_i64().unwrap() as i32;
@@ -916,13 +909,10 @@ fn help_and_version_succeed_on_stdout() {
 }
 
 #[test]
-fn version_verb_prints_the_crate_version() {
+fn version_verb_preserves_the_frozen_cli_version() {
     let got = simple(&["version"]);
     assert_eq!(got.code, 0, "{}", got.stderr);
-    assert_eq!(
-        got.stdout,
-        format!("\x1b[36mUkiryu version {}\x1b[0m\n", ukiryu::VERSION)
-    );
+    assert_eq!(got.stdout, "\x1b[36mUkiryu version 0.3.1\x1b[0m\n");
 }
 
 #[test]
