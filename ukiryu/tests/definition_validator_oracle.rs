@@ -128,22 +128,29 @@ fn compare(want: &Value, got: &Result<ValidationReport, SchemaError>) -> Option<
     }
 }
 
+// Match the capture's timezone without mutating the process environment
+// while the integration test harness runs other tests on parallel threads.
+fn oracle_timezone(test: &str) -> bool {
+    if std::env::var("UKIRYU_VALIDATOR_ORACLE_CHILD")
+        .ok()
+        .as_deref()
+        == Some(test)
+    {
+        return true;
+    }
+    let status = std::process::Command::new(std::env::current_exe().unwrap())
+        .args(["--exact", test, "--nocapture"])
+        .env("TZ", "UTC")
+        .env("UKIRYU_VALIDATOR_ORACLE_CHILD", test)
+        .status()
+        .expect("UTC oracle subprocess");
+    assert!(status.success(), "UTC oracle subprocess: {status}");
+    false
+}
+
 #[test]
 fn definition_validator_matches_the_oracle() {
-    // Match the capture's timezone without changing the environment read by
-    // other tests running in this process.
-    if std::env::var_os("UKIRYU_VALIDATOR_ORACLE_CHILD").is_none() {
-        let status = std::process::Command::new(std::env::current_exe().unwrap())
-            .args([
-                "--exact",
-                "definition_validator_matches_the_oracle",
-                "--nocapture",
-            ])
-            .env("TZ", "UTC")
-            .env("UKIRYU_VALIDATOR_ORACLE_CHILD", "1")
-            .status()
-            .expect("UTC oracle subprocess");
-        assert!(status.success(), "UTC oracle subprocess: {status}");
+    if !oracle_timezone("definition_validator_matches_the_oracle") {
         return;
     }
     let golden = golden();
@@ -178,15 +185,30 @@ fn definition_validator_matches_the_oracle() {
 /// raise, so a broken validator cannot pass by accident.
 #[test]
 fn oracle_comparison_rejects_altered_expectations() {
+    if !oracle_timezone("oracle_comparison_rejects_altered_expectations") {
+        return;
+    }
     let golden = golden();
     let cases = golden["cases"].as_array().expect("cases");
     let mut rejected = 0;
     for case in cases {
         let id = case["id"].as_str().expect("id");
-        if divergence(id).is_some() || (UNIX_ONLY.contains(&id) && !cfg!(unix)) {
+        if UNIX_ONLY.contains(&id) && !cfg!(unix) {
             continue;
         }
         let got = run(&case["input"]);
+        assert!(compare(case, &got).is_none(), "{id}: original differs");
+        if case["ok"]["errors"]
+            .as_array()
+            .is_some_and(|errors| !errors.is_empty())
+        {
+            let mut changed_message = case.clone();
+            changed_message["ok"]["errors"][0] = Value::String("Invalid YAML: altered".into());
+            assert!(
+                compare(&changed_message, &got).is_some(),
+                "{id}: altered diagnostic accepted"
+            );
+        }
         let mut altered = case.clone();
         if altered.get("error").is_some() {
             altered["error"]["message"] = Value::String("altered".into());
@@ -196,12 +218,12 @@ fn oracle_comparison_rejects_altered_expectations() {
             let mut stage = case.clone();
             stage["stages"]["schema_stage"] = Value::String("altered".into());
             assert!(
-                compare(id, &stage, &got).is_some(),
+                compare(&stage, &got).is_some(),
                 "{id}: altered stage accepted"
             );
         }
         assert!(
-            compare(id, &altered, &got).is_some(),
+            compare(&altered, &got).is_some(),
             "{id}: altered result accepted"
         );
         rejected += 1;

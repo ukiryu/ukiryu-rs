@@ -1,14 +1,25 @@
-//! Exact invalid-YAML diagnostics through the binary, including CRLF input.
+//! Exact invalid-YAML diagnostics through validate's binary and standalone lint.
 //! Regenerate with scripts/capture-definition-diagnostics.py and the pinned Ruby oracle.
 use serde_json::Value;
 use std::path::PathBuf;
 use std::process::{Command, Stdio};
+use ukiryu::cli::commands::author::{self, AuthorContext, LintInput, LintOptions, LintTarget};
+use ukiryu::definition::definition_validator::RemoteSchemaSource;
+use ukiryu::render::OutputWrite;
 
 struct Scratch(PathBuf);
 
 impl Drop for Scratch {
     fn drop(&mut self) {
         let _ = std::fs::remove_dir_all(&self.0);
+    }
+}
+
+struct RestoreDir(PathBuf);
+
+impl Drop for RestoreDir {
+    fn drop(&mut self) {
+        std::env::set_current_dir(&self.0).unwrap();
     }
 }
 
@@ -28,6 +39,9 @@ fn malformed_definition_diagnostics_match_ruby_cli() {
     )));
     std::fs::create_dir_all(root.0.join("defs")).unwrap();
     std::fs::create_dir_all(root.0.join("home")).unwrap();
+    // This test binary has one test. Restore cwd before dropping Scratch.
+    let _restore = RestoreDir(std::env::current_dir().unwrap());
+    std::env::set_current_dir(&root.0).unwrap();
     let mut failures = Vec::new();
     for case in cases {
         let id = case["id"].as_str().unwrap();
@@ -36,6 +50,59 @@ fn malformed_definition_diagnostics_match_ruby_cli() {
             case["yaml"].as_str().unwrap(),
         )
         .unwrap();
+        // Ruby's LintCommand is standalone, not registered by exe/ukiryu.
+        // Exercise the same shared handler without inventing a new CLI verb.
+        if case["args"][0] == "lint" {
+            let outcome = author::lint(
+                LintInput {
+                    target: LintTarget::File {
+                        path: "defs/diagnostic.yaml".into(),
+                    },
+                    options: LintOptions {
+                        format: Some(
+                            case["args"]
+                                .as_array()
+                                .unwrap()
+                                .last()
+                                .unwrap()
+                                .as_str()
+                                .unwrap()
+                                .into(),
+                        ),
+                        ..LintOptions::default()
+                    },
+                },
+                &AuthorContext {
+                    thor_colors: false,
+                    discovery: ukiryu::definition::DiscoveryEnv {
+                        home: None,
+                        xdg_data_home: None,
+                        xdg_data_dirs: None,
+                        path: None,
+                        opt_root: root.0.join("opt").to_string_lossy().into_owned(),
+                    },
+                    schema_path_env: None,
+                    remote_schema: RemoteSchemaSource::Unavailable,
+                    default_register: None,
+                    config_colors_disabled: false,
+                },
+            )
+            .expect("standalone lint handler");
+            let (mut stdout, mut stderr) = (String::new(), String::new());
+            for write in outcome.writes {
+                match write {
+                    OutputWrite::Stdout(text) => stdout.push_str(&text),
+                    OutputWrite::Stderr(text) => stderr.push_str(&text),
+                    OutputWrite::File { .. } => panic!("lint unexpectedly wrote a file"),
+                }
+            }
+            let got =
+                serde_json::json!({"stdout": stdout, "stderr": stderr, "exit": outcome.exit_code});
+            if got != case["expect"] {
+                failures.push(format!("{id}\ngot: {got}\nwant: {}", case["expect"]));
+            }
+            continue;
+        }
         let mut command = Command::new(env!("CARGO_BIN_EXE_ukiryu"));
         command
             .args(

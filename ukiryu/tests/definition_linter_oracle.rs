@@ -268,7 +268,7 @@ fn lint_result_on_built_issues() {
             })
             .collect();
         let res = LintResult::new(issues);
-        check(name, &b["result"], &Ok(res.clone()), None, false);
+        check(name, &b["result"], &Ok(res.clone()), None);
         for (sev, n) in b["count_by_severity"].as_object().unwrap() {
             assert_eq!(
                 res.count_by_severity(&severity(sev)) as u64,

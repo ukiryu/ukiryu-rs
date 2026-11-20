@@ -10,6 +10,8 @@ use super::SchemaError;
 use num_bigint::BigInt;
 use yeptris::{Document, Node, NodeKind, Style};
 
+mod diagnostics;
+
 /// The extra classes a `safe_load` call permits.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct Permitted {
@@ -55,6 +57,7 @@ pub fn safe_load(text: &str, permitted: Permitted) -> Result<Data, SchemaError> 
         let message = e.message().unwrap_or(&e.to_string()).to_owned();
         SchemaError::YamlSyntax {
             message: unfinished_flow_sequence(text, &message)
+                .or_else(|| diagnostics::mapping_value(text, &message))
                 .unwrap_or_else(|| crate::models::safe_load::syntax_message(&message)),
         }
     })?;
