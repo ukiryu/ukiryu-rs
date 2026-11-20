@@ -1,5 +1,5 @@
-//! `JSON::Validator.fully_validate` of json-schema 6.2.1, for draft-03,
-//! draft-04 and draft-06 keyword subsets, evaluated in schema key order
+//! `JSON::Validator.fully_validate` of json-schema 6.2.1, for draft-01,
+//! draft-02, draft-03, draft-04 and draft-06 keyword subsets, evaluated in schema key order
 //! with the gem's exact messages.
 //!
 //! Every input the port does not reproduce is an explicit
@@ -13,10 +13,14 @@ use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 
+mod keywords;
+
 const INDENT: &str = "    ";
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Dialect {
+    Draft1,
+    Draft2,
     Draft3,
     Draft4,
     Draft6,
@@ -36,6 +40,7 @@ enum Attr {
     Format,
     Pattern,
     Limit,
+    Keyword,
 }
 
 /// A recorded `JSON::Schema::ValidationError`.
@@ -167,7 +172,7 @@ fn fully_validate_mode(
     let resources = if host_paths {
         super::resources::load(schema, root_uri)?
     } else {
-        super::resources::load_with(schema, root_uri, |name| {
+        super::resources::load_with(schema, root_uri, |name, _extension| {
             Err(unsupported(
                 "snapshot schema resource",
                 format!("external resource {name:?} is unavailable in read-only rendering"),
@@ -223,17 +228,12 @@ fn fully_validate_mode(
 /// The dialect `$schema` selects: `validators["#{scheme}://#{host}#{path}"]`.
 fn resolve_dialect(value: &Data) -> Result<Dialect, SchemaError> {
     let Data::String(s) = value else {
-        return Err(unsupported(
-            "$schema",
-            "a non-string $schema raises TypeError in Addressable; not reproduced",
+        return Err(keywords::ruby_error(
+            "TypeError",
+            format!("Can't convert {} into String.", keywords::class_name(value)),
         ));
     };
-    if s.contains(['\n', '\r']) || !uri::addressable_parses(s) {
-        return Err(unsupported(
-            "$schema",
-            format!("$schema {s:?} raises JSON::Schema::UriError; not reproduced"),
-        ));
-    }
+    keywords::check_schema_uri(s)?;
     let p = uri::split(s);
     let host = p.authority.map(|a| {
         let a = a.rsplit_once('@').map_or(a, |(_, h)| h);
@@ -253,15 +253,12 @@ fn resolve_dialect(value: &Data) -> Result<Dialect, SchemaError> {
         "http://json-schema.org/draft-04/schema" => Ok(Dialect::Draft4),
         "http://json-schema.org/draft-06/schema" => Ok(Dialect::Draft6),
         "http://json-schema.org/draft-01/schema"
-        | "http://json-schema.org/draft-02/schema"
-        | "http://json-schema.org/draft-01/hyper-schema"
-        | "http://json-schema.org/draft-02/hyper-schema"
-        | "http://json-schema.org/draft-03/hyper-schema"
-        | "http://json-schema.org/draft-04/hyper-schema"
-        | "http://json-schema.org/draft-06/hyper-schema" => Err(unsupported(
-            "$schema dialect",
-            format!("json-schema 6.2.1 validates {s} with a dialect this port does not implement"),
-        )),
+        | "http://json-schema.org/draft-01/hyper-schema" => Ok(Dialect::Draft1),
+        "http://json-schema.org/draft-02/schema"
+        | "http://json-schema.org/draft-02/hyper-schema" => Ok(Dialect::Draft2),
+        "http://json-schema.org/draft-03/hyper-schema" => Ok(Dialect::Draft3),
+        "http://json-schema.org/draft-04/hyper-schema" => Ok(Dialect::Draft4),
+        "http://json-schema.org/draft-06/hyper-schema" => Ok(Dialect::Draft6),
         _ => Err(SchemaError::Schema {
             message: format!("Schema not found: {s}"),
         }),
@@ -337,13 +334,8 @@ impl<'s> Validation<'s> {
         parent: Dialect,
     ) -> Result<Ctx<'s>, SchemaError> {
         let Data::Hash(pairs) = node else {
-            return Err(unsupported(
-                "subschema",
-                format!(
-                    "a {} where a schema object is expected is not reproduced",
-                    type_of_data(node)
-                ),
-            ));
+            keywords::ruby_index(node, "id")?;
+            return Err(keywords::no_method(node, "each"));
         };
         let known = self.locations.borrow().get(&(node as *const Data)).cloned();
         let uri = if let Some(known) =
@@ -394,11 +386,6 @@ impl<'s> Validation<'s> {
                 self.check_local_ref(r)?;
             }
         }
-        if let Some(e) = ctx.get("extends") {
-            if matches!(e, Data::String(_)) {
-                return Err(unsupported("extends", "extends is not reproduced"));
-            }
-        }
         for key in ["type", "disallow"] {
             if let Some(Data::Array(items)) = ctx.get(key) {
                 for item in items {
@@ -414,12 +401,7 @@ impl<'s> Validation<'s> {
                     }
                 }
                 Some(Data::Array(_)) | None | Some(Data::Null | Data::Bool(false)) => {}
-                Some(_) => {
-                    return Err(unsupported(
-                        key,
-                        format!("a non-object {key} raises NoMethodError; not reproduced"),
-                    ))
-                }
+                Some(_) => return Err(keywords::no_method(ctx.get(key).expect("present"), "each")),
             }
         }
         for key in [
@@ -532,7 +514,10 @@ impl<'s> Validation<'s> {
             match key.as_str() {
                 "allOf" | "anyOf" | "oneOf" | "not" | "required" | "minProperties"
                 | "maxProperties"
-                    if ctx.dialect == Dialect::Draft3 => {}
+                    if matches!(
+                        ctx.dialect,
+                        Dialect::Draft1 | Dialect::Draft2 | Dialect::Draft3
+                    ) => {}
                 "type" => self.type_attr(ctx, v, data, frags)?,
                 "allOf" => self.all_of(ctx, v, data, frags)?,
                 "anyOf" => self.any_of(ctx, v, data, frags)?,
@@ -549,36 +534,35 @@ impl<'s> Validation<'s> {
                 "additionalProperties" => self.additional_properties(ctx, v, data, frags)?,
                 "items" => self.items(ctx, v, data, frags)?,
                 "$ref" => self.ref_attr(ctx, v, data, frags)?,
-                "extends" if ctx.dialect == Dialect::Draft3 => self.extends(ctx, v, data, frags)?,
-                "disallow" if ctx.dialect == Dialect::Draft3 => {
+                "extends" => self.extends(ctx, v, data, frags)?,
+                "disallow"
+                    if matches!(
+                        ctx.dialect,
+                        Dialect::Draft1 | Dialect::Draft2 | Dialect::Draft3
+                    ) =>
+                {
                     self.disallow(ctx, v, data, frags)?
                 }
-                "disallow" | "extends" => {
-                    return Err(unsupported(key, format!("{key} is not reproduced")))
-                }
                 "const" if ctx.dialect == Dialect::Draft6 => {
-                    return Err(unsupported(key, "const is not reproduced"))
+                    self.const_attr(ctx, v, data, frags)?
                 }
-                "uniqueItems" if matches!(data, Data::Array(_)) => {
-                    return Err(unsupported(key, "uniqueItems is not reproduced"))
+                "uniqueItems" => self.unique_items(ctx, v, data, frags)?,
+                "additionalItems" if !matches!(ctx.dialect, Dialect::Draft1 | Dialect::Draft2) => {
+                    self.additional_items(ctx, v, data, frags)?
                 }
-                "additionalItems"
-                    if matches!(data, Data::Array(_))
-                        && matches!(ctx.get("items"), Some(Data::Array(_))) =>
-                {
-                    return Err(unsupported(key, "additionalItems is not reproduced"))
+                "multipleOf" if matches!(ctx.dialect, Dialect::Draft4 | Dialect::Draft6) => {
+                    self.multiple_of(ctx, v, data, frags)?
                 }
-                "multipleOf" if matches!(data, Data::Integer(_) | Data::Float(_)) => {
-                    return Err(unsupported(key, "multipleOf is not reproduced"))
+                "divisibleBy" if matches!(ctx.dialect, Dialect::Draft2 | Dialect::Draft3) => {
+                    self.multiple_of(ctx, v, data, frags)?
                 }
                 "pattern" => self.pattern_attr(ctx, v, data, frags)?,
-                "patternProperties" | "dependencies" if matches!(data, Data::Hash(_)) => {
-                    return Err(unsupported(key, format!("{key} is not reproduced")))
+                "patternProperties" => self.pattern_properties(ctx, v, data, frags)?,
+                "dependencies" if ctx.dialect != Dialect::Draft1 => {
+                    self.dependencies(ctx, v, data, frags)?
                 }
-                "propertyNames"
-                    if ctx.dialect == Dialect::Draft6 && matches!(data, Data::Hash(_)) =>
-                {
-                    return Err(unsupported(key, "propertyNames is not reproduced"))
+                "propertyNames" if ctx.dialect == Dialect::Draft6 => {
+                    self.property_names(ctx, v, data, frags)?
                 }
                 _ => {}
             }
@@ -599,7 +583,12 @@ impl<'s> Validation<'s> {
         };
         let mut sub_errors = Vec::new();
         for (i, ty) in list.iter().enumerate() {
-            if matches!(ty, Data::Hash(_)) && ctx.dialect == Dialect::Draft3 {
+            if matches!(ty, Data::Hash(_))
+                && matches!(
+                    ctx.dialect,
+                    Dialect::Draft1 | Dialect::Draft2 | Dialect::Draft3
+                )
+            {
                 if !union {
                     continue;
                 }
@@ -652,15 +641,37 @@ impl<'s> Validation<'s> {
             }
             Data::Array(items) => {
                 for item in items {
-                    let child = self.new_schema(item, ctx.uri.clone(), ctx.dialect)?;
-                    self.validate(&child, data, frags)?;
+                    if matches!(item, Data::Hash(_)) {
+                        let child = self.new_schema(item, ctx.uri.clone(), ctx.dialect)?;
+                        self.validate(&child, data, frags)?;
+                    } else {
+                        self.push(
+                            ctx,
+                            format!(
+                                "The property '{}' was not a valid schema",
+                                build_fragment(frags)
+                            ),
+                            frags,
+                            Attr::Keyword,
+                            Vec::new(),
+                        );
+                    }
                 }
                 Ok(())
             }
-            _ => Err(unsupported(
-                "extends",
-                "non-object/non-array extends is not reproduced",
-            )),
+            _ => {
+                self.push(
+                    ctx,
+                    format!(
+                        "The property '{}' was not a valid schema",
+                        build_fragment(frags)
+                    ),
+                    frags,
+                    Attr::Keyword,
+                    Vec::new(),
+                );
+                Ok(())
+            }
         }
     }
 
@@ -719,13 +730,8 @@ impl<'s> Validation<'s> {
         let Data::Hash(pairs) = data else {
             return Ok(());
         };
-        let Data::Array(names) = req else {
-            return Err(unsupported(
-                "required",
-                "a non-array required is not reproduced",
-            ));
-        };
-        for name in names {
+        let names = keywords::each_pairs(req)?;
+        for (name, _) in names {
             let name = name.ruby_to_s()?;
             if has_key(pairs, &name) {
                 continue;
@@ -749,20 +755,14 @@ impl<'s> Validation<'s> {
         let Data::Hash(pairs) = data else {
             return Ok(());
         };
-        let Data::Hash(schema_props) = props else {
-            return Err(unsupported(
-                "properties",
-                "a non-object properties is not reproduced",
-            ));
-        };
-        for (name, sub) in schema_props {
+        let schema_props = keywords::each_pairs(props)?;
+        for (name, sub) in &schema_props {
             let name = name.ruby_to_s()?;
             let present = get(pairs, &name);
-            let required = if ctx.dialect == Dialect::Draft3 {
-                let Data::Hash(sub) = sub else {
-                    return Err(unsupported("properties", "a non-object property schema"));
-                };
-                get(sub, "required").map_or(self.strict, Data::truthy)
+            let required = if matches!(ctx.dialect, Dialect::Draft1 | Dialect::Draft2) {
+                !keywords::ruby_index(sub, "optional")?.is_some_and(Data::truthy)
+            } else if ctx.dialect == Dialect::Draft3 {
+                keywords::ruby_index(sub, "required")?.map_or(self.strict, Data::truthy)
             } else {
                 self.strict
             };
@@ -780,22 +780,18 @@ impl<'s> Validation<'s> {
                 self.validate(&child, value, &f)?;
             }
         }
-        if !self.strict || has_key(ctx.pairs, "additionalProperties") {
+        if matches!(ctx.dialect, Dialect::Draft1 | Dialect::Draft2)
+            || !self.strict
+            || has_key(ctx.pairs, "additionalProperties")
+        {
             return Ok(());
         }
-        if ctx.get("patternProperties").is_some() {
-            return Err(unsupported(
-                "patternProperties",
-                "strict mode with patternProperties needs Ruby regular expressions; not reproduced",
-            ));
-        }
-        let diff: Vec<String> = pairs
-            .iter()
-            .filter_map(|(k, _)| match k {
-                Data::String(s) if !has_key(schema_props, s) => Some(s.clone()),
-                _ => None,
-            })
-            .collect();
+        let mut diff = self.extra_properties(ctx, pairs)?;
+        diff.retain(|s| {
+            !schema_props
+                .iter()
+                .any(|(k, _)| matches!(k, Data::String(name) if name == s))
+        });
         if !diff.is_empty() {
             let message = format!(
                 "The property '{}' contained undefined properties: '{}'",
@@ -822,35 +818,7 @@ impl<'s> Validation<'s> {
             Some(Data::String(t)) if t == "object" => {}
             Some(_) => return Ok(()),
         }
-        if ctx
-            .get("patternProperties")
-            .is_some_and(|v| !matches!(v, Data::Null))
-        {
-            return Err(unsupported(
-                "patternProperties",
-                "additionalProperties with patternProperties needs Ruby regular expressions; not reproduced",
-            ));
-        }
-        if ctx.get("extends").is_some_and(Data::truthy) {
-            return Err(unsupported("extends", "extends is not reproduced"));
-        }
-        let mut extra: Vec<String> = pairs
-            .iter()
-            .filter_map(|(k, _)| match k {
-                Data::String(s) => Some(s.clone()),
-                _ => None,
-            })
-            .collect();
-        match ctx.get("properties") {
-            Some(Data::Hash(props)) => extra.retain(|k| !has_key(props, k)),
-            Some(Data::Null | Data::Bool(false)) | None => {}
-            Some(_) => {
-                return Err(unsupported(
-                    "properties",
-                    "a non-object properties is not reproduced",
-                ))
-            }
-        }
+        let mut extra = self.extra_properties(ctx, pairs)?;
         if let Data::Hash(_) = addprop {
             for key in &extra {
                 let child = self.new_schema(addprop, ctx.uri.clone(), ctx.dialect)?;
@@ -1033,13 +1001,17 @@ impl<'s> Validation<'s> {
         &self,
         ctx: &Ctx<'s>,
         list: &'s Data,
-        key: &str,
+        _key: &str,
     ) -> Result<Vec<Ctx<'s>>, SchemaError> {
         let Data::Array(items) = list else {
-            return Err(unsupported(
-                key,
-                format!("a non-array {key} is not reproduced"),
-            ));
+            return match list {
+                Data::Hash(pairs) if pairs.is_empty() => Ok(Vec::new()),
+                Data::Hash(_) => Err(keywords::ruby_error(
+                    "TypeError",
+                    "no implicit conversion of String into Integer",
+                )),
+                other => Err(keywords::no_method(other, "each_with_index")),
+            };
         };
         items
             .iter()
@@ -1203,7 +1175,7 @@ impl<'s> Validation<'s> {
         frags: &[String],
     ) -> Result<(), SchemaError> {
         let Data::Array(values) = list else {
-            return Err(unsupported("enum", "a non-array enum is not reproduced"));
+            return self.non_array_enum(ctx, list, data, frags);
         };
         // build_schemas turned enums of walked schemas into an ArraySet;
         // the others keep Array#include? (==).
@@ -1249,20 +1221,12 @@ impl<'s> Validation<'s> {
             return Ok(());
         };
         match format.ruby_to_s()?.as_str() {
-            "uri" => {
-                if text.contains(['\n', '\r']) {
-                    return Err(unsupported(
-                        "format: uri",
-                        "Addressable line-anchor behaviour for multi-line strings is not reproduced",
-                    ));
-                }
-                if !uri::addressable_parses(text) {
-                    let message = format!(
-                        "The property '{}' must be a valid URI",
-                        build_fragment(frags)
-                    );
-                    self.push(ctx, message, frags, Attr::Format, Vec::new());
-                }
+            "uri" if !keywords::uri_format_valid(text)? => {
+                let message = format!(
+                    "The property '{}' must be a valid URI",
+                    build_fragment(frags)
+                );
+                self.push(ctx, message, frags, Attr::Format, Vec::new());
             }
             "date-time" if !super::date_time::valid(text) => {
                 let message = format!(
@@ -1296,24 +1260,8 @@ impl<'s> Validation<'s> {
         let Data::String(text) = data else {
             return Ok(());
         };
-        let Data::String(source) = pattern else {
-            return Err(unsupported(
-                "pattern",
-                "Regexp.new with a non-String pattern is not reproduced",
-            ));
-        };
-        let regex = OnigRegex::compile(source, 0).map_err(|e| {
-            unsupported(
-                "pattern",
-                format!("Regexp.new raises for {source:?} ({e}); not reproduced"),
-            )
-        })?;
-        let Some(matched) = regex.is_match(text) else {
-            return Err(unsupported(
-                "pattern",
-                "Onigmo reported a match error; not reproduced",
-            ));
-        };
+        let (regex, source) = keywords::compile_pattern(pattern)?;
+        let matched = keywords::pattern_match(&regex, text)?;
         if !matched {
             let message = format!(
                 "The property '{}' value {} did not match the regex '{}'",
@@ -1342,14 +1290,24 @@ impl<'s> Validation<'s> {
             _ => return Ok(()),
         };
         let exclusive = match name {
+            "minimum" if matches!(ctx.dialect, Dialect::Draft1 | Dialect::Draft2) => {
+                ctx.get("minimumCanEqual").is_some_and(|v| !v.truthy())
+            }
+            "maximum" if matches!(ctx.dialect, Dialect::Draft1 | Dialect::Draft2) => {
+                ctx.get("maximumCanEqual").is_some_and(|v| !v.truthy())
+            }
             "minimum" => ctx.get("exclusiveMinimum").is_some_and(Data::truthy),
             "maximum" => ctx.get("exclusiveMaximum").is_some_and(Data::truthy),
             _ => false,
         };
         let Some(ord) = num_cmp(&value, limit) else {
-            return Err(unsupported(
-                name,
-                "a non-numeric or NaN limit is not reproduced",
+            return Err(keywords::ruby_error(
+                "ArgumentError",
+                format!(
+                    "comparison of {} with {} failed",
+                    keywords::class_name(&value),
+                    keywords::comparison_name(limit)
+                ),
             ));
         };
         use std::cmp::Ordering::*;

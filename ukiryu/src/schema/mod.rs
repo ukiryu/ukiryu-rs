@@ -77,8 +77,8 @@ pub enum SchemaError {
     IpAddress { prefix: bool, message: String },
     /// `Errno::*` while reading a schema file.
     Io { errno: String, message: String },
-    /// A Ruby exception from scalar conversion, tag revival or
-    /// resource/URI/reference preparation.
+    /// A measured Ruby exception from scalar conversion, tag revival,
+    /// schema preparation or validation.
     Ruby { class: String, message: String },
     /// Behaviour of the original that this port does not reproduce.
     Unsupported { feature: String, detail: String },
@@ -175,25 +175,67 @@ fn read_text(path: &Path) -> Result<String, SchemaError> {
             message: format!("Is a directory @ io_fread - {}", path.display()),
         });
     }
-    let bytes = std::fs::read(path).map_err(|e| match e.kind() {
+    let bytes = std::fs::read(path).map_err(|e| schema_file_read_error(path, e, cfg!(windows)))?;
+    malformed::decode(bytes)
+}
+
+// Keep OS-code interpretation explicit so Windows errors can be tested on any host.
+fn schema_file_read_error(path: &Path, e: std::io::Error, windows: bool) -> SchemaError {
+    match e.kind() {
         std::io::ErrorKind::PermissionDenied => SchemaError::Io {
             errno: "EACCES".to_owned(),
             message: format!("Permission denied @ rb_sysopen - {}", path.display()),
         },
-        _ if e.kind() == std::io::ErrorKind::NotFound => SchemaError::Io {
-            errno: "ENOENT".to_owned(),
-            message: format!(
-                "No such file or directory @ rb_sysopen - {}",
-                path.display()
-            ),
-        },
+        // URN-derived POSIX paths are invalid filenames on Windows, but the
+        // pinned Ruby oracle reports them as missing schema files.
+        _ if e.kind() == std::io::ErrorKind::NotFound
+            || (windows && e.raw_os_error() == Some(123)) =>
+        {
+            SchemaError::Io {
+                errno: "ENOENT".to_owned(),
+                message: format!(
+                    "No such file or directory @ rb_sysopen - {}",
+                    path.display()
+                ),
+            }
+        }
         _ if e.raw_os_error() == Some(5) && cfg!(unix) => SchemaError::Io {
             errno: "EIO".to_owned(),
             message: format!("Input/output error @ io_fread - {}", path.display()),
         },
         _ => SchemaError::unsupported("schema file read", format!("{}: {e}", path.display())),
-    })?;
-    malformed::decode(bytes)
+    }
+}
+
+#[cfg(test)]
+mod file_read_tests {
+    use super::*;
+
+    #[test]
+    fn windows_invalid_schema_filename_matches_missing_file() {
+        let path = Path::new("urn:/x.json/resources/target.json");
+        for error in [
+            std::io::Error::from(std::io::ErrorKind::NotFound),
+            std::io::Error::from_raw_os_error(123), // Windows ERROR_INVALID_NAME.
+        ] {
+            let mapped = schema_file_read_error(path, error, true);
+            assert_eq!(mapped.ruby_class().as_deref(), Some("Errno::ENOENT"));
+            assert_eq!(
+                mapped.message(),
+                "No such file or directory @ rb_sysopen - urn:/x.json/resources/target.json"
+            );
+        }
+    }
+
+    #[test]
+    fn non_windows_error_123_is_not_missing_file() {
+        let mapped = schema_file_read_error(
+            Path::new("schema.json"),
+            std::io::Error::from_raw_os_error(123),
+            false,
+        );
+        assert!(matches!(mapped, SchemaError::Unsupported { .. }));
+    }
 }
 
 /// `SchemaValidator.load_schema(path)`: `Ok(None)` when no path is given
@@ -360,12 +402,6 @@ fn initialize_data(data: &Data) -> Result<Data, SchemaError> {
     };
     if let Some(parsed) = json::parse(s) {
         return stringify(&parsed);
-    }
-    if s.contains(['\n', '\r']) {
-        return Err(SchemaError::unsupported(
-            "string document",
-            "a multi-line top-level string is resolved as a URI by the gem; not reproduced",
-        ));
     }
     if !uri::addressable_parses(s) {
         return Ok(data.clone());

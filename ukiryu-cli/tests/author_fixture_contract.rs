@@ -13,6 +13,12 @@ fn all_register_and_profile_fixtures_match_ruby_issues() {
     let inputs = inputs.canonicalize().unwrap();
     let rows = fixture["cases"].as_array().unwrap();
     assert_eq!(rows.len(), 64);
+    // capture-author-reference.py stubs the default remote download as unavailable.
+    // Replay that condition rather than validating against a changing live schema.
+    let env = ValidatorEnv {
+        remote_schema: definition_validator::RemoteSchemaSource::Unavailable,
+        ..ValidatorEnv::default()
+    };
     for row in rows {
         let relative = row["path"].as_str().unwrap();
         let path = inputs.join(relative);
@@ -33,12 +39,8 @@ fn all_register_and_profile_fixtures_match_ruby_issues() {
             serde_json::from_str::<Value>(&expected).unwrap(),
             "{relative}: lint"
         );
-        let result = definition_validator::validate_file(
-            path.to_str().unwrap(),
-            None,
-            &ValidatorEnv::default(),
-        )
-        .unwrap();
+        let result =
+            definition_validator::validate_file(path.to_str().unwrap(), None, &env).unwrap();
         let got: Value = serde_json::from_str(&result.to_json()).unwrap();
         assert_eq!(got, row["validation"], "{relative}: validate");
     }

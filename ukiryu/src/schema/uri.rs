@@ -48,7 +48,7 @@ pub(crate) fn split(s: &str) -> Parts<'_> {
 
 /// Host part of an authority: `sub(/^([^\[\]]*)@/, '')` then
 /// `sub(/:([^:@\[\]]*?)$/, '')`.
-fn host_of(authority: &str) -> &str {
+pub(super) fn host_of(authority: &str) -> &str {
     let without_userinfo = userinfo_end(authority).map_or(authority, |i| &authority[i + 1..]);
     match port_start(without_userinfo) {
         Some(i) => &without_userinfo[..i],
@@ -64,12 +64,12 @@ fn userinfo_end(authority: &str) -> Option<usize> {
 }
 
 /// Leftmost `:` from which `[^:@\[\]]*` reaches the end.
-fn port_start(s: &str) -> Option<usize> {
+pub(super) fn port_start(s: &str) -> Option<usize> {
     let i = s.rfind(':')?;
     (!s[i + 1..].contains(['@', '[', ']'])).then_some(i)
 }
 
-fn percent_decode(s: &str) -> Vec<u8> {
+pub(super) fn percent_decode(s: &str) -> Vec<u8> {
     let b = s.as_bytes();
     let mut out = Vec::with_capacity(b.len());
     let mut i = 0;
