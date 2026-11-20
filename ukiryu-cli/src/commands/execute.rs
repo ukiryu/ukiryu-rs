@@ -983,8 +983,16 @@ fn options_check(
     };
     let names = setter_names(definition);
     if let Some(key) = setter_keys.iter().find(|k| !names.iter().any(|n| n == *k)) {
-        return Err(ExecuteError::unsupported(format!(
-            "parameter '{key}' has no setter on the options class: the source's NoMethodError names an anonymous class by address"
+        // OptionsBuilder's anonymous class has no such setter. The source
+        // rescues NoMethodError into an error response (CLI status remains 0).
+        // Use the native definition's identity for the volatile class address;
+        // only the comparison layer canonicalizes it, never runtime output.
+        return Ok(Some(ErrorResponse::from_message(
+            &format!(
+                "Unexpected error: NoMethodError: undefined method '{key}=' for an instance of #<Class:0x{:016x}>",
+                std::ptr::from_ref(definition) as usize
+            ),
+            1,
         )));
     }
     Ok(None)
