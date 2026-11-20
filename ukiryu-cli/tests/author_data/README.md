@@ -41,3 +41,9 @@ Run the focused checks with:
 ```sh
 cargo test --locked -p ukiryu-cli --features ukiryu/c --test author_oracle --test author_tools_oracle --test author_fixture_contract --test cli_binary --test arguments
 ```
+
+The in-process capture tests and both pipe and PTY subprocess replays supply
+`UKIRYU_REMOTE_SCHEMA_URL` using `tests/support/offline_schema.rs`. That loopback
+server returns HTTP 404, reproducing the failed download recorded by the Ruby
+capture without consulting the mutable schema on GitHub. Direct handler tests
+use `RemoteSchemaSource::Unavailable`. Production defaults are unchanged.

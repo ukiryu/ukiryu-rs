@@ -1,0 +1,248 @@
+name: Published artifact audit
+
+# Registry reads only. The release owner dispatches this after ALL runtime
+# uploads finish. Keep the train incomplete until the completion job is green.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Published train version (X.Y.Z)'
+        required: true
+        type: string
+      core_ref:
+        description: 'Qualified ukiryu-rs commit (40 hex characters)'
+        required: true
+        type: string
+      ruby_ref:
+        description: 'Qualified ukiryu-ruby consumer commit (40 hex characters)'
+        required: true
+        type: string
+      python_ref:
+        description: 'Qualified ukiryu-python consumer commit (40 hex characters)'
+        required: true
+        type: string
+      ts_ref:
+        description: 'Qualified ukiryu-ts consumer commit (40 hex characters)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+concurrency:
+  group: published-audit-${{ inputs.version }}
+  cancel-in-progress: false
+
+env:
+  TRAIN_VERSION: ${{ inputs.version }}
+  CORE_REF: ${{ inputs.core_ref }}
+  CARGO_BUILD_JOBS: 2
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  inputs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require explicit version and immutable source revisions
+        env:
+          RUBY_REF: ${{ inputs.ruby_ref }}
+          PYTHON_REF: ${{ inputs.python_ref }}
+          TS_REF: ${{ inputs.ts_ref }}
+        run: |
+          python3 scripts/published-audit.py inputs --version "$TRAIN_VERSION" \
+            --core-ref "$CORE_REF" --ruby-ref "$RUBY_REF" \
+            --python-ref "$PYTHON_REF" --ts-ref "$TS_REF"
+
+  crate:
+    needs: inputs
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.core_ref }}
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.95.0
+      - name: Prepare a standalone consumer of the published crate
+        run: |
+          python3 scripts/published-audit.py prepare-core --version "$TRAIN_VERSION" --path "$RUNNER_TEMP/registry-core"
+          cargo generate-lockfile --manifest-path "$RUNNER_TEMP/registry-core/Cargo.toml"
+          python3 scripts/published-audit.py verify-core-lock --version "$TRAIN_VERSION" --path "$RUNNER_TEMP/registry-core/Cargo.lock"
+      - name: Replay the sealed corpus through crates.io ukiryu
+        env:
+          UKIRYU_CONFORMANCE_DIR: ${{ github.workspace }}/corpus/conformance
+          UKIRYU_CONFORMANCE_REPORT: ${{ runner.temp }}/published-core.json
+        run: cargo test --locked --manifest-path "$RUNNER_TEMP/registry-core/Cargo.toml" --test conformance -- --nocapture
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: published-core-report
+          path: ${{ runner.temp }}/published-core.json
+          if-no-files-found: warn
+
+  cli:
+    needs: inputs
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.core_ref }}
+      - name: Download the five published CLI archives
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "ukiryu-v$TRAIN_VERSION" --repo ukiryu/ukiryu-rs --json isDraft,tagName > "$RUNNER_TEMP/release.json"
+          python3 -c 'import json,sys; assert not json.load(open(sys.argv[1]))["isDraft"]' "$RUNNER_TEMP/release.json"
+          mkdir "$RUNNER_TEMP/published-cli"
+          gh release download "ukiryu-v$TRAIN_VERSION" --repo ukiryu/ukiryu-rs \
+            --pattern "ukiryu-$TRAIN_VERSION-*.tar.gz" --pattern "ukiryu-$TRAIN_VERSION-*.zip" \
+            --dir "$RUNNER_TEMP/published-cli"
+      - name: Verify provenance, target matrix and frozen CLI outputs
+        run: python3 scripts/published-audit.py cli --version "$TRAIN_VERSION" --path "$RUNNER_TEMP/published-cli"
+
+  gem:
+    needs: inputs
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.core_ref }}
+      - uses: actions/checkout@v4
+        with:
+          repository: ukiryu/ukiryu-ruby
+          ref: ${{ inputs.ruby_ref }}
+          path: ruby-consumer
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+      - name: Install the published native gem into a clean GEM_HOME
+        run: |
+          export GEM_HOME="$RUNNER_TEMP/published-gem" GEM_PATH="$RUNNER_TEMP/published-gem"
+          echo "GEM_HOME=$GEM_HOME" >> "$GITHUB_ENV"
+          echo "GEM_PATH=$GEM_PATH" >> "$GITHUB_ENV"
+          gem install --no-document --version "$TRAIN_VERSION" --platform x86_64-linux ukiryu
+          gem install --no-document rspec
+          mkdir "$RUNNER_TEMP/gem-consumer"
+          cp ruby-consumer/spec/ffi/{ffi_helper.rb,corpus_spec.rb} "$RUNNER_TEMP/gem-consumer/"
+      - name: Require the installed gem's own native library and version
+        working-directory: ${{ runner.temp }}/gem-consumer
+        run: |
+          unset RUBYLIB UKIRYU_FFI_LIB
+          ruby -rjson -rukiryu/ffi -e '
+            spec = Gem.loaded_specs.fetch("ukiryu")
+            abort "gem version differs" unless spec.version.to_s == ENV.fetch("TRAIN_VERSION")
+            abort "source gem instead of native gem" if spec.platform.to_s == "ruby"
+            lib = Ukiryu::Ffi.library
+            abort "library outside installed gem" unless File.expand_path(lib.path).start_with?(spec.full_gem_path + "/")
+            reply = JSON.parse(lib.call(JSON.generate({op: "version"})))
+            abort "core version differs" unless reply.fetch("version") == ENV.fetch("TRAIN_VERSION")
+            puts "published gem #{spec.full_name}: #{lib.path}"
+          '
+      - name: Replay the corpus through the published gem
+        working-directory: ${{ runner.temp }}/gem-consumer
+        env:
+          UKIRYU_CONFORMANCE_DIR: ${{ github.workspace }}/corpus/conformance
+        run: |
+          unset RUBYLIB UKIRYU_FFI_LIB
+          "$GEM_HOME/bin/rspec" --options /dev/null --format documentation corpus_spec.rb
+
+  wheel:
+    needs: inputs
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.core_ref }}
+      - uses: actions/checkout@v4
+        with:
+          repository: ukiryu/ukiryu-python
+          ref: ${{ inputs.python_ref }}
+          path: python-consumer
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install the published wheel into a clean environment
+        run: |
+          python -m venv "$RUNNER_TEMP/published-wheel"
+          "$RUNNER_TEMP/published-wheel/bin/python" -m pip install --no-cache-dir --only-binary=:all: "ukiryu==$TRAIN_VERSION"
+          mkdir "$RUNNER_TEMP/wheel-consumer"
+          cp python-consumer/tests/test_corpus.py "$RUNNER_TEMP/wheel-consumer/"
+      - name: Check package identity and replay the corpus
+        working-directory: ${{ runner.temp }}/wheel-consumer
+        env:
+          UKIRYU_CONFORMANCE_DIR: ${{ github.workspace }}/corpus/conformance
+          UKIRYU_CORPUS_REPORT: ${{ runner.temp }}/published-wheel.json
+          CI: 'true'
+        run: |
+          unset PYTHONPATH UKIRYU_CDYLIB
+          "$RUNNER_TEMP/published-wheel/bin/python" -I -c '
+          import os, pathlib, ukiryu
+          assert ukiryu.__version__ == os.environ["TRAIN_VERSION"]
+          assert ukiryu.core_version().version == os.environ["TRAIN_VERSION"]
+          assert pathlib.Path(ukiryu.__file__).is_relative_to(os.environ["RUNNER_TEMP"])
+          assert list((pathlib.Path(ukiryu.__file__).parent / "lib").glob("*.so")), "wheel has no native library"
+          print(ukiryu.__file__)
+          '
+          "$RUNNER_TEMP/published-wheel/bin/python" -I -m unittest discover -s . -p test_corpus.py -v
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: published-wheel-report
+          path: ${{ runner.temp }}/published-wheel.json
+          if-no-files-found: warn
+
+  npm:
+    needs: inputs
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.core_ref }}
+      - uses: actions/checkout@v4
+        with:
+          repository: ukiryu/ukiryu-ts
+          ref: ${{ inputs.ts_ref }}
+          path: ts-consumer
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install the published npm package in a clean project
+        run: |
+          mkdir "$RUNNER_TEMP/published-npm"
+          cd "$RUNNER_TEMP/published-npm"
+          npm init -y >/dev/null
+          npm install --ignore-scripts --registry https://registry.npmjs.org "ukiryu@$TRAIN_VERSION"
+      - name: Replay the corpus through the shipped Node and browser WASM
+        run: |
+          node tests/shipped-replay/published-npm.mjs "$RUNNER_TEMP/published-npm/node_modules/ukiryu" \
+            "$GITHUB_WORKSPACE/ts-consumer" "$GITHUB_WORKSPACE/corpus/conformance" "$TRAIN_VERSION" "$CORE_REF"
+
+  completion:
+    name: Published train is complete
+    if: always()
+    needs: [inputs, crate, cli, gem, wheel, npm]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require every published artifact audit to pass
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          python3 - <<'PY'
+          import json, os
+          results = {name: job['result'] for name, job in json.loads(os.environ['RESULTS']).items()}
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+              summary.write('Published train ' + os.environ['TRAIN_VERSION'] + '\n\n')
+              for name, result in results.items():
+                  summary.write(f'- {name}: {result}\n')
+          assert all(result == 'success' for result in results.values()), results
+          PY
