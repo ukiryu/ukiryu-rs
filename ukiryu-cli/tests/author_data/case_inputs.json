@@ -1,0 +1,2322 @@
+{
+  "fixed_mtime_unix": 1767323045,
+  "cases": [
+    {
+      "id": "validate_file_convert_text",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/convert.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_file_convert_json",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/convert.yaml",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_file_warnings_text",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/warnings.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_file_warnings_json",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/warnings.yaml",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_file_bad_name_text",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/bad_name.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_file_bad_name_json",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/bad_name.yaml",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_file_invalid_yaml_text",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/invalid_yaml.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_file_invalid_yaml_json",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/invalid_yaml.yaml",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_file_list_text",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/list.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_file_list_json",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/list.yaml",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_file_digit_text",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/digit.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_file_digit_json",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/digit.yaml",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_file_minimal_text",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/minimal.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_file_minimal_json",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/minimal.yaml",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_file_jq_text",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/jq.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_file_jq_json",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/jq.yaml",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_file_warnings_strict",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/warnings.yaml",
+        "--strict"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_file_warnings_strict_json",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/warnings.yaml",
+        "--strict",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_file_convert_strict",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/convert.yaml",
+        "--strict"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_file_missing_text",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/missing.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_file_missing_json",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/missing.yaml",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_file_directory",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_file_minimal_schema_json_text",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/minimal.yaml",
+        "--schema",
+        "schema/tool.schema.json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_file_minimal_schema_json_json",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/minimal.yaml",
+        "--schema",
+        "schema/tool.schema.json",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_file_jq_schema_json",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/jq.yaml",
+        "--schema",
+        "schema/tool.schema.json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_file_convert_schema_yaml",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/convert.yaml",
+        "--schema",
+        "schema/tool.schema.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_file_warnings_schema_yaml",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/warnings.yaml",
+        "--schema",
+        "schema/tool.schema.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_file_minimal_schema_missing",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/minimal.yaml",
+        "--schema",
+        "schema/none.json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_file_minimal_schema_env",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/minimal.yaml"
+      ],
+      "env": {
+        "UKIRYU_SCHEMA_PATH": "{root}/schema/tool.schema.json"
+      },
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_string_ok_text",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "string",
+        "name: x"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_string_ok_json",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "string",
+        "name: x",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_string_ws_text",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "string",
+        "name: a b"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_string_ws_json",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "string",
+        "name: a b",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_string_upper_strict",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "string",
+        "name: Abc",
+        "--strict"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_string_scalar",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "string",
+        "hello"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_string_badyaml_text",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "string",
+        "a: [1\n"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_string_badyaml_json",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "string",
+        "a: [1\n",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_string_schema_json",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "string",
+        "name: 3\n",
+        "--schema",
+        "schema/tool.schema.json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_all_text",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "all"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_all_json",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "all",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_all_register_option_ignored",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "all",
+        "--register",
+        "defs"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_all_no_tools",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "all"
+      ],
+      "env": {
+        "UKIRYU_REGISTER": "{root}/defs"
+      },
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "validate_format_yaml",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/convert.yaml",
+        "--format",
+        "yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_executable_missing_tool",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/convert.yaml",
+        "--executable"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "gated"
+    },
+    {
+      "id": "validate_file_pty",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/warnings.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": true,
+      "mode": "tty"
+    },
+    {
+      "id": "validate_bad_name_pty",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "file",
+        "defs/bad_name.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": true,
+      "mode": "tty"
+    },
+    {
+      "id": "lint_file_convert_text",
+      "runner": "lint",
+      "args": [
+        "file",
+        "defs/convert.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_file_convert_json",
+      "runner": "lint",
+      "args": [
+        "file",
+        "defs/convert.yaml",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_file_warnings_text",
+      "runner": "lint",
+      "args": [
+        "file",
+        "defs/warnings.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_file_warnings_json",
+      "runner": "lint",
+      "args": [
+        "file",
+        "defs/warnings.yaml",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_file_bad_name_text",
+      "runner": "lint",
+      "args": [
+        "file",
+        "defs/bad_name.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_file_bad_name_json",
+      "runner": "lint",
+      "args": [
+        "file",
+        "defs/bad_name.yaml",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_file_invalid_yaml_text",
+      "runner": "lint",
+      "args": [
+        "file",
+        "defs/invalid_yaml.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_file_invalid_yaml_json",
+      "runner": "lint",
+      "args": [
+        "file",
+        "defs/invalid_yaml.yaml",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_file_list_text",
+      "runner": "lint",
+      "args": [
+        "file",
+        "defs/list.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_file_list_json",
+      "runner": "lint",
+      "args": [
+        "file",
+        "defs/list.yaml",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_file_digit_text",
+      "runner": "lint",
+      "args": [
+        "file",
+        "defs/digit.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_file_digit_json",
+      "runner": "lint",
+      "args": [
+        "file",
+        "defs/digit.yaml",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_file_minimal_text",
+      "runner": "lint",
+      "args": [
+        "file",
+        "defs/minimal.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_file_minimal_json",
+      "runner": "lint",
+      "args": [
+        "file",
+        "defs/minimal.yaml",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_file_jq_text",
+      "runner": "lint",
+      "args": [
+        "file",
+        "defs/jq.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_file_jq_json",
+      "runner": "lint",
+      "args": [
+        "file",
+        "defs/jq.yaml",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_file_missing_text",
+      "runner": "lint",
+      "args": [
+        "file",
+        "defs/missing.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_file_directory",
+      "runner": "lint",
+      "args": [
+        "file",
+        "defs"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_file_severity_ignored",
+      "runner": "lint",
+      "args": [
+        "file",
+        "defs/warnings.yaml",
+        "--severity",
+        "error"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_format_yaml",
+      "runner": "lint",
+      "args": [
+        "file",
+        "defs/convert.yaml",
+        "--format",
+        "yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_rules",
+      "runner": "lint",
+      "args": [
+        "rules"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_rules_pty",
+      "runner": "lint",
+      "args": [
+        "rules"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": true,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_file_pty",
+      "runner": "lint",
+      "args": [
+        "file",
+        "defs/warnings.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": true,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_all_register",
+      "runner": "lint",
+      "args": [
+        "all",
+        "--register",
+        "register"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_all_default_register",
+      "runner": "lint",
+      "args": [
+        "all"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_all_empty_tools",
+      "runner": "lint",
+      "args": [
+        "all",
+        "--register",
+        "emptyreg"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_all_missing_register",
+      "runner": "lint",
+      "args": [
+        "all",
+        "--register",
+        "nowhere"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_all_no_tools_dir",
+      "runner": "lint",
+      "args": [
+        "all",
+        "--register",
+        "defs"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_not_registered_in_exe",
+      "runner": "exe",
+      "args": [
+        "lint",
+        "file",
+        "defs/convert.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "docs_generate_convert_markdown",
+      "runner": "docs",
+      "args": [
+        "generate",
+        "convert",
+        "--register",
+        "register"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "docs_generate_convert_md",
+      "runner": "docs",
+      "args": [
+        "generate",
+        "convert",
+        "--register",
+        "register",
+        "--format",
+        "md"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "docs_generate_convert_asciidoc",
+      "runner": "docs",
+      "args": [
+        "generate",
+        "convert",
+        "--register",
+        "register",
+        "--format",
+        "asciidoc"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "docs_generate_convert_adoc",
+      "runner": "docs",
+      "args": [
+        "generate",
+        "convert",
+        "--register",
+        "register",
+        "--format",
+        "adoc"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "docs_generate_convert_html",
+      "runner": "docs",
+      "args": [
+        "generate",
+        "convert",
+        "--register",
+        "register",
+        "--format",
+        "html"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "docs_generate_convert_output",
+      "runner": "docs",
+      "args": [
+        "generate",
+        "convert",
+        "--register",
+        "register",
+        "--output",
+        "out.md"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "docs_generate_jq",
+      "runner": "docs",
+      "args": [
+        "generate",
+        "jq",
+        "--register",
+        "register"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "docs_generate_warnings",
+      "runner": "docs",
+      "args": [
+        "generate",
+        "warnings",
+        "--register",
+        "register"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "docs_generate_missing",
+      "runner": "docs",
+      "args": [
+        "generate",
+        "nothere",
+        "--register",
+        "register"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "docs_generate_default_register",
+      "runner": "docs",
+      "args": [
+        "generate",
+        "convert"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "docs_generate_all",
+      "runner": "docs",
+      "args": [
+        "generate-all",
+        "--register",
+        "register",
+        "--output-dir",
+        "outdocs"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "docs_generate_all_adoc",
+      "runner": "docs",
+      "args": [
+        "generate-all",
+        "--register",
+        "register",
+        "--output-dir",
+        "outdocs",
+        "--format",
+        "adoc"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "docs_generate_all_no_tools",
+      "runner": "docs",
+      "args": [
+        "generate-all",
+        "--register",
+        "defs",
+        "--output-dir",
+        "outdocs"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "docs_serve",
+      "runner": "docs",
+      "args": [
+        "serve"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "docs_serve_port",
+      "runner": "docs",
+      "args": [
+        "serve",
+        "--port",
+        "9000"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "docs_serve_pty",
+      "runner": "docs",
+      "args": [
+        "serve"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": true,
+      "mode": "frozen"
+    },
+    {
+      "id": "docs_not_registered_in_exe",
+      "runner": "exe",
+      "args": [
+        "docs",
+        "generate",
+        "convert"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "definitions_default",
+      "runner": "exe",
+      "args": [
+        "definitions"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "lines"
+    },
+    {
+      "id": "definitions_list",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "list"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "lines"
+    },
+    {
+      "id": "definitions_list_verbose",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "list",
+        "-v"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "lines"
+    },
+    {
+      "id": "definitions_list_empty",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "list"
+      ],
+      "env": {
+        "XDG_DATA_HOME": "{root}/empty"
+      },
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "definitions_path",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "path"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "definitions_path_bundled",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "path"
+      ],
+      "env": {
+        "PATH": "{root}/tooldir/bin"
+      },
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "definitions_list_bundled",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "list",
+        "-v"
+      ],
+      "env": {
+        "PATH": "{root}/tooldir/bin"
+      },
+      "stdin": null,
+      "pty": false,
+      "mode": "lines"
+    },
+    {
+      "id": "definitions_info_convert",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "info",
+        "convert"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "definitions_info_convert_version",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "info",
+        "convert",
+        "-v",
+        "1.9"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "definitions_info_convert_bad_version",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "info",
+        "convert",
+        "-v",
+        "9"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "definitions_info_missing",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "info",
+        "nothere"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "definitions_info_gzip",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "info",
+        "gzip"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "definitions_info_fancy",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "info",
+        "Fancy-Tool"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "definitions_add_digit",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "add",
+        "defs/digit.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "definitions_add_convert_exists",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "add",
+        "defs/convert.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "definitions_add_named",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "add",
+        "defs/convert.yaml",
+        "-n",
+        "mytool",
+        "-V",
+        "3"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "definitions_add_missing",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "add",
+        "defs/missing.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "definitions_add_minimal",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "add",
+        "defs/minimal.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "definitions_add_invalid_yaml",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "add",
+        "defs/invalid_yaml.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "definitions_add_list",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "add",
+        "defs/list.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "definitions_add_jq",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "add",
+        "defs/jq.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "definitions_add_bad_name",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "add",
+        "defs/bad_name.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "definitions_remove_force",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "remove",
+        "convert",
+        "-f"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "definitions_remove_version",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "remove",
+        "convert",
+        "-v",
+        "1.9",
+        "-f"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "definitions_remove_last_version",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "remove",
+        "gzip",
+        "-v",
+        "1.0",
+        "-f"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "definitions_remove_bad_version",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "remove",
+        "convert",
+        "-v",
+        "5",
+        "-f"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "definitions_remove_missing",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "remove",
+        "nothere"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "definitions_remove_confirm_yes",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "remove",
+        "gzip"
+      ],
+      "env": {},
+      "stdin": "y\n",
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "definitions_remove_confirm_no",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "remove",
+        "gzip"
+      ],
+      "env": {},
+      "stdin": "n\n",
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "definitions_remove_confirm_upper",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "remove",
+        "convert",
+        "-v",
+        "2.1"
+      ],
+      "env": {},
+      "stdin": "Y\n",
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_file_magick_text",
+      "runner": "lint",
+      "args": [
+        "file",
+        "defs/magick.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_file_magick_json",
+      "runner": "lint",
+      "args": [
+        "file",
+        "defs/magick.yaml",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_file_fancy_text",
+      "runner": "lint",
+      "args": [
+        "file",
+        "defs/fancy.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_file_fancy_json",
+      "runner": "lint",
+      "args": [
+        "file",
+        "defs/fancy.yaml",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_all_register2",
+      "runner": "lint",
+      "args": [
+        "all",
+        "--register",
+        "register2"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_all_register3",
+      "runner": "lint",
+      "args": [
+        "all",
+        "--register",
+        "register3"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "lint_file_magick_pty",
+      "runner": "lint",
+      "args": [
+        "file",
+        "defs/fancy.yaml"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": true,
+      "mode": "frozen"
+    },
+    {
+      "id": "docs_generate_magick_markdown",
+      "runner": "docs",
+      "args": [
+        "generate",
+        "magick",
+        "--register",
+        "register2"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "docs_generate_magick_adoc",
+      "runner": "docs",
+      "args": [
+        "generate",
+        "magick",
+        "--register",
+        "register2",
+        "--format",
+        "adoc"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "docs_generate_magick_output",
+      "runner": "docs",
+      "args": [
+        "generate",
+        "magick",
+        "--register",
+        "register2",
+        "--output",
+        "out.md"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "docs_generate_fancy",
+      "runner": "docs",
+      "args": [
+        "generate",
+        "fancy",
+        "--register",
+        "register2"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "docs_generate_all_register3",
+      "runner": "docs",
+      "args": [
+        "generate-all",
+        "--register",
+        "register3",
+        "--output-dir",
+        "outdocs"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "docs_generate_all_register3_adoc",
+      "runner": "docs",
+      "args": [
+        "generate-all",
+        "--register",
+        "register3",
+        "--output-dir",
+        "outdocs",
+        "--format",
+        "asciidoc"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "docs_generate_all_register2",
+      "runner": "docs",
+      "args": [
+        "generate-all",
+        "--register",
+        "register2",
+        "--output-dir",
+        "outdocs"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "docs_serve_port_float",
+      "runner": "docs",
+      "args": [
+        "serve",
+        "--port",
+        "80.5"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "docs_serve_port_bad",
+      "runner": "docs",
+      "args": [
+        "serve",
+        "--port",
+        "abc"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "frozen"
+    },
+    {
+      "id": "definitions_info_fancy",
+      "runner": "exe",
+      "args": [
+        "definitions",
+        "info",
+        "Fancy-Tool"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "extract_native",
+      "runner": "exe",
+      "args": [
+        "extract",
+        "ukx-native"
+      ],
+      "env": {
+        "PATH": "{root}/xbin:/usr/bin:/bin"
+      },
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "extract_native_verbose",
+      "runner": "exe",
+      "args": [
+        "extract",
+        "ukx-native",
+        "-v"
+      ],
+      "env": {
+        "PATH": "{root}/xbin:/usr/bin:/bin"
+      },
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "extract_native_output",
+      "runner": "exe",
+      "args": [
+        "extract",
+        "ukx-native",
+        "-o",
+        "out.yaml"
+      ],
+      "env": {
+        "PATH": "{root}/xbin:/usr/bin:/bin"
+      },
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "extract_native_output_verbose",
+      "runner": "exe",
+      "args": [
+        "extract",
+        "ukx-native",
+        "-o",
+        "out.yaml",
+        "-v"
+      ],
+      "env": {
+        "PATH": "{root}/xbin:/usr/bin:/bin"
+      },
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "extract_help_auto",
+      "runner": "exe",
+      "args": [
+        "extract",
+        "ukx-help"
+      ],
+      "env": {
+        "PATH": "{root}/xbin:/usr/bin:/bin"
+      },
+      "stdin": null,
+      "pty": false,
+      "mode": "yaml_data"
+    },
+    {
+      "id": "extract_help_method",
+      "runner": "exe",
+      "args": [
+        "extract",
+        "ukx-help",
+        "-m",
+        "help",
+        "-v"
+      ],
+      "env": {
+        "PATH": "{root}/xbin:/usr/bin:/bin"
+      },
+      "stdin": null,
+      "pty": false,
+      "mode": "yaml_data"
+    },
+    {
+      "id": "extract_help_as_native",
+      "runner": "exe",
+      "args": [
+        "extract",
+        "ukx-help",
+        "-m",
+        "native"
+      ],
+      "env": {
+        "PATH": "{root}/xbin:/usr/bin:/bin"
+      },
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "extract_native_broken",
+      "runner": "exe",
+      "args": [
+        "extract",
+        "ukx-native-broken"
+      ],
+      "env": {
+        "PATH": "{root}/xbin:/usr/bin:/bin"
+      },
+      "stdin": null,
+      "pty": false,
+      "mode": "yaml_data"
+    },
+    {
+      "id": "extract_native_blank",
+      "runner": "exe",
+      "args": [
+        "extract",
+        "ukx-native-blank"
+      ],
+      "env": {
+        "PATH": "{root}/xbin:/usr/bin:/bin"
+      },
+      "stdin": null,
+      "pty": false,
+      "mode": "yaml_data"
+    },
+    {
+      "id": "extract_help_fails",
+      "runner": "exe",
+      "args": [
+        "extract",
+        "ukx-help-fails"
+      ],
+      "env": {
+        "PATH": "{root}/xbin:/usr/bin:/bin"
+      },
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "extract_missing",
+      "runner": "exe",
+      "args": [
+        "extract",
+        "ukx-no-such-tool"
+      ],
+      "env": {
+        "PATH": "{root}/xbin:/usr/bin:/bin"
+      },
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "extract_unknown_method",
+      "runner": "exe",
+      "args": [
+        "extract",
+        "ukx-native",
+        "-m",
+        "bogus"
+      ],
+      "env": {
+        "PATH": "{root}/xbin:/usr/bin:/bin"
+      },
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "extract_auto_method",
+      "runner": "exe",
+      "args": [
+        "extract",
+        "ukx-no-such-tool",
+        "-m",
+        "auto"
+      ],
+      "env": {
+        "PATH": "{root}/xbin:/usr/bin:/bin"
+      },
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_flow_0_text",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "string",
+        "a: [1\n",
+        "--format",
+        "text"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_flow_0_json",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "string",
+        "a: [1\n",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_flow_1_text",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "string",
+        "a: [1, 2\n",
+        "--format",
+        "text"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_flow_1_json",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "string",
+        "a: [1, 2\n",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_flow_2_text",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "string",
+        "x:\n  a: [1, 2\n",
+        "--format",
+        "text"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_flow_2_json",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "string",
+        "x:\n  a: [1, 2\n",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_flow_3_text",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "string",
+        "a: [\"[\", 2\n",
+        "--format",
+        "text"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_flow_3_json",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "string",
+        "a: [\"[\", 2\n",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_flow_4_text",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "string",
+        "a: [1, [2\n",
+        "--format",
+        "text"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_flow_4_json",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "string",
+        "a: [1, [2\n",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_flow_5_text",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "string",
+        "a: [1, 2] # [\n",
+        "--format",
+        "text"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_flow_5_json",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "string",
+        "a: [1, 2] # [\n",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_flow_6_text",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "string",
+        "a: [\n",
+        "--format",
+        "text"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    },
+    {
+      "id": "validate_flow_6_json",
+      "runner": "exe",
+      "args": [
+        "validate",
+        "string",
+        "a: [\n",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "stdin": null,
+      "pty": false,
+      "mode": "exact"
+    }
+  ]
+}
