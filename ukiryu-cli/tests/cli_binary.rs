@@ -26,6 +26,10 @@
 //! pipe-based author row compares source output and status. Terminal captures
 //! are replayed by the author handler test.
 //!
+//! Execute terminal rows (`pty`) are captured with a terminal on stdout. The
+//! test `terminal_execute_captures_through_the_binary` replays all 12 rows over
+//! a real PTY with the Python standard library helper.
+//!
 //! Recorded deviations (all decided outside this file):
 //! - shell detection is strict (DECISIONS.md D2): inspect rows with a `note`
 //!   expect the shell error after the same partial output, and extract rows
@@ -770,6 +774,24 @@ fn execute_cases_through_the_binary() {
     assert_eq!(counts.unqualified, EXECUTE_UNQUALIFIED.len(), "{counts:?}");
     assert_eq!(counts.terminal, 12, "{counts:?}");
     assert_eq!(counts.exact, 92, "{counts:?}");
+}
+
+/// Exercise terminal detection and ANSI output through the actual binary,
+/// including NO_COLOR, TERM=dumb and the Ruby cache-info NameError contract.
+#[cfg(target_os = "linux")]
+#[test]
+fn terminal_execute_captures_through_the_binary() {
+    let output = Command::new("python3")
+        .arg(Path::new(env!("CARGO_MANIFEST_DIR")).join("../scripts/check-cli-terminal.py"))
+        .args(["--binary", BIN])
+        .output()
+        .expect("Python 3 is required for the Linux terminal capture check");
+    assert!(
+        output.status.success(),
+        "terminal captures: {}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
 }
 
 /// The binary comparator permits address variation but keeps every diagnostic
