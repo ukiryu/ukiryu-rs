@@ -621,6 +621,9 @@ fn stage(stage: &Option<SchemaStage>) -> Json {
         Some(SchemaStage::RemoteFallbackNotPerformed) => {
             json!({"kind": "remote_fallback_not_performed"})
         }
+        Some(SchemaStage::RemoteFallback { loaded }) => {
+            json!({"kind": "remote_fallback", "loaded": loaded})
+        }
         Some(SchemaStage::Supplied) => json!({"kind": "supplied"}),
         Some(SchemaStage::SuppliedNotLoaded) => json!({"kind": "supplied_not_loaded"}),
     }

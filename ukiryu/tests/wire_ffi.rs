@@ -27,7 +27,7 @@ fn repeated_calls_of_each_operation_are_stable_and_freed() {
                "bounds": {"from": "1.0.0", "to": "2.0.0"}, "version": "1.5.0"}),
         json!({"op": "resolve", "method": "extract_version", "output": "tool 1.2.3", "pattern": "(\\d+\\.\\d+\\.\\d+)"}),
         json!({"op": "validate", "method": "type", "value": "3", "type": {"$sym": "integer"}}),
-        json!({"op": "validate", "method": "definition", "yaml": DEFINITION}),
+        json!({"op": "validate", "method": "definition_text", "yaml": DEFINITION, "schema_format": "yaml"}),
         json!({"op": "schema", "method": "fully_validate", "profile": "name: 1\n",
                "schema": "type: object\nproperties:\n  name:\n    type: string\n"}),
         json!({"op": "results", "method": "exit_code_meaning", "tool": tool, "command": "run", "status": 0}),

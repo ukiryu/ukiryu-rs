@@ -335,7 +335,7 @@ fn sha256_hex(data: &[u8]) -> String {
 }
 
 #[test]
-fn network_schemas_remain_explicit_and_cycles_terminate() {
+fn network_connection_failures_and_cycles_terminate() {
     for yaml in [
         "type: object\nproperties:\n  n: {$ref: 'http://127.0.0.1:9/schema.json'}\n",
         "https://127.0.0.1:9/schema.json\n",
@@ -343,9 +343,11 @@ fn network_schemas_remain_explicit_and_cycles_terminate() {
     ] {
         let schema = safe_load(yaml, Permitted::NONE).unwrap();
         let document = safe_load("{}", Permitted::DOCUMENT).unwrap();
-        assert!(matches!(
-            definition_schema_report(&document, &schema),
-            Err(SchemaError::Unsupported { .. })
-        ));
+        let error = definition_schema_report(&document, &schema).unwrap_err();
+        if yaml.starts_with("$ref: '#'") {
+            assert!(matches!(error, SchemaError::Unsupported { .. }));
+        } else {
+            assert_eq!(error.ruby_class().as_deref(), Some("Errno::ECONNREFUSED"));
+        }
     }
 }

@@ -81,6 +81,7 @@ fn stage_label(s: &SchemaStage) -> &'static str {
         SchemaStage::GivenNotLoaded { .. } => "given_not_loaded",
         SchemaStage::Env { .. } => "env",
         SchemaStage::RemoteFallbackNotPerformed => "remote_fallback",
+        SchemaStage::RemoteFallback { .. } => "remote_fallback",
         SchemaStage::Supplied => "supplied",
         SchemaStage::SuppliedNotLoaded => "supplied_not_loaded",
     }
@@ -108,6 +109,7 @@ fn report_value(r: &ValidationReport) -> Value {
 
 fn run(input: &Value) -> Result<ValidationReport, SchemaError> {
     let env = ValidatorEnv {
+        remote_schema: definition_validator::RemoteSchemaSource::Unavailable,
         schema_path: input["env"]
             .as_str()
             .map(abs)
@@ -252,14 +254,17 @@ fn oracle_comparison_rejects_altered_expectations() {
     assert!(rejected >= 60, "only {rejected} controls ran");
 }
 
-/// The remote fallback is reported, never performed: with neither a schema
+/// An explicitly host-supplied unavailable remote response: with neither a schema
 /// path nor a loadable `UKIRYU_SCHEMA_PATH` the schema stage does not run.
 #[test]
 fn remote_fallback_is_explicit() {
     let report = definition_validator::validate_string_report(
         "name: tool\n",
         None,
-        &ValidatorEnv::default(),
+        &ValidatorEnv {
+            remote_schema: definition_validator::RemoteSchemaSource::Unavailable,
+            ..ValidatorEnv::default()
+        },
     )
     .expect("report");
     assert_eq!(

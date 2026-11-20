@@ -322,6 +322,8 @@ fn author_context(config_colors_disabled: bool) -> AuthorContext {
         thor_colors: thor_colors(),
         discovery: DiscoveryEnv::from_process(),
         schema_path_env: std::env::var("UKIRYU_SCHEMA_PATH").ok(),
+        remote_schema: ukiryu::definition::definition_validator::ValidatorEnv::from_process()
+            .remote_schema,
         default_register: None,
         config_colors_disabled,
     }

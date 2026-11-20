@@ -129,7 +129,10 @@ pub fn definition_validate(input: &Oj, ctx: &Ctx) -> Outcome {
     let result = definition_validator::validate_string(
         &text,
         schema_path.as_deref(),
-        &ValidatorEnv::default(),
+        &ValidatorEnv {
+            remote_schema: definition_validator::RemoteSchemaSource::Unavailable,
+            ..ValidatorEnv::default()
+        },
     )
     .map_err(|e| schema_error(e, "definition"))?;
     let strings = |v: &[String]| Oj::Arr(v.iter().map(|m| Oj::s(m.as_str())).collect());

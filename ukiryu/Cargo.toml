@@ -33,6 +33,10 @@ wasm-bindgen = { version = "=0.2.105", optional = true }
 # Ruby binding (issue #24): magnus with rb-sys raw-value access, MSRV 1.85.
 magnus = { version = "0.9", optional = true, features = ["rb-sys"] }
 
+# Blocking HTTP is native-only: browser/WASM has no socket or TLS imports.
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+ureq = { version = "2.12", default-features = false, features = ["tls"] }
+
 [build-dependencies]
 # Compiles Ruby 4.0.1's Onigmo (vendor/onigmo) for Regexp; see build.rs.
 # Same crate and feature set the vendored YAML engine already builds with.
