@@ -77,6 +77,10 @@ fn windows_fixture_paths_preserve_posix_uri_inputs() {
             );
             let error = schema::fully_validate(&data(&case["schema"]), &data(&case["data"]), false)
                 .unwrap_err();
+            assert!(matches!(
+                &error,
+                schema::SchemaError::Io { errno, .. } if errno == "ENOENT"
+            ));
             assert_eq!(
                 json!({"class":error.ruby_class(), "message":error.message()}),
                 case["expect"]["error"],
