@@ -37,7 +37,7 @@ pub trait DefinitionDocument: Sized {
     /// `self_uri` (YAML key `$self`).
     fn self_uri(&self) -> Option<&str>;
     /// `resolve_inheritance!`.
-    fn resolve_inheritance(&mut self);
+    fn resolve_inheritance(&mut self) -> Result<()>;
 }
 
 /// `options[:validation]`. Ruby treats any value other than `:strict` and
@@ -233,7 +233,7 @@ impl<T: DefinitionDocument> Loader<T> {
                     .push(warning);
             }
         }
-        profile.resolve_inheritance();
+        profile.resolve_inheritance()?;
         let profile = Arc::new(profile);
         self.lock_cache().insert(key, Arc::clone(&profile));
         Ok(profile)

@@ -449,8 +449,16 @@ impl DefinitionDocument for ToolDocument {
         self.self_uri.as_deref()
     }
 
-    fn resolve_inheritance(&mut self) {
-        self.definition.resolve_inheritance();
+    fn resolve_inheritance(&mut self) -> ukiryu::definition::Result<()> {
+        self.definition
+            .resolve_inheritance()
+            .map(|_| ())
+            .map_err(|e| {
+                ukiryu::definition::DefinitionError::new(
+                    ukiryu::definition::DefinitionErrorKind::Load,
+                    e.message,
+                )
+            })
     }
 }
 
@@ -1002,12 +1010,31 @@ fn options_check(
 fn setter_names(c: &CommandDefinition) -> Vec<String> {
     let text = |t: &Option<ukiryu::models::value::Text>| t.as_ref().map(|t| t.to_ruby_s());
     let mut names = Vec::new();
-    names.extend(c.arguments.iter().flatten().filter_map(|a| text(&a.name)));
-    names.extend(c.options.iter().flatten().filter_map(|o| text(&o.name)));
-    names.extend(c.flags.iter().flatten().filter_map(|f| text(&f.name)));
+    names.extend(
+        c.arguments
+            .iter()
+            .flatten()
+            .flatten()
+            .filter_map(|a| text(&a.name)),
+    );
+    names.extend(
+        c.options
+            .iter()
+            .flatten()
+            .flatten()
+            .filter_map(|o| text(&o.name)),
+    );
+    names.extend(
+        c.flags
+            .iter()
+            .flatten()
+            .flatten()
+            .filter_map(|f| text(&f.name)),
+    );
     names.extend(
         c.post_options
             .iter()
+            .flatten()
             .flatten()
             .filter_map(|o| text(&o.name)),
     );

@@ -15,7 +15,7 @@ pub struct Arguments {
         serialize_with = "ser_model_list",
         skip_serializing_if = "omit_list"
     )]
-    pub options: Option<Vec<Argument>>,
+    pub options: Option<Vec<Option<Argument>>>,
     #[serde(
         default = "d::empty",
         deserialize_with = "d::text_list",
@@ -28,7 +28,7 @@ pub struct Arguments {
         serialize_with = "ser_model_list",
         skip_serializing_if = "omit_list"
     )]
-    pub positional: Option<Vec<Argument>>,
+    pub positional: Option<Vec<Option<Argument>>>,
 }
 
 impl Default for Arguments {
@@ -85,13 +85,13 @@ impl Arguments {
         }
         let mut args = Arguments::default();
         if !options.is_empty() {
-            args.options = Some(options);
+            args.options = Some(options.into_iter().map(Some).collect());
         }
         if !flags.is_empty() {
             args.flags = Some(flags);
         }
         if !positional.is_empty() {
-            args.positional = Some(positional);
+            args.positional = Some(positional.into_iter().map(Some).collect());
         }
         Ok(args)
     }
@@ -104,16 +104,25 @@ impl Arguments {
     ) -> Result<ArgumentKind, ModelError> {
         if let Some(cmd) = command_definition {
             for f in cmd.flags.iter().flatten() {
+                let f = f
+                    .as_ref()
+                    .ok_or_else(|| ModelError::no_method("name", &Value::Nil))?;
                 if name_matches(&f.name, key)? {
                     return Ok(ArgumentKind::Flag);
                 }
             }
             for o in cmd.options.iter().flatten() {
+                let o = o
+                    .as_ref()
+                    .ok_or_else(|| ModelError::no_method("name", &Value::Nil))?;
                 if name_matches(&o.name, key)? {
                     return Ok(ArgumentKind::Option);
                 }
             }
             for a in cmd.arguments.iter().flatten() {
+                let a = a
+                    .as_ref()
+                    .ok_or_else(|| ModelError::no_method("name", &Value::Nil))?;
                 if name_matches(&a.name, key)? {
                     return Ok(ArgumentKind::Positional);
                 }

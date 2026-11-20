@@ -325,7 +325,7 @@ pub fn load_tool_definition(
         return Ok(None);
     };
     let mut definition = ToolDefinition::from_yaml(&content)?;
-    definition.resolve_inheritance();
+    definition.resolve_inheritance()?;
     Ok(Some(definition))
 }
 
