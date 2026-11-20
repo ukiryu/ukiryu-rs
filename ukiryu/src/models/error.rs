@@ -15,9 +15,8 @@ pub enum ModelErrorKind {
     Syntax,
     /// `Errno::ENOENT` and other file errors from `from_yaml(path)` loaders.
     Io,
-    /// A value lutaml keeps raw that the typed model cannot represent
-    /// (for example a mapping assigned to a `:string` attribute). The port
-    /// fails loudly instead of guessing; see the models module docs.
+    /// A conversion outside the represented value domain (for example an
+    /// integer outside the typed i64 view or an unsupported YAML tag).
     Unsupported,
     /// `Psych::DisallowedClass` (a class the `safe_load` call does not permit).
     DisallowedClass,

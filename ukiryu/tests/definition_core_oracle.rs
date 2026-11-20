@@ -159,9 +159,9 @@ impl DefinitionDocument for TDef {
     fn self_uri(&self) -> Option<&str> {
         self.self_uri.as_deref()
     }
-    fn resolve_inheritance(&mut self) {
+    fn resolve_inheritance(&mut self) -> ukiryu::definition::Result<()> {
         let Some(profiles) = self.profiles.as_mut() else {
-            return;
+            return Ok(());
         };
         for i in 0..profiles.len() {
             let Some(parent_name) = profiles[i].inherits.clone() else {
@@ -183,6 +183,8 @@ impl DefinitionDocument for TDef {
             );
             profiles[i].commands = Some(merged);
         }
+
+        Ok(())
     }
 }
 

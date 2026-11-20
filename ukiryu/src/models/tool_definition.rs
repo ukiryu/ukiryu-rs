@@ -1,6 +1,5 @@
 //! Source: lib/ukiryu/models/tool_definition.rb (`Ukiryu::Models::ToolDefinition`).
 use super::attr::{de_fns as d, omit_list, omit_model, omit_opt, ser_model_list, Model};
-use super::command_definition::CommandDefinition;
 use super::components::Components;
 use super::error::ModelError;
 use super::invocation::Invocation;
@@ -54,7 +53,7 @@ pub struct ToolDefinition {
         serialize_with = "ser_model_list",
         skip_serializing_if = "omit_list"
     )]
-    pub profiles: Option<Vec<PlatformProfile>>,
+    pub profiles: Option<Vec<Option<PlatformProfile>>>,
     #[serde(
         default,
         deserialize_with = "d::model",
@@ -106,7 +105,7 @@ impl ToolDefinition {
         let Some(profiles) = &self.profiles else {
             return Ok(None);
         };
-        for p in profiles {
+        for p in profiles.iter().flatten() {
             if p.is_compatible(platform, shell)? {
                 return Ok(Some(p));
             }
@@ -145,6 +144,9 @@ impl ToolDefinition {
             return Ok(true);
         }
         for p in profiles {
+            let p = p
+                .as_ref()
+                .ok_or_else(|| ModelError::no_method("supports_platform?", &Value::Nil))?;
             if p.supports_platform(platform)? {
                 return Ok(true);
             }
@@ -154,34 +156,65 @@ impl ToolDefinition {
 
     /// `#resolve_inheritance!`: a child profile gains each parent command it
     /// does not define by name, appended after its own commands.
-    pub fn resolve_inheritance(&mut self) -> &mut Self {
+    pub fn resolve_inheritance(&mut self) -> Result<&mut Self, ModelError> {
         let Some(profiles) = self.profiles.as_mut() else {
-            return self;
+            return Ok(self);
         };
         for i in 0..profiles.len() {
-            let Some(parent_name) = profiles[i].inherits.clone() else {
+            let Some(parent_name) = profiles[i]
+                .as_ref()
+                .ok_or_else(|| ModelError::no_method("inherits", &Value::Nil))?
+                .inherits
+                .clone()
+            else {
                 continue;
             };
             let Some(parent_idx) = profiles
+                .iter()
+                .map(|p| {
+                    p.as_ref()
+                        .ok_or_else(|| ModelError::no_method("name", &Value::Nil))
+                })
+                .collect::<Result<Vec<_>, _>>()?
                 .iter()
                 .position(|p| p.name.as_ref() == Some(&parent_name))
             else {
                 continue;
             };
-            let parent_commands: Vec<CommandDefinition> =
-                profiles[parent_idx].commands.clone().unwrap_or_default();
-            let child_commands: Vec<CommandDefinition> =
-                profiles[i].commands.clone().unwrap_or_default();
+            let parent_commands = profiles[parent_idx]
+                .as_ref()
+                .expect("parent was inspected")
+                .commands
+                .clone()
+                .unwrap_or_default();
+            let child_commands = profiles[i]
+                .as_ref()
+                .expect("child was inspected")
+                .commands
+                .clone()
+                .unwrap_or_default();
             let mut merged = child_commands.clone();
             for parent_cmd in parent_commands {
-                if !child_commands.iter().any(|c| c.name == parent_cmd.name) {
+                let parent = parent_cmd
+                    .as_ref()
+                    .ok_or_else(|| ModelError::no_method("name", &Value::Nil))?;
+                let names = child_commands
+                    .iter()
+                    .map(|c| {
+                        c.as_ref()
+                            .map(|c| &c.name)
+                            .ok_or_else(|| ModelError::no_method("name", &Value::Nil))
+                    })
+                    .collect::<Result<Vec<_>, _>>()?;
+                if !names.iter().any(|n| **n == parent.name) {
                     merged.push(parent_cmd);
                 }
             }
-            profiles[i].commands = Some(merged);
-            profiles[i].clear_commands_index();
+            let child = profiles[i].as_mut().expect("child was inspected");
+            child.commands = Some(merged);
+            child.clear_commands_index();
         }
-        self
+        Ok(self)
     }
 
     /// `#schema_version`

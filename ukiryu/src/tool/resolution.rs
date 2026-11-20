@@ -27,6 +27,12 @@ pub(super) fn find_command_profile(
             message: format!("No compatible profile for {name}"),
         });
     };
+    if profiles.iter().any(Option::is_none) {
+        return Err(ToolError::Ruby {
+            class: "NoMethodError",
+            message: "undefined method 'platforms' for nil".into(),
+        });
+    }
     if profiles.len() == 1 {
         return Ok(0);
     }
@@ -36,7 +42,10 @@ pub(super) fn find_command_profile(
     };
     profiles
         .iter()
-        .position(|p| lists(&p.platforms, platform.as_str()) && lists(&p.shells, shell.as_str()))
+        .position(|p| {
+            let p = p.as_ref().expect("profiles checked above");
+            lists(&p.platforms, platform.as_str()) && lists(&p.shells, shell.as_str())
+        })
         .ok_or_else(|| ToolError::ProfileNotFound {
             message: format!(
                 "No compatible profile for {name}. Current: {}/{}",
@@ -114,7 +123,7 @@ impl Tool {
         parent: &str,
         action: &str,
     ) -> Option<&CommandDefinition> {
-        self.commands().iter().find(|c| {
+        self.commands().into_iter().find(|c| {
             c.belongs_to.as_ref().is_some_and(|b| b.eq_str(parent))
                 && c.name.as_ref().is_some_and(|n| n.eq_str(action))
         })

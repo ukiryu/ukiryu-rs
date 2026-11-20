@@ -245,15 +245,9 @@ fn every_serializable_model_matches_the_oracle() {
                 compare(id, ok, &snap, &mut failures);
                 "ok"
             }
-            (Some(_), Err(e)) if kind == "divergence" && e.kind == ModelErrorKind::Unsupported => {
-                "unsupported"
-            }
             (Some(_), Err(e)) => {
                 failures.push(format!("{id} ({kind}): ruby ok, rust error {e}"));
                 "fail"
-            }
-            (None, Err(e)) if kind == "divergence" && e.kind == ModelErrorKind::Unsupported => {
-                "unsupported"
             }
             (None, Err(e)) => {
                 let class = expect["error"]["class"].as_str().unwrap();

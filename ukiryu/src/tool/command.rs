@@ -60,9 +60,14 @@ fn texts(list: &Option<Vec<Text>>) -> Option<Vec<String>> {
         .map(|items| items.iter().map(Text::to_ruby_s).collect())
 }
 
-fn ints(list: &Option<Vec<Option<i64>>>) -> Option<Vec<i64>> {
-    list.as_ref()
-        .map(|items| items.iter().flatten().copied().collect())
+fn ints(list: &Option<Vec<Option<Attr<i64>>>>) -> Option<Vec<i64>> {
+    list.as_ref().map(|items| {
+        items
+            .iter()
+            .flatten()
+            .filter_map(|a| a.get().copied())
+            .collect()
+    })
 }
 
 fn option_spec(o: &OptionDefinition) -> OptionSpec {
@@ -93,8 +98,8 @@ fn argument_spec(a: &ArgumentDefinition) -> ArgumentSpec {
         r#type: attr_text(&a.r#type),
         position: attr_text(&a.position),
         variadic: a.variadic.get().copied(),
-        min: a.min,
-        max: a.max,
+        min: a.min.as_ref().and_then(|a| a.get().copied()),
+        max: a.max.as_ref().and_then(|a| a.get().copied()),
         size: ints(&a.size),
         of: opt_text(&a.of),
         range: ints(&a.range),
@@ -113,8 +118,10 @@ fn env_var_spec(e: &EnvVarDefinition) -> EnvVarSpec {
 
 /// The builder's view of a typed command definition.
 pub(super) fn command_spec(c: &CommandDefinition) -> CommandSpec {
-    let list = |items: &Option<Vec<OptionDefinition>>| {
-        items.as_ref().map(|v| v.iter().map(option_spec).collect())
+    let list = |items: &Option<Vec<Option<OptionDefinition>>>| {
+        items
+            .as_ref()
+            .map(|v| v.iter().flatten().map(option_spec).collect())
     };
     CommandSpec {
         name: opt_text(&c.name),
@@ -122,15 +129,18 @@ pub(super) fn command_spec(c: &CommandDefinition) -> CommandSpec {
         use_env_vars: texts(&c.use_env_vars),
         options: list(&c.options),
         post_options: list(&c.post_options),
-        flags: c.flags.as_ref().map(|v| v.iter().map(flag_spec).collect()),
+        flags: c
+            .flags
+            .as_ref()
+            .map(|v| v.iter().flatten().map(flag_spec).collect()),
         arguments: c
             .arguments
             .as_ref()
-            .map(|v| v.iter().map(argument_spec).collect()),
+            .map(|v| v.iter().flatten().map(argument_spec).collect()),
         env_vars: c
             .env_vars
             .as_ref()
-            .map(|v| v.iter().map(env_var_spec).collect()),
+            .map(|v| v.iter().flatten().map(env_var_spec).collect()),
     }
 }
 

@@ -133,8 +133,10 @@ fn method_view(m: &VersionDetectionMethod) -> DetectionMethodView {
 }
 
 /// The detector's view of `Models::VersionDetection`.
-pub(super) fn detection_view(vd: &VersionDetection) -> VersionDetectionView {
-    VersionDetectionView {
+pub(super) fn detection_view(
+    vd: &VersionDetection,
+) -> Result<VersionDetectionView, DetectionError> {
+    Ok(VersionDetectionView {
         command: vd
             .command
             .as_ref()
@@ -144,8 +146,20 @@ pub(super) fn detection_view(vd: &VersionDetection) -> VersionDetectionView {
         detection_methods: vd
             .detection_methods
             .as_ref()
-            .map(|ms| ms.iter().map(method_view).collect()),
-    }
+            .map(|ms| {
+                ms.iter()
+                    .map(|m| {
+                        m.as_ref().map(method_view).ok_or_else(|| {
+                            DetectionError::Model(crate::models::ModelError::new(
+                                crate::models::ModelErrorKind::NoMethod,
+                                "undefined method 'type' for nil",
+                            ))
+                        })
+                    })
+                    .collect::<Result<Vec<_>, _>>()
+            })
+            .transpose()?,
+    })
 }
 
 impl Tool {
@@ -160,7 +174,8 @@ impl Tool {
             .definition
             .version_detection
             .as_deref()
-            .map(detection_view);
+            .map(detection_view)
+            .transpose()?;
         let context = ToolContext {
             profile_version: self.definition.version.as_ref().and_then(text),
             executable: self.executable().map(str::to_owned),

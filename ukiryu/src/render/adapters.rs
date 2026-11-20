@@ -36,10 +36,17 @@ fn request_summary(request: Option<&Arguments>) -> RequestSummary {
             .options
             .iter()
             .flatten()
+            .flatten()
             .map(|a| (text(a.name.as_ref()), argument_value(a)))
             .collect(),
         flags: r.flags.iter().flatten().map(Text::to_ruby_s).collect(),
-        positional: r.positional.iter().flatten().map(argument_value).collect(),
+        positional: r
+            .positional
+            .iter()
+            .flatten()
+            .flatten()
+            .map(argument_value)
+            .collect(),
     }
 }
 
@@ -47,7 +54,7 @@ impl Renderable for SuccessResponse {
     fn view(&self) -> ResponseView {
         let output = self.output.as_deref();
         ResponseView::Success(SuccessView {
-            exit_code: self.exit_code,
+            exit_code: self.exit_code.as_ref().and_then(|a| a.get().copied()),
             formatted_duration: text(
                 self.metadata
                     .as_deref()
