@@ -34,7 +34,7 @@ pub fn process(input: &str) -> String {
             }
             Some(
                 "version" | "resolve_config" | "parse_yaml" | "resolve" | "build" | "validate"
-                | "escape" | "schema" | "lint" | "yaml",
+                | "escape" | "schema" | "lint" | "yaml" | "cli.run",
             ) => crate::wire::process(input.as_bytes()),
             Some(operation) => crate::wire::failure(
                 "UNSUPPORTED_CAPABILITY",

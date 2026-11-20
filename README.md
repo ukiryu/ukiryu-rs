@@ -94,3 +94,16 @@ explicit length. Every reply is an owned NUL-terminated JSON string; free it onc
 with `ukiryu_free`, never with a foreign allocator. Binding entrypoints remain in
 the core behind feature `c`; the cdylib crate is only a link entry.
 Ukiryu runtime migration: one Rust core, coordinated language runtimes (ukiryu/ukiryu#29).
+
+### Read-only CLI rendering
+
+`cli.run` on the core wire/WASM API takes `argv` (without the program name),
+`platform`, a complete `env`, and an explicit `snapshot`: `files` maps virtual
+paths to text; `executables` maps tool names to `{path, version}`; `probes` lists
+captured `{executable, args, stdout, stderr, exit}` results; `definitions` lists
+known discovered definitions (currently only empty discovery is supported).
+This uses the native CLI's shared parser and output formatters. There is no
+implicit host discovery or I/O: missing inputs remain missing. Commands that
+execute, write, bootstrap/update the register, use external schema resources,
+or need unsupported discovery return `UNSUPPORTED_CAPABILITY`.
+Native CLI handlers retain their real I/O adapters and the same output bytes.
