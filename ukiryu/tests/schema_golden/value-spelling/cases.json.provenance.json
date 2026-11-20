@@ -1,0 +1,19 @@
+{
+  "default_external": "UTF-8",
+  "default_internal": null,
+  "source_commit": "acb847bb95566b4565be6b62b910c88da896eadd",
+  "oracle": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+  "clean": true,
+  "ruby": "ruby 4.0.1 (2026-01-13 revision e04267a14b) +PRISM [x86_64-linux]",
+  "gems": {
+    "psych": "5.3.1",
+    "date": "3.5.1",
+    "json": "3.1.0",
+    "json-schema": "6.2.1"
+  },
+  "lock_sha256": "388dbb063683f15b9976f1fb3cc4d62ca2390ed6333ab69270d71eab98e988f9",
+  "inputs_sha256": "fadc8e55bf474b3ecd93d3f66f819402b6a8de271a48478eb83ecbdb15b65878",
+  "generator_sha256": "973926643fdb998c96a7bf615094aa1f3b296f7550718258c2b0096fe007d15c",
+  "payload_sha256": "4315eb84074c00b25f29bcca1d076d03a9b829f095b3b7291d008594d81ca3b4",
+  "TZ": "UTC"
+}

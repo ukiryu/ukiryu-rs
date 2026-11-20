@@ -1,0 +1,1331 @@
+[
+  {
+    "json": "{",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "expected object key, got EOF at line 1 column 2"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "expected object key, got EOF at line 1 column 2"
+      }
+    }
+  },
+  {
+    "json": "{\"x\":}",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "unexpected character: '}' at line 1 column 6"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "unexpected character: '}' at line 1 column 6"
+      }
+    }
+  },
+  {
+    "json": "[1,]",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "unexpected character: ']' at line 1 column 4"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "unexpected character: ']' at line 1 column 4"
+      }
+    }
+  },
+  {
+    "json": "{\"x\":1,\"x\":2}",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "duplicate key \"x\" at line 1 column 1"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "duplicate key \"x\" at line 1 column 1"
+      }
+    }
+  },
+  {
+    "json": "\"\\ud800\"",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "incomplete surrogate pair at '\\ud800\"' at line 1 column 2"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "incomplete surrogate pair at '\\ud800\"' at line 1 column 2"
+      }
+    }
+  },
+  {
+    "json": "\"\\udc00\"",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "unpaired trailing surrogate at '\\udc00\"' at line 1 column 2"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "unpaired trailing surrogate at '\\udc00\"' at line 1 column 2"
+      }
+    }
+  },
+  {
+    "json": "\"\\ud800\\u1111\"",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "invalid surrogate pair at '\\ud800\\u1111\"' at line 1 column 2"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "invalid surrogate pair at '\\ud800\\u1111\"' at line 1 column 2"
+      }
+    }
+  },
+  {
+    "json": "NaN",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "unexpected token 'NaN' at line 1 column 1"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "unexpected token 'NaN' at line 1 column 1"
+      }
+    }
+  },
+  {
+    "json": "Infinity",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "unexpected token 'Infinity' at line 1 column 1"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "unexpected token 'Infinity' at line 1 column 1"
+      }
+    }
+  },
+  {
+    "json": "01",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "invalid number: '01' at line 1 column 1"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "invalid number: '01' at line 1 column 1"
+      }
+    }
+  },
+  {
+    "json": "-",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "invalid number: '-' at line 1 column 1"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "invalid number: '-' at line 1 column 1"
+      }
+    }
+  },
+  {
+    "json": "1.",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "invalid number: '1.' at line 1 column 1"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "invalid number: '1.' at line 1 column 1"
+      }
+    }
+  },
+  {
+    "json": "1e",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "invalid number: '1e' at line 1 column 1"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "invalid number: '1e' at line 1 column 1"
+      }
+    }
+  },
+  {
+    "json": "[",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "unexpected end of input at line 1 column 2"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "unexpected end of input at line 1 column 2"
+      }
+    }
+  },
+  {
+    "json": "",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "unexpected end of input at line 1 column 1"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "unexpected end of input at line 1 column 1"
+      }
+    }
+  },
+  {
+    "json": "  ",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "unexpected end of input at line 1 column 3"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "unexpected end of input at line 1 column 3"
+      }
+    }
+  },
+  {
+    "json": "true false",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "unexpected token at end of stream 'false' at line 1 column 6"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "unexpected token at end of stream 'false' at line 1 column 6"
+      }
+    }
+  },
+  {
+    "json": "nul",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "unexpected token 'nul' at line 1 column 1"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "unexpected token 'nul' at line 1 column 1"
+      }
+    }
+  },
+  {
+    "json": "{\"a\" 2}",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "expected ':' after object key at line 1 column 6"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "expected ':' after object key at line 1 column 6"
+      }
+    }
+  },
+  {
+    "json": "{\"a\":1 x}",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "expected ',' or '}' after object value, got: 'x}' at line 1 column 8"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "expected ',' or '}' after object value, got: 'x}' at line 1 column 8"
+      }
+    }
+  },
+  {
+    "json": "{\"a\":1,}",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "expected object key, got: '}' at line 1 column 8"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "expected object key, got: '}' at line 1 column 8"
+      }
+    }
+  },
+  {
+    "json": "{1:2}",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "expected object key, got '1:2}' at line 1 column 2"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "expected object key, got '1:2}' at line 1 column 2"
+      }
+    }
+  },
+  {
+    "json": "[1 2]",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "expected ',' or ']' after array value at line 1 column 4"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "expected ',' or ']' after array value at line 1 column 4"
+      }
+    }
+  },
+  {
+    "json": "[true,",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "unexpected end of input at line 1 column 7"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "unexpected end of input at line 1 column 7"
+      }
+    }
+  },
+  {
+    "json": "\"abc",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "unexpected end of input, expected closing \" at line 1 column 5"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "unexpected end of input, expected closing \" at line 1 column 5"
+      }
+    }
+  },
+  {
+    "json": "\"\\x\"",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "invalid escape character in string: '\\x\"' at line 1 column 2"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "invalid escape character in string: '\\x\"' at line 1 column 2"
+      }
+    }
+  },
+  {
+    "json": "\"a\tb\"",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "invalid ASCII control character in string: \tb\" at line 1 column 3"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "invalid ASCII control character in string: \tb\" at line 1 column 3"
+      }
+    }
+  },
+  {
+    "json": "{\n \"a\":\n}",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "unexpected character: '}' at line 3 column 1"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "unexpected character: '}' at line 3 column 1"
+      }
+    }
+  },
+  {
+    "json": "123abc",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "unexpected token at end of stream 'abc' at line 1 column 4"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "unexpected token at end of stream 'abc' at line 1 column 4"
+      }
+    }
+  },
+  {
+    "json": "trueX",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "unexpected token at end of stream 'X' at line 1 column 5"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "unexpected token at end of stream 'X' at line 1 column 5"
+      }
+    }
+  },
+  {
+    "json": "falsehood",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "unexpected token at end of stream 'hood' at line 1 column 6"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "unexpected token at end of stream 'hood' at line 1 column 6"
+      }
+    }
+  },
+  {
+    "json": "nulla",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "unexpected token at end of stream 'a' at line 1 column 5"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "unexpected token at end of stream 'a' at line 1 column 5"
+      }
+    }
+  },
+  {
+    "json": "foobar",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "unexpected token 'foobar' at line 1 column 1"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "unexpected token 'foobar' at line 1 column 1"
+      }
+    }
+  },
+  {
+    "json": "\"\\uZZZZ\"",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "incomplete unicode character escape sequence at '\\uZZZZ\"' at line 1 column 2"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "incomplete unicode character escape sequence at '\\uZZZZ\"' at line 1 column 2"
+      }
+    }
+  },
+  {
+    "json": "\"\\u123\"",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "incomplete unicode character escape sequence at '\\u123\"' at line 1 column 2"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "incomplete unicode character escape sequence at '\\u123\"' at line 1 column 2"
+      }
+    }
+  },
+  {
+    "json": "{}x",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "unexpected token at end of stream 'x' at line 1 column 3"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "unexpected token at end of stream 'x' at line 1 column 3"
+      }
+    }
+  },
+  {
+    "json": "[x]",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "unexpected character: 'x]' at line 1 column 2"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "unexpected character: 'x]' at line 1 column 2"
+      }
+    }
+  },
+  {
+    "json": "[1e+]",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "invalid number: '1e+]' at line 1 column 2"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "invalid number: '1e+]' at line 1 column 2"
+      }
+    }
+  },
+  {
+    "json": "{\"x\":\"\\ud800\"}",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "incomplete surrogate pair at '\\ud800\"}' at line 1 column 7"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "incomplete surrogate pair at '\\ud800\"}' at line 1 column 7"
+      }
+    }
+  },
+  {
+    "json": "{\"é\":\n x}",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "unexpected character: 'x}' at line 2 column 2"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "unexpected character: 'x}' at line 2 column 2"
+      }
+    }
+  },
+  {
+    "json": "{\"é\": }",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "unexpected character: '}' at line 1 column 7"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "unexpected character: '}' at line 1 column 7"
+      }
+    }
+  },
+  {
+    "json": "{\"a\":{\"x\":1,\"x\":2}}",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "duplicate key \"x\" at line 1 column 6"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "duplicate key \"x\" at line 1 column 6"
+      }
+    }
+  },
+  {
+    "json": "{\"a\":1",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "expected ',' or '}' after object value, got: EOF at line 1 column 7"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "expected ',' or '}' after object value, got: EOF at line 1 column 7"
+      }
+    }
+  },
+  {
+    "json": "{\"a\":",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "unexpected end of input at line 1 column 6"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "unexpected end of input at line 1 column 6"
+      }
+    }
+  },
+  {
+    "json": "{\"a\":1,",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "expected object key, got: EOF at line 1 column 8"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "expected object key, got: EOF at line 1 column 8"
+      }
+    }
+  },
+  {
+    "json": "\"\\u1234\",\"x\"",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "unexpected token at end of stream ',\"x\"' at line 1 column 9"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "unexpected token at end of stream ',\"x\"' at line 1 column 9"
+      }
+    }
+  },
+  {
+    "json": "[1,2",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "expected ',' or ']' after array value at line 1 column 5"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "expected ',' or ']' after array value at line 1 column 5"
+      }
+    }
+  },
+  {
+    "json": "{\"x\":1e+}",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "invalid number: '1e+}' at line 1 column 6"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "invalid number: '1e+}' at line 1 column 6"
+      }
+    }
+  },
+  {
+    "json": "-01",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "invalid number: '-01' at line 1 column 1"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "invalid number: '-01' at line 1 column 1"
+      }
+    }
+  },
+  {
+    "json": "00.2",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "invalid number: '00.2' at line 1 column 1"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "invalid number: '00.2' at line 1 column 1"
+      }
+    }
+  },
+  {
+    "json": "\"\\uD834\\uDD1E\"",
+    "expect": {
+      "error": {
+        "class": "NoMethodError",
+        "message": "undefined method 'each' for an instance of String"
+      }
+    },
+    "parse_expect": {
+      "ok": true
+    }
+  },
+  {
+    "json": "{}",
+    "expect": {
+      "ok": true
+    },
+    "parse_expect": {
+      "ok": true
+    }
+  },
+  {
+    "json": "{\"type\":\"object\"}",
+    "expect": {
+      "ok": true
+    },
+    "parse_expect": {
+      "ok": true
+    }
+  },
+  {
+    "json": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "unexpected character: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' at line 1 column 1"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "unexpected character: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' at line 1 column 1"
+      }
+    }
+  },
+  {
+    "json": "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "unexpected token 'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn' at line 1 column 1"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "unexpected token 'nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn' at line 1 column 1"
+      }
+    }
+  },
+  {
+    "json": "{                                        x}",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "expected object key, got 'x}' at line 1 column 42"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "expected object key, got 'x}' at line 1 column 42"
+      }
+    }
+  },
+  {
+    "json": "\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "unexpected end of input, expected closing \" at line 1 column 52"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "unexpected end of input, expected closing \" at line 1 column 52"
+      }
+    }
+  },
+  {
+    "json": "\"\\xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "unexpected end of input, expected closing \" at line 1 column 54"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "unexpected end of input, expected closing \" at line 1 column 54"
+      }
+    }
+  },
+  {
+    "json": "{\"a\":1 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx}",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "expected ',' or '}' after object value, got: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' at line 1 column 8"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "expected ',' or '}' after object value, got: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' at line 1 column 8"
+      }
+    }
+  },
+  {
+    "json": "[truexxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx]",
+    "expect": {
+      "error": {
+        "class": "JSON::Schema::JsonParseError",
+        "message": "expected ',' or ']' after array value at line 1 column 6"
+      }
+    },
+    "parse_expect": {
+      "error": {
+        "class": "JSON::ParserError",
+        "message": "expected ',' or ']' after array value at line 1 column 6"
+      }
+    }
+  },
+  {
+    "bytes": [
+      255
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): invalid leading UTF-8 octet at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      195,
+      40
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): invalid trailing UTF-8 octet at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      97,
+      58,
+      32,
+      255
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): invalid leading UTF-8 octet at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      239,
+      187,
+      191,
+      123,
+      125
+    ],
+    "expect": {
+      "ok": true
+    }
+  },
+  {
+    "bytes": [
+      255,
+      254,
+      123,
+      0,
+      125,
+      0
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): invalid leading UTF-8 octet at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      0,
+      0,
+      254,
+      255,
+      0,
+      0,
+      0,
+      123,
+      0,
+      0,
+      0,
+      125
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): control characters are not allowed at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      195
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): incomplete UTF-8 octet sequence at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      226,
+      130
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): incomplete UTF-8 octet sequence at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      128
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): invalid leading UTF-8 octet at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      192,
+      175
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): invalid length of a UTF-8 sequence at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      237,
+      160,
+      128
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): invalid Unicode character at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      0,
+      255
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): control characters are not allowed at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      239,
+      187,
+      191,
+      195
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): incomplete UTF-8 octet sequence at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      97,
+      58,
+      32,
+      0
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): control characters are not allowed at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      239,
+      191,
+      190
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): control characters are not allowed at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      192
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): incomplete UTF-8 octet sequence at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      192,
+      128
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): invalid length of a UTF-8 sequence at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      193,
+      191
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): invalid length of a UTF-8 sequence at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      224,
+      128,
+      128
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): invalid length of a UTF-8 sequence at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      240,
+      128,
+      128,
+      128
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): invalid length of a UTF-8 sequence at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      224,
+      159,
+      191
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): invalid length of a UTF-8 sequence at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      237,
+      191,
+      191
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): invalid Unicode character at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      244,
+      144,
+      128,
+      128
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): invalid Unicode character at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      245,
+      128,
+      128,
+      128
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): invalid Unicode character at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      247,
+      191,
+      191,
+      191
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): invalid Unicode character at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      248,
+      128,
+      128,
+      128,
+      128
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): invalid leading UTF-8 octet at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      240,
+      40,
+      140,
+      188
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): invalid trailing UTF-8 octet at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      240,
+      144,
+      128
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): incomplete UTF-8 octet sequence at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      194,
+      133
+    ],
+    "expect": {
+      "ok": true
+    }
+  },
+  {
+    "bytes": [
+      194,
+      128
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): control characters are not allowed at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      194,
+      159
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): control characters are not allowed at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      239,
+      191,
+      191
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): control characters are not allowed at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      0,
+      224,
+      160,
+      128
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): control characters are not allowed at line 1 column 1"
+      }
+    }
+  },
+  {
+    "bytes": [
+      97,
+      10,
+      255
+    ],
+    "expect": {
+      "error": {
+        "class": "Psych::SyntaxError",
+        "message": "(<unknown>): invalid leading UTF-8 octet at line 1 column 1"
+      }
+    }
+  }
+]
