@@ -7,8 +7,8 @@
 //! result (`to_h`, or the raised class and message) and what each stage
 //! produced: `validate_structure`, how the schema resolved (including an
 //! observed call of the remote fallback, stubbed as a failed download) and
-//! `validate_against_schema`. Every case must match exactly, except those in
-//! `DIVERGENCES`, which must diverge exactly as declared.
+//! `validate_against_schema`. Every case must match exactly, including YAML
+//! syntax messages and the timestamp-name outcome captured under TZ=UTC.
 
 use serde_json::Value;
 use std::path::PathBuf;
@@ -16,32 +16,6 @@ use ukiryu::definition::definition_validator::{
     self, SchemaStage, StageIssues, ValidationReport, ValidatorEnv,
 };
 use ukiryu::schema::SchemaError;
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-enum Divergence {
-    /// Same `Invalid YAML: ` error; the rest is the YAML engine's wording.
-    YamlMessage,
-    /// The port reports `SchemaError::Unsupported` instead of emulating Ruby.
-    Unsupported,
-}
-
-const DIVERGENCES: &[(&str, Divergence, &str)] = &[
-    (
-        "load.invalid_yaml",
-        Divergence::YamlMessage,
-        "Psych and yeptris word syntax errors differently",
-    ),
-    (
-        "file.broken_yaml",
-        Divergence::YamlMessage,
-        "Psych and yeptris word syntax errors differently",
-    ),
-    (
-        "load.time_name",
-        Divergence::Unsupported,
-        "Time#to_s of a YAML timestamp is not reproduced",
-    ),
-];
 
 /// Cases whose oracle behaviour is platform specific (captured on Linux).
 const UNIX_ONLY: &[&str] = &["file.directory"];
@@ -129,38 +103,10 @@ fn run(input: &Value) -> Result<ValidationReport, SchemaError> {
     }
 }
 
-fn divergence(id: &str) -> Option<Divergence> {
-    DIVERGENCES
-        .iter()
-        .find(|(case, _, _)| *case == id)
-        .map(|(_, d, _)| *d)
-}
-
 /// Compare a captured and an actual case; `None` when they agree.
-fn compare(id: &str, want: &Value, got: &Result<ValidationReport, SchemaError>) -> Option<String> {
-    match (divergence(id), got) {
-        (Some(Divergence::Unsupported), Err(SchemaError::Unsupported { .. })) => None,
-        (Some(Divergence::Unsupported), other) => {
-            Some(format!("declared Unsupported, got {other:?}"))
-        }
-        (Some(Divergence::YamlMessage), Ok(r)) => {
-            let mut have = report_value(r);
-            let mut exp = serde_json::json!({ "ok": want["ok"], "stages": want["stages"] });
-            for v in [&mut have, &mut exp] {
-                let errors = v["ok"]["errors"].as_array_mut().expect("errors");
-                if errors.len() != 1 {
-                    return Some(format!("expected one YAML error, got {errors:?}"));
-                }
-                let text = errors[0].as_str().unwrap_or("").to_owned();
-                if !text.starts_with("Invalid YAML: ") || text.len() <= "Invalid YAML: ".len() {
-                    return Some(format!("not a YAML error: {text:?}"));
-                }
-                errors[0] = Value::String("Invalid YAML: <engine message>".into());
-            }
-            (have != exp).then(|| format!("got {have}\nwant {exp}"))
-        }
-        (Some(Divergence::YamlMessage), Err(e)) => Some(format!("raised {e:?}")),
-        (None, Ok(r)) => {
+fn compare(want: &Value, got: &Result<ValidationReport, SchemaError>) -> Option<String> {
+    match got {
+        Ok(r) => {
             if want.get("error").is_some() {
                 return Some(format!(
                     "expected raise {}, got {}",
@@ -172,9 +118,9 @@ fn compare(id: &str, want: &Value, got: &Result<ValidationReport, SchemaError>) 
             let exp = serde_json::json!({ "ok": want["ok"], "stages": want["stages"] });
             (have != exp).then(|| format!("got  {have}\nwant {exp}"))
         }
-        (None, Err(e)) => {
+        Err(e) => {
             let Some(class) = e.ruby_class() else {
-                return Some(format!("unsupported (not declared): {e}"));
+                return Some(format!("unsupported: {e}"));
             };
             let have = serde_json::json!({ "class": class, "message": scrub(&e.message()) });
             (have != want["error"]).then(|| format!("raised {have}, want {}", want["error"]))
@@ -184,6 +130,22 @@ fn compare(id: &str, want: &Value, got: &Result<ValidationReport, SchemaError>) 
 
 #[test]
 fn definition_validator_matches_the_oracle() {
+    // Match the capture's timezone without changing the environment read by
+    // other tests running in this process.
+    if std::env::var_os("UKIRYU_VALIDATOR_ORACLE_CHILD").is_none() {
+        let status = std::process::Command::new(std::env::current_exe().unwrap())
+            .args([
+                "--exact",
+                "definition_validator_matches_the_oracle",
+                "--nocapture",
+            ])
+            .env("TZ", "UTC")
+            .env("UKIRYU_VALIDATOR_ORACLE_CHILD", "1")
+            .status()
+            .expect("UTC oracle subprocess");
+        assert!(status.success(), "UTC oracle subprocess: {status}");
+        return;
+    }
     let golden = golden();
     assert_eq!(
         golden["provenance"]["oracle"],
@@ -193,22 +155,15 @@ fn definition_validator_matches_the_oracle() {
     assert_eq!(cases.len(), 70, "golden case count changed");
     let mut failures = Vec::new();
     let mut checked = 0;
-    let mut diverged = Vec::new();
     for case in cases {
         let id = case["id"].as_str().expect("id");
         if UNIX_ONLY.contains(&id) && !cfg!(unix) {
             continue;
         }
         checked += 1;
-        if divergence(id).is_some() {
-            diverged.push(id);
-        }
-        if let Some(why) = compare(id, case, &run(&case["input"])) {
+        if let Some(why) = compare(case, &run(&case["input"])) {
             failures.push(format!("{id}: {why}"));
         }
-    }
-    for (id, _, _) in DIVERGENCES {
-        assert!(diverged.contains(id), "stale divergence declaration {id}");
     }
     assert!(checked >= 69, "only {checked} cases checked");
     assert!(
