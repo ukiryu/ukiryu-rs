@@ -134,16 +134,8 @@ fn read_extension(reference: &str) -> Result<Data, SchemaError> {
     if scheme.is_some_and(|s| !["file", "http", "https"].contains(&s))
         && !(cfg!(windows) && PathBuf::from(reference).is_absolute())
     {
-        if !std::path::Path::new(reference).exists() {
-            return Err(SchemaError::Io {
-                errno: "ENOENT".into(),
-                message: format!("No such file or directory @ rb_sysopen - {reference}"),
-            });
-        }
-        return Err(SchemaError::unsupported(
-            "extends transport",
-            "an existing non-file URI-named local file needs an oracle probe",
-        ));
+        let text = super::read_text(std::path::Path::new(reference))?;
+        return json::parse_schema(&text);
     }
     read(reference)
 }

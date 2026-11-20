@@ -24,7 +24,22 @@ cargo test -p ukiryu --locked --features c --test schema_keywords
 The cases preserve the gem's draft 1/2 `optional` and inclusive-limit rules,
 draft-specific keyword selection, malformed argument exceptions, overlapping
 pattern properties, strict error ordering and the eagerly opened but invalid
-String `extends` behavior. The implementation still explicitly refuses Onigmo
-runtime match failures, decimal exponents outside signed 64-bit, and existing
-local files whose names use a non-file URI scheme; those behaviors have not been measured here. Resource transport and
-YAML value-spelling boundaries remain separate work.
+String `extends` behavior.
+
+`capture_extends.rb` separately captures 14 local-file cases for `urn:` and
+custom URI schemes, including missing files, valid schemas and malformed
+resources. Run it from the same clean reference checkout with an output path,
+then compare with `extends.json`. Run its focused test with:
+
+```sh
+cargo test -p ukiryu --locked --features c --test schema_extends
+```
+
+Existing colon-named local files are tested on Unix; Windows cannot create
+them. Missing-file cases remain covered by `schema_keywords`.
+
+The implementation still explicitly refuses Onigmo runtime match failures and
+decimal exponents outside signed 64-bit. The latter needs BigDecimal resource
+limit behavior: probing a remainder at the extreme negative exponent boundary
+raised `NoMemoryError` in the reference. Resource transport and YAML
+value-spelling boundaries remain separate work.
