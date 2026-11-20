@@ -172,6 +172,18 @@ fn fully_validate_mode(
                 "snapshot schema resource",
                 format!("external resource {name:?} is unavailable in read-only rendering"),
             ))
+        })
+        .map_err(|error| {
+            // A malformed external URI (including file://C:\... on Windows)
+            // can fail before the resource-denial callback is reached.
+            if matches!(&error, SchemaError::Ruby { class, .. } if class == "JSON::Schema::UriError") {
+                unsupported(
+                    "snapshot schema resource",
+                    format!("schema resource cannot be resolved in read-only rendering: {error}"),
+                )
+            } else {
+                error
+            }
         })?
     };
 
