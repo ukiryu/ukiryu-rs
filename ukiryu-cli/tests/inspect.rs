@@ -8,7 +8,6 @@
 //! explicit context with the same variables, and the writes are applied.
 //!
 //! Recorded deviations:
-//! - the version string is `ukiryu::VERSION` (the Ruby gem says 0.3.1);
 //! - shell detection is strict (DECISIONS.md D2): rows with a `note` expect
 //!   the shell error after the same partial output;
 //! - the persistent config.yml is compared as YAML data, since Psych and the
@@ -27,8 +26,6 @@ use ukiryu_cli::commands::inspect::{
     self, ConfigAction, ConfigInput, HandlerContext, InspectError, SystemInput, VersionInput,
 };
 use ukiryu_cli::commands::CommandOutcome;
-
-const RUBY_VERSION_LINE: &str = "Ukiryu version 0.3.1";
 
 fn goldens() -> Json {
     let text = include_str!("inspect_goldens.json");
@@ -69,10 +66,6 @@ impl Sandbox {
             .replace("{HOME}", &self.home)
             .replace("{BIN}", &self.bin)
             .replace("{REGISTER}", &self.register)
-            .replace(
-                RUBY_VERSION_LINE,
-                &format!("Ukiryu version {}", ukiryu::VERSION),
-            )
     }
 }
 

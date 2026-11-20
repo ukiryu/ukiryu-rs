@@ -9,3 +9,5 @@ pub mod dispatch;
 pub mod stdin;
 pub mod thor;
 mod thor_help;
+
+pub mod capture;

@@ -309,14 +309,16 @@ impl Out {
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct VersionInput;
 
+/// The pinned CLI compatibility version (ukiryu/ukiryu ab6df353), kept
+/// separate from the development crate version. cli-output.version is a
+/// byte-exact oracle row; changing the package's version must not rewrite it.
+pub const CLI_VERSION: &str = "0.3.1";
+
 /// `VersionCommand#run`: `Ukiryu version <VERSION>` in cyan.
 pub fn version(_input: VersionInput, ctx: &HandlerContext) -> Result<CommandOutcome, InspectError> {
     let config = ctx.configuration()?;
     let mut out = Out::new(colors_disabled(&config));
-    out.say(
-        &format!("Ukiryu version {}", ukiryu::VERSION),
-        Some(Color::Cyan),
-    );
+    out.say(&format!("Ukiryu version {CLI_VERSION}"), Some(Color::Cyan));
     Ok(out.done())
 }
 
