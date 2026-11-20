@@ -44,6 +44,8 @@ def main():
     os.environ.update(BUNDLE_GEMFILE=str(oracle / 'Gemfile'), BUNDLE_FROZEN='true')
     ruby = subprocess.check_output([author.RUBY, '-e', 'print RUBY_VERSION'], text=True)
     assert ruby == '4.0.1', ruby
+    psych = subprocess.check_output([author.RUBY, '-ryaml', '-e', 'print Psych::VERSION'], text=True)
+    assert psych == '5.3.1', psych
     original_setup = author.setup
     def setup(case, root, mtime):
         original_setup(case, root, mtime)
@@ -75,12 +77,11 @@ def main():
     assert all(row['expect']['exit'] == 1 for row in rows), 'oracle failed unexpectedly'
     assert all(g == gems[0] for g in gems), 'dependency drift between probes'
     assert gems[0] == expected_gems, 'loaded dependency versions differ from author oracle'
-    assert gems[0]['psych'] == '5.3.1'
     OUTPUT.mkdir(parents=True, exist_ok=True)
     payload = json.dumps({'oracle': author.SHA, 'cases': rows}, indent=2, ensure_ascii=False) + '\n'
     (OUTPUT / 'cases.json').write_text(payload)
     provenance = {'oracle': author.SHA, 'oracle_clean': True, 'source_commit': source_commit,
-                  'ruby': ruby, 'psych': gems[0]['psych'], 'timezone': 'UTC', 'locale': 'C.UTF-8',
+                  'ruby': ruby, 'psych': psych, 'timezone': 'UTC', 'locale': 'C.UTF-8',
                   'oracle_lock_sha256': digest(oracle / 'Gemfile.lock'), 'bundler_frozen': True,
                   'generator_sha256': digest(Path(__file__)),
                   'author_generator_sha256': digest(REPO / 'scripts/capture-author-reference.py'),
