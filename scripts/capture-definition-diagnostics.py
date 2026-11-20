@@ -35,7 +35,7 @@ def main():
     git = lambda *args: subprocess.check_output(['git', '-C', str(oracle), *args], text=True).strip()
     assert git('rev-parse', 'HEAD') == author.SHA, 'wrong oracle'
     assert not git('status', '--porcelain'), 'dirty oracle'
-    assert (oracle / 'Gemfile.lock').read_bytes() == (author.DATA / 'oracle.Gemfile.lock').read_bytes()
+    expected_gems = json.loads((author.DATA / 'provenance.json').read_text())['gems'][0]
     # Generated output/provenance may differ; its generator and shared boot may not.
     source_paths = ['scripts/capture-definition-diagnostics.py', 'scripts/capture-author-reference.py']
     subprocess.run(['git', '-C', str(REPO), 'diff', '--exit-code', 'HEAD', '--', *source_paths], check=True)
@@ -70,6 +70,8 @@ def main():
     assert len(rows) == 24 and len({r['id'] for r in rows}) == 24
     assert all(row['expect']['exit'] == 1 for row in rows), 'oracle failed unexpectedly'
     assert all(g == gems[0] for g in gems), 'dependency drift between probes'
+    assert gems[0] == expected_gems, 'loaded dependency versions differ from author oracle'
+    assert gems[0]['psych'] == '5.3.1'
     OUTPUT.mkdir(parents=True, exist_ok=True)
     payload = json.dumps({'oracle': author.SHA, 'cases': rows}, indent=2, ensure_ascii=False) + '\n'
     (OUTPUT / 'cases.json').write_text(payload)
