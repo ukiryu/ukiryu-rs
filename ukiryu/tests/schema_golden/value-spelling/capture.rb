@@ -28,7 +28,7 @@ rescue Exception => e
   { 'error' => { 'class' => e.class.to_s, 'message' => e.message.encode('UTF-8', invalid: :replace, undef: :replace) } }
 end
 inputs = File.join(__dir__, 'inputs.json')
-rows = JSON.parse(File.read(inputs)).map do |row|
+rows = JSON.parse(File.read(inputs, encoding: 'UTF-8')).map do |row|
   classes = { 'none' => [], 'symbol' => [Symbol], 'document' => [Symbol, Date, Time] }.fetch(row.fetch('permitted'))
   row.merge('expect' => result do
     x = YAML.safe_load(row.fetch('yaml'), permitted_classes: classes)

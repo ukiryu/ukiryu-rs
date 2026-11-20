@@ -26,7 +26,7 @@ rescue Exception => e
   { 'error' => { 'class' => e.class.to_s, 'message' => e.message } }
 end
 input_path = File.join(__dir__, 'diagnostic-inputs.json')
-inputs = JSON.parse(File.read(input_path))
+inputs = JSON.parse(File.read(input_path, encoding: 'UTF-8'))
 rows = inputs.fetch('json').map do |text|
   f = Tempfile.new(['schema', '.json'])
   begin
