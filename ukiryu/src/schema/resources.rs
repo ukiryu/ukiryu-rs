@@ -115,12 +115,7 @@ pub(super) fn read(reference: &str) -> Result<Data, SchemaError> {
     let text = std::fs::read_to_string(&path).map_err(|_| SchemaError::ReadFailed {
         message: format!("Read of file at {} failed", path_text(&path)),
     })?;
-    json::parse(&text).ok_or_else(|| {
-        SchemaError::unsupported(
-            "schema JSON parse",
-            format!("invalid JSON schema file {}", path_text(&path)),
-        )
-    })
+    json::parse_schema(&text)
 }
 
 pub(super) fn load(root: &Data, base: &str) -> Result<Vec<(String, Data)>, SchemaError> {

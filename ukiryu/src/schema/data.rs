@@ -25,8 +25,11 @@ pub enum Data {
         month: u32,
         day: u32,
     },
+    /// `Date.allocate`: Julian day zero with the default Italian cutover.
+    AllocatedDate,
     /// A Ruby `Time`, kept as its YAML spelling. Validation treats it as an
-    /// opaque object; any message that needs its Ruby spelling fails loudly.
+    /// opaque object. Its spellings use the same exact Time implementation as
+    /// the core type API; an empty spelling represents an allocated Time.
     Time(String),
     Array(Vec<Data>),
     /// An insertion-ordered Ruby Hash (no duplicate keys under `eql?`).
@@ -47,7 +50,7 @@ impl Data {
     /// Ruby `eql?`: no numeric coercion, structural for containers.
     pub fn eql(&self, other: &Data) -> bool {
         match (self, other) {
-            (Data::Null, Data::Null) => true,
+            (Data::Null, Data::Null) | (Data::AllocatedDate, Data::AllocatedDate) => true,
             (Data::Bool(a), Data::Bool(b)) => a == b,
             (Data::Integer(a), Data::Integer(b)) => a == b,
             (Data::Float(a), Data::Float(b)) => a == b,
@@ -111,13 +114,9 @@ impl Data {
             Data::Integer(i) => i.to_string(),
             Data::Float(f) => ruby_float_to_s(*f),
             Data::String(s) | Data::Symbol(s) => s.clone(),
+            Data::AllocatedDate => "-4712-01-01".to_owned(),
             Data::Date { year, month, day } => date_to_s(*year, *month, *day),
-            Data::Time(raw) => {
-                return Err(SchemaError::unsupported(
-                    "Ruby Time spelling",
-                    format!("Time#to_s of the YAML timestamp {raw:?} is not reproduced"),
-                ))
-            }
+            Data::Time(raw) => crate::types::ruby::time_to_s(&super::value_time::parse(raw)?),
             Data::Array(_) | Data::Hash(_) => self.ruby_inspect()?,
         })
     }
@@ -127,19 +126,10 @@ impl Data {
         Ok(match self {
             Data::Null => "nil".to_owned(),
             Data::String(s) => inspect_str(s),
-            Data::Symbol(s) => {
-                return Err(SchemaError::unsupported(
-                    "Ruby Symbol spelling",
-                    format!("Symbol#inspect of :{s} is not reproduced"),
-                ))
-            }
+            Data::Symbol(s) => symbol_inspect(s),
+            Data::AllocatedDate => "#<Date: -4712-01-01 ((0j,0s,0n),+0s,2299161j)>".to_owned(),
             Data::Date { year, month, day } => date_inspect(*year, *month, *day),
-            Data::Time(raw) => {
-                return Err(SchemaError::unsupported(
-                    "Ruby Time spelling",
-                    format!("Time#inspect of the YAML timestamp {raw:?} is not reproduced"),
-                ))
-            }
+            Data::Time(raw) => crate::types::ruby::time_inspect(&super::value_time::parse(raw)?),
             Data::Array(items) => {
                 let parts: Result<Vec<_>, _> = items.iter().map(Data::ruby_inspect).collect();
                 format!("[{}]", parts?.join(", "))
@@ -150,16 +140,16 @@ impl Data {
                 }
                 let mut parts = Vec::with_capacity(pairs.len());
                 for (k, v) in pairs {
-                    let key = match k {
-                        Data::Symbol(_) => {
-                            return Err(SchemaError::unsupported(
-                                "Ruby Symbol spelling",
-                                "Hash#inspect with Symbol keys is not reproduced",
-                            ))
-                        }
-                        other => other.ruby_inspect()?,
-                    };
-                    parts.push(format!("{key} => {}", v.ruby_inspect()?));
+                    if let Data::Symbol(name) = k {
+                        let key = if crate::types::ruby::is_simple_symbol_key(name) {
+                            name.clone()
+                        } else {
+                            symbol_name_inspect(name)
+                        };
+                        parts.push(format!("{key}: {}", v.ruby_inspect()?));
+                    } else {
+                        parts.push(format!("{} => {}", k.ruby_inspect()?, v.ruby_inspect()?));
+                    }
                 }
                 format!("{{{}}}", parts.join(", "))
             }
@@ -405,7 +395,7 @@ fn jdn(year: i64, month: u32, day: u32) -> i64 {
 
 fn date_inspect(year: i64, month: u32, day: u32) -> String {
     format!(
-        "#<Date: {} (({}j,0s,0n),+0s,2299161j)>",
+        "#<Date: {} (({}j,0s,0n),+0s,-Infj)>",
         date_to_s(year, month, day),
         jdn(year, month, day)
     )
@@ -493,6 +483,25 @@ impl Data {
                 ))
             }
         })
+    }
+}
+
+// Psych interns ASCII-only symbol names with US-ASCII encoding. Ruby uses
+// byte escapes for their nonprinting characters, unlike UTF-8 Symbols.
+fn symbol_name_inspect(s: &str) -> String {
+    let text = inspect_str(s);
+    if s.is_ascii() {
+        text.replace("\\u00", "\\x")
+    } else {
+        text
+    }
+}
+fn symbol_inspect(s: &str) -> String {
+    let text = crate::types::ruby::symbol_inspect(s);
+    if s.is_ascii() {
+        text.replace("\\u00", "\\x")
+    } else {
+        text
     }
 }
 

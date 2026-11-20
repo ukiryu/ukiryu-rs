@@ -329,7 +329,7 @@ impl Loader {
             Data::Float(f) => Value::Float(f),
             Data::String(s) => Value::String(s),
             Data::Symbol(s) => Value::Symbol(s),
-            Data::Date { .. } | Data::Time(_) => {
+            Data::AllocatedDate | Data::Date { .. } | Data::Time(_) => {
                 return Err(unsupported(
                     "a Date or Time scalar; the value domain has no YAML Date/Time object",
                 ))

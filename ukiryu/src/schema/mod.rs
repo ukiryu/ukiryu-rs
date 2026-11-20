@@ -30,9 +30,14 @@ mod engine;
 mod inspect_table;
 mod ip;
 mod json;
+mod malformed;
 mod psych;
 mod resources;
 mod uri;
+mod value_time;
+
+#[cfg(test)]
+mod value_spelling_tests;
 
 pub mod bundled;
 
@@ -71,6 +76,8 @@ pub enum SchemaError {
     IpAddress { prefix: bool, message: String },
     /// `Errno::*` while reading a schema file.
     Io { errno: String, message: String },
+    /// A Ruby runtime error from scalar conversion or tag revival.
+    Ruby { class: String, message: String },
     /// Behaviour of the original that this port does not reproduce.
     Unsupported { feature: String, detail: String },
 }
@@ -80,6 +87,13 @@ impl SchemaError {
         SchemaError::Unsupported {
             feature: feature.to_owned(),
             detail: detail.into(),
+        }
+    }
+
+    pub(crate) fn ruby(class: &str, message: impl Into<String>) -> Self {
+        Self::Ruby {
+            class: class.to_owned(),
+            message: message.into(),
         }
     }
 
@@ -99,6 +113,7 @@ impl SchemaError {
             }
             .to_owned(),
             SchemaError::Io { errno, .. } => format!("Errno::{errno}"),
+            SchemaError::Ruby { class, .. } => class.clone(),
             SchemaError::Unsupported { .. } => return None,
         })
     }
@@ -111,7 +126,8 @@ impl SchemaError {
             | SchemaError::SchemaParse { message }
             | SchemaError::ReadFailed { message }
             | SchemaError::IpAddress { message, .. }
-            | SchemaError::Io { message, .. } => message.clone(),
+            | SchemaError::Io { message, .. }
+            | SchemaError::Ruby { message, .. } => message.clone(),
             SchemaError::DisallowedClass { class } => {
                 format!("Tried to load unspecified class: {class}")
             }
@@ -162,14 +178,20 @@ fn read_text(path: &Path) -> Result<String, SchemaError> {
             errno: "EACCES".to_owned(),
             message: format!("Permission denied @ rb_sysopen - {}", path.display()),
         },
+        _ if e.kind() == std::io::ErrorKind::NotFound => SchemaError::Io {
+            errno: "ENOENT".to_owned(),
+            message: format!(
+                "No such file or directory @ rb_sysopen - {}",
+                path.display()
+            ),
+        },
+        _ if e.raw_os_error() == Some(5) && cfg!(unix) => SchemaError::Io {
+            errno: "EIO".to_owned(),
+            message: format!("Input/output error @ io_fread - {}", path.display()),
+        },
         _ => SchemaError::unsupported("schema file read", format!("{}: {e}", path.display())),
     })?;
-    String::from_utf8(bytes).map_err(|_| {
-        SchemaError::unsupported(
-            "schema file encoding",
-            format!("{} is not UTF-8", path.display()),
-        )
-    })
+    malformed::decode(bytes)
 }
 
 /// `SchemaValidator.load_schema(path)`: `Ok(None)` when no path is given
