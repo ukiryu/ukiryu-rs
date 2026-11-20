@@ -128,6 +128,7 @@ fn unsupported(feature: &str, detail: impl Into<String>) -> SchemaError {
 pub(crate) struct Validation<'s> {
     root_uri: Rc<str>,
     strict: bool,
+    host_paths: bool,
     active: HashSet<(*const Data, *const Data)>,
     locations: RefCell<HashMap<*const Data, Rc<str>>>,
     schemas: RefCell<HashMap<String, (&'s Data, Dialect)>>,
@@ -144,10 +145,40 @@ pub(crate) fn fully_validate(
     data: impl FnOnce() -> Result<Data, SchemaError>,
     strict: bool,
 ) -> Result<Vec<VErr>, SchemaError> {
-    let resources = super::resources::load(schema, root_uri)?;
+    fully_validate_mode(schema, root_uri, data, strict, true)
+}
+
+pub(super) fn fully_validate_readonly(
+    schema: &Data,
+    root_uri: &str,
+    data: impl FnOnce() -> Result<Data, SchemaError>,
+    strict: bool,
+) -> Result<Vec<VErr>, SchemaError> {
+    fully_validate_mode(schema, root_uri, data, strict, false)
+}
+
+fn fully_validate_mode(
+    schema: &Data,
+    root_uri: &str,
+    data: impl FnOnce() -> Result<Data, SchemaError>,
+    strict: bool,
+    host_paths: bool,
+) -> Result<Vec<VErr>, SchemaError> {
+    let resources = if host_paths {
+        super::resources::load(schema, root_uri)?
+    } else {
+        super::resources::load_with(schema, root_uri, |name| {
+            Err(unsupported(
+                "snapshot schema resource",
+                format!("external resource {name:?} is unavailable in read-only rendering"),
+            ))
+        })?
+    };
+
     let mut v = Validation {
         root_uri: Rc::from(root_uri),
         strict,
+        host_paths,
         active: HashSet::new(),
         locations: RefCell::new(HashMap::new()),
         schemas: RefCell::new(HashMap::new()),
@@ -889,7 +920,8 @@ impl<'s> Validation<'s> {
             .get(&(target as *const Data))
             .cloned()
             .unwrap_or_else(|| self.root_uri.clone());
-        let diagnostic_uri = if target_uri.as_ref() == name
+        let diagnostic_uri = if self.host_paths
+            && target_uri.as_ref() == name
             && !name.contains("://")
             && super::resources::local_path(name).is_ok_and(|p| p.is_file())
         {

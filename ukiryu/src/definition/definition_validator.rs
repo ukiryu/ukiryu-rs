@@ -368,10 +368,18 @@ fn report_with(
     definition: &Data,
     resolve: impl FnOnce() -> Result<(SchemaStage, Option<Data>), SchemaError>,
 ) -> Result<ValidationReport, SchemaError> {
+    report_with_validator(definition, resolve, validate_against_schema)
+}
+
+fn report_with_validator(
+    definition: &Data,
+    resolve: impl FnOnce() -> Result<(SchemaStage, Option<Data>), SchemaError>,
+    validate_schema: impl FnOnce(&Data, &Data) -> Result<StageIssues, SchemaError>,
+) -> Result<ValidationReport, SchemaError> {
     let structure = validate_structure(definition)?;
     let (stage, schema) = resolve()?;
     let schema_issues = match &schema {
-        Some(schema) => Some(validate_against_schema(definition, schema)?),
+        Some(schema) => Some(validate_schema(definition, schema)?),
         None => None,
     };
     let mut errors = structure.errors.clone();
@@ -498,4 +506,26 @@ pub fn validate_file(
     env: &ValidatorEnv,
 ) -> Result<ValidationResult, SchemaError> {
     validate_file_report(path, schema_path, env).map(|r| r.result)
+}
+
+/// CLI snapshot validation: supplied texts only, no filesystem/network fallbacks.
+pub fn validate_string_readonly_report(
+    yaml: &str,
+    schema: Option<(&str, DefinitionSchemaFormat)>,
+) -> Result<ValidationReport, SchemaError> {
+    match schema::safe_load(yaml, Permitted::DOCUMENT) {
+        Ok(definition) => report_with_validator(
+            &definition,
+            || resolve_supplied(schema),
+            |definition, schema| {
+                let report = schema::definition_schema_report_readonly(definition, schema)?;
+                Ok(StageIssues {
+                    errors: report.errors,
+                    warnings: report.warnings,
+                })
+            },
+        ),
+        Err(SchemaError::YamlSyntax { message }) => Ok(invalid_yaml(message)),
+        Err(error) => Err(error),
+    }
 }

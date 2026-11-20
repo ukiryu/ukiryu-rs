@@ -3,18 +3,13 @@
 //! snapshot are supplied by the caller. No process-global environment or
 //! working directory is modified. Files and subprocesses remain real, as in
 //! the executable. Relative paths are relative to the caller's cwd.
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use std::collections::BTreeMap;
 use std::ffi::{c_char, CString};
 use ukiryu::environment::Environment;
 use ukiryu::runtime::{platform_from_host_os, Host, Platform};
 
-#[derive(Debug, Default, Serialize)]
-pub struct CapturedOutput {
-    pub stdout: String,
-    pub stderr: String,
-    pub exit: i32,
-}
+pub use ukiryu::cli::capture::CapturedOutput;
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]

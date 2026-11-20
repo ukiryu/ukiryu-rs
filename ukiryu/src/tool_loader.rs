@@ -611,8 +611,16 @@ pub fn load_implementation_index(
     register: &Register,
     tool: &str,
 ) -> Result<Option<ImplementationIndex>, LoadError> {
+    load_implementation_index_with(register, tool, &read_document)
+}
+
+fn load_implementation_index_with(
+    register: &Register,
+    tool: &str,
+    read: &DocumentReader<'_>,
+) -> Result<Option<ImplementationIndex>, LoadError> {
     let path = ruby_join(register.path(), &["tools", tool, "index.yaml"]);
-    match read_document(&path)? {
+    match read(&path)? {
         None => Ok(None),
         Some(text) => Ok(ImplementationIndex::from_register_yaml(&text)?),
     }
@@ -623,9 +631,17 @@ pub fn load_interface(
     register: &Register,
     interface_path: &str,
 ) -> Result<Option<Interface>, LoadError> {
+    load_interface_with(register, interface_path, &read_document)
+}
+
+fn load_interface_with(
+    register: &Register,
+    interface_path: &str,
+    read: &DocumentReader<'_>,
+) -> Result<Option<Interface>, LoadError> {
     let file = format!("{interface_path}.yaml");
     let path = ruby_join(register.path(), &["interfaces", &file]);
-    match read_document(&path)? {
+    match read(&path)? {
         None => Ok(None),
         Some(text) => Ok(Interface::from_register_yaml(&text)?),
     }
@@ -639,8 +655,18 @@ pub fn load_implementation_version(
     implementation: &str,
     file: &str,
 ) -> Result<Option<ImplementationVersion>, LoadError> {
+    load_implementation_version_with(register, tool, implementation, file, &read_document)
+}
+
+fn load_implementation_version_with(
+    register: &Register,
+    tool: &str,
+    implementation: &str,
+    file: &str,
+    read: &DocumentReader<'_>,
+) -> Result<Option<ImplementationVersion>, LoadError> {
     let path = ruby_join(register.path(), &["tools", tool, implementation, file]);
-    match read_document(&path)? {
+    match read(&path)? {
         None => Ok(None),
         Some(text) => Ok(ImplementationVersion::from_register_yaml(&text)?),
     }
@@ -816,7 +842,10 @@ fn profile_views(profiles: &Value) -> Result<Vec<ProfileView>, LoadError> {
 }
 
 /// The loader's collaborators for [`routing::detect_implementation_and_version`].
+type DocumentReader<'a> = dyn Fn(&Path) -> Result<Option<String>, LoadError> + 'a;
+
 struct Selection<'a, 'r> {
+    read: &'a DocumentReader<'a>,
     register: &'a Register,
     tool: &'a str,
     raw: &'a [Value],
@@ -888,7 +917,8 @@ impl SelectionEnv for Selection<'_, '_> {
             .name
             .clone()
             .unwrap_or_default();
-        let Some(version) = load_implementation_version(self.register, self.tool, &name, file)?
+        let Some(version) =
+            load_implementation_version_with(self.register, self.tool, &name, file, self.read)?
         else {
             return Ok(None);
         };
@@ -917,10 +947,21 @@ pub fn load_definition(
     options: &LoadOptions<'_>,
     runner: &mut dyn CommandRunner,
 ) -> Result<Option<ToolDefinition>, LoadError> {
-    let Some(index) = load_implementation_index(register, name)? else {
+    load_definition_from_text(register, name, options, runner, &read_document)
+}
+
+/// The same register loader with an explicit document reader (no implicit I/O).
+pub fn load_definition_from_text(
+    register: &Register,
+    name: &str,
+    options: &LoadOptions<'_>,
+    runner: &mut dyn CommandRunner,
+    read: &DocumentReader<'_>,
+) -> Result<Option<ToolDefinition>, LoadError> {
+    let Some(index) = load_implementation_index_with(register, name, read)? else {
         return Ok(None);
     };
-    let Some(interface) = load_interface(register, &index.interface.to_ruby_s())? else {
+    let Some(interface) = load_interface_with(register, &index.interface.to_ruby_s(), read)? else {
         return Ok(None);
     };
     let implementations = index
@@ -934,6 +975,7 @@ pub fn load_definition(
         shell: options.shell,
     };
     let mut selection = Selection {
+        read,
         register,
         tool: name,
         raw: &index.implementations,
@@ -959,7 +1001,8 @@ pub fn load_definition(
         return Err(type_error("no implicit conversion of nil into String"));
     };
     let implementation_name = spec.implementation_name.clone().unwrap_or_default();
-    let Some(version) = load_implementation_version(register, name, &implementation_name, file)?
+    let Some(version) =
+        load_implementation_version_with(register, name, &implementation_name, file, read)?
     else {
         return Ok(None);
     };
