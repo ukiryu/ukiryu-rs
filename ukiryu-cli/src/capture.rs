@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::ffi::{c_char, CString};
 use ukiryu::environment::Environment;
-use ukiryu::runtime::{platform_from_host_os, Host};
+use ukiryu::runtime::{platform_from_host_os, Host, Platform};
 
 #[derive(Debug, Default, Serialize)]
 pub struct CapturedOutput {
@@ -32,13 +32,17 @@ pub fn process(bytes: &[u8]) -> serde_json::Value {
         Ok(request) => request,
         Err(error) => return ukiryu::wire::failure("INVALID_REQUEST", error.to_string()),
     };
-    let platform = match platform_from_host_os(&request.platform) {
+    let platform = match request.platform.as_str() {
+        "macos" => Ok(Platform::Macos),
+        name => platform_from_host_os(name),
+    };
+    let platform = match platform {
         Ok(platform) => platform,
         Err(error) => return ukiryu::wire::failure("INVALID_REQUEST", error.to_string()),
     };
     let host = Host {
         platform,
-        env: Environment::from_pairs(request.env),
+        env: Environment::from_snapshot(request.env),
     };
     let argv = std::iter::once("ukiryu".to_owned()).chain(request.argv);
     let output = crate::dispatch::capture(argv, host);

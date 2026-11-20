@@ -89,6 +89,20 @@ fn captures_parse_errors_and_changed_input_without_leaking_output() {
         process(br#"{"argv": [], "platform": "unknown", "env": {}}"#)["ok"],
         false
     );
+    for platform in [
+        "linux",
+        "macos",
+        "windows",
+        "arm64-darwin",
+        "x64-mingw-ucrt",
+    ] {
+        let request = json!({"argv": ["help"], "platform": platform, "env": {}});
+        assert_eq!(
+            process(&serde_json::to_vec(&request).unwrap())["ok"],
+            true,
+            "{platform}"
+        );
+    }
     assert_eq!(process(b"{}")["ok"], false);
     // The C boundary accepts null/zero and rejects null/nonzero without dereferencing.
     for length in [0, 1] {
