@@ -100,8 +100,11 @@ impl DefinitionDocument for ToolDocument {
         self.self_uri.as_deref()
     }
 
-    fn resolve_inheritance(&mut self) {
-        self.inner.resolve_inheritance();
+    fn resolve_inheritance(&mut self) -> crate::definition::Result<()> {
+        self.inner
+            .resolve_inheritance()
+            .map(|_| ())
+            .map_err(|e| crate::definition::DefinitionError::load(e.message))
     }
 }
 

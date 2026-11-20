@@ -33,7 +33,7 @@ pub struct OptionDefinition {
         serialize_with = "ser_int_list",
         skip_serializing_if = "omit_list"
     )]
-    pub range: Option<Vec<Option<i64>>>,
+    pub range: Option<Vec<Option<Attr<i64>>>>,
     #[serde(
         default,
         deserialize_with = "d::text_list",

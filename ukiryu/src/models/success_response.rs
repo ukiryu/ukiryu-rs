@@ -21,7 +21,7 @@ pub struct SuccessResponse {
     #[serde(default = "default_status", skip_serializing_if = "Attr::omit")]
     pub status: Attr<Text>,
     #[serde(default, deserialize_with = "d::opt", skip_serializing_if = "omit_opt")]
-    pub exit_code: Option<i64>,
+    pub exit_code: Option<Attr<i64>>,
     #[serde(
         default,
         deserialize_with = "d::model",
@@ -105,7 +105,7 @@ impl SuccessResponse {
         let request = Arguments::from_params(params, command_definition)?;
         Ok(SuccessResponse {
             status: Attr::Set(Text::new("success")),
-            exit_code: Some(result.status),
+            exit_code: Some(Attr::Set(result.status)),
             command: Some(Box::new(CommandInfo {
                 executable: Some(Text::new(result.executable.clone())),
                 arguments: Some(Box::new(request.clone())),

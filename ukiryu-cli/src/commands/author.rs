@@ -1787,8 +1787,13 @@ impl DefinitionDocument for ToolDocument {
         self.self_uri.as_deref()
     }
 
-    fn resolve_inheritance(&mut self) {
-        self.inner.resolve_inheritance();
+    fn resolve_inheritance(&mut self) -> ukiryu::definition::Result<()> {
+        self.inner.resolve_inheritance().map(|_| ()).map_err(|e| {
+            ukiryu::definition::DefinitionError::new(
+                ukiryu::definition::DefinitionErrorKind::Load,
+                e.message,
+            )
+        })
     }
 }
 
@@ -2252,8 +2257,12 @@ fn executable_body(
         return run_smoke_tests(out, o, &session, &tool, tests);
     }
     let profiles = tool.definition().profiles.as_deref().unwrap_or_default();
-    if let Some(commands) = profiles.first().and_then(|p| p.commands.as_deref()) {
-        if let Some(first) = commands.first() {
+    if let Some(commands) = profiles
+        .first()
+        .and_then(Option::as_ref)
+        .and_then(|p| p.commands.as_deref())
+    {
+        if let Some(first) = commands.first().and_then(Option::as_ref) {
             out.say("", Color::Clear)?;
             out.say("Testing command execution (smoke test)...", Color::Cyan)?;
             let name = first.name.as_ref().map(Text::to_ruby_s).unwrap_or_default();
@@ -2701,12 +2710,13 @@ fn run_describe(
     let Some(commands) = tool.command_profile().commands.as_deref() else {
         return out.thor_error(&format!("No commands defined for {}", input.tool));
     };
+    let commands: Vec<&CommandDefinition> = commands.iter().flatten().collect();
     match input.command.as_deref() {
-        Some("help") => tool_summary(out, off, &session, &tool, commands, true)?,
-        None => tool_summary(out, off, &session, &tool, commands, false)?,
+        Some("help") => tool_summary(out, off, &session, &tool, &commands, true)?,
+        None => tool_summary(out, off, &session, &tool, &commands, false)?,
         Some(name) => {
             let mut found = None;
-            for c in commands {
+            for c in &commands {
                 let own = c.name.as_ref().map(Text::to_ruby_s).unwrap_or_default();
                 if own == name {
                     found = Some(c);
@@ -2753,18 +2763,21 @@ fn texts_joined(list: &[Text], separator: &str) -> String {
         .join(separator)
 }
 
-fn ints_joined(list: &[Option<i64>], separator: &str) -> String {
+fn ints_joined(list: &[Option<ukiryu::models::Attr<i64>>], separator: &str) -> String {
     list.iter()
-        .map(|i| i.map(|v| v.to_string()).unwrap_or_default())
+        .map(|i| i.as_ref().map(|v| v.to_string()).unwrap_or_default())
         .collect::<Vec<_>>()
         .join(separator)
 }
 
 /// `Array#inspect` of an integer list (`nil` for a missing element).
-fn ints_inspect(list: &[Option<i64>]) -> String {
+fn ints_inspect(list: &[Option<ukiryu::models::Attr<i64>>]) -> String {
     let items: Vec<String> = list
         .iter()
-        .map(|i| i.map_or_else(|| "nil".to_owned(), |v| v.to_string()))
+        .map(|i| {
+            i.as_ref()
+                .map_or_else(|| "nil".to_owned(), |v| v.to_ruby_value().inspect())
+        })
         .collect();
     format!("[{}]", items.join(", "))
 }
@@ -2785,7 +2798,7 @@ fn tool_summary(
     off: bool,
     session: &Tools<'_>,
     tool: &Tool,
-    commands: &[CommandDefinition],
+    commands: &[&CommandDefinition],
     help: bool,
 ) -> Step {
     let definition = tool.definition();
@@ -2951,6 +2964,9 @@ fn describe_command(
     if let Some(arguments) = non_empty(&cmd.arguments) {
         say_c(out, off, "Arguments:", YELLOW);
         for arg in arguments {
+            let arg = arg
+                .as_ref()
+                .ok_or_else(|| raise("NoMethodError", "undefined method 'name' for nil"))?;
             let name = arg
                 .name
                 .as_ref()
@@ -2995,10 +3011,10 @@ fn describe_command(
             }
             if arg.min.is_some() || arg.max.is_some() || arg.size.is_some() {
                 let mut constraints = Vec::new();
-                if let Some(min) = arg.min {
+                if let Some(min) = &arg.min {
                     constraints.push(format!("min: {min}"));
                 }
-                if let Some(max) = arg.max {
+                if let Some(max) = &arg.max {
                     constraints.push(format!("max: {max}"));
                 }
                 if let Some(size) = &arg.size {
@@ -3033,6 +3049,9 @@ fn describe_command(
     if let Some(options) = non_empty(&cmd.options) {
         say_c(out, off, "Options:", YELLOW);
         for opt in options {
+            let opt = opt
+                .as_ref()
+                .ok_or_else(|| raise("NoMethodError", "undefined method 'name' for nil"))?;
             let name = opt
                 .name
                 .as_ref()
@@ -3118,6 +3137,9 @@ fn describe_command(
     if let Some(post) = non_empty(&cmd.post_options) {
         say_c(out, off, "Post-Options (between input and output):", YELLOW);
         for opt in post {
+            let opt = opt
+                .as_ref()
+                .ok_or_else(|| raise("NoMethodError", "undefined method 'name' for nil"))?;
             let name = opt
                 .name
                 .as_ref()
@@ -3149,6 +3171,9 @@ fn describe_command(
     if let Some(flags) = non_empty(&cmd.flags) {
         say_c(out, off, "Flags:", YELLOW);
         for flag in flags {
+            let flag = flag
+                .as_ref()
+                .ok_or_else(|| raise("NoMethodError", "undefined method 'name' for nil"))?;
             let name = flag
                 .name
                 .as_ref()
@@ -3201,7 +3226,11 @@ fn describe_command(
         let named = |words: &[&str]| -> Vec<String> {
             options
                 .iter()
-                .filter_map(|o| o.name.as_ref().map(Text::to_ruby_s))
+                .filter_map(|o| {
+                    o.as_ref()
+                        .and_then(|o| o.name.as_ref())
+                        .map(Text::to_ruby_s)
+                })
                 .filter(|n| {
                     let lower = n.to_lowercase();
                     words.iter().any(|w| lower.contains(w))

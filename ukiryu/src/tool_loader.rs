@@ -579,7 +579,7 @@ pub fn convert_to_tool_definition(
         vec![platform_profile],
         impl_version.version_detection.clone(),
     )?;
-    tool.resolve_inheritance();
+    tool.resolve_inheritance()?;
     Ok(Some(tool))
 }
 

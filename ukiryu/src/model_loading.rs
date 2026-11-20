@@ -73,19 +73,25 @@ fn implicit<T>(attr: &mut Attr<T>, kwargs: &Value, key: &str) {
 }
 
 /// Applies `fix` to each built item with the Hash it was cast from.
-fn each_item<T>(items: &mut Option<Vec<T>>, source: Option<&Value>, fix: impl Fn(&mut T, &Value)) {
+fn each_item<T>(
+    items: &mut Option<Vec<Option<T>>>,
+    source: Option<&Value>,
+    fix: impl Fn(&mut T, &Value),
+) {
     let (Some(items), Some(source)) = (items.as_mut(), source) else {
         return;
     };
     match source {
         Value::Array(sources) => {
             for (item, src) in items.iter_mut().zip(sources) {
-                fix(item, src);
+                if let Some(item) = item {
+                    fix(item, src);
+                }
             }
         }
         // A single Hash given for a collection wraps into one item.
         Value::Hash(_) => {
-            if let Some(item) = items.first_mut() {
+            if let Some(Some(item)) = items.first_mut() {
                 fix(item, source);
             }
         }
@@ -196,7 +202,7 @@ pub fn platform_profile_new(
             exit_codes_new(codes, kw);
         }
     }
-    profile.commands = Some(commands);
+    profile.commands = Some(commands.into_iter().map(Some).collect());
     Ok(profile)
 }
 
@@ -216,7 +222,7 @@ pub fn tool_definition_new(
         &[("self_uri", "$self")],
     );
     let mut tool: ToolDefinition = build(&fields)?;
-    tool.profiles = Some(profiles);
+    tool.profiles = Some(profiles.into_iter().map(Some).collect());
     tool.version_detection = version_detection.map(Box::new);
     Ok(tool)
 }

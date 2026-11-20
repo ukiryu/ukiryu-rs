@@ -186,6 +186,8 @@ pub enum Text {
     /// A raw Array held by a single-valued `:string` attribute (elements
     /// keep their Ruby classes).
     List(Vec<Value>),
+    /// A Hash is retained and serialized as a mapping, without string casting.
+    Hash(Vec<(Value, Value)>),
     /// A `nil` element of a `:string` collection.
     Nil,
 }
@@ -208,7 +210,7 @@ impl Text {
         match self {
             Text::Str(s) => s.clone(),
             Text::Nil => String::new(),
-            Text::List(_) => self.inspect(),
+            Text::List(_) | Text::Hash(_) => self.inspect(),
         }
     }
 
@@ -229,6 +231,7 @@ impl Text {
         match self {
             Text::Str(s) => s.is_empty(),
             Text::List(items) => items.is_empty(),
+            Text::Hash(pairs) => pairs.is_empty(),
             Text::Nil => true,
         }
     }
@@ -243,6 +246,7 @@ impl Text {
             Text::Str(s) => Value::String(s.clone()),
             Text::Nil => Value::Nil,
             Text::List(items) => Value::Array(items.clone()),
+            Text::Hash(pairs) => Value::Hash(pairs.clone()),
         }
     }
 
@@ -259,17 +263,10 @@ impl Text {
         Ok(Some(match v {
             Value::Nil => return Ok(None),
             Value::Array(items) => Text::List(items.clone()),
-            Value::Hash(_) => return Err(unsupported_map()),
+            Value::Hash(pairs) => Text::Hash(pairs.clone()),
             other => Text::from_scalar(other),
         }))
     }
-}
-
-fn unsupported_map() -> ModelError {
-    ModelError::new(
-        ModelErrorKind::Unsupported,
-        "a Hash assigned to a :string attribute is kept raw by lutaml; not representable",
-    )
 }
 
 impl From<&str> for Text {
@@ -292,7 +289,10 @@ impl fmt::Display for Text {
 
 impl Serialize for Text {
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        serializer.serialize_str(&self.to_ruby_s())
+        match self {
+            Text::Hash(pairs) => Value::Hash(pairs.clone()).serialize(serializer),
+            _ => serializer.serialize_str(&self.to_ruby_s()),
+        }
     }
 }
 
@@ -310,10 +310,7 @@ impl<'de> Deserialize<'de> for Text {
 pub(crate) fn text_item(v: &Value) -> Result<Text, ModelError> {
     match v {
         Value::Nil => Ok(Text::Nil),
-        Value::Hash(_) => Err(ModelError::new(
-            ModelErrorKind::Unsupported,
-            "a Hash element in a :string collection is kept raw by lutaml; not representable",
-        )),
+        Value::Hash(pairs) => Ok(Text::Hash(pairs.clone())),
         other => Ok(Text::Str(other.to_ruby_s())),
     }
 }

@@ -280,6 +280,7 @@ fn evaluate(group: &str, i: &Json) -> Json {
                 .iter()
                 .flatten()
                 .map(|a| {
+                    let a = a.as_ref().expect("oracle argument is a model");
                     json!([
                         enc_text(a.name.as_ref()),
                         enc_text(a.position.get()),
@@ -292,8 +293,8 @@ fn evaluate(group: &str, i: &Json) -> Json {
             json!({
                 "belongs_to_command": c.is_belongs_to_command(), "flag_action": c.is_flag_action(),
                 "has_subcommand": c.has_subcommand(), "standalone_executable": c.is_standalone_executable(),
-                "option": opt_model(c.option("resize")), "option_missing": opt_model(c.option("zz")),
-                "flag": opt_model(c.flag("verbose")), "argument": opt_model(c.argument("first")),
+                "option": opt_model(c.option("resize").unwrap()), "option_missing": opt_model(c.option("zz").unwrap()),
+                "flag": opt_model(c.flag("verbose").unwrap()), "argument": opt_model(c.argument("first").unwrap()),
                 "last_argument": opt_model(c.last_argument()),
                 "regular_arguments": c.regular_arguments().iter().map(|a| enc_text(a.name.as_ref())).collect::<Vec<_>>(),
                 "arg_positions": positions,
@@ -303,9 +304,9 @@ fn evaluate(group: &str, i: &Json) -> Json {
             let c: CommandDefinition = from(&i["yaml"]);
             json!({"belongs_to_command": c.is_belongs_to_command(), "flag_action": c.is_flag_action(),
                    "has_subcommand": c.has_subcommand(), "standalone_executable": c.is_standalone_executable(),
-                   "option": opt_model(c.option("a")), "last_argument": opt_model(c.last_argument()),
+                   "option": opt_model(c.option("a").unwrap()), "last_argument": opt_model(c.last_argument()),
                    "regular_arguments": c.regular_arguments().into_iter().map(enc_model).collect::<Vec<_>>(),
-                   "argument": opt_model(c.argument("a"))})
+                   "argument": opt_model(c.argument("a").unwrap())})
         }
         "command_definition.new" => {
             let c = CommandDefinition::default();
@@ -370,15 +371,15 @@ fn evaluate(group: &str, i: &Json) -> Json {
             json!({"supports_platform": p.supports_platform(pl).unwrap(), "supports_shell": p.supports_shell(sh).unwrap(),
                    "compatible": p.is_compatible(pl, sh).unwrap(), "universal": p.is_universal(),
                    "routing": p.has_routing(), "routing_h": enc(&p.routing().to_h()),
-                   "command_names": p.command_names().iter().map(enc).collect::<Vec<_>>(),
-                   "command": opt_model(p.command("convert")), "command_missing": opt_model(p.command("zz"))})
+                   "command_names": p.command_names().unwrap().iter().map(enc).collect::<Vec<_>>(),
+                   "command": opt_model(p.command("convert").unwrap()), "command_missing": opt_model(p.command("zz").unwrap())})
         }
         "platform_profile.empty" | "platform_profile.null" => {
             let p: PlatformProfile = from(&i["yaml"]);
             json!({"supports_platform": p.supports_platform("x").unwrap(), "universal": p.is_universal(),
                    "routing": p.has_routing(), "routing_h": enc(&p.routing().to_h()),
-                   "command_names": p.command_names().iter().map(enc).collect::<Vec<_>>(),
-                   "command": opt_model(p.command("a"))})
+                   "command_names": p.command_names().unwrap().iter().map(enc).collect::<Vec<_>>(),
+                   "command": opt_model(p.command("a").unwrap())})
         }
         "tool_definition" => {
             let mut t: ToolDefinition = from(&i["yaml"]);
@@ -387,13 +388,14 @@ fn evaluate(group: &str, i: &Json) -> Json {
                 .compatible_profile(pl, sh)
                 .unwrap()
                 .map(|p| enc_text(p.name.as_ref()));
-            t.resolve_inheritance();
+            t.resolve_inheritance().unwrap();
             let after = t.compatible_profile(pl, sh).unwrap().map(|p| {
                 Json::Array(
                     p.commands
                         .iter()
                         .flatten()
                         .map(|c| {
+                            let c = c.as_ref().expect("oracle command is a model");
                             json!([enc_text(c.name.as_ref()), enc_text(c.description.as_ref())])
                         })
                         .collect(),
@@ -419,7 +421,7 @@ fn evaluate(group: &str, i: &Json) -> Json {
             let compatible = t.compatible_profile("linux", "bash").unwrap().is_some();
             json!({"implements": t.is_implements("x").unwrap(), "interfaces": texts(&t.interfaces()),
                    "available": available, "compatible": if compatible { json!("some") } else { Json::Null },
-                   "resolve": t.resolve_inheritance().to_yaml().unwrap()})
+                   "resolve": t.resolve_inheritance().unwrap().to_yaml().unwrap()})
         }
         "tool_definition.profiles_empty" => {
             let t: ToolDefinition = from(&i["yaml"]);

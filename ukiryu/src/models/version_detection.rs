@@ -46,7 +46,7 @@ pub struct VersionDetection {
         serialize_with = "ser_model_list",
         skip_serializing_if = "omit_list"
     )]
-    pub detection_methods: Option<Vec<VersionDetectionMethod>>,
+    pub detection_methods: Option<Vec<Option<VersionDetectionMethod>>>,
 }
 
 impl Default for VersionDetection {
