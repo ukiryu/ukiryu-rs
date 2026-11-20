@@ -1,6 +1,5 @@
-//! Offline schema resources. Resolve every reference before preparing data,
-//! as the gem does, while leaving network reads explicitly unsupported.
-use super::{data::Data, json, uri, SchemaError};
+//! Resolve local and native HTTP schema resources before preparing data.
+use super::{data::Data, json, transport, uri, SchemaError};
 use std::collections::HashSet;
 use std::path::PathBuf;
 
@@ -78,8 +77,8 @@ pub(super) fn local_path(reference: &str) -> Result<PathBuf, SchemaError> {
             .is_some_and(|s| !s.is_empty() && s != "localhost")
     {
         return Err(SchemaError::unsupported(
-            "external schema",
-            format!("network schema read {reference:?} is not supported"),
+            "schema transport",
+            format!("non-file schema path {reference:?} is not supported"),
         ));
     }
     let decoded = uri::unescape(parts.path);
@@ -111,6 +110,12 @@ pub(super) fn local_path(reference: &str) -> Result<PathBuf, SchemaError> {
 }
 
 pub(super) fn read(reference: &str) -> Result<Data, SchemaError> {
+    if transport::is_http(reference) {
+        let text = transport::read(reference)?;
+        return json::parse(&text).ok_or_else(|| {
+            SchemaError::unsupported("schema JSON parse", "invalid JSON schema response")
+        });
+    }
     let path = local_path(reference)?;
     let text = std::fs::read_to_string(&path).map_err(|_| SchemaError::ReadFailed {
         message: format!("Read of file at {} failed", path_text(&path)),
