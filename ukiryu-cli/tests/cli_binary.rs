@@ -34,8 +34,8 @@
 //!   `validate --executable`, the execute rows the handlers gate), which must
 //!   fail with the gated status and never print a success;
 //! - terminal rows (`pty`): captured with a terminal on stdout. The test
-//!   spawns the binary over pipes, so they cannot run here; they are counted
-//!   and asserted by number, and the handler test `execute.rs` replays them.
+//!   `terminal_execute_captures_through_the_binary` replays all 12 rows over
+//!   a real PTY with the Python standard library helper.
 //!
 //! Recorded deviations (all decided outside this file):
 //! - shell detection is strict (DECISIONS.md D2): inspect rows with a `note`
@@ -69,11 +69,45 @@ struct Output {
     code: i32,
 }
 
+// Ruby captures stubbed an unavailable remote schema. Exercise a real local
+// 404 response in subprocesses instead of downloading a mutable live schema.
+fn unavailable_schema_url() -> &'static str {
+    static URL: std::sync::OnceLock<String> = std::sync::OnceLock::new();
+    URL.get_or_init(|| {
+        let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+        let url = format!("http://{}/schema.yaml", listener.local_addr().unwrap());
+        std::thread::spawn(move || {
+            use std::io::{BufRead, BufReader};
+            for connection in listener.incoming() {
+                let mut stream = connection.unwrap();
+                stream
+                    .set_read_timeout(Some(std::time::Duration::from_secs(5)))
+                    .unwrap();
+                let mut reader = BufReader::new(&stream);
+                loop {
+                    let mut line = String::new();
+                    reader.read_line(&mut line).unwrap();
+                    if line == "\r\n" || line.is_empty() {
+                        break;
+                    }
+                }
+                stream
+                    .write_all(
+                        b"HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\nConnection: close\r\n\r\n",
+                    )
+                    .unwrap();
+            }
+        });
+        url
+    })
+}
+
 fn run(args: &[String], env: &[(String, String)], cwd: &Path, stdin: Option<&str>) -> Output {
     let mut child = Command::new(BIN)
         .args(args)
         .env_clear()
         .envs(env.iter().map(|(k, v)| (k, v)))
+        .env("UKIRYU_REMOTE_SCHEMA_URL", unavailable_schema_url())
         .current_dir(cwd)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
@@ -781,6 +815,24 @@ fn execute_cases_through_the_binary() {
     assert_eq!(counts.unqualified, EXECUTE_UNQUALIFIED.len(), "{counts:?}");
     assert_eq!(counts.terminal, 12, "{counts:?}");
     assert_eq!(counts.exact, 91, "{counts:?}");
+}
+
+/// Exercise terminal detection and ANSI output through the actual binary,
+/// including NO_COLOR, TERM=dumb and the Ruby cache-info NameError contract.
+#[cfg(target_os = "linux")]
+#[test]
+fn terminal_execute_captures_through_the_binary() {
+    let output = Command::new("python3")
+        .arg(Path::new(env!("CARGO_MANIFEST_DIR")).join("../scripts/check-cli-terminal.py"))
+        .args(["--binary", BIN])
+        .output()
+        .expect("Python 3 is required for the Linux terminal capture check");
+    assert!(
+        output.status.success(),
+        "terminal captures: {}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
 }
 
 /// The binary comparator permits address variation but keeps every diagnostic
@@ -1525,6 +1577,7 @@ fn run_stdin_row(
         .args(args)
         .env_clear()
         .envs(env.iter().map(|(k, v)| (k, v)))
+        .env("UKIRYU_REMOTE_SCHEMA_URL", unavailable_schema_url())
         .current_dir(cwd)
         .stdin(stdin)
         .stdout(Stdio::piped())
@@ -1557,6 +1610,7 @@ fn closed_stdin_row(
         .args(args)
         .env_clear()
         .envs(env.iter().map(|(k, v)| (k, v)))
+        .env("UKIRYU_REMOTE_SCHEMA_URL", unavailable_schema_url())
         .current_dir(cwd)
         .stdin(Stdio::null())
         .stdout(Stdio::piped())

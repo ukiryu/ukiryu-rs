@@ -321,6 +321,7 @@ fn context(case: &Value, root: &str) -> AuthorContext {
             .map(|v| v.replace("{root}", root))
     };
     AuthorContext {
+        remote_schema: ukiryu::definition::definition_validator::RemoteSchemaSource::Unavailable,
         thor_colors: case["pty"].as_bool().unwrap_or(false),
         discovery: DiscoveryEnv {
             home: Some(format!("{root}/home")),

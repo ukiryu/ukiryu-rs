@@ -34,48 +34,47 @@
 //! executable test starts; [`validate_with_tools`] runs it (the source loads
 //! each tool with `Tool.get`, so the smoke tests take the exact name only).
 //! `describe` runs `Tool.find_by` through the core
-//! `ukiryu::register_lookup::find_by`: exact name, then the interface, alias
+//! `crate::register_lookup::find_by`: exact name, then the interface, alias
 //! and register-wide fallbacks over the `ToolIndex` of the same register.
 //!
 //! The source crashes on a few of its own paths and the handlers reproduce
 //! the crash (see [`REPRODUCED_DEFECTS`]); the owner-pending corrections
 //! are not applied here.
-//! `DefinitionValidator` is the core `ukiryu::definition::definition_validator`
-//! module; its remote schema download is not performed: with no `--schema`
-//! and no usable `UKIRYU_SCHEMA_PATH`, only the structural checks run (the
-//! Ruby behaviour when the download is unavailable).
+//! `DefinitionValidator` is the core `crate::definition::definition_validator`
+//! module; with no usable local schema it performs Ruby's remote fallback.
+//! Hosts can supply an unavailable response to reproduce offline captures.
 use super::CommandOutcome;
-use std::cmp::Ordering;
-use std::path::{Component, Path, PathBuf};
-use std::rc::Rc;
-use ukiryu::cache::ToolCache;
-use ukiryu::definition::documentation::{DocumentationErrorKind, DocumentationGenerator};
-use ukiryu::definition::linter::{DefinitionLinter, LintError, LintResult};
-use ukiryu::definition::sources::file::ruby_time_to_s;
-use ukiryu::definition::{
+use crate::cache::ToolCache;
+use crate::definition::documentation::{DocumentationErrorKind, DocumentationGenerator};
+use crate::definition::linter::{DefinitionLinter, LintError, LintResult};
+use crate::definition::sources::file::ruby_time_to_s;
+use crate::definition::{
     definition_validator, DefinitionDocument, DefinitionError, DefinitionErrorKind,
     DefinitionMetadata, Discovery, DiscoveryEnv, DocumentParseError, Loader, Severity,
     ValidationMode, ValidationResult, ValidatorEnv,
 };
-use ukiryu::executable::DiscoveryContext;
-use ukiryu::execution::Seconds;
-use ukiryu::executor::{self, ExecuteError as ProcessError, ExecuteRequest};
-use ukiryu::extractors::base::ProcessHost;
-use ukiryu::extractors::help::{self as extractors, CommandHost, ExtractionMethod};
-use ukiryu::extractors::man::{FileSystem, ManPageParser};
-use ukiryu::models::attr::Model;
-use ukiryu::models::error::ModelErrorKind;
-use ukiryu::models::tool_definition::ToolDefinition;
-use ukiryu::models::{CommandDefinition, Text};
-use ukiryu::register::Register;
-use ukiryu::register_lookup::{self, LookupError};
-use ukiryu::render::OutputWrite;
-use ukiryu::runtime::{Clock, Host, Runtime};
-use ukiryu::schema::{safe_load, Data, Permitted, SchemaError};
-use ukiryu::tool::{self, version_info_to_s, Tool, ToolError, ToolOptions};
-use ukiryu::tool_loader::RegisterSource;
-use ukiryu::types::Value;
-use ukiryu::version_detection::{DetectedVersion, DetectionError, RubyPattern};
+use crate::executable::DiscoveryContext;
+use crate::execution::Seconds;
+use crate::executor::{self, ExecuteError as ProcessError, ExecuteRequest};
+use crate::extractors::base::ProcessHost;
+use crate::extractors::help::{self as extractors, CommandHost, ExtractionMethod};
+use crate::extractors::man::{FileSystem, ManPageParser};
+use crate::models::attr::Model;
+use crate::models::error::ModelErrorKind;
+use crate::models::tool_definition::ToolDefinition;
+use crate::models::{CommandDefinition, Text};
+use crate::register::Register;
+use crate::register_lookup::{self, LookupError};
+use crate::render::OutputWrite;
+use crate::runtime::{Clock, Host, Runtime};
+use crate::schema::{safe_load, Data, Permitted, SchemaError};
+use crate::tool::{self, version_info_to_s, Tool, ToolError, ToolOptions};
+use crate::tool_loader::RegisterSource;
+use crate::types::Value;
+use crate::version_detection::{DetectedVersion, DetectionError, RubyPattern};
+use std::cmp::Ordering;
+use std::path::{Component, Path, PathBuf};
+use std::rc::Rc;
 
 /// Ruby defects of the oracle commands that the port does not reproduce,
 /// as `(command path, Ruby observation, port behaviour)`. Each is captured in
@@ -147,6 +146,8 @@ pub struct AuthorContext {
     pub discovery: DiscoveryEnv,
     /// `ENV['UKIRYU_SCHEMA_PATH']` (`DefinitionValidator.find_schema`).
     pub schema_path_env: Option<String>,
+    /// Native URL fallback, or an explicitly unavailable offline response.
+    pub remote_schema: definition_validator::RemoteSchemaSource,
     /// `Register.default.path`, resolved by the register owner (discovery,
     /// `UKIRYU_REGISTER`, user clone). `None` when it is not resolved; the
     /// verbs that need it then return [`AuthorError::RegisterUnavailable`].
@@ -688,6 +689,7 @@ fn ljust(text: &str, width: usize) -> String {
 fn validator_env(ctx: &AuthorContext) -> ValidatorEnv {
     ValidatorEnv {
         schema_path: ctx.schema_path_env.clone(),
+        remote_schema: ctx.remote_schema.clone(),
     }
 }
 
@@ -1083,7 +1085,7 @@ fn load_for_docs(file: &str) -> Step<String> {
 /// text; `Ok(Err(message))` is the rescued ArgumentError.
 fn generate_docs(text: &str, format: &str) -> Step<Result<String, String>> {
     let definition =
-        ukiryu::from_yaml(text).map_err(|e| raise("Psych::SyntaxError", e.to_string()))?;
+        crate::from_yaml(text).map_err(|e| raise("Psych::SyntaxError", e.to_string()))?;
     match DocumentationGenerator::generate(&definition, format) {
         Ok(docs) => Ok(Ok(docs)),
         Err(e) if e.kind == DocumentationErrorKind::Argument => Ok(Err(e.message)),
@@ -1755,7 +1757,7 @@ impl DefinitionDocument for ToolDocument {
             }
             _ => DocumentParseError::Other(e.message),
         })?;
-        let text = |t: &Option<ukiryu::models::value::Text>| t.as_ref().map(|t| t.to_ruby_s());
+        let text = |t: &Option<crate::models::value::Text>| t.as_ref().map(|t| t.to_ruby_s());
         Ok(ToolDocument {
             name: text(&inner.name),
             version: text(&inner.version),
@@ -1785,10 +1787,10 @@ impl DefinitionDocument for ToolDocument {
         self.self_uri.as_deref()
     }
 
-    fn resolve_inheritance(&mut self) -> ukiryu::definition::Result<()> {
+    fn resolve_inheritance(&mut self) -> crate::definition::Result<()> {
         self.inner.resolve_inheritance().map(|_| ()).map_err(|e| {
-            ukiryu::definition::DefinitionError::new(
-                ukiryu::definition::DefinitionErrorKind::Load,
+            crate::definition::DefinitionError::new(
+                crate::definition::DefinitionErrorKind::Load,
                 e.message,
             )
         })
@@ -2705,13 +2707,23 @@ fn run_describe(
             tools.join(", ")
         ));
     };
+    describe_loaded(input, off, &tool, out, |tool| session.version(tool))
+}
+
+fn describe_loaded(
+    input: &DescribeInput,
+    off: bool,
+    tool: &Tool,
+    out: &mut Out,
+    mut version: impl FnMut(&Tool) -> Step<Option<String>>,
+) -> Step<i32> {
     let Some(commands) = tool.command_profile().commands.as_deref() else {
         return out.thor_error(&format!("No commands defined for {}", input.tool));
     };
     let commands: Vec<&CommandDefinition> = commands.iter().flatten().collect();
     match input.command.as_deref() {
-        Some("help") => tool_summary(out, off, &session, &tool, &commands, true)?,
-        None => tool_summary(out, off, &session, &tool, &commands, false)?,
+        Some("help") => tool_summary(out, off, &mut version, tool, &commands, true)?,
+        None => tool_summary(out, off, &mut version, tool, &commands, false)?,
         Some(name) => {
             let mut found = None;
             for c in &commands {
@@ -2744,7 +2756,7 @@ fn run_describe(
                     names.join(", ")
                 ));
             };
-            describe_command(out, off, &tool, &input.tool, name, cmd)?;
+            describe_command(out, off, tool, &input.tool, name, cmd)?;
         }
     }
     Ok(0)
@@ -2761,7 +2773,7 @@ fn texts_joined(list: &[Text], separator: &str) -> String {
         .join(separator)
 }
 
-fn ints_joined(list: &[Option<ukiryu::models::Attr<i64>>], separator: &str) -> String {
+fn ints_joined(list: &[Option<crate::models::Attr<i64>>], separator: &str) -> String {
     list.iter()
         .map(|i| i.as_ref().map(|v| v.to_string()).unwrap_or_default())
         .collect::<Vec<_>>()
@@ -2769,7 +2781,7 @@ fn ints_joined(list: &[Option<ukiryu::models::Attr<i64>>], separator: &str) -> S
 }
 
 /// `Array#inspect` of an integer list (`nil` for a missing element).
-fn ints_inspect(list: &[Option<ukiryu::models::Attr<i64>>]) -> String {
+fn ints_inspect(list: &[Option<crate::models::Attr<i64>>]) -> String {
     let items: Vec<String> = list
         .iter()
         .map(|i| {
@@ -2794,7 +2806,7 @@ fn non_empty<T>(list: &Option<Vec<T>>) -> Option<&Vec<T>> {
 fn tool_summary(
     out: &mut Out,
     off: bool,
-    session: &Tools<'_>,
+    version: &mut impl FnMut(&Tool) -> Step<Option<String>>,
     tool: &Tool,
     commands: &[&CommandDefinition],
     help: bool,
@@ -2842,9 +2854,7 @@ fn tool_summary(
         Some(exe) => {
             say_c(out, off, "Status: INSTALLED", GREEN);
             say_c(out, off, &format!("Executable: {exe}"), WHITE);
-            let version = session
-                .version(tool)?
-                .unwrap_or_else(|| "unknown".to_owned());
+            let version = version(tool)?.unwrap_or_else(|| "unknown".to_owned());
             say_c(out, off, &format!("Detected Version: {version}"), WHITE);
         }
         None => say_c(out, off, "Status: NOT FOUND", RED),
@@ -3357,4 +3367,39 @@ fn code_lines(out: &mut Out, off: bool, codes: &Value) -> Step {
         );
     }
     Ok(())
+}
+
+/// Describe using a caller-loaded tool and explicit version fact.
+pub(crate) fn describe_snapshot(
+    input: DescribeInput,
+    ctx: &AuthorContext,
+    tool: &Tool,
+    version: Option<String>,
+) -> Result<CommandOutcome, AuthorError> {
+    let mut out = Out::new(ctx);
+    let result = describe_loaded(&input, ctx.config_colors_disabled, tool, &mut out, |_| {
+        Ok(version.clone())
+    });
+    out.finish(result)
+}
+
+/// Validate supplied text and render through the same CLI output formatter.
+pub(crate) fn validate_snapshot(
+    path: &str,
+    yaml: &str,
+    schema: Option<(&str, crate::schema::DefinitionSchemaFormat)>,
+    format: &str,
+    strict: bool,
+    ctx: &AuthorContext,
+) -> Result<CommandOutcome, AuthorError> {
+    let mut out = Out::new(ctx);
+    let result = (|| {
+        check_enum(&mut out, "format", format, &["text", "json"])?;
+        let result = definition_validator::validate_string_readonly_report(yaml, schema)
+            .map_err(schema_stop)?
+            .result;
+        output_validation(&mut out, &result, path, format)?;
+        Ok(validation_exit(&result, strict))
+    })();
+    out.finish(result)
 }

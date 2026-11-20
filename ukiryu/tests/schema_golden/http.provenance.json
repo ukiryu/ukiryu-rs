@@ -1,0 +1,33 @@
+{
+  "generator_revision": "fa428554cf07e4caeb233ae89809b31d7771be18",
+  "generator": "ukiryu/tests/schema_golden/capture_http.rb",
+  "generator_sha256": "543fb43494379d5bf19e6a3302d4dac10507dbfab0d4133f68bd6c4757b0af47",
+  "oracle": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+  "oracle_state": "clean",
+  "oracle_lock_sha256": "388dbb063683f15b9976f1fb3cc4d62ca2390ed6333ab69270d71eab98e988f9",
+  "ruby": "4.0.1",
+  "json-schema": "6.2.1",
+  "payload": "http.json",
+  "payload_sha256": "341f83901f432d7041a9d969bbfd24ad693e5d83ba1f392ada231b8d4bfe8edc",
+  "cases": 57,
+  "requests": 47,
+  "canonicalization": [
+    "BASE",
+    "DEAD",
+    "DEAD_AUTH",
+    "DEAD_PORT"
+  ],
+  "verification": {
+    "perturbations": [
+      "time",
+      "process",
+      "TZ",
+      "locale",
+      "PWD",
+      "ephemeral ports"
+    ],
+    "identical": true,
+    "rows": 57,
+    "sha256": "341f83901f432d7041a9d969bbfd24ad693e5d83ba1f392ada231b8d4bfe8edc"
+  }
+}

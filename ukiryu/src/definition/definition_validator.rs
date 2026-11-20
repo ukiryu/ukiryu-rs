@@ -19,12 +19,11 @@
 //! 4. The result: valid when there are no errors, with the warnings of both
 //!    stages.
 //!
-//! What this port does not do, and says so explicitly:
+//! Resource loading and remaining limits:
 //!
-//! - The remote schema fallback (`download_and_load_schema` of
-//!   [`REMOTE_SCHEMA_URL`]) is not performed. When Ruby would download, the
-//!   report says [`SchemaStage::RemoteFallbackNotPerformed`] and no schema
-//!   stage runs, which is what Ruby does when that download fails.
+//! - Native validation performs the original remote schema fallback when no
+//!   local schema loads. Hosts can select an unavailable response for tests
+//!   or offline use; WASM requires a host-supplied schema.
 //! - Schema dialects and features the schema engine does not reproduce
 //!   surface as [`SchemaError::Unsupported`]; they are not skipped.
 //! - `schema_validation_available?` is always true here (json-schema is
@@ -39,23 +38,41 @@ use crate::schema::{self, Data, DefinitionSchemaFormat, Permitted, SchemaError};
 pub const DEFAULT_SCHEMA_VERSION: &str = "1.0";
 
 /// `DefinitionValidator::REMOTE_SCHEMA_URL`: the schema Ruby downloads when
-/// no local schema is found. Never fetched by this port.
+/// no local schema is found.
 pub const REMOTE_SCHEMA_URL: &str =
     "https://raw.githubusercontent.com/ukiryu/schemas/refs/heads/main/v1/tool.schema.yaml";
+
+/// Resource loading supplied by a host. The default follows Ruby's remote
+/// fallback. Tests can use a local URL or an unavailable response without
+/// consulting the real internet.
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub enum RemoteSchemaSource {
+    #[default]
+    DefaultUrl,
+    /// Override the source URL (e.g. a loopback fixture server).
+    Url(String),
+    /// Host reports the remote resource unavailable (e.g. a frozen offline replay).
+    Unavailable,
+}
 
 /// Process state `DefinitionValidator` reads, chosen by the caller.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct ValidatorEnv {
     /// `ENV['UKIRYU_SCHEMA_PATH']` (`find_schema`).
     pub schema_path: Option<String>,
+    pub remote_schema: RemoteSchemaSource,
 }
 
 impl ValidatorEnv {
-    /// Reads `UKIRYU_SCHEMA_PATH` from the process environment.
+    /// Reads `UKIRYU_SCHEMA_PATH` and the optional host transport override
+    /// `UKIRYU_REMOTE_SCHEMA_URL` from the process environment.
     pub fn from_process() -> Self {
         ValidatorEnv {
             schema_path: std::env::var_os(schema::SCHEMA_PATH_ENV)
                 .map(|v| v.to_string_lossy().into_owned()),
+            remote_schema: std::env::var("UKIRYU_REMOTE_SCHEMA_URL")
+                .map(RemoteSchemaSource::Url)
+                .unwrap_or_default(),
         }
     }
 }
@@ -79,10 +96,11 @@ pub enum SchemaStage {
     /// No `schema_path:`; `find_schema` returned `UKIRYU_SCHEMA_PATH` and it
     /// loaded.
     Env { path: String },
-    /// No `schema_path:` and no loadable `UKIRYU_SCHEMA_PATH`: Ruby calls
-    /// `download_and_load_schema` ([`REMOTE_SCHEMA_URL`]). Not performed by
-    /// this port; the stage is skipped, as in Ruby when the download fails.
+    /// A host supplied an unavailable response; no request was performed.
     RemoteFallbackNotPerformed,
+    /// The native remote fallback was attempted. Only a truthy downloaded
+    /// document runs the schema stage (404/invalid YAML/nil/false skip it).
+    RemoteFallback { loaded: bool },
     /// The schema was supplied by the caller as text (no file is read and
     /// `UKIRYU_SCHEMA_PATH` is not consulted), and it loaded.
     Supplied,
@@ -97,7 +115,10 @@ impl SchemaStage {
     pub fn ran(&self) -> bool {
         matches!(
             self,
-            SchemaStage::Given { .. } | SchemaStage::Env { .. } | SchemaStage::Supplied
+            SchemaStage::Given { .. }
+                | SchemaStage::Env { .. }
+                | SchemaStage::Supplied
+                | SchemaStage::RemoteFallback { loaded: true }
         )
     }
 }
@@ -268,7 +289,31 @@ fn resolve_schema(
             return Ok((SchemaStage::Env { path }, Some(schema)));
         }
     }
-    Ok((SchemaStage::RemoteFallbackNotPerformed, None))
+    let schema = match &env.remote_schema {
+        RemoteSchemaSource::Unavailable => {
+            return Ok((SchemaStage::RemoteFallbackNotPerformed, None));
+        }
+        RemoteSchemaSource::DefaultUrl => download_and_load_schema(REMOTE_SCHEMA_URL)?,
+        RemoteSchemaSource::Url(url) => download_and_load_schema(url)?,
+    }
+    .filter(Data::truthy);
+    Ok((
+        SchemaStage::RemoteFallback {
+            loaded: schema.is_some(),
+        },
+        schema,
+    ))
+}
+
+/// Ruby `download_and_load_schema`: HTTP/DNS failure and YAML syntax errors
+/// return nil. Other errors (including connection refusal) still propagate.
+pub fn download_and_load_schema(url: &str) -> Result<Option<Data>, SchemaError> {
+    let text = match schema::transport::read(url) {
+        Ok(text) => text,
+        Err(SchemaError::ReadFailed { .. }) => return Ok(None),
+        Err(error) => return Err(error),
+    };
+    schema::load_definition_schema_text(&text, DefinitionSchemaFormat::Yaml)
 }
 
 fn assemble(errors: Vec<String>, warnings: Vec<String>) -> ValidationResult {
@@ -323,10 +368,18 @@ fn report_with(
     definition: &Data,
     resolve: impl FnOnce() -> Result<(SchemaStage, Option<Data>), SchemaError>,
 ) -> Result<ValidationReport, SchemaError> {
+    report_with_validator(definition, resolve, validate_against_schema)
+}
+
+fn report_with_validator(
+    definition: &Data,
+    resolve: impl FnOnce() -> Result<(SchemaStage, Option<Data>), SchemaError>,
+    validate_schema: impl FnOnce(&Data, &Data) -> Result<StageIssues, SchemaError>,
+) -> Result<ValidationReport, SchemaError> {
     let structure = validate_structure(definition)?;
     let (stage, schema) = resolve()?;
     let schema_issues = match &schema {
-        Some(schema) => Some(validate_against_schema(definition, schema)?),
+        Some(schema) => Some(validate_schema(definition, schema)?),
         None => None,
     };
     let mut errors = structure.errors.clone();
@@ -453,4 +506,26 @@ pub fn validate_file(
     env: &ValidatorEnv,
 ) -> Result<ValidationResult, SchemaError> {
     validate_file_report(path, schema_path, env).map(|r| r.result)
+}
+
+/// CLI snapshot validation: supplied texts only, no filesystem/network fallbacks.
+pub fn validate_string_readonly_report(
+    yaml: &str,
+    schema: Option<(&str, DefinitionSchemaFormat)>,
+) -> Result<ValidationReport, SchemaError> {
+    match schema::safe_load(yaml, Permitted::DOCUMENT) {
+        Ok(definition) => report_with_validator(
+            &definition,
+            || resolve_supplied(schema),
+            |definition, schema| {
+                let report = schema::definition_schema_report_readonly(definition, schema)?;
+                Ok(StageIssues {
+                    errors: report.errors,
+                    warnings: report.warnings,
+                })
+            },
+        ),
+        Err(SchemaError::YamlSyntax { message }) => Ok(invalid_yaml(message)),
+        Err(error) => Err(error),
+    }
 }
