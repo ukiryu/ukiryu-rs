@@ -21,6 +21,7 @@ wasm = ["dep:wasm-bindgen"]
 ruby = ["dep:magnus"]
 
 [dependencies]
+clap = { version = "=4.5.32", default-features = false, features = ["std", "help", "usage", "error-context"] }
 serde.workspace = true
 serde_json.workspace = true
 num-bigint.workspace = true

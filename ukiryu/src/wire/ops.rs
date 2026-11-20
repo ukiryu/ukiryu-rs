@@ -255,6 +255,9 @@ pub fn build(request: BuildRequest) -> Json {
 #[derive(Debug, Deserialize)]
 #[serde(tag = "method", rename_all = "snake_case", deny_unknown_fields)]
 pub enum ResolveRequest {
+    ShellClass {
+        name: Typed,
+    },
     /// Strict D2 shell detection over an explicit platform and complete
     /// environment snapshot. Null values are unset; nothing is inherited.
     ShellDetect {
@@ -518,8 +521,33 @@ fn shell_detect(platform: &str, vars: &serde_json::Map<String, Json>) -> Result<
     )
 }
 
+fn shell_class(name: &Value) -> Result<Json, Json> {
+    use crate::cache::shell_instances::{builtin_shell, UnknownShellError};
+    let spelling = name.to_ruby_s();
+    let shell = if matches!(name, Value::Symbol(_)) {
+        builtin_shell(&spelling).ok()
+    } else {
+        None
+    };
+    let Some(shell) = shell else {
+        return Err(ruby(
+            UnknownShellError::RUBY_CLASS,
+            format!("Unknown shell: {spelling}"),
+        ));
+    };
+    let class = match shell.name() {
+        "powershell" => "PowerShell".to_owned(),
+        other => {
+            let mut c = other.chars();
+            format!("{}{}", c.next().unwrap().to_uppercase(), c.as_str())
+        }
+    };
+    Ok(json!(format!("Ukiryu::Shell::{class}")))
+}
+
 pub fn resolve(request: ResolveRequest) -> Json {
     let result = match request {
+        ResolveRequest::ShellClass { name: Typed(name) } => shell_class(&name),
         ResolveRequest::ShellDetect { platform, env } => shell_detect(&platform, &env),
         ResolveRequest::ExtractVersion { output, pattern } => {
             extract_version(output, pattern.as_deref())

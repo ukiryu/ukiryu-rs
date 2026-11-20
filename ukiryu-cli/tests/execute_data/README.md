@@ -5,6 +5,18 @@
 using Ruby 4.0.1. The adjacent `execute.rs` runner pins all 104 rows and
 requires an outcome for every row. No anonymous-setter errors are refused.
 
+The compiled binary also replays the 12 `pty` rows through a real Linux
+pseudo-terminal, including ANSI colors, `NO_COLOR`, `TERM=dumb` and the
+oracle's cache-info `NameError`. Both streams share the terminal as in the
+capture. Only the terminal's LF-to-CRLF translation is disabled; output bytes,
+process status and fixture file contents are checked without masks. The check
+rejects changed output and changed status as negative controls:
+
+```sh
+python3 scripts/check-cli-terminal.py --binary target/debug/ukiryu
+cargo test --locked -p ukiryu-cli --test cli_binary terminal_execute_captures
+```
+
 ## Comparison canonicalization (#22, #23)
 
 The four rows `exec_register_unknown_param`, `runfile_execute`,

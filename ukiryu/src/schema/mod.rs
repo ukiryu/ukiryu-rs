@@ -77,7 +77,8 @@ pub enum SchemaError {
     IpAddress { prefix: bool, message: String },
     /// `Errno::*` while reading a schema file.
     Io { errno: String, message: String },
-    /// A measured Ruby exception from schema preparation or validation.
+    /// A measured Ruby exception from scalar conversion, tag revival,
+    /// schema preparation or validation.
     Ruby { class: String, message: String },
     /// Behaviour of the original that this port does not reproduce.
     Unsupported { feature: String, detail: String },
@@ -410,4 +411,28 @@ fn run(schema: &Data, data: &Data, strict: bool) -> Result<Vec<engine::VErr>, Sc
     };
     let data = stringify(data)?;
     engine::fully_validate(&stringified, &uuid, || initialize_data(&data), strict)
+}
+
+/// Validate supplied schema/data with no implicit resource reads or path probes.
+pub fn definition_schema_report_readonly(
+    definition: &Data,
+    schema: &Data,
+) -> Result<DefinitionSchemaReport, SchemaError> {
+    if !matches!(schema, Data::Hash(_)) {
+        return Err(SchemaError::unsupported(
+            "snapshot schema",
+            "schema must be a supplied mapping",
+        ));
+    }
+    let uuid = digest::uuid_v5_nil(&json::dump(schema)?);
+    let schema = stringify(schema)?;
+    let data = stringify(definition)?;
+    // Definition text is already parsed: never apply JSON::Validator's path/URL shortcut.
+    Ok(DefinitionSchemaReport {
+        errors: engine::fully_validate_readonly(&schema, &uuid, || Ok(data), false)?
+            .iter()
+            .map(|e| e.definition_line())
+            .collect(),
+        warnings: Vec::new(),
+    })
 }

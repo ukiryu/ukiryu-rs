@@ -25,6 +25,7 @@
 //!
 //! Register directories and process execution exist only in native builds:
 //! [`native`] is not compiled for WebAssembly.
+pub mod cache;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod definition;
 pub mod document;
@@ -44,9 +45,12 @@ use serde_json::{json, Value};
 #[serde(tag = "op", rename_all = "snake_case", deny_unknown_fields)]
 enum Request {
     Version,
+    #[serde(rename = "cli.run")]
+    CliRun(Box<crate::cli::snapshot::Request>),
     #[cfg(not(target_arch = "wasm32"))]
     Definition(definition::DefinitionRequest),
     Escape(portable::EscapeRequest),
+    Cache(cache::CacheRequest),
     Resolve(Box<ops::ResolveRequest>),
     Build(Box<ops::BuildRequest>),
     Validate(ops::ValidateRequest),
@@ -83,7 +87,9 @@ pub fn process(input: &[u8]) -> Value {
         Err(error) => return failure("INVALID_REQUEST", error),
     };
     match request {
+        Request::CliRun(request) => crate::cli::snapshot::process(*request),
         Request::Escape(request) => portable::escape(request),
+        Request::Cache(request) => cache::process(request),
         Request::Resolve(request) => ops::resolve(*request),
         Request::Build(request) => ops::build(*request),
         Request::Validate(request) => ops::validate(request),

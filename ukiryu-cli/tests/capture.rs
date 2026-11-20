@@ -115,3 +115,46 @@ fn captures_parse_errors_and_changed_input_without_leaking_output() {
         }
     }
 }
+
+/// Merge coverage: author commands must use the capture request's register,
+/// while retaining the unmodified Ruby author output.
+#[cfg(target_os = "linux")]
+#[test]
+fn author_commands_use_the_captured_register() {
+    let data = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/author_data");
+    let root = std::fs::canonicalize(data.join("tree")).unwrap();
+    let env = json!({
+        "HOME": root.join("home"),
+        "XDG_DATA_HOME": root.join("xdg"),
+        "XDG_DATA_DIRS": root.join("sysdata"),
+        "PATH": "/usr/bin:/bin", "SHELL": "/bin/bash", "TERM": "dumb",
+        "TZ": "UTC", "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8"
+    });
+    for (file, id, register) in [
+        ("cases.json", "validate_all_text", "register"),
+        ("tools_cases.json", "describe_unknown_tool", "regx"),
+    ] {
+        let rows: Value = serde_json::from_slice(&std::fs::read(data.join(file)).unwrap()).unwrap();
+        let case = rows["cases"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|row| row["id"] == id)
+            .unwrap();
+        let mut env = env.clone();
+        env["UKIRYU_REGISTER"] = json!(root.join(register));
+        let reply = process(
+            &serde_json::to_vec(&json!({
+                "argv": case["args"], "platform": "linux", "env": env
+            }))
+            .unwrap(),
+        );
+        assert_eq!(reply["ok"], true, "{id}: {reply}");
+        for field in ["stdout", "stderr", "exit"] {
+            assert_eq!(
+                reply["value"][field], case["expect"][field],
+                "{id}: {field}"
+            );
+        }
+    }
+}

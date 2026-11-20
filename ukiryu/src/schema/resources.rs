@@ -149,6 +149,14 @@ fn read_extension(reference: &str) -> Result<Data, SchemaError> {
 }
 
 pub(super) fn load(root: &Data, base: &str) -> Result<Vec<(String, Data)>, SchemaError> {
+    load_with(root, base, read)
+}
+
+pub(super) fn load_with(
+    root: &Data,
+    base: &str,
+    read: impl Fn(&str) -> Result<Data, SchemaError>,
+) -> Result<Vec<(String, Data)>, SchemaError> {
     let mut documents: Vec<(String, Data)> = Vec::new();
     loop {
         let mut ids = HashSet::new();

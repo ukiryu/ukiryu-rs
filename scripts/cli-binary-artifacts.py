@@ -118,7 +118,11 @@ def stage(directory, target):
         (payload / 'BUILT_FROM').write_text(json.dumps(marker, indent=2) + '\n', encoding='utf-8')
         if target.endswith('msvc'):
             archive = directory / f'{payload.name}.zip'
-            with zipfile.ZipFile(archive, 'w', compression=zipfile.ZIP_DEFLATED) as handle:
+            # Registry license files can retain pre-1980 mtimes (for example
+            # untrusted's LICENSE.txt). ZIP cannot encode those dates; clamp
+            # archive metadata while preserving the licensed bytes.
+            with zipfile.ZipFile(archive, 'w', compression=zipfile.ZIP_DEFLATED,
+                                 strict_timestamps=False) as handle:
                 for path in sorted(payload.rglob('*')):
                     if path.is_file():
                         handle.write(path, f'{payload.name}/{path.relative_to(payload).as_posix()}')

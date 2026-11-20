@@ -76,6 +76,50 @@ impl<K: PartialEq + Clone, V: Clone> Cache<K, V> {
         self.ttl
     }
 
+    /// Transport state for bindings that retain language-owned values. The
+    /// value can be an opaque object ID; the core still owns all cache policy.
+    pub(crate) fn snapshot(&self) -> Vec<(K, V, f64, f64)> {
+        self.lock()
+            .iter()
+            .map(|(key, entry)| {
+                (
+                    key.clone(),
+                    entry.value.clone(),
+                    entry.created_at,
+                    entry.accessed_at,
+                )
+            })
+            .collect()
+    }
+
+    pub(crate) fn restore(
+        max_size: usize,
+        ttl: Option<f64>,
+        clock: Arc<dyn Clock>,
+        entries: Vec<(K, V, f64, f64)>,
+    ) -> Self {
+        Self {
+            max_size,
+            ttl,
+            clock,
+            data: Mutex::new(
+                entries
+                    .into_iter()
+                    .map(|(key, value, created_at, accessed_at)| {
+                        (
+                            key,
+                            Entry {
+                                value,
+                                created_at,
+                                accessed_at,
+                            },
+                        )
+                    })
+                    .collect(),
+            ),
+        }
+    }
+
     fn lock(&self) -> std::sync::MutexGuard<'_, Vec<(K, Entry<V>)>> {
         self.data.lock().unwrap_or_else(|e| e.into_inner())
     }

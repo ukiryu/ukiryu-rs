@@ -13,9 +13,9 @@
 //!
 //! `--verbose` is accepted and unused, as in the source.
 use super::{ExecuteContext, ExecuteError};
-use crate::commands::CommandOutcome;
-use ukiryu::definition::cache::{CachedDefinition, DefinitionCache};
-use ukiryu::render::OutputWrite;
+use crate::cli::commands::CommandOutcome;
+use crate::definition::cache::{CachedDefinition, DefinitionCache};
+use crate::render::OutputWrite;
 
 /// The cache action.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

@@ -1,0 +1,772 @@
+{
+  "fixed_mtime_unix": 1767323045,
+  "cases": [
+    {
+      "id": "describe_overview_cat",
+      "args": [
+        "describe",
+        "cat"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "describe_overview_rich",
+      "args": [
+        "describe",
+        "rich"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "describe_help_rich",
+      "args": [
+        "describe",
+        "rich",
+        "help"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "describe_help_cat",
+      "args": [
+        "describe",
+        "cat",
+        "help"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "describe_command_cat",
+      "args": [
+        "describe",
+        "cat",
+        "concatenate"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "describe_command_rich_convert",
+      "args": [
+        "describe",
+        "rich",
+        "convert"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "describe_command_rich_plain",
+      "args": [
+        "describe",
+        "rich",
+        "plain"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "describe_command_rich_nodesc",
+      "args": [
+        "describe",
+        "rich",
+        "nodesc"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "describe_command_rich_codes_symbol_keys",
+      "args": [
+        "describe",
+        "rich",
+        "codes"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "describe_command_rich_envy_env_var",
+      "args": [
+        "describe",
+        "rich",
+        "envy"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "describe_command_missing",
+      "args": [
+        "describe",
+        "rich",
+        "nope"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "describe_command_missing_pty",
+      "args": [
+        "describe",
+        "rich",
+        "nope"
+      ],
+      "env": {},
+      "pty": true,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "describe_not_installed",
+      "args": [
+        "describe",
+        "ghost"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "describe_no_color",
+      "args": [
+        "describe",
+        "rich",
+        "convert"
+      ],
+      "env": {
+        "NO_COLOR": "1"
+      },
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "describe_help_no_color",
+      "args": [
+        "describe",
+        "rich",
+        "help"
+      ],
+      "env": {
+        "NO_COLOR": "1"
+      },
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "describe_register_option",
+      "args": [
+        "describe",
+        "rich",
+        "-r",
+        "{root}/regx"
+      ],
+      "env": {
+        "UKIRYU_REGISTER": "{root}/register"
+      },
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "describe_register_long_option",
+      "args": [
+        "describe",
+        "rich",
+        "--register",
+        "{root}/regx"
+      ],
+      "env": {
+        "UKIRYU_REGISTER": "{root}/register"
+      },
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "describe_register_missing_dir",
+      "args": [
+        "describe",
+        "rich",
+        "--register",
+        "{root}/nowhere"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "describe_format_ignored",
+      "args": [
+        "describe",
+        "rich",
+        "plain",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "describe_unknown_tool",
+      "args": [
+        "describe",
+        "nothere"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "describe_unknown_tool_default_register_fixture",
+      "args": [
+        "describe",
+        "convert"
+      ],
+      "env": {
+        "UKIRYU_REGISTER": "{root}/register"
+      },
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "describe_interface_name",
+      "args": [
+        "describe",
+        "richy"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "validate_exec_cat_smoke",
+      "args": [
+        "validate",
+        "file",
+        "smoke/cat.yaml",
+        "--executable"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "validate_exec_cat_smoke_verbose",
+      "args": [
+        "validate",
+        "file",
+        "smoke/cat.yaml",
+        "--executable",
+        "--verbose"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "validate_exec_cat_smoke_strict",
+      "args": [
+        "validate",
+        "file",
+        "smoke/cat.yaml",
+        "--executable",
+        "--strict"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "validate_all_flag_cat_smoke",
+      "args": [
+        "validate",
+        "file",
+        "smoke/cat.yaml",
+        "--all"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "validate_exec_cat_smoke_json",
+      "args": [
+        "validate",
+        "file",
+        "smoke/cat.yaml",
+        "--executable",
+        "--format",
+        "json"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "validate_exec_cat_fallback",
+      "args": [
+        "validate",
+        "file",
+        "fall/cat.yaml",
+        "--executable"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "validate_exec_rich_no_timeout",
+      "args": [
+        "validate",
+        "file",
+        "smoke/rich.yaml",
+        "--executable",
+        "--verbose"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "validate_exec_rich_no_timeout_strict",
+      "args": [
+        "validate",
+        "file",
+        "smoke/rich.yaml",
+        "--executable",
+        "--strict"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "validate_exec_ghost_not_installed",
+      "args": [
+        "validate",
+        "file",
+        "fall/ghost.yaml",
+        "--executable"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "validate_exec_orphan_not_in_register",
+      "args": [
+        "validate",
+        "file",
+        "fall/orphan.yaml",
+        "--executable"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "validate_exec_badver",
+      "args": [
+        "validate",
+        "file",
+        "fall/badver.yaml",
+        "--executable"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "validate_exec_nover",
+      "args": [
+        "validate",
+        "file",
+        "fall/nover.yaml",
+        "--executable"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "validate_exec_tools_dir_path",
+      "args": [
+        "validate",
+        "file",
+        "regx/tools/rich/rich.yaml",
+        "--executable"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "validate_exec_invalid_file_skips_executable",
+      "args": [
+        "validate",
+        "file",
+        "defs/bad_name.yaml",
+        "--executable"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "validate_exec_register_option_missing",
+      "args": [
+        "validate",
+        "file",
+        "smoke/cat.yaml",
+        "--executable",
+        "--register",
+        "nowhere"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "validate_exec_register_option_valid",
+      "args": [
+        "validate",
+        "file",
+        "smoke/cat.yaml",
+        "--executable",
+        "--register",
+        "{root}/regx"
+      ],
+      "env": {
+        "UKIRYU_REGISTER": "{root}/register"
+      },
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "validate_exec_string_ignores_flag",
+      "args": [
+        "validate",
+        "string",
+        "name: x",
+        "--executable"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "validate_exec_warnings_strict",
+      "args": [
+        "validate",
+        "file",
+        "defs/warnings.yaml",
+        "--executable",
+        "--strict"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "validate_exec_cat_pty",
+      "args": [
+        "validate",
+        "file",
+        "smoke/cat.yaml",
+        "--executable"
+      ],
+      "env": {},
+      "pty": true,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "validate_exec_ghost_pty",
+      "args": [
+        "validate",
+        "file",
+        "fall/ghost.yaml",
+        "--executable"
+      ],
+      "env": {},
+      "pty": true,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "validate_exec_ghost_pty_strict",
+      "args": [
+        "validate",
+        "file",
+        "fall/ghost.yaml",
+        "--executable",
+        "--strict"
+      ],
+      "env": {},
+      "pty": true,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "validate_exec_cat_verbose_pty",
+      "args": [
+        "validate",
+        "file",
+        "smoke/cat.yaml",
+        "--executable",
+        "--verbose"
+      ],
+      "env": {},
+      "pty": true,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "validate_all_executable",
+      "args": [
+        "validate",
+        "all",
+        "--executable"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "validate_all_all_flag",
+      "args": [
+        "validate",
+        "all",
+        "--all"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "validate_all_executable_strict",
+      "args": [
+        "validate",
+        "all",
+        "--executable",
+        "--strict"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "validate_all_executable_pty",
+      "args": [
+        "validate",
+        "all",
+        "--executable"
+      ],
+      "env": {},
+      "pty": true,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "validate_all_executable_lint_register",
+      "args": [
+        "validate",
+        "all",
+        "--executable"
+      ],
+      "env": {
+        "UKIRYU_REGISTER": "{root}/register"
+      },
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "validate_all_executable_register_option",
+      "args": [
+        "validate",
+        "all",
+        "--executable",
+        "--register",
+        "{root}/register"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    },
+    {
+      "id": "validate_all_executable_missing_register_dir",
+      "args": [
+        "validate",
+        "all",
+        "--executable",
+        "--register",
+        "{root}/nowhere"
+      ],
+      "env": {},
+      "pty": false,
+      "mode": "exact",
+      "runner": "exe",
+      "stdin": null,
+      "suite": "tools"
+    }
+  ]
+}

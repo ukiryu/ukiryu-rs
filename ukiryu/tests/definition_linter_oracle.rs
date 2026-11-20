@@ -11,8 +11,9 @@
 //! - YAML syntax errors: the text after `Invalid YAML: ` is the YAML
 //!   engine's message, not libyaml's, so only the prefix, the class and the
 //!   result shape are compared.
-//! - `<<` merge keys are not reproduced by the YAML loader and report
-//!   `LintError::Unsupported`.
+//!
+//! YAML merge keys use the captured outcomes too: aliases raise
+//! `Psych::AliasesNotEnabled`, while inline mappings are merged before linting.
 use serde_json::Value;
 use std::path::PathBuf;
 use ukiryu::definition::linter::{
@@ -24,9 +25,6 @@ const FIXTURE: &str = include_str!("../src/definition/linter/fixtures/oracle.jso
 
 /// Cases whose YAML the Ruby loader rejects with `Psych::SyntaxError`.
 const SYNTAX_CASES: &[&str] = &["spec_invalid_yaml_indent", "spec_invalid_yaml_colon"];
-
-/// Cases this port reports as unsupported (YAML `<<` merge keys).
-const UNSUPPORTED_CASES: &[&str] = &["yaml_merge_key_alias", "yaml_merge_key_inline"];
 
 fn fixture() -> Value {
     serde_json::from_str(FIXTURE).expect("fixture parses")
@@ -151,7 +149,7 @@ fn oracle_cases_lint_lint_string_lint_file_and_cli_exit() {
     let outcomes = fx["outcomes"].as_array().unwrap();
     let cases = fx["cases"].as_array().unwrap();
     let dir = tmp_dir("cases");
-    let (mut compared, mut unsupported, mut cli) = (0usize, 0usize, 0usize);
+    let (mut compared, mut cli) = (0usize, 0usize);
 
     for (i, case) in cases.iter().enumerate() {
         let id = case["id"].as_str().unwrap();
@@ -166,17 +164,6 @@ fn oracle_cases_lint_lint_string_lint_file_and_cli_exit() {
         let lint = safe_load_definition(yaml, true).and_then(|d| DefinitionLinter::lint(&d, rules));
         let lint_string = DefinitionLinter::lint_string(yaml, rules);
         let lint_file = DefinitionLinter::lint_file(&path, rules);
-
-        if UNSUPPORTED_CASES.contains(&id) {
-            for got in [&lint, &lint_string, &lint_file] {
-                assert!(
-                    matches!(got, Err(LintError::Unsupported { .. })),
-                    "{id}: expected unsupported, got {got:?}"
-                );
-            }
-            unsupported += 1;
-            continue;
-        }
 
         let o = |api: &str| &outcomes[case[api].as_u64().unwrap() as usize];
         check(&format!("{id} lint"), o("lint"), &lint, None, syntax);
@@ -228,10 +215,10 @@ fn oracle_cases_lint_lint_string_lint_file_and_cli_exit() {
     }
     let _ = std::fs::remove_dir_all(&dir);
     eprintln!(
-        "cases={} compared_outcomes={compared} unsupported_cases={unsupported} cli_exits={cli}",
+        "cases={} compared_outcomes={compared} cli_exits={cli}",
         cases.len()
     );
-    assert_eq!(compared + unsupported * 3, cases.len() * 3);
+    assert_eq!(compared, cases.len() * 3);
     assert!(compared >= 450, "compared {compared}");
 }
 
