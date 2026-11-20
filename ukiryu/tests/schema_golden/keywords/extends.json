@@ -1,0 +1,147 @@
+{
+  "reference": {
+    "revision": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+    "ruby": "4.0.1",
+    "json-schema": "6.2.1",
+    "addressable": "2.9.2",
+    "generator_sha256": "e565985b01b15b969a7df988bfd7f60ad682f4dcae1e647b37b5a8dd9b77e4e7"
+  },
+  "cases": [
+    {
+      "scheme": "urn",
+      "contents": null,
+      "expect": {
+        "error": {
+          "class": "Errno::ENOENT",
+          "message": "No such file or directory @ rb_sysopen - ${RESOURCE}"
+        }
+      }
+    },
+    {
+      "scheme": "urn",
+      "contents": "{\"type\":\"integer\"}",
+      "expect": {
+        "ok": [
+          "The property '#/' was not a valid schema in schema urn:root"
+        ]
+      }
+    },
+    {
+      "scheme": "urn",
+      "contents": "{}",
+      "expect": {
+        "ok": [
+          "The property '#/' was not a valid schema in schema urn:root"
+        ]
+      }
+    },
+    {
+      "scheme": "urn",
+      "contents": "false",
+      "expect": {
+        "error": {
+          "class": "NoMethodError",
+          "message": "undefined method '[]' for false"
+        }
+      }
+    },
+    {
+      "scheme": "urn",
+      "contents": "[]",
+      "expect": {
+        "error": {
+          "class": "TypeError",
+          "message": "no implicit conversion of String into Integer"
+        }
+      }
+    },
+    {
+      "scheme": "urn",
+      "contents": "1",
+      "expect": {
+        "error": {
+          "class": "TypeError",
+          "message": "no implicit conversion of String into Integer"
+        }
+      }
+    },
+    {
+      "scheme": "urn",
+      "contents": "invalid",
+      "expect": {
+        "error": {
+          "class": "JSON::Schema::JsonParseError",
+          "message": "unexpected character: 'invalid' at line 1 column 1"
+        }
+      }
+    },
+    {
+      "scheme": "custom",
+      "contents": null,
+      "expect": {
+        "error": {
+          "class": "Errno::ENOENT",
+          "message": "No such file or directory @ rb_sysopen - ${RESOURCE}"
+        }
+      }
+    },
+    {
+      "scheme": "custom",
+      "contents": "{\"type\":\"integer\"}",
+      "expect": {
+        "ok": [
+          "The property '#/' was not a valid schema in schema urn:root"
+        ]
+      }
+    },
+    {
+      "scheme": "custom",
+      "contents": "{}",
+      "expect": {
+        "ok": [
+          "The property '#/' was not a valid schema in schema urn:root"
+        ]
+      }
+    },
+    {
+      "scheme": "custom",
+      "contents": "false",
+      "expect": {
+        "error": {
+          "class": "NoMethodError",
+          "message": "undefined method '[]' for false"
+        }
+      }
+    },
+    {
+      "scheme": "custom",
+      "contents": "[]",
+      "expect": {
+        "error": {
+          "class": "TypeError",
+          "message": "no implicit conversion of String into Integer"
+        }
+      }
+    },
+    {
+      "scheme": "custom",
+      "contents": "1",
+      "expect": {
+        "error": {
+          "class": "TypeError",
+          "message": "no implicit conversion of String into Integer"
+        }
+      }
+    },
+    {
+      "scheme": "custom",
+      "contents": "invalid",
+      "expect": {
+        "error": {
+          "class": "JSON::Schema::JsonParseError",
+          "message": "unexpected character: 'invalid' at line 1 column 1"
+        }
+      }
+    }
+  ]
+}
