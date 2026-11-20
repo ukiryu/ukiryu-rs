@@ -21,11 +21,8 @@ fn write_value(out: &mut String, value: &Data) -> Result<(), SchemaError> {
         Data::Integer(i) => out.push_str(&i.to_string()),
         Data::Float(f) => out.push_str(&json_float(*f)),
         Data::String(s) | Data::Symbol(s) => write_str(out, s),
-        Data::Date { .. } | Data::Time(_) => {
-            return Err(SchemaError::unsupported(
-                "JSON.dump of Date/Time",
-                "a schema holding a Date or Time value is not reproduced",
-            ))
+        Data::AllocatedDate | Data::Date { .. } | Data::Time(_) => {
+            write_str(out, &value.ruby_to_s()?)
         }
         Data::Array(items) => {
             out.push('[');
@@ -77,21 +74,40 @@ fn write_str(out: &mut String, s: &str) {
 
 /// `JSON.parse(text)`; `None` where Ruby raises `JSON::ParserError`.
 pub(crate) fn parse(text: &str) -> Option<Data> {
+    parse_schema(text).ok()
+}
+
+/// json-schema wraps the parser's exact diagnostic in JsonParseError.
+pub(crate) fn parse_schema(text: &str) -> Result<Data, SchemaError> {
     let mut p = Parser {
         b: text.as_bytes(),
         i: 0,
         s: text,
+        error: None,
     };
     p.ws();
-    let v = p.value()?;
-    p.ws();
-    (p.i == p.b.len()).then_some(v)
+    let value = p.value();
+    if let Some(value) = value {
+        p.ws();
+        if p.i == p.b.len() {
+            return Ok(value);
+        }
+        p.fail::<Data>(
+            format!("unexpected token at end of stream '{}'", p.snippet(p.i)),
+            p.i,
+        );
+    }
+    Err(SchemaError::ruby(
+        "JSON::Schema::JsonParseError",
+        p.error.unwrap_or_else(|| "unexpected end of input".into()),
+    ))
 }
 
 struct Parser<'a> {
     b: &'a [u8],
     i: usize,
     s: &'a str,
+    error: Option<String>,
 }
 
 impl Parser<'_> {
@@ -100,7 +116,6 @@ impl Parser<'_> {
             self.i += 1;
         }
     }
-
     fn eat(&mut self, lit: &str) -> bool {
         if self.b[self.i..].starts_with(lit.as_bytes()) {
             self.i += lit.len();
@@ -109,36 +124,80 @@ impl Parser<'_> {
             false
         }
     }
-
-    fn value(&mut self) -> Option<Data> {
-        match *self.b.get(self.i)? {
-            b'{' => self.object(),
-            b'[' => self.array(),
-            b'"' => self.string().map(Data::String),
-            b't' => self.eat("true").then_some(Data::Bool(true)),
-            b'f' => self.eat("false").then_some(Data::Bool(false)),
-            b'n' => self.eat("null").then_some(Data::Null),
-            b'-' | b'0'..=b'9' => self.number(),
-            _ => None,
+    fn snippet(&self, at: usize) -> String {
+        self.s[at..].chars().take(32).collect()
+    }
+    fn fail<T>(&mut self, message: impl AsRef<str>, at: usize) -> Option<T> {
+        if self.error.is_none() {
+            let before = &self.b[..at];
+            let line = before.iter().filter(|b| **b == b'\n').count() + 1;
+            let line_start = before
+                .iter()
+                .rposition(|b| *b == b'\n')
+                .map_or(0, |i| i + 1);
+            let column = self.s[line_start..at].chars().count() + 1;
+            self.error = Some(format!(
+                "{} at line {line} column {column}",
+                message.as_ref()
+            ));
+        }
+        None
+    }
+    fn unexpected(&mut self) -> Option<Data> {
+        match self.b.get(self.i) {
+            None => self.fail("unexpected end of input", self.i),
+            Some(b't' | b'f' | b'n' | b'N' | b'I') => self.fail(
+                format!("unexpected token '{}'", self.snippet(self.i)),
+                self.i,
+            ),
+            _ => self.fail(
+                format!("unexpected character: '{}'", self.snippet(self.i)),
+                self.i,
+            ),
         }
     }
-
+    fn value(&mut self) -> Option<Data> {
+        match self.b.get(self.i).copied() {
+            Some(b'{') => self.object(),
+            Some(b'[') => self.array(),
+            Some(b'"') => self.string().map(Data::String),
+            Some(b't') if self.eat("true") => Some(Data::Bool(true)),
+            Some(b'f') if self.eat("false") => Some(Data::Bool(false)),
+            Some(b'n') if self.eat("null") => Some(Data::Null),
+            Some(b'-' | b'0'..=b'9') => self.number(),
+            _ => self.unexpected(),
+        }
+    }
     fn object(&mut self) -> Option<Data> {
+        let start = self.i;
         self.i += 1;
         let mut pairs: Vec<(Data, Data)> = Vec::new();
         self.ws();
         if self.eat("}") {
             return Some(Data::Hash(pairs));
         }
+        let mut after_comma = false;
         loop {
             self.ws();
             if self.b.get(self.i) != Some(&b'"') {
-                return None;
+                let msg = if self.i == self.b.len() {
+                    format!(
+                        "expected object key, got{} EOF",
+                        if after_comma { ":" } else { "" }
+                    )
+                } else {
+                    format!(
+                        "expected object key, got{} '{}'",
+                        if after_comma { ":" } else { "" },
+                        self.snippet(self.i)
+                    )
+                };
+                return self.fail(msg, self.i);
             }
             let key = self.string()?;
             self.ws();
             if !self.eat(":") {
-                return None;
+                return self.fail("expected ':' after object key", self.i);
             }
             self.ws();
             let value = self.value()?;
@@ -146,17 +205,33 @@ impl Parser<'_> {
                 .iter()
                 .any(|(k, _)| matches!(k, Data::String(s) if *s == key))
             {
-                return None;
+                return self.fail(
+                    format!("duplicate key {}", super::data::inspect_str(&key)),
+                    start,
+                );
             }
             pairs.push((Data::String(key), value));
             self.ws();
             if self.eat(",") {
+                after_comma = true;
                 continue;
             }
-            return self.eat("}").then_some(Data::Hash(pairs));
+            if self.eat("}") {
+                return Some(Data::Hash(pairs));
+            }
+            return self.fail(
+                format!(
+                    "expected ',' or '}}' after object value, got: {}",
+                    if self.i == self.b.len() {
+                        "EOF".into()
+                    } else {
+                        format!("'{}'", self.snippet(self.i))
+                    }
+                ),
+                self.i,
+            );
         }
     }
-
     fn array(&mut self) -> Option<Data> {
         self.i += 1;
         let mut items = Vec::new();
@@ -171,30 +246,68 @@ impl Parser<'_> {
             if self.eat(",") {
                 continue;
             }
-            return self.eat("]").then_some(Data::Array(items));
+            if self.eat("]") {
+                return Some(Data::Array(items));
+            }
+            return self.fail("expected ',' or ']' after array value", self.i);
         }
     }
-
-    fn hex4(&mut self) -> Option<u32> {
-        let h = self.s.get(self.i..self.i + 4)?;
-        let v = u32::from_str_radix(h, 16).ok()?;
-        self.i += 4;
-        Some(v)
+    fn hex4(&mut self, escape: usize) -> Option<u32> {
+        let value = self
+            .s
+            .get(self.i..self.i + 4)
+            .and_then(|s| u32::from_str_radix(s, 16).ok());
+        match value {
+            Some(value) => {
+                self.i += 4;
+                Some(value)
+            }
+            None => self.fail(
+                format!(
+                    "incomplete unicode character escape sequence at '{}'",
+                    self.snippet(escape)
+                ),
+                escape,
+            ),
+        }
     }
-
     fn string(&mut self) -> Option<String> {
         self.i += 1;
+        // json 3.1 finds a closing quote before decoding escape sequences.
+        // Thus an unterminated string wins over an invalid escape within it.
+        let mut end = self.i;
+        while let Some(c) = self.b.get(end) {
+            match c {
+                b'"' => break,
+                b'\\' => end += 2,
+                _ => end += 1,
+            }
+        }
+        if end >= self.b.len() {
+            return self.fail("unexpected end of input, expected closing \"", self.b.len());
+        }
         let mut out = String::new();
         loop {
-            let c = *self.b.get(self.i)?;
+            let Some(c) = self.b.get(self.i).copied() else {
+                return self.fail("unexpected end of input, expected closing \"", self.i);
+            };
             match c {
                 b'"' => {
                     self.i += 1;
                     return Some(out);
                 }
                 b'\\' => {
+                    let escape = self.i;
                     self.i += 1;
-                    let e = *self.b.get(self.i)?;
+                    let Some(e) = self.b.get(self.i).copied() else {
+                        return self.fail(
+                            format!(
+                                "invalid escape character in string: '{}'",
+                                self.snippet(escape)
+                            ),
+                            escape,
+                        );
+                    };
                     self.i += 1;
                     match e {
                         b'"' => out.push('"'),
@@ -206,27 +319,61 @@ impl Parser<'_> {
                         b'r' => out.push('\r'),
                         b't' => out.push('\t'),
                         b'u' => {
-                            let hi = self.hex4()?;
+                            let hi = self.hex4(escape)?;
                             let cp = if (0xD800..0xDC00).contains(&hi) {
                                 if !self.eat("\\u") {
-                                    return None;
+                                    return self.fail(
+                                        format!(
+                                            "incomplete surrogate pair at '{}'",
+                                            self.snippet(escape)
+                                        ),
+                                        escape,
+                                    );
                                 }
-                                let lo = self.hex4()?;
+                                let lo = self.hex4(escape)?;
                                 if !(0xDC00..0xE000).contains(&lo) {
-                                    return None;
+                                    return self.fail(
+                                        format!(
+                                            "invalid surrogate pair at '{}'",
+                                            self.snippet(escape)
+                                        ),
+                                        escape,
+                                    );
                                 }
                                 0x10000 + ((hi - 0xD800) << 10) + (lo - 0xDC00)
                             } else if (0xDC00..0xE000).contains(&hi) {
-                                return None;
+                                return self.fail(
+                                    format!(
+                                        "unpaired trailing surrogate at '{}'",
+                                        self.snippet(escape)
+                                    ),
+                                    escape,
+                                );
                             } else {
                                 hi
                             };
                             out.push(char::from_u32(cp)?);
                         }
-                        _ => return None,
+                        _ => {
+                            return self.fail(
+                                format!(
+                                    "invalid escape character in string: '{}'",
+                                    self.snippet(escape)
+                                ),
+                                escape,
+                            )
+                        }
                     }
                 }
-                0..=0x1f => return None,
+                0..=0x1f => {
+                    return self.fail(
+                        format!(
+                            "invalid ASCII control character in string: {}",
+                            self.snippet(self.i)
+                        ),
+                        self.i,
+                    )
+                }
                 _ => {
                     let ch = self.s[self.i..].chars().next()?;
                     out.push(ch);
@@ -235,20 +382,25 @@ impl Parser<'_> {
             }
         }
     }
-
     fn number(&mut self) -> Option<Data> {
         let start = self.i;
         if self.b[self.i] == b'-' {
             self.i += 1;
         }
+        let mut valid = true;
         match self.b.get(self.i) {
-            Some(b'0') => self.i += 1,
+            Some(b'0') => {
+                self.i += 1;
+                if self.b.get(self.i).is_some_and(u8::is_ascii_digit) {
+                    valid = false;
+                }
+            }
             Some(b'1'..=b'9') => {
                 while self.b.get(self.i).is_some_and(u8::is_ascii_digit) {
                     self.i += 1;
                 }
             }
-            _ => return None,
+            _ => valid = false,
         }
         let mut float = false;
         if self.b.get(self.i) == Some(&b'.') {
@@ -258,9 +410,7 @@ impl Parser<'_> {
             while self.b.get(self.i).is_some_and(u8::is_ascii_digit) {
                 self.i += 1;
             }
-            if self.i == d {
-                return None;
-            }
+            valid &= self.i > d;
         }
         if matches!(self.b.get(self.i), Some(b'e' | b'E')) {
             float = true;
@@ -272,9 +422,10 @@ impl Parser<'_> {
             while self.b.get(self.i).is_some_and(u8::is_ascii_digit) {
                 self.i += 1;
             }
-            if self.i == d {
-                return None;
-            }
+            valid &= self.i > d;
+        }
+        if !valid {
+            return self.fail(format!("invalid number: '{}'", self.snippet(start)), start);
         }
         let text = &self.s[start..self.i];
         if float {

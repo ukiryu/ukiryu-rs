@@ -238,7 +238,7 @@ fn data_value(d: &Data) -> Result<Value, Json> {
         Data::Float(f) => Value::Float(*f),
         Data::String(s) => Value::String(s.clone()),
         Data::Symbol(s) => Value::Symbol(s.clone()),
-        Data::Date { .. } => {
+        Data::AllocatedDate | Data::Date { .. } => {
             return Err(transport("NOT_PORTED", "a YAML Date has no wire value"));
         }
         Data::Time(raw) => {

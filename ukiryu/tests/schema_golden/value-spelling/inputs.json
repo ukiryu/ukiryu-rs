@@ -1,0 +1,1922 @@
+[
+  {
+    "id": "symbol.0",
+    "yaml": "!ruby/symbol \"abc\"",
+    "permitted": "none",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.1",
+    "yaml": "!ruby/symbol \"abc\"",
+    "permitted": "symbol",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.2",
+    "yaml": "!ruby/symbol \"abc\"",
+    "permitted": "document",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol-key.3",
+    "yaml": "!ruby/symbol \"abc\": 1\n",
+    "permitted": "document",
+    "group": "symbol-key"
+  },
+  {
+    "id": "symbol.4",
+    "yaml": "!ruby/symbol \"hello world\"",
+    "permitted": "none",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.5",
+    "yaml": "!ruby/symbol \"hello world\"",
+    "permitted": "symbol",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.6",
+    "yaml": "!ruby/symbol \"hello world\"",
+    "permitted": "document",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol-key.7",
+    "yaml": "!ruby/symbol \"hello world\": 1\n",
+    "permitted": "document",
+    "group": "symbol-key"
+  },
+  {
+    "id": "symbol.8",
+    "yaml": "!ruby/symbol \"\"",
+    "permitted": "none",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.9",
+    "yaml": "!ruby/symbol \"\"",
+    "permitted": "symbol",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.10",
+    "yaml": "!ruby/symbol \"\"",
+    "permitted": "document",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol-key.11",
+    "yaml": "!ruby/symbol \"\": 1\n",
+    "permitted": "document",
+    "group": "symbol-key"
+  },
+  {
+    "id": "symbol.12",
+    "yaml": "!ruby/symbol \"foo?\"",
+    "permitted": "none",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.13",
+    "yaml": "!ruby/symbol \"foo?\"",
+    "permitted": "symbol",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.14",
+    "yaml": "!ruby/symbol \"foo?\"",
+    "permitted": "document",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol-key.15",
+    "yaml": "!ruby/symbol \"foo?\": 1\n",
+    "permitted": "document",
+    "group": "symbol-key"
+  },
+  {
+    "id": "symbol.16",
+    "yaml": "!ruby/symbol \"foo!\"",
+    "permitted": "none",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.17",
+    "yaml": "!ruby/symbol \"foo!\"",
+    "permitted": "symbol",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.18",
+    "yaml": "!ruby/symbol \"foo!\"",
+    "permitted": "document",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol-key.19",
+    "yaml": "!ruby/symbol \"foo!\": 1\n",
+    "permitted": "document",
+    "group": "symbol-key"
+  },
+  {
+    "id": "symbol.20",
+    "yaml": "!ruby/symbol \"foo=\"",
+    "permitted": "none",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.21",
+    "yaml": "!ruby/symbol \"foo=\"",
+    "permitted": "symbol",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.22",
+    "yaml": "!ruby/symbol \"foo=\"",
+    "permitted": "document",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol-key.23",
+    "yaml": "!ruby/symbol \"foo=\": 1\n",
+    "permitted": "document",
+    "group": "symbol-key"
+  },
+  {
+    "id": "symbol.24",
+    "yaml": "!ruby/symbol \"@foo\"",
+    "permitted": "none",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.25",
+    "yaml": "!ruby/symbol \"@foo\"",
+    "permitted": "symbol",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.26",
+    "yaml": "!ruby/symbol \"@foo\"",
+    "permitted": "document",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol-key.27",
+    "yaml": "!ruby/symbol \"@foo\": 1\n",
+    "permitted": "document",
+    "group": "symbol-key"
+  },
+  {
+    "id": "symbol.28",
+    "yaml": "!ruby/symbol \"@@foo\"",
+    "permitted": "none",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.29",
+    "yaml": "!ruby/symbol \"@@foo\"",
+    "permitted": "symbol",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.30",
+    "yaml": "!ruby/symbol \"@@foo\"",
+    "permitted": "document",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol-key.31",
+    "yaml": "!ruby/symbol \"@@foo\": 1\n",
+    "permitted": "document",
+    "group": "symbol-key"
+  },
+  {
+    "id": "symbol.32",
+    "yaml": "!ruby/symbol \"$1\"",
+    "permitted": "none",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.33",
+    "yaml": "!ruby/symbol \"$1\"",
+    "permitted": "symbol",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.34",
+    "yaml": "!ruby/symbol \"$1\"",
+    "permitted": "document",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol-key.35",
+    "yaml": "!ruby/symbol \"$1\": 1\n",
+    "permitted": "document",
+    "group": "symbol-key"
+  },
+  {
+    "id": "symbol.36",
+    "yaml": "!ruby/symbol \"$-x\"",
+    "permitted": "none",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.37",
+    "yaml": "!ruby/symbol \"$-x\"",
+    "permitted": "symbol",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.38",
+    "yaml": "!ruby/symbol \"$-x\"",
+    "permitted": "document",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol-key.39",
+    "yaml": "!ruby/symbol \"$-x\": 1\n",
+    "permitted": "document",
+    "group": "symbol-key"
+  },
+  {
+    "id": "symbol.40",
+    "yaml": "!ruby/symbol \"é\"",
+    "permitted": "none",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.41",
+    "yaml": "!ruby/symbol \"é\"",
+    "permitted": "symbol",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.42",
+    "yaml": "!ruby/symbol \"é\"",
+    "permitted": "document",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol-key.43",
+    "yaml": "!ruby/symbol \"é\": 1\n",
+    "permitted": "document",
+    "group": "symbol-key"
+  },
+  {
+    "id": "symbol.44",
+    "yaml": "!ruby/symbol \"😀\"",
+    "permitted": "none",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.45",
+    "yaml": "!ruby/symbol \"😀\"",
+    "permitted": "symbol",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.46",
+    "yaml": "!ruby/symbol \"😀\"",
+    "permitted": "document",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol-key.47",
+    "yaml": "!ruby/symbol \"😀\": 1\n",
+    "permitted": "document",
+    "group": "symbol-key"
+  },
+  {
+    "id": "symbol.48",
+    "yaml": "!ruby/symbol \"Foo\"",
+    "permitted": "none",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.49",
+    "yaml": "!ruby/symbol \"Foo\"",
+    "permitted": "symbol",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.50",
+    "yaml": "!ruby/symbol \"Foo\"",
+    "permitted": "document",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol-key.51",
+    "yaml": "!ruby/symbol \"Foo\": 1\n",
+    "permitted": "document",
+    "group": "symbol-key"
+  },
+  {
+    "id": "symbol.52",
+    "yaml": "!ruby/symbol \"1\"",
+    "permitted": "none",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.53",
+    "yaml": "!ruby/symbol \"1\"",
+    "permitted": "symbol",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.54",
+    "yaml": "!ruby/symbol \"1\"",
+    "permitted": "document",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol-key.55",
+    "yaml": "!ruby/symbol \"1\": 1\n",
+    "permitted": "document",
+    "group": "symbol-key"
+  },
+  {
+    "id": "symbol.56",
+    "yaml": "!ruby/symbol \"foo-bar\"",
+    "permitted": "none",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.57",
+    "yaml": "!ruby/symbol \"foo-bar\"",
+    "permitted": "symbol",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.58",
+    "yaml": "!ruby/symbol \"foo-bar\"",
+    "permitted": "document",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol-key.59",
+    "yaml": "!ruby/symbol \"foo-bar\": 1\n",
+    "permitted": "document",
+    "group": "symbol-key"
+  },
+  {
+    "id": "symbol.60",
+    "yaml": "!ruby/symbol \"[]\"",
+    "permitted": "none",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.61",
+    "yaml": "!ruby/symbol \"[]\"",
+    "permitted": "symbol",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.62",
+    "yaml": "!ruby/symbol \"[]\"",
+    "permitted": "document",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol-key.63",
+    "yaml": "!ruby/symbol \"[]\": 1\n",
+    "permitted": "document",
+    "group": "symbol-key"
+  },
+  {
+    "id": "symbol.64",
+    "yaml": "!ruby/symbol \"[]=\"",
+    "permitted": "none",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.65",
+    "yaml": "!ruby/symbol \"[]=\"",
+    "permitted": "symbol",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.66",
+    "yaml": "!ruby/symbol \"[]=\"",
+    "permitted": "document",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol-key.67",
+    "yaml": "!ruby/symbol \"[]=\": 1\n",
+    "permitted": "document",
+    "group": "symbol-key"
+  },
+  {
+    "id": "symbol.68",
+    "yaml": "!ruby/symbol \"~\"",
+    "permitted": "none",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.69",
+    "yaml": "!ruby/symbol \"~\"",
+    "permitted": "symbol",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.70",
+    "yaml": "!ruby/symbol \"~\"",
+    "permitted": "document",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol-key.71",
+    "yaml": "!ruby/symbol \"~\": 1\n",
+    "permitted": "document",
+    "group": "symbol-key"
+  },
+  {
+    "id": "symbol.72",
+    "yaml": "!ruby/symbol \"a\\\\nb\"",
+    "permitted": "none",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.73",
+    "yaml": "!ruby/symbol \"a\\\\nb\"",
+    "permitted": "symbol",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.74",
+    "yaml": "!ruby/symbol \"a\\\\nb\"",
+    "permitted": "document",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol-key.75",
+    "yaml": "!ruby/symbol \"a\\\\nb\": 1\n",
+    "permitted": "document",
+    "group": "symbol-key"
+  },
+  {
+    "id": "symbol.76",
+    "yaml": "!ruby/symbol \"a: b\"",
+    "permitted": "none",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.77",
+    "yaml": "!ruby/symbol \"a: b\"",
+    "permitted": "symbol",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.78",
+    "yaml": "!ruby/symbol \"a: b\"",
+    "permitted": "document",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol-key.79",
+    "yaml": "!ruby/symbol \"a: b\": 1\n",
+    "permitted": "document",
+    "group": "symbol-key"
+  },
+  {
+    "id": "symbol.80",
+    "yaml": "!ruby/symbol \"a\\nb\"",
+    "permitted": "none",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.81",
+    "yaml": "!ruby/symbol \"a\\nb\"",
+    "permitted": "symbol",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.82",
+    "yaml": "!ruby/symbol \"a\\nb\"",
+    "permitted": "document",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol-key.83",
+    "yaml": "!ruby/symbol \"a\\nb\": 1\n",
+    "permitted": "document",
+    "group": "symbol-key"
+  },
+  {
+    "id": "symbol.84",
+    "yaml": "!ruby/symbol \"a\\u0000b\"",
+    "permitted": "none",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.85",
+    "yaml": "!ruby/symbol \"a\\u0000b\"",
+    "permitted": "symbol",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol.86",
+    "yaml": "!ruby/symbol \"a\\u0000b\"",
+    "permitted": "document",
+    "group": "symbol"
+  },
+  {
+    "id": "symbol-key.87",
+    "yaml": "!ruby/symbol \"a\\u0000b\": 1\n",
+    "permitted": "document",
+    "group": "symbol-key"
+  },
+  {
+    "id": "date.88",
+    "yaml": "2001-12-15",
+    "permitted": "none",
+    "group": "date"
+  },
+  {
+    "id": "date.89",
+    "yaml": "2001-12-15",
+    "permitted": "document",
+    "group": "date"
+  },
+  {
+    "id": "date.90",
+    "yaml": "2024-02-29",
+    "permitted": "none",
+    "group": "date"
+  },
+  {
+    "id": "date.91",
+    "yaml": "2024-02-29",
+    "permitted": "document",
+    "group": "date"
+  },
+  {
+    "id": "date.92",
+    "yaml": "1500-02-29",
+    "permitted": "none",
+    "group": "date"
+  },
+  {
+    "id": "date.93",
+    "yaml": "1500-02-29",
+    "permitted": "document",
+    "group": "date"
+  },
+  {
+    "id": "date.94",
+    "yaml": "0000-01-01",
+    "permitted": "none",
+    "group": "date"
+  },
+  {
+    "id": "date.95",
+    "yaml": "0000-01-01",
+    "permitted": "document",
+    "group": "date"
+  },
+  {
+    "id": "time.96",
+    "yaml": "2001-12-15T02:59:43Z",
+    "permitted": "none",
+    "group": "time"
+  },
+  {
+    "id": "time.97",
+    "yaml": "2001-12-15T02:59:43Z",
+    "permitted": "document",
+    "group": "time"
+  },
+  {
+    "id": "time.98",
+    "yaml": "2001-12-15T02:59:43.1200Z",
+    "permitted": "none",
+    "group": "time"
+  },
+  {
+    "id": "time.99",
+    "yaml": "2001-12-15T02:59:43.1200Z",
+    "permitted": "document",
+    "group": "time"
+  },
+  {
+    "id": "time.100",
+    "yaml": "2001-12-15T02:59:43.1234567891Z",
+    "permitted": "none",
+    "group": "time"
+  },
+  {
+    "id": "time.101",
+    "yaml": "2001-12-15T02:59:43.1234567891Z",
+    "permitted": "document",
+    "group": "time"
+  },
+  {
+    "id": "time.102",
+    "yaml": "2001-12-15T02:59:43.000000000001Z",
+    "permitted": "none",
+    "group": "time"
+  },
+  {
+    "id": "time.103",
+    "yaml": "2001-12-15T02:59:43.000000000001Z",
+    "permitted": "document",
+    "group": "time"
+  },
+  {
+    "id": "time.104",
+    "yaml": "2001-12-15T02:59:43.5+05:30",
+    "permitted": "none",
+    "group": "time"
+  },
+  {
+    "id": "time.105",
+    "yaml": "2001-12-15T02:59:43.5+05:30",
+    "permitted": "document",
+    "group": "time"
+  },
+  {
+    "id": "time.106",
+    "yaml": "2001-12-15T02:59:43-00:00",
+    "permitted": "none",
+    "group": "time"
+  },
+  {
+    "id": "time.107",
+    "yaml": "2001-12-15T02:59:43-00:00",
+    "permitted": "document",
+    "group": "time"
+  },
+  {
+    "id": "time.108",
+    "yaml": "2001-12-15T02:59:43+0",
+    "permitted": "none",
+    "group": "time"
+  },
+  {
+    "id": "time.109",
+    "yaml": "2001-12-15T02:59:43+0",
+    "permitted": "document",
+    "group": "time"
+  },
+  {
+    "id": "time.110",
+    "yaml": "2001-12-15 02:59:43",
+    "permitted": "none",
+    "group": "time"
+  },
+  {
+    "id": "time.111",
+    "yaml": "2001-12-15 02:59:43",
+    "permitted": "document",
+    "group": "time"
+  },
+  {
+    "id": "time.112",
+    "yaml": "2001-12-15 24:00:00Z",
+    "permitted": "none",
+    "group": "time"
+  },
+  {
+    "id": "time.113",
+    "yaml": "2001-12-15 24:00:00Z",
+    "permitted": "document",
+    "group": "time"
+  },
+  {
+    "id": "time.114",
+    "yaml": "2001-12-15 24:01:00Z",
+    "permitted": "none",
+    "group": "time"
+  },
+  {
+    "id": "time.115",
+    "yaml": "2001-12-15 24:01:00Z",
+    "permitted": "document",
+    "group": "time"
+  },
+  {
+    "id": "time.116",
+    "yaml": "2001-12-15 02:59:60Z",
+    "permitted": "none",
+    "group": "time"
+  },
+  {
+    "id": "time.117",
+    "yaml": "2001-12-15 02:59:60Z",
+    "permitted": "document",
+    "group": "time"
+  },
+  {
+    "id": "time.118",
+    "yaml": "2001-02-31 00:00:00Z",
+    "permitted": "none",
+    "group": "time"
+  },
+  {
+    "id": "time.119",
+    "yaml": "2001-02-31 00:00:00Z",
+    "permitted": "document",
+    "group": "time"
+  },
+  {
+    "id": "time.120",
+    "yaml": "-0001-01-01T00:00:00Z",
+    "permitted": "none",
+    "group": "time"
+  },
+  {
+    "id": "time.121",
+    "yaml": "-0001-01-01T00:00:00Z",
+    "permitted": "document",
+    "group": "time"
+  },
+  {
+    "id": "time.122",
+    "yaml": "2001-12-15 02:59:43+25:00",
+    "permitted": "none",
+    "group": "time"
+  },
+  {
+    "id": "time.123",
+    "yaml": "2001-12-15 02:59:43+25:00",
+    "permitted": "document",
+    "group": "time"
+  },
+  {
+    "id": "numeric.124",
+    "yaml": "1.5",
+    "permitted": "document",
+    "group": "numeric"
+  },
+  {
+    "id": "float-tag.125",
+    "yaml": "!!float \"1.5\"",
+    "permitted": "document",
+    "group": "float-tag"
+  },
+  {
+    "id": "numeric.126",
+    "yaml": "1.",
+    "permitted": "document",
+    "group": "numeric"
+  },
+  {
+    "id": "float-tag.127",
+    "yaml": "!!float \"1.\"",
+    "permitted": "document",
+    "group": "float-tag"
+  },
+  {
+    "id": "numeric.128",
+    "yaml": "1.e+3",
+    "permitted": "document",
+    "group": "numeric"
+  },
+  {
+    "id": "float-tag.129",
+    "yaml": "!!float \"1.e+3\"",
+    "permitted": "document",
+    "group": "float-tag"
+  },
+  {
+    "id": "numeric.130",
+    "yaml": "1.e3",
+    "permitted": "document",
+    "group": "numeric"
+  },
+  {
+    "id": "float-tag.131",
+    "yaml": "!!float \"1.e3\"",
+    "permitted": "document",
+    "group": "float-tag"
+  },
+  {
+    "id": "numeric.132",
+    "yaml": ".5",
+    "permitted": "document",
+    "group": "numeric"
+  },
+  {
+    "id": "float-tag.133",
+    "yaml": "!!float \".5\"",
+    "permitted": "document",
+    "group": "float-tag"
+  },
+  {
+    "id": "numeric.134",
+    "yaml": "+.",
+    "permitted": "document",
+    "group": "numeric"
+  },
+  {
+    "id": "float-tag.135",
+    "yaml": "!!float \"+.\"",
+    "permitted": "document",
+    "group": "float-tag"
+  },
+  {
+    "id": "numeric.136",
+    "yaml": "+.e+1",
+    "permitted": "document",
+    "group": "numeric"
+  },
+  {
+    "id": "float-tag.137",
+    "yaml": "!!float \"+.e+1\"",
+    "permitted": "document",
+    "group": "float-tag"
+  },
+  {
+    "id": "numeric.138",
+    "yaml": "0b101",
+    "permitted": "document",
+    "group": "numeric"
+  },
+  {
+    "id": "float-tag.139",
+    "yaml": "!!float \"0b101\"",
+    "permitted": "document",
+    "group": "float-tag"
+  },
+  {
+    "id": "numeric.140",
+    "yaml": "0x_ff",
+    "permitted": "document",
+    "group": "numeric"
+  },
+  {
+    "id": "float-tag.141",
+    "yaml": "!!float \"0x_ff\"",
+    "permitted": "document",
+    "group": "float-tag"
+  },
+  {
+    "id": "numeric.142",
+    "yaml": "0x_,f",
+    "permitted": "document",
+    "group": "numeric"
+  },
+  {
+    "id": "float-tag.143",
+    "yaml": "!!float \"0x_,f\"",
+    "permitted": "document",
+    "group": "float-tag"
+  },
+  {
+    "id": "numeric.144",
+    "yaml": "0_7",
+    "permitted": "document",
+    "group": "numeric"
+  },
+  {
+    "id": "float-tag.145",
+    "yaml": "!!float \"0_7\"",
+    "permitted": "document",
+    "group": "float-tag"
+  },
+  {
+    "id": "numeric.146",
+    "yaml": "0__7",
+    "permitted": "document",
+    "group": "numeric"
+  },
+  {
+    "id": "float-tag.147",
+    "yaml": "!!float \"0__7\"",
+    "permitted": "document",
+    "group": "float-tag"
+  },
+  {
+    "id": "numeric.148",
+    "yaml": "077",
+    "permitted": "document",
+    "group": "numeric"
+  },
+  {
+    "id": "float-tag.149",
+    "yaml": "!!float \"077\"",
+    "permitted": "document",
+    "group": "float-tag"
+  },
+  {
+    "id": "numeric.150",
+    "yaml": "09",
+    "permitted": "document",
+    "group": "numeric"
+  },
+  {
+    "id": "float-tag.151",
+    "yaml": "!!float \"09\"",
+    "permitted": "document",
+    "group": "float-tag"
+  },
+  {
+    "id": "numeric.152",
+    "yaml": "1_000",
+    "permitted": "document",
+    "group": "numeric"
+  },
+  {
+    "id": "float-tag.153",
+    "yaml": "!!float \"1_000\"",
+    "permitted": "document",
+    "group": "float-tag"
+  },
+  {
+    "id": "numeric.154",
+    "yaml": "1,000",
+    "permitted": "document",
+    "group": "numeric"
+  },
+  {
+    "id": "float-tag.155",
+    "yaml": "!!float \"1,000\"",
+    "permitted": "document",
+    "group": "float-tag"
+  },
+  {
+    "id": "numeric.156",
+    "yaml": "1.0e+999",
+    "permitted": "document",
+    "group": "numeric"
+  },
+  {
+    "id": "float-tag.157",
+    "yaml": "!!float \"1.0e+999\"",
+    "permitted": "document",
+    "group": "float-tag"
+  },
+  {
+    "id": "numeric.158",
+    "yaml": "-0.0",
+    "permitted": "document",
+    "group": "numeric"
+  },
+  {
+    "id": "float-tag.159",
+    "yaml": "!!float \"-0.0\"",
+    "permitted": "document",
+    "group": "float-tag"
+  },
+  {
+    "id": "numeric.160",
+    "yaml": "NaN",
+    "permitted": "document",
+    "group": "numeric"
+  },
+  {
+    "id": "float-tag.161",
+    "yaml": "!!float \"NaN\"",
+    "permitted": "document",
+    "group": "float-tag"
+  },
+  {
+    "id": "numeric.162",
+    "yaml": "Infinity",
+    "permitted": "document",
+    "group": "numeric"
+  },
+  {
+    "id": "float-tag.163",
+    "yaml": "!!float \"Infinity\"",
+    "permitted": "document",
+    "group": "float-tag"
+  },
+  {
+    "id": "numeric.164",
+    "yaml": "1.2.3",
+    "permitted": "document",
+    "group": "numeric"
+  },
+  {
+    "id": "float-tag.165",
+    "yaml": "!!float \"1.2.3\"",
+    "permitted": "document",
+    "group": "float-tag"
+  },
+  {
+    "id": "numeric.166",
+    "yaml": "x",
+    "permitted": "document",
+    "group": "numeric"
+  },
+  {
+    "id": "float-tag.167",
+    "yaml": "!!float \"x\"",
+    "permitted": "document",
+    "group": "float-tag"
+  },
+  {
+    "id": "numeric.168",
+    "yaml": "",
+    "permitted": "document",
+    "group": "numeric"
+  },
+  {
+    "id": "float-tag.169",
+    "yaml": "!!float \"\"",
+    "permitted": "document",
+    "group": "float-tag"
+  },
+  {
+    "id": "numeric.170",
+    "yaml": "0xff",
+    "permitted": "document",
+    "group": "numeric"
+  },
+  {
+    "id": "float-tag.171",
+    "yaml": "!!float \"0xff\"",
+    "permitted": "document",
+    "group": "float-tag"
+  },
+  {
+    "id": "numeric.172",
+    "yaml": "0x1.fp2",
+    "permitted": "document",
+    "group": "numeric"
+  },
+  {
+    "id": "float-tag.173",
+    "yaml": "!!float \"0x1.fp2\"",
+    "permitted": "document",
+    "group": "float-tag"
+  },
+  {
+    "id": "merge.174",
+    "yaml": "{<<: {a: 1}, b: 2}",
+    "permitted": "document",
+    "group": "merge"
+  },
+  {
+    "id": "merge.175",
+    "yaml": "{a: 1, <<: {a: 2, b: 3}, c: 4}",
+    "permitted": "document",
+    "group": "merge"
+  },
+  {
+    "id": "merge.176",
+    "yaml": "{<<: [{a: 1}, {a: 2,b: 3}]}",
+    "permitted": "document",
+    "group": "merge"
+  },
+  {
+    "id": "merge.177",
+    "yaml": "{<<: [{a: 1}, 2]}",
+    "permitted": "document",
+    "group": "merge"
+  },
+  {
+    "id": "merge.178",
+    "yaml": "{<<: 5}",
+    "permitted": "document",
+    "group": "merge"
+  },
+  {
+    "id": "merge.179",
+    "yaml": "{<<: null}",
+    "permitted": "document",
+    "group": "merge"
+  },
+  {
+    "id": "merge.180",
+    "yaml": "{<<: []}",
+    "permitted": "document",
+    "group": "merge"
+  },
+  {
+    "id": "merge.181",
+    "yaml": "{<<: {a: 1}, a: 3}",
+    "permitted": "document",
+    "group": "merge"
+  },
+  {
+    "id": "merge.182",
+    "yaml": "{!!str <<: {a: 1}}",
+    "permitted": "document",
+    "group": "merge"
+  },
+  {
+    "id": "merge.183",
+    "yaml": "{'<<': {a: 1}}",
+    "permitted": "document",
+    "group": "merge"
+  },
+  {
+    "id": "merge.184",
+    "yaml": "{<<: &a {x: 1}, z: *a}",
+    "permitted": "document",
+    "group": "merge"
+  },
+  {
+    "id": "tag.185",
+    "yaml": "!!binary YWJj",
+    "permitted": "none",
+    "group": "tag"
+  },
+  {
+    "id": "tag.186",
+    "yaml": "!!binary YWJj",
+    "permitted": "symbol",
+    "group": "tag"
+  },
+  {
+    "id": "tag.187",
+    "yaml": "!!binary YWJj",
+    "permitted": "document",
+    "group": "tag"
+  },
+  {
+    "id": "tag.188",
+    "yaml": "!!binary 4oKs",
+    "permitted": "none",
+    "group": "tag"
+  },
+  {
+    "id": "tag.189",
+    "yaml": "!!binary 4oKs",
+    "permitted": "symbol",
+    "group": "tag"
+  },
+  {
+    "id": "tag.190",
+    "yaml": "!!binary 4oKs",
+    "permitted": "document",
+    "group": "tag"
+  },
+  {
+    "id": "tag.191",
+    "yaml": "!!binary /w==",
+    "permitted": "none",
+    "group": "tag"
+  },
+  {
+    "id": "tag.192",
+    "yaml": "!!binary /w==",
+    "permitted": "symbol",
+    "group": "tag"
+  },
+  {
+    "id": "tag.193",
+    "yaml": "!!binary /w==",
+    "permitted": "document",
+    "group": "tag"
+  },
+  {
+    "id": "tag.194",
+    "yaml": "!ruby/encoding UTF-8",
+    "permitted": "none",
+    "group": "tag"
+  },
+  {
+    "id": "tag.195",
+    "yaml": "!ruby/encoding UTF-8",
+    "permitted": "symbol",
+    "group": "tag"
+  },
+  {
+    "id": "tag.196",
+    "yaml": "!ruby/encoding UTF-8",
+    "permitted": "document",
+    "group": "tag"
+  },
+  {
+    "id": "tag.197",
+    "yaml": "!ruby/encoding BAD",
+    "permitted": "none",
+    "group": "tag"
+  },
+  {
+    "id": "tag.198",
+    "yaml": "!ruby/encoding BAD",
+    "permitted": "symbol",
+    "group": "tag"
+  },
+  {
+    "id": "tag.199",
+    "yaml": "!ruby/encoding BAD",
+    "permitted": "document",
+    "group": "tag"
+  },
+  {
+    "id": "tag.200",
+    "yaml": "!omap [{a: 1}, {b: 2}]",
+    "permitted": "none",
+    "group": "tag"
+  },
+  {
+    "id": "tag.201",
+    "yaml": "!omap [{a: 1}, {b: 2}]",
+    "permitted": "symbol",
+    "group": "tag"
+  },
+  {
+    "id": "tag.202",
+    "yaml": "!omap [{a: 1}, {b: 2}]",
+    "permitted": "document",
+    "group": "tag"
+  },
+  {
+    "id": "tag.203",
+    "yaml": "!omap []",
+    "permitted": "none",
+    "group": "tag"
+  },
+  {
+    "id": "tag.204",
+    "yaml": "!omap []",
+    "permitted": "symbol",
+    "group": "tag"
+  },
+  {
+    "id": "tag.205",
+    "yaml": "!omap []",
+    "permitted": "document",
+    "group": "tag"
+  },
+  {
+    "id": "tag.206",
+    "yaml": "!omap [1]",
+    "permitted": "none",
+    "group": "tag"
+  },
+  {
+    "id": "tag.207",
+    "yaml": "!omap [1]",
+    "permitted": "symbol",
+    "group": "tag"
+  },
+  {
+    "id": "tag.208",
+    "yaml": "!omap [1]",
+    "permitted": "document",
+    "group": "tag"
+  },
+  {
+    "id": "tag.209",
+    "yaml": "!seq: []",
+    "permitted": "none",
+    "group": "tag"
+  },
+  {
+    "id": "tag.210",
+    "yaml": "!seq: []",
+    "permitted": "symbol",
+    "group": "tag"
+  },
+  {
+    "id": "tag.211",
+    "yaml": "!seq: []",
+    "permitted": "document",
+    "group": "tag"
+  },
+  {
+    "id": "tag.212",
+    "yaml": "!ruby/array: []",
+    "permitted": "none",
+    "group": "tag"
+  },
+  {
+    "id": "tag.213",
+    "yaml": "!ruby/array: []",
+    "permitted": "symbol",
+    "group": "tag"
+  },
+  {
+    "id": "tag.214",
+    "yaml": "!ruby/array: []",
+    "permitted": "document",
+    "group": "tag"
+  },
+  {
+    "id": "tag.215",
+    "yaml": "!map: {}",
+    "permitted": "none",
+    "group": "tag"
+  },
+  {
+    "id": "tag.216",
+    "yaml": "!map: {}",
+    "permitted": "symbol",
+    "group": "tag"
+  },
+  {
+    "id": "tag.217",
+    "yaml": "!map: {}",
+    "permitted": "document",
+    "group": "tag"
+  },
+  {
+    "id": "tag.218",
+    "yaml": "!ruby/hash: {}",
+    "permitted": "none",
+    "group": "tag"
+  },
+  {
+    "id": "tag.219",
+    "yaml": "!ruby/hash: {}",
+    "permitted": "symbol",
+    "group": "tag"
+  },
+  {
+    "id": "tag.220",
+    "yaml": "!ruby/hash: {}",
+    "permitted": "document",
+    "group": "tag"
+  },
+  {
+    "id": "tag.221",
+    "yaml": "!!str {}",
+    "permitted": "none",
+    "group": "tag"
+  },
+  {
+    "id": "tag.222",
+    "yaml": "!!str {}",
+    "permitted": "symbol",
+    "group": "tag"
+  },
+  {
+    "id": "tag.223",
+    "yaml": "!!str {}",
+    "permitted": "document",
+    "group": "tag"
+  },
+  {
+    "id": "tag.224",
+    "yaml": "!!str {a: 1}",
+    "permitted": "none",
+    "group": "tag"
+  },
+  {
+    "id": "tag.225",
+    "yaml": "!!str {a: 1}",
+    "permitted": "symbol",
+    "group": "tag"
+  },
+  {
+    "id": "tag.226",
+    "yaml": "!!str {a: 1}",
+    "permitted": "document",
+    "group": "tag"
+  },
+  {
+    "id": "tag.227",
+    "yaml": "!str {str: hi}",
+    "permitted": "none",
+    "group": "tag"
+  },
+  {
+    "id": "tag.228",
+    "yaml": "!str {str: hi}",
+    "permitted": "symbol",
+    "group": "tag"
+  },
+  {
+    "id": "tag.229",
+    "yaml": "!str {str: hi}",
+    "permitted": "document",
+    "group": "tag"
+  },
+  {
+    "id": "tag.230",
+    "yaml": "!ruby/string {str: hi}",
+    "permitted": "none",
+    "group": "tag"
+  },
+  {
+    "id": "tag.231",
+    "yaml": "!ruby/string {str: hi}",
+    "permitted": "symbol",
+    "group": "tag"
+  },
+  {
+    "id": "tag.232",
+    "yaml": "!ruby/string {str: hi}",
+    "permitted": "document",
+    "group": "tag"
+  },
+  {
+    "id": "tag.233",
+    "yaml": "!ruby/hash-with-ivars {}",
+    "permitted": "none",
+    "group": "tag"
+  },
+  {
+    "id": "tag.234",
+    "yaml": "!ruby/hash-with-ivars {}",
+    "permitted": "symbol",
+    "group": "tag"
+  },
+  {
+    "id": "tag.235",
+    "yaml": "!ruby/hash-with-ivars {}",
+    "permitted": "document",
+    "group": "tag"
+  },
+  {
+    "id": "tag.236",
+    "yaml": "!ruby/data {}",
+    "permitted": "none",
+    "group": "tag"
+  },
+  {
+    "id": "tag.237",
+    "yaml": "!ruby/data {}",
+    "permitted": "symbol",
+    "group": "tag"
+  },
+  {
+    "id": "tag.238",
+    "yaml": "!ruby/data {}",
+    "permitted": "document",
+    "group": "tag"
+  },
+  {
+    "id": "tag.239",
+    "yaml": "!ruby/object:Date {}",
+    "permitted": "none",
+    "group": "tag"
+  },
+  {
+    "id": "tag.240",
+    "yaml": "!ruby/object:Date {}",
+    "permitted": "symbol",
+    "group": "tag"
+  },
+  {
+    "id": "tag.241",
+    "yaml": "!ruby/object:Date {}",
+    "permitted": "document",
+    "group": "tag"
+  },
+  {
+    "id": "tag.242",
+    "yaml": "!ruby/object:Time {}",
+    "permitted": "none",
+    "group": "tag"
+  },
+  {
+    "id": "tag.243",
+    "yaml": "!ruby/object:Time {}",
+    "permitted": "symbol",
+    "group": "tag"
+  },
+  {
+    "id": "tag.244",
+    "yaml": "!ruby/object:Time {}",
+    "permitted": "document",
+    "group": "tag"
+  },
+  {
+    "id": "tag.245",
+    "yaml": "!ruby/object:Symbol {}",
+    "permitted": "none",
+    "group": "tag"
+  },
+  {
+    "id": "tag.246",
+    "yaml": "!ruby/object:Symbol {}",
+    "permitted": "symbol",
+    "group": "tag"
+  },
+  {
+    "id": "tag.247",
+    "yaml": "!ruby/object:Symbol {}",
+    "permitted": "document",
+    "group": "tag"
+  },
+  {
+    "id": "tag.248",
+    "yaml": "!ruby/array:Time []",
+    "permitted": "none",
+    "group": "tag"
+  },
+  {
+    "id": "tag.249",
+    "yaml": "!ruby/array:Time []",
+    "permitted": "symbol",
+    "group": "tag"
+  },
+  {
+    "id": "tag.250",
+    "yaml": "!ruby/array:Time []",
+    "permitted": "document",
+    "group": "tag"
+  },
+  {
+    "id": "tag.251",
+    "yaml": "!ruby/string:Time hi",
+    "permitted": "none",
+    "group": "tag"
+  },
+  {
+    "id": "tag.252",
+    "yaml": "!ruby/string:Time hi",
+    "permitted": "symbol",
+    "group": "tag"
+  },
+  {
+    "id": "tag.253",
+    "yaml": "!ruby/string:Time hi",
+    "permitted": "document",
+    "group": "tag"
+  },
+  {
+    "id": "tag.254",
+    "yaml": "!ruby/string:Date hi",
+    "permitted": "none",
+    "group": "tag"
+  },
+  {
+    "id": "tag.255",
+    "yaml": "!ruby/string:Date hi",
+    "permitted": "symbol",
+    "group": "tag"
+  },
+  {
+    "id": "tag.256",
+    "yaml": "!ruby/string:Date hi",
+    "permitted": "document",
+    "group": "tag"
+  },
+  {
+    "id": "tag.257",
+    "yaml": "!ruby/array:Date []",
+    "permitted": "none",
+    "group": "tag"
+  },
+  {
+    "id": "tag.258",
+    "yaml": "!ruby/array:Date []",
+    "permitted": "symbol",
+    "group": "tag"
+  },
+  {
+    "id": "tag.259",
+    "yaml": "!ruby/array:Date []",
+    "permitted": "document",
+    "group": "tag"
+  },
+  {
+    "id": "tag.260",
+    "yaml": "!ruby/exception:Time {}",
+    "permitted": "none",
+    "group": "tag"
+  },
+  {
+    "id": "tag.261",
+    "yaml": "!ruby/exception:Time {}",
+    "permitted": "symbol",
+    "group": "tag"
+  },
+  {
+    "id": "tag.262",
+    "yaml": "!ruby/exception:Time {}",
+    "permitted": "document",
+    "group": "tag"
+  },
+  {
+    "id": "tag-extra.263",
+    "yaml": "!ruby/array:Time [1]",
+    "permitted": "none",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.264",
+    "yaml": "!ruby/array:Time [1]",
+    "permitted": "symbol",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.265",
+    "yaml": "!ruby/array:Time [1]",
+    "permitted": "document",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.266",
+    "yaml": "!ruby/array:Date [1]",
+    "permitted": "none",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.267",
+    "yaml": "!ruby/array:Date [1]",
+    "permitted": "symbol",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.268",
+    "yaml": "!ruby/array:Date [1]",
+    "permitted": "document",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.269",
+    "yaml": "!seq:Time [1]",
+    "permitted": "none",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.270",
+    "yaml": "!seq:Time [1]",
+    "permitted": "symbol",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.271",
+    "yaml": "!seq:Time [1]",
+    "permitted": "document",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.272",
+    "yaml": "!ruby/hash:Time {}",
+    "permitted": "none",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.273",
+    "yaml": "!ruby/hash:Time {}",
+    "permitted": "symbol",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.274",
+    "yaml": "!ruby/hash:Time {}",
+    "permitted": "document",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.275",
+    "yaml": "!map:Date {}",
+    "permitted": "none",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.276",
+    "yaml": "!map:Date {}",
+    "permitted": "symbol",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.277",
+    "yaml": "!map:Date {}",
+    "permitted": "document",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.278",
+    "yaml": "!ruby/marshalable:Time {}",
+    "permitted": "none",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.279",
+    "yaml": "!ruby/marshalable:Time {}",
+    "permitted": "symbol",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.280",
+    "yaml": "!ruby/marshalable:Time {}",
+    "permitted": "document",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.281",
+    "yaml": "!ruby/object:Time {a: 1}",
+    "permitted": "none",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.282",
+    "yaml": "!ruby/object:Time {a: 1}",
+    "permitted": "symbol",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.283",
+    "yaml": "!ruby/object:Time {a: 1}",
+    "permitted": "document",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.284",
+    "yaml": "!ruby/exception:Date {a: 1}",
+    "permitted": "none",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.285",
+    "yaml": "!ruby/exception:Date {a: 1}",
+    "permitted": "symbol",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.286",
+    "yaml": "!ruby/exception:Date {a: 1}",
+    "permitted": "document",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.287",
+    "yaml": "!str {str: 2}",
+    "permitted": "none",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.288",
+    "yaml": "!str {str: 2}",
+    "permitted": "symbol",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.289",
+    "yaml": "!str {str: 2}",
+    "permitted": "document",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.290",
+    "yaml": "!str {str: hi, a: 1}",
+    "permitted": "none",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.291",
+    "yaml": "!str {str: hi, a: 1}",
+    "permitted": "symbol",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.292",
+    "yaml": "!str {str: hi, a: 1}",
+    "permitted": "document",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.293",
+    "yaml": "!str {str: null}",
+    "permitted": "none",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.294",
+    "yaml": "!str {str: null}",
+    "permitted": "symbol",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.295",
+    "yaml": "!str {str: null}",
+    "permitted": "document",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.296",
+    "yaml": "!!float true",
+    "permitted": "none",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.297",
+    "yaml": "!!float true",
+    "permitted": "symbol",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.298",
+    "yaml": "!!float true",
+    "permitted": "document",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.299",
+    "yaml": "!!float false",
+    "permitted": "none",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.300",
+    "yaml": "!!float false",
+    "permitted": "symbol",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.301",
+    "yaml": "!!float false",
+    "permitted": "document",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.302",
+    "yaml": "!!float :foo",
+    "permitted": "none",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.303",
+    "yaml": "!!float :foo",
+    "permitted": "symbol",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.304",
+    "yaml": "!!float :foo",
+    "permitted": "document",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.305",
+    "yaml": "!!float 2001-12-15",
+    "permitted": "none",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.306",
+    "yaml": "!!float 2001-12-15",
+    "permitted": "symbol",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.307",
+    "yaml": "!!float 2001-12-15",
+    "permitted": "document",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.308",
+    "yaml": "!ruby/class Time",
+    "permitted": "none",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.309",
+    "yaml": "!ruby/class Time",
+    "permitted": "symbol",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.310",
+    "yaml": "!ruby/class Time",
+    "permitted": "document",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.311",
+    "yaml": "!ruby/module Date",
+    "permitted": "none",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.312",
+    "yaml": "!ruby/module Date",
+    "permitted": "symbol",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.313",
+    "yaml": "!ruby/module Date",
+    "permitted": "document",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.314",
+    "yaml": "!omap [{a: 1,b: 2}]",
+    "permitted": "none",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.315",
+    "yaml": "!omap [{a: 1,b: 2}]",
+    "permitted": "symbol",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.316",
+    "yaml": "!omap [{a: 1,b: 2}]",
+    "permitted": "document",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.317",
+    "yaml": "!ruby/hash-with-ivars {elements: {a: 1}, ivars: {b: 2}}",
+    "permitted": "none",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.318",
+    "yaml": "!ruby/hash-with-ivars {elements: {a: 1}, ivars: {b: 2}}",
+    "permitted": "symbol",
+    "group": "tag-extra"
+  },
+  {
+    "id": "tag-extra.319",
+    "yaml": "!ruby/hash-with-ivars {elements: {a: 1}, ivars: {b: 2}}",
+    "permitted": "document",
+    "group": "tag-extra"
+  }
+]

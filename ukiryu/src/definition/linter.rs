@@ -517,7 +517,7 @@ fn class_name(d: &Data) -> &'static str {
         Data::Float(_) => "Float",
         Data::String(_) => "String",
         Data::Symbol(_) => "Symbol",
-        Data::Date { .. } => "Date",
+        Data::AllocatedDate | Data::Date { .. } => "Date",
         Data::Time(_) => "Time",
         Data::Array(_) => "Array",
         Data::Hash(_) => "Hash",

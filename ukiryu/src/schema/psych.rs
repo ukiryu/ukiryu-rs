@@ -5,7 +5,7 @@
 //! call does not permit raise `Psych::DisallowedClass`, and aliases raise
 //! `Psych::AliasesNotEnabled`, as `safe_load` does by default.
 
-use super::data::{valid_civil, Data};
+use super::data::{inspect_str, valid_civil, Data};
 use super::SchemaError;
 use num_bigint::BigInt;
 use yeptris::{Document, Node, NodeKind, Style};
@@ -181,6 +181,42 @@ fn node_to_data(node: Node<'_>, permitted: Permitted) -> Result<Data, SchemaErro
             }
         }
         NodeKind::Sequence => {
+            if matches!(tag.as_deref(), Some("!omap" | "tag:yaml.org,2002:omap")) {
+                let mut pairs = Vec::new();
+                for item in node.items() {
+                    // Psych's omap visitor takes the first entry of each AST mapping.
+                    if item.kind() != NodeKind::Mapping || item.map_count() == 0 {
+                        return Err(SchemaError::ruby(
+                            "NoMethodError",
+                            "undefined method 'first' for nil",
+                        ));
+                    }
+                    let k = item.entries().next().unwrap().0;
+                    let v = item.entries().last().unwrap().1;
+                    Data::hash_insert(
+                        &mut pairs,
+                        node_to_data(k, permitted)?,
+                        node_to_data(v, permitted)?,
+                    );
+                }
+                return Ok(Data::Hash(pairs));
+            }
+            if let Some(name) = tag.as_deref().and_then(|t| {
+                t.strip_prefix("!seq:")
+                    .or_else(|| t.strip_prefix("!ruby/array:"))
+            }) {
+                if permits(permitted, name) {
+                    let value = allocated(name)?;
+                    if let Some(item) = node.items().next() {
+                        node_to_data(item, permitted)?;
+                        return Err(SchemaError::ruby(
+                            "NoMethodError",
+                            format!("undefined method 'push' for an instance of {name}"),
+                        ));
+                    }
+                    return Ok(value);
+                }
+            }
             sequence_tag(tag.as_deref(), permitted)?;
             let mut items = Vec::with_capacity(node.seq_count());
             for item in node.items() {
@@ -192,25 +228,43 @@ fn node_to_data(node: Node<'_>, permitted: Permitted) -> Result<Data, SchemaErro
             let revived = mapping_tag(tag.as_deref(), permitted)?;
             let mut pairs = Vec::with_capacity(node.map_count());
             for (k, v) in node.entries() {
-                if k.kind() == NodeKind::Scalar
-                    && k.style() == Style::Plain
-                    && k.tag().is_none()
+                let merge = k.kind() == NodeKind::Scalar
                     && k.str() == Some("<<")
-                {
-                    return Err(SchemaError::unsupported(
-                        "YAML merge key",
-                        "Psych `<<` merge semantics are not reproduced",
-                    ));
-                }
+                    && k.tag() != Some(b"tag:yaml.org,2002:str");
                 let key = node_to_data(k, permitted)?;
                 let value = node_to_data(v, permitted)?;
+                if merge {
+                    match &value {
+                        Data::Hash(incoming) => {
+                            for (k, v) in incoming {
+                                Data::hash_insert(&mut pairs, k.clone(), v.clone());
+                            }
+                            continue;
+                        }
+                        Data::Array(maps) if maps.iter().all(|v| matches!(v, Data::Hash(_))) => {
+                            let mut merged = Vec::new();
+                            for map in maps.iter().rev() {
+                                if let Data::Hash(incoming) = map {
+                                    for (k, v) in incoming {
+                                        Data::hash_insert(&mut merged, k.clone(), v.clone());
+                                    }
+                                }
+                            }
+                            for (k, v) in merged {
+                                Data::hash_insert(&mut pairs, k, v);
+                            }
+                            continue;
+                        }
+                        _ => {}
+                    }
+                }
                 Data::hash_insert(&mut pairs, key, value);
             }
             // `!ruby/exception` builds its members before resolving the class.
             if let Some(class) = revived {
                 return Err(class);
             }
-            Ok(Data::Hash(pairs))
+            finish_mapping(tag.as_deref(), pairs, permitted)
         }
     }
 }
@@ -227,11 +281,11 @@ fn permits(permitted: Permitted, class: &str) -> bool {
 
 /// A class a tag loads: `DisallowedClass` unless permitted; a permitted
 /// class revives an object outside the data domain.
-fn object_class(permitted: Permitted, class: &str, tag: &str) -> SchemaError {
+fn object_class(permitted: Permitted, class: &str, _tag: &str) -> SchemaError {
     if permits(permitted, class) {
         SchemaError::unsupported(
             "YAML tag",
-            format!("a {class} object revived from the tag {tag} is not reproduced"),
+            format!("the {class} object loaded by {_tag} is outside the schema data domain"),
         )
     } else {
         disallowed(class)
@@ -259,7 +313,14 @@ fn tagged_scalar(tag: &str, text: &str, permitted: Permitted) -> Result<Data, Sc
             return Ok(Data::String(text.to_owned()));
         }
         if let Some(name) = rest.strip_prefix(':') {
-            return Err(object_class(permitted, name, tag));
+            return Err(if permits(permitted, name) {
+                SchemaError::ruby(
+                    "NoMethodError",
+                    format!("undefined method 'replace' for an instance of {name}"),
+                )
+            } else {
+                object_class(permitted, name, tag)
+            });
         }
     }
     let class = match tag {
@@ -275,12 +336,9 @@ fn tagged_scalar(tag: &str, text: &str, permitted: Permitted) -> Result<Data, Sc
         return Err(object_class(permitted, class, tag));
     }
     match tag {
-        // A binary String needs a bytes value; `Float()` is not ported here.
-        "!binary"
-        | "tag:yaml.org,2002:binary"
-        | "!ruby/encoding"
-        | "!float"
-        | "tag:yaml.org,2002:float" => Err(unsupported_tag(tag)),
+        // Binary String encodings and Encoding objects need an expanded data domain.
+        "!binary" | "tag:yaml.org,2002:binary" | "!ruby/encoding" => Err(unsupported_tag(tag)),
+        "!float" | "tag:yaml.org,2002:float" => tagged_float(text, permitted),
         "!ruby/class" | "!ruby/module" if text.is_empty() => Ok(Data::Null),
         "!ruby/class" | "!ruby/module" => Err(object_class(permitted, text, tag)),
         t if t.starts_with("!ruby/sym") => {
@@ -299,14 +357,17 @@ fn tagged_scalar(tag: &str, text: &str, permitted: Permitted) -> Result<Data, Sc
 fn sequence_tag(tag: Option<&str>, permitted: Permitted) -> Result<(), SchemaError> {
     let Some(tag) = tag else { return Ok(()) };
     if tag == "!omap" || tag == "tag:yaml.org,2002:omap" {
-        return Err(unsupported_tag(tag));
+        return Ok(());
     }
     if let Some(name) = tag
         .strip_prefix("!seq:")
         .or_else(|| tag.strip_prefix("!ruby/array:"))
     {
         if name.is_empty() {
-            return Err(unsupported_tag(tag));
+            return Err(SchemaError::ruby(
+                "NoMethodError",
+                "undefined method 'allocate' for nil",
+            ));
         }
         return Err(object_class(permitted, name, tag));
     }
@@ -332,6 +393,11 @@ fn mapping_tag(
         return match name {
             "Hash" => Ok(None),
             "" => Err(object_class(permitted, "Object", tag)),
+            "Symbol" if permitted.symbol => Err(SchemaError::ruby(
+                "TypeError",
+                "allocator undefined for Symbol",
+            )),
+            name if permits(permitted, name) => Ok(None),
             name => Err(object_class(permitted, name, tag)),
         };
     }
@@ -343,7 +409,11 @@ fn mapping_tag(
     if let Some(rest) = tag.strip_prefix("!ruby/exception") {
         let name = rest.strip_prefix(':').unwrap_or(rest);
         let class = if name.is_empty() { "Exception" } else { name };
-        return Ok(Some(object_class(permitted, class, tag)));
+        return if permits(permitted, class) && class != "Symbol" {
+            Ok(None)
+        } else {
+            Ok(Some(object_class(permitted, class, tag)))
+        };
     }
     if let Some(name) = tag
         .strip_prefix("!map:")
@@ -351,20 +421,37 @@ fn mapping_tag(
         .or_else(|| tag.strip_prefix("!ruby/marshalable:"))
     {
         if name.is_empty() {
-            return Err(unsupported_tag(tag));
+            return Err(SchemaError::ruby(
+                "NoMethodError",
+                "undefined method 'allocate' for nil",
+            ));
+        }
+        if permits(permitted, name) && !tag.starts_with("!ruby/marshalable:") {
+            allocated(name)?;
+            return Ok(None);
+        }
+        if permits(permitted, name) && tag.starts_with("!ruby/marshalable:") {
+            return Err(SchemaError::ruby(
+                "ArgumentError",
+                format!("Cannot deserialize {name}"),
+            ));
         }
         return Err(object_class(permitted, name, tag));
     }
     if tag == "!ruby/range" {
         return Err(object_class(permitted, "Range", tag));
     }
-    if tag.starts_with("!ruby/data")
-        || tag.starts_with("!ruby/array:")
-        || tag.starts_with("!ruby/hash-with-ivars")
+    if tag.starts_with("!ruby/data") {
+        return Err(disallowed("Data"));
+    }
+    if tag.starts_with("!ruby/hash-with-ivars")
         || tag == "tag:yaml.org,2002:str"
-        || tag.starts_with("!str")
-        || tag.starts_with("!ruby/string")
+        || tag == "!str"
+        || tag == "!ruby/string"
     {
+        return Ok(None);
+    }
+    if tag.starts_with("!str") || tag.starts_with("!ruby/string") {
         return Err(unsupported_tag(tag));
     }
     // Core `!!map`, local, foreign and other unmatched tags: a plain Hash.
@@ -374,6 +461,102 @@ fn mapping_tag(
 fn disallowed(class: &str) -> SchemaError {
     SchemaError::DisallowedClass {
         class: class.to_owned(),
+    }
+}
+
+fn allocated(class: &str) -> Result<Data, SchemaError> {
+    match class {
+        "Date" => Ok(Data::AllocatedDate),
+        "Time" => Ok(Data::Time(String::new())),
+        _ => Err(SchemaError::ruby(
+            "TypeError",
+            format!("allocator undefined for {class}"),
+        )),
+    }
+}
+
+fn finish_mapping(
+    tag: Option<&str>,
+    pairs: Vec<(Data, Data)>,
+    permitted: Permitted,
+) -> Result<Data, SchemaError> {
+    if let Some(tag) = tag {
+        if tag.starts_with("!ruby/hash-with-ivars") && !pairs.is_empty() {
+            return Err(unsupported_tag(tag));
+        }
+        if let Some(class) = tag
+            .strip_prefix("!ruby/object:")
+            .or_else(|| tag.strip_prefix("!ruby/exception:"))
+            .or_else(|| tag.strip_prefix("!ruby/hash:"))
+            .or_else(|| tag.strip_prefix("!map:"))
+        {
+            if permits(permitted, class) {
+                return allocated(class);
+            }
+        }
+        if tag == "tag:yaml.org,2002:str" || tag == "!str" || tag == "!ruby/string" {
+            let value = pairs
+                .iter()
+                .find(|(k, _)| matches!(k, Data::String(s) if s == "str"))
+                .map(|(_, v)| v.clone())
+                .unwrap_or(Data::Null);
+            if pairs
+                .iter()
+                .any(|(k, _)| !matches!(k, Data::String(s) if s == "str"))
+                && matches!(value, Data::Null)
+            {
+                return Err(SchemaError::ruby(
+                    "FrozenError",
+                    "can't modify frozen NilClass: nil",
+                ));
+            }
+            return Ok(value);
+        }
+    }
+    Ok(Data::Hash(pairs))
+}
+
+fn tagged_float(text: &str, permitted: Permitted) -> Result<Data, SchemaError> {
+    let value = tokenize(text, permitted)?;
+    match value {
+        Data::Float(_) => Ok(value),
+        Data::Integer(i) => Ok(Data::Float(super::data::bigint_to_f64(&i))),
+        Data::Null => Err(SchemaError::ruby(
+            "TypeError",
+            "can't convert nil into Float",
+        )),
+        Data::Bool(b) => Err(SchemaError::ruby(
+            "TypeError",
+            format!(
+                "can't convert {} into Float",
+                if b { "true" } else { "false" }
+            ),
+        )),
+        Data::String(s) => {
+            // Use the already ported Ruby Float() scanner, including hex floats.
+            crate::types::number::parse_float(&s)
+                .ok()
+                .flatten()
+                .map(Data::Float)
+                .ok_or_else(|| {
+                    SchemaError::ruby(
+                        "ArgumentError",
+                        format!("invalid value for Float(): {}", inspect_str(&s)),
+                    )
+                })
+        }
+        other => Err(SchemaError::ruby(
+            "TypeError",
+            format!(
+                "can't convert {} into Float",
+                match other {
+                    Data::Symbol(_) => "Symbol",
+                    Data::AllocatedDate | Data::Date { .. } => "Date",
+                    Data::Time(_) => "Time",
+                    _ => unreachable!(),
+                }
+            ),
+        )),
     }
 }
 
@@ -424,11 +607,15 @@ pub(crate) fn tokenize(s: &str, permitted: Permitted) -> Result<Data, SchemaErro
         if !permitted.time {
             return Err(disallowed("Time"));
         }
-        return Ok(if time_fields_valid(s) {
-            Data::Time(s.to_owned())
-        } else {
-            Data::String(s.to_owned())
-        });
+        return Ok(
+            if time_fields_valid(s)
+                && !matches!(super::value_time::parse(s), Err(SchemaError::Ruby { ref class, .. }) if class == "ArgumentError")
+            {
+                Data::Time(s.to_owned())
+            } else {
+                Data::String(s.to_owned())
+            },
+        );
     }
     if let Some((y, m, d)) = date_parts(s) {
         if !permitted.date {
@@ -482,9 +669,9 @@ pub(crate) fn tokenize(s: &str, permitted: Permitted) -> Result<Data, SchemaErro
         let cleaned: String = s.chars().filter(|c| *c != ',' && *c != '_').collect();
         let cleaned = drop_dot_before_exponent(&cleaned);
         return cleaned.parse::<f64>().map(Data::Float).map_err(|_| {
-            SchemaError::unsupported(
-                "YAML float",
-                format!("Psych raises ArgumentError for Float({cleaned:?}); not reproduced"),
+            SchemaError::ruby(
+                "ArgumentError",
+                format!("invalid value for Float(): {}", inspect_str(&cleaned)),
             )
         });
     }
@@ -493,9 +680,9 @@ pub(crate) fn tokenize(s: &str, permitted: Permitted) -> Result<Data, SchemaErro
         return parse_ruby_integer(&cleaned)
             .map(Data::Integer)
             .ok_or_else(|| {
-                SchemaError::unsupported(
-                    "YAML integer",
-                    format!("Psych raises ArgumentError for Integer({cleaned:?}); not reproduced"),
+                SchemaError::ruby(
+                    "ArgumentError",
+                    format!("invalid value for Integer(): {}", inspect_str(&cleaned)),
                 )
             });
     }

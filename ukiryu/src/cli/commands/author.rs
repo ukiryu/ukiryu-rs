@@ -2021,7 +2021,7 @@ fn data_receiver(v: Option<&Data>) -> String {
         Some(Data::Float(_)) => "an instance of Float".to_owned(),
         Some(Data::String(_)) => "an instance of String".to_owned(),
         Some(Data::Symbol(_)) => "an instance of Symbol".to_owned(),
-        Some(Data::Date { .. }) => "an instance of Date".to_owned(),
+        Some(Data::AllocatedDate | Data::Date { .. }) => "an instance of Date".to_owned(),
         Some(Data::Time(_)) => "an instance of Time".to_owned(),
         Some(Data::Array(_)) => "an instance of Array".to_owned(),
         Some(Data::Hash(_)) => "an instance of Hash".to_owned(),

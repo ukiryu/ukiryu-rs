@@ -283,7 +283,7 @@ fn symbol_needs_no_quotes(s: &str) -> bool {
     is_ident(base)
 }
 
-fn is_simple_symbol_key(s: &str) -> bool {
+pub(crate) fn is_simple_symbol_key(s: &str) -> bool {
     let base = s
         .strip_suffix('?')
         .or_else(|| s.strip_suffix('!'))
