@@ -5,6 +5,9 @@ use serde_json::{json, Value};
 use std::path::Path;
 use ukiryu_cli::capture::process;
 
+#[path = "support/offline_schema.rs"]
+mod offline_schema;
+
 #[test]
 fn every_cli_corpus_row_is_captured_byte_exact() {
     let corpus = Path::new(env!("CARGO_MANIFEST_DIR")).join("../corpus/conformance");
@@ -23,7 +26,8 @@ fn every_cli_corpus_row_is_captured_byte_exact() {
         "HOME": home, "SHELL": "/bin/bash", "PATH": "", "TZ": "UTC",
         "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8", "TERM": "dumb",
         "COLUMNS": "100", "THOR_COLUMNS": "100",
-        "UKIRYU_REGISTER": format!("{inputs}/register")
+        "UKIRYU_REGISTER": format!("{inputs}/register"),
+        "UKIRYU_REMOTE_SCHEMA_URL": offline_schema::unavailable_schema_url()
     });
     let mut seen = 0;
     let mut failures = Vec::new();
@@ -128,7 +132,8 @@ fn author_commands_use_the_captured_register() {
         "XDG_DATA_HOME": root.join("xdg"),
         "XDG_DATA_DIRS": root.join("sysdata"),
         "PATH": "/usr/bin:/bin", "SHELL": "/bin/bash", "TERM": "dumb",
-        "TZ": "UTC", "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8"
+        "TZ": "UTC", "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8",
+        "UKIRYU_REMOTE_SCHEMA_URL": offline_schema::unavailable_schema_url()
     });
     for (file, id, register) in [
         ("cases.json", "validate_all_text", "register"),

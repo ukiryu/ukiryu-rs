@@ -14,7 +14,7 @@ fn scan(
     node: &Data,
     base: &str,
     ids: &mut HashSet<String>,
-    refs: &mut Vec<String>,
+    refs: &mut Vec<(String, bool)>,
 ) -> Result<(), SchemaError> {
     let Data::Hash(pairs) = node else {
         return Ok(());
@@ -27,8 +27,11 @@ fn scan(
     if let Some(Data::String(r)) = get(pairs, "$ref") {
         // Fragment-only references never load a resource.
         if !r.starts_with('#') && !r.is_empty() {
-            refs.push(uri::resolve(&base, r)?);
+            refs.push((uri::resolve(&base, r)?, false));
         }
+    }
+    if let Some(Data::String(reference)) = get(pairs, "extends") {
+        refs.push((uri::resolve(&base, reference)?, true));
     }
     for key in ["definitions", "properties", "patternProperties"] {
         if let Some(Data::Hash(pairs)) = get(pairs, key) {
@@ -123,14 +126,34 @@ pub(super) fn read(reference: &str) -> Result<Data, SchemaError> {
     json::parse_schema(&text)
 }
 
+// A String `extends` is eagerly opened even though its validation attribute
+// subsequently reports it as an invalid schema. Non-file URI schemes reach
+// Ruby's ordinary file opener rather than JSON::Schema::Reader's file wrapper.
+fn read_extension(reference: &str) -> Result<Data, SchemaError> {
+    let scheme = uri::split(reference).scheme;
+    if scheme.is_some_and(|s| !["file", "http", "https"].contains(&s))
+        && !(cfg!(windows) && PathBuf::from(reference).is_absolute())
+    {
+        let text = super::read_text(std::path::Path::new(reference))?;
+        return json::parse_schema(&text);
+    }
+    read(reference)
+}
+
 pub(super) fn load(root: &Data, base: &str) -> Result<Vec<(String, Data)>, SchemaError> {
-    load_with(root, base, read)
+    load_with(root, base, |name, extension| {
+        if extension {
+            read_extension(name)
+        } else {
+            read(name)
+        }
+    })
 }
 
 pub(super) fn load_with(
     root: &Data,
     base: &str,
-    read: impl Fn(&str) -> Result<Data, SchemaError>,
+    read: impl Fn(&str, bool) -> Result<Data, SchemaError>,
 ) -> Result<Vec<(String, Data)>, SchemaError> {
     let mut documents: Vec<(String, Data)> = Vec::new();
     loop {
@@ -143,9 +166,9 @@ pub(super) fn load_with(
         }
         let missing = refs
             .iter()
-            .map(|r| r.split('#').next().unwrap_or(r))
-            .find(|r| !ids.contains(*r));
-        let Some(name) = missing else {
+            .map(|(r, extension)| (r.split('#').next().unwrap_or(r), *extension))
+            .find(|(r, _)| !ids.contains(*r));
+        let Some((name, extension)) = missing else {
             return Ok(documents);
         };
         if documents.len() >= 128 {
@@ -154,7 +177,7 @@ pub(super) fn load_with(
                 "more than 128 external schema documents",
             ));
         }
-        documents.push((name.into(), read(name)?));
+        documents.push((name.into(), read(name, extension)?));
     }
 }
 
@@ -170,4 +193,25 @@ pub(super) fn file_uri(path: &std::path::Path) -> String {
         if text.starts_with('/') { "" } else { "/" },
         text
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn string_extends_uses_the_supplied_resource_loader() {
+        let root = json::parse_schema(r#"{"id":"urn:root","extends":"urn:external"}"#).unwrap();
+        let error = load_with(&root, "urn:root", |name, extension| {
+            assert_eq!(name, "urn:external");
+            assert!(extension);
+            Err(SchemaError::unsupported(
+                "snapshot schema resource",
+                "denied",
+            ))
+        })
+        .unwrap_err();
+        assert!(matches!(error, SchemaError::Unsupported { feature, .. }
+            if feature == "snapshot schema resource"));
+    }
 }
