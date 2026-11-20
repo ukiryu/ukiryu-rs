@@ -43,3 +43,10 @@ decimal exponents outside signed 64-bit. The latter needs BigDecimal resource
 limit behavior: probing a remainder at the extreme negative exponent boundary
 raised `NoMemoryError` in the reference. Resource transport and YAML
 value-spelling boundaries remain separate work.
+
+The replay keeps the captured POSIX absolute-path spelling for scalar String
+`extends` under the URN base. A Windows drive prefix would change that input
+from `urn:/path` to `C:/path`, bypassing the captured missing-file behavior.
+File-based cases continue to use the actual host path and file URI; no rows
+are skipped or expected results changed. The fixture expansion regression
+checks both `C:/x.json` and `C:\\x.json` on every platform.
