@@ -19,3 +19,5 @@ jobs:
         with:
           python-version: '3.12'
       - run: python scripts/shipped-audit.py
+      - name: Check published-artifact isolation and rejection paths
+        run: python -m unittest discover -s tests/published-audit -v

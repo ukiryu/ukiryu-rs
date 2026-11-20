@@ -1,6 +1,8 @@
 # ukiryu-rs
 
 Shared Rust core for the migration in [ukiryu/ukiryu#29](https://github.com/ukiryu/ukiryu/issues/29).
+See [runtime architecture and development installation](docs/runtime-installation.md)
+and the [release train and published-artifact audit checklist](docs/release-trains.md).
 The workspace contains the core, a thin non-published C-ABI cdylib entry and the
 future Rust CLI. Initial development metadata follows Parsanol: version0.1.0,
 Rust1.86, shared dependencies and an LTO release profile. Publication is not enabled.
