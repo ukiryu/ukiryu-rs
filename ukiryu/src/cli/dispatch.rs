@@ -590,7 +590,12 @@ fn execute_outcome(
     }
     match error {
         ExecuteError::Raised { .. } => {
-            io.stderr(&format!("{}\n", error.friendly_message()));
+            let message = error.friendly_message();
+            if io.thor_colors() {
+                io.stderr(&format!("\x1b[31m{message}\x1b[0m\n"));
+            } else {
+                io.stderr(&format!("{message}\n"));
+            }
             Ok(1)
         }
         ExecuteError::Gated { stage, detail, .. } => Err(Failure::Gated {
@@ -730,6 +735,12 @@ impl ProcessIo {
         self.captured.is_none() && io::stdout().is_terminal()
     }
 
+    fn thor_colors(&self) -> bool {
+        self.stdout_tty()
+            && self.env("TERM").is_none_or(|v| v != "dumb")
+            && self.env("NO_COLOR").is_none_or(|v| v.is_empty())
+    }
+
     fn handler_context(&self, register: Option<String>) -> Result<HandlerContext, Failure> {
         Ok(HandlerContext {
             host: self.host()?,
@@ -739,9 +750,7 @@ impl ProcessIo {
 
     fn author_context(&self, config_colors_disabled: bool) -> AuthorContext {
         AuthorContext {
-            thor_colors: self.stdout_tty()
-                && self.env("TERM").is_none_or(|v| v != "dumb")
-                && self.env("NO_COLOR").is_none_or(|v| v.is_empty()),
+            thor_colors: self.thor_colors(),
             discovery: DiscoveryEnv {
                 home: self.env("HOME"),
                 xdg_data_home: self.env("XDG_DATA_HOME"),
@@ -750,6 +759,10 @@ impl ProcessIo {
                 opt_root: "/opt".to_owned(),
             },
             schema_path_env: self.env("UKIRYU_SCHEMA_PATH"),
+            remote_schema: self
+                .env("UKIRYU_REMOTE_SCHEMA_URL")
+                .map(crate::definition::definition_validator::RemoteSchemaSource::Url)
+                .unwrap_or_default(),
             default_register: None,
             config_colors_disabled,
         }

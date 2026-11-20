@@ -112,6 +112,38 @@ fn snapshot_is_not_a_transcript_and_never_falls_back_to_host_files() {
     assert_eq!(actual["error"]["code"], "UNSUPPORTED_CAPABILITY");
 }
 #[test]
+fn external_schema_paths_are_refused_independently_of_host_platform() {
+    for reference in [
+        r"file://D:\a\ukiryu-rs\ukiryu-rs\ukiryu/Cargo.toml",
+        "file:///C:/host/Cargo.toml",
+        "file://localhost/C:/host/Cargo.toml",
+        r"C:\host\Cargo.toml",
+        r"\\server\share\Cargo.toml",
+        "file:///host/Cargo.toml",
+        "../host/Cargo.toml",
+        "https://example.invalid/schema.json",
+    ] {
+        let mut external = snapshot();
+        external["files"]["${INPUTS}/external-schema/tool.schema.yaml"] =
+            Value::String(format!("$ref: {reference}\n"));
+        let refused = request(
+            json!([
+                "validate",
+                "file",
+                "${INPUTS}/profiles/inkscape_1.0.yaml",
+                "--schema",
+                "${INPUTS}/external-schema/tool.schema.yaml"
+            ]),
+            external,
+        );
+        assert_eq!(
+            refused["error"]["code"], "UNSUPPORTED_CAPABILITY",
+            "{reference}: {refused}"
+        );
+    }
+}
+
+#[test]
 fn side_effecting_commands_and_missing_snapshots_are_refused_loudly() {
     for argv in [
         json!(["exec", "jq", "process", "filter=."]),

@@ -114,6 +114,7 @@ fn contexts(case: &Value, root: &str) -> (AuthorContext, ToolEnv) {
     let register = case_env(case, root, "UKIRYU_REGISTER", Some(format!("{root}/regx")));
     let colors_disabled = case_env(case, root, "NO_COLOR", None).is_some_and(|v| !v.is_empty());
     let ctx = AuthorContext {
+        remote_schema: ukiryu::definition::definition_validator::RemoteSchemaSource::Unavailable,
         thor_colors: case["pty"].as_bool().unwrap_or(false),
         discovery: DiscoveryEnv {
             home: Some(format!("{root}/home")),

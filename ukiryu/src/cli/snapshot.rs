@@ -147,6 +147,7 @@ impl Snapshot {
                 opt_root: String::new(),
             },
             schema_path_env: None,
+            remote_schema: crate::definition::definition_validator::RemoteSchemaSource::Unavailable,
             default_register: None,
             config_colors_disabled: colors_off,
         };

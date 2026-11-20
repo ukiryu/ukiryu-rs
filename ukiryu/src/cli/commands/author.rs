@@ -41,9 +41,8 @@
 //! the crash (see [`REPRODUCED_DEFECTS`]); the owner-pending corrections
 //! are not applied here.
 //! `DefinitionValidator` is the core `crate::definition::definition_validator`
-//! module; its remote schema download is not performed: with no `--schema`
-//! and no usable `UKIRYU_SCHEMA_PATH`, only the structural checks run (the
-//! Ruby behaviour when the download is unavailable).
+//! module; with no usable local schema it performs Ruby's remote fallback.
+//! Hosts can supply an unavailable response to reproduce offline captures.
 use super::CommandOutcome;
 use crate::cache::ToolCache;
 use crate::definition::documentation::{DocumentationErrorKind, DocumentationGenerator};
@@ -147,6 +146,8 @@ pub struct AuthorContext {
     pub discovery: DiscoveryEnv,
     /// `ENV['UKIRYU_SCHEMA_PATH']` (`DefinitionValidator.find_schema`).
     pub schema_path_env: Option<String>,
+    /// Native URL fallback, or an explicitly unavailable offline response.
+    pub remote_schema: definition_validator::RemoteSchemaSource,
     /// `Register.default.path`, resolved by the register owner (discovery,
     /// `UKIRYU_REGISTER`, user clone). `None` when it is not resolved; the
     /// verbs that need it then return [`AuthorError::RegisterUnavailable`].
@@ -688,6 +689,7 @@ fn ljust(text: &str, width: usize) -> String {
 fn validator_env(ctx: &AuthorContext) -> ValidatorEnv {
     ValidatorEnv {
         schema_path: ctx.schema_path_env.clone(),
+        remote_schema: ctx.remote_schema.clone(),
     }
 }
 

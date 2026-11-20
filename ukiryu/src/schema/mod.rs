@@ -18,10 +18,10 @@
 //!   references, JSON/file string schemas and date-time/IP formats. Other
 //!   unimplemented keywords and malformed JSON resource diagnostics raise
 //!   [`SchemaError::Unsupported`]; they are never silently accepted.
-//! - No network access and no remote schema download: the original
-//!   `DefinitionValidator` falls back to downloading a schema when none is
-//!   given; that path is not ported. Its structural checks are not schema
-//!   validation and are not provided here.
+//! - Native HTTP/HTTPS schema resources use open-uri-compatible URI bases,
+//!   redirects and failure classes. Definition validation downloads the
+//!   default remote schema when no local schema loads. WASM refuses HTTP;
+//!   its host can supply the already-loaded schema instead.
 
 mod data;
 mod date_time;
@@ -33,6 +33,7 @@ mod json;
 mod malformed;
 mod psych;
 mod resources;
+pub(crate) mod transport;
 mod uri;
 mod value_time;
 
@@ -76,7 +77,8 @@ pub enum SchemaError {
     IpAddress { prefix: bool, message: String },
     /// `Errno::*` while reading a schema file.
     Io { errno: String, message: String },
-    /// A Ruby runtime error from scalar conversion or tag revival.
+    /// A Ruby exception from scalar conversion, tag revival or
+    /// resource/URI/reference preparation.
     Ruby { class: String, message: String },
     /// Behaviour of the original that this port does not reproduce.
     Unsupported { feature: String, detail: String },
@@ -399,8 +401,12 @@ fn run(schema: &Data, data: &Data, strict: bool) -> Result<Vec<engine::VErr>, Sc
                 (stringify(&parsed)?, uuid)
             } else {
                 let parsed = resources::read(text)?;
-                let path = resources::local_path(text)?;
-                (stringify(&parsed)?, resources::file_uri(&path))
+                let base = if transport::is_http(text) {
+                    text.clone()
+                } else {
+                    resources::file_uri(&resources::local_path(text)?)
+                };
+                (stringify(&parsed)?, base)
             }
         }
         _ => {

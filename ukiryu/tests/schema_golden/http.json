@@ -1,0 +1,965 @@
+{
+  "generator_sha256": "543fb43494379d5bf19e6a3302d4dac10507dbfab0d4133f68bd6c4757b0af47",
+  "oracle_state": "clean",
+  "oracle": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+  "ruby": "4.0.1",
+  "json-schema": "6.2.1",
+  "lock_sha256": "388dbb063683f15b9976f1fb3cc4d62ca2390ed6333ab69270d71eab98e988f9",
+  "routes": {
+    "/integer.json": [
+      200,
+      "{\"type\":\"integer\"}"
+    ],
+    "/dir/root.json": [
+      200,
+      "{\"$ref\":\"../integer.json\"}"
+    ],
+    "/dir/id.json": [
+      200,
+      "{\"id\":\"nested/entry.json\",\"$ref\":\"../../integer.json\"}"
+    ],
+    "/fragment.json": [
+      200,
+      "{\"definitions\":{\"n\":{\"type\":\"integer\"}}}"
+    ],
+    "/redirect": [
+      302,
+      "",
+      "/dir/root.json"
+    ],
+    "/redir/from/start": [
+      302,
+      "",
+      "/dir/root.json"
+    ],
+    "/redirect-missing": [
+      302,
+      "",
+      "/missing"
+    ],
+    "/fragment-ref.json": [
+      200,
+      "{\"$ref\":\"fragment.json#/definitions/n\"}"
+    ],
+    "/definition.yaml": [
+      200,
+      "type: object\nrequired: [name]\n"
+    ],
+    "/invalid.yaml": [
+      200,
+      "x: [\n"
+    ],
+    "/false.yaml": [
+      200,
+      "false"
+    ],
+    "/symbol.yaml": [
+      200,
+      ":foo"
+    ]
+  },
+  "cases": [
+    {
+      "id": "ref.shape.0",
+      "input": {
+        "op": "schema",
+        "schema": {
+          "$ref": 1
+        },
+        "data": {}
+      },
+      "expect": {
+        "error": {
+          "class": "TypeError",
+          "message": "Can't convert Integer into String."
+        }
+      }
+    },
+    {
+      "id": "ref.shape.1",
+      "input": {
+        "op": "schema",
+        "schema": {
+          "$ref": true
+        },
+        "data": {}
+      },
+      "expect": {
+        "error": {
+          "class": "TypeError",
+          "message": "Can't convert TrueClass into String."
+        }
+      }
+    },
+    {
+      "id": "ref.shape.2",
+      "input": {
+        "op": "schema",
+        "schema": {
+          "$ref": []
+        },
+        "data": {}
+      },
+      "expect": {
+        "error": {
+          "class": "TypeError",
+          "message": "Can't convert Array into String."
+        }
+      }
+    },
+    {
+      "id": "ref.shape.3",
+      "input": {
+        "op": "schema",
+        "schema": {
+          "$ref": {}
+        },
+        "data": {}
+      },
+      "expect": {
+        "error": {
+          "class": "TypeError",
+          "message": "Can't convert Hash into String."
+        }
+      }
+    },
+    {
+      "id": "ref.shape.4",
+      "input": {
+        "op": "schema",
+        "schema": {
+          "$ref": null
+        },
+        "data": {}
+      },
+      "expect": {
+        "error": {
+          "class": "NoMethodError",
+          "message": "undefined method 'normalize_ref' for nil"
+        }
+      }
+    },
+    {
+      "id": "ref.shape.5",
+      "input": {
+        "op": "schema",
+        "schema": {
+          "$ref": false
+        },
+        "data": {}
+      },
+      "expect": {
+        "error": {
+          "class": "NoMethodError",
+          "message": "undefined method 'normalize_ref' for nil"
+        }
+      }
+    },
+    {
+      "id": "ref.shape.6",
+      "input": {
+        "op": "schema",
+        "schema": {
+          "$ref": "${BASE}/integer.json\n"
+        },
+        "data": {}
+      },
+      "expect": {
+        "error": {
+          "class": "URI::InvalidURIError",
+          "message": "bad URI (is not URI?): \"${BASE}/integer.json\\n\""
+        }
+      }
+    },
+    {
+      "id": "ref.scalar.0",
+      "input": {
+        "op": "schema",
+        "schema": {
+          "definitions": {
+            "x": 5
+          },
+          "$ref": "#/definitions/x/a"
+        },
+        "data": {}
+      },
+      "expect": {
+        "error": {
+          "class": "TypeError",
+          "message": "no implicit conversion of String into Integer"
+        }
+      }
+    },
+    {
+      "id": "ref.scalar.1",
+      "input": {
+        "op": "schema",
+        "schema": {
+          "definitions": {
+            "x": 1.5
+          },
+          "$ref": "#/definitions/x/a"
+        },
+        "data": {}
+      },
+      "expect": {
+        "error": {
+          "class": "NoMethodError",
+          "message": "undefined method '[]' for an instance of Float"
+        }
+      }
+    },
+    {
+      "id": "ref.scalar.2",
+      "input": {
+        "op": "schema",
+        "schema": {
+          "definitions": {
+            "x": true
+          },
+          "$ref": "#/definitions/x/a"
+        },
+        "data": {}
+      },
+      "expect": {
+        "error": {
+          "class": "NoMethodError",
+          "message": "undefined method '[]' for true"
+        }
+      }
+    },
+    {
+      "id": "ref.scalar.3",
+      "input": {
+        "op": "schema",
+        "schema": {
+          "definitions": {
+            "x": false
+          },
+          "$ref": "#/definitions/x/a"
+        },
+        "data": {}
+      },
+      "expect": {
+        "error": {
+          "class": "NoMethodError",
+          "message": "undefined method '[]' for false"
+        }
+      }
+    },
+    {
+      "id": "ref.scalar.4",
+      "input": {
+        "op": "schema",
+        "schema": {
+          "definitions": {
+            "x": null
+          },
+          "$ref": "#/definitions/x/a"
+        },
+        "data": {}
+      },
+      "expect": {
+        "error": {
+          "class": "JSON::Schema::SchemaError",
+          "message": "The fragment '/definitions/x' does not exist on schema be8ec78a-d11f-5195-9d6e-3339afb24096"
+        }
+      }
+    },
+    {
+      "id": "ref.scalar.5",
+      "input": {
+        "op": "schema",
+        "schema": {
+          "definitions": {
+            "x": "abc"
+          },
+          "$ref": "#/definitions/x/a"
+        },
+        "data": {}
+      },
+      "expect": {
+        "error": {
+          "class": "NoMethodError",
+          "message": "undefined method 'each' for an instance of String"
+        }
+      }
+    },
+    {
+      "id": "ref.string.0",
+      "input": {
+        "op": "schema",
+        "schema": {
+          "definitions": {
+            "x": "abc"
+          },
+          "$ref": "#/definitions/x/a/z"
+        },
+        "data": {}
+      },
+      "expect": {
+        "error": {
+          "class": "JSON::Schema::SchemaError",
+          "message": "The fragment '/definitions/x/a/z' does not exist on schema 66c6c1e3-7889-5534-8cf5-aacfc885599c"
+        }
+      }
+    },
+    {
+      "id": "ref.string.1",
+      "input": {
+        "op": "schema",
+        "schema": {
+          "definitions": {
+            "x": "abc"
+          },
+          "$ref": "#/definitions/x/z"
+        },
+        "data": {}
+      },
+      "expect": {
+        "error": {
+          "class": "JSON::Schema::SchemaError",
+          "message": "The fragment '/definitions/x/z' does not exist on schema 2d20aad3-07fa-5f0c-82e5-f23703b8a558"
+        }
+      }
+    },
+    {
+      "id": "ref.string.2",
+      "input": {
+        "op": "schema",
+        "schema": {
+          "definitions": {
+            "x": "abc"
+          },
+          "$ref": "#/definitions/x/b/b"
+        },
+        "data": {}
+      },
+      "expect": {
+        "error": {
+          "class": "NoMethodError",
+          "message": "undefined method 'each' for an instance of String"
+        }
+      }
+    },
+    {
+      "id": "uri.invalid.0",
+      "input": {
+        "op": "schema",
+        "schema": {
+          "$ref": "http://bad host/schema"
+        },
+        "data": {}
+      },
+      "expect": {
+        "error": {
+          "class": "JSON::Schema::UriError",
+          "message": "Invalid character in host: 'bad host'"
+        }
+      }
+    },
+    {
+      "id": "uri.invalid.1",
+      "input": {
+        "op": "schema",
+        "schema": {
+          "$ref": "1bad:foo"
+        },
+        "data": {}
+      },
+      "expect": {
+        "error": {
+          "class": "JSON::Schema::UriError",
+          "message": "Invalid scheme format: '1bad'"
+        }
+      }
+    },
+    {
+      "id": "uri.invalid.2",
+      "input": {
+        "op": "schema",
+        "schema": {
+          "$ref": "http://127.0.0.1:abc/x"
+        },
+        "data": {}
+      },
+      "expect": {
+        "error": {
+          "class": "JSON::Schema::UriError",
+          "message": "Invalid port number: \"abc\""
+        }
+      }
+    },
+    {
+      "id": "uri.invalid.3",
+      "input": {
+        "op": "schema",
+        "schema": {
+          "$ref": "http:"
+        },
+        "data": {}
+      },
+      "expect": {
+        "error": {
+          "class": "JSON::Schema::UriError",
+          "message": "Absolute URI missing hierarchical segment: 'http:'"
+        }
+      }
+    },
+    {
+      "id": "uri.invalid.4",
+      "input": {
+        "op": "schema",
+        "schema": {
+          "$ref": "http://[bad!]/x"
+        },
+        "data": {}
+      },
+      "expect": {
+        "error": {
+          "class": "URI::InvalidURIError",
+          "message": "bad URI (is not URI?): \"http://[bad!]/x\""
+        }
+      }
+    },
+    {
+      "id": "uri.invalid.5",
+      "input": {
+        "op": "schema",
+        "schema": {
+          "$ref": "http://[bad/]/x"
+        },
+        "data": {}
+      },
+      "expect": {
+        "error": {
+          "class": "URI::InvalidURIError",
+          "message": "bad URI (is not URI?): \"http://[bad/]/x\""
+        }
+      }
+    },
+    {
+      "id": "uri.invalid.6",
+      "input": {
+        "op": "schema",
+        "schema": {
+          "$ref": ":ambiguous"
+        },
+        "data": {}
+      },
+      "expect": {
+        "error": {
+          "class": "JSON::Schema::UriError",
+          "message": "Cannot assemble URI string with ambiguous path: ':ambiguous'"
+        }
+      }
+    },
+    {
+      "id": "schema./integer.json.1",
+      "input": {
+        "op": "schema",
+        "schema": "${BASE}/integer.json",
+        "data": "1"
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "schema./dir/root.json.1",
+      "input": {
+        "op": "schema",
+        "schema": "${BASE}/dir/root.json",
+        "data": "1"
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "schema./dir/id.json.1",
+      "input": {
+        "op": "schema",
+        "schema": "${BASE}/dir/id.json",
+        "data": "1"
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "schema./fragment.json#/definitions/n.1",
+      "input": {
+        "op": "schema",
+        "schema": "${BASE}/fragment.json#/definitions/n",
+        "data": "1"
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "schema./fragment-ref.json.1",
+      "input": {
+        "op": "schema",
+        "schema": "${BASE}/fragment-ref.json",
+        "data": "1"
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "schema./redirect.1",
+      "input": {
+        "op": "schema",
+        "schema": "${BASE}/redirect",
+        "data": "1"
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "schema./redir/from/start.1",
+      "input": {
+        "op": "schema",
+        "schema": "${BASE}/redir/from/start",
+        "data": "1"
+      },
+      "expect": {
+        "error": {
+          "class": "JSON::Schema::ReadFailed",
+          "message": "Read of URI at ${BASE}/redir/integer.json failed"
+        }
+      }
+    },
+    {
+      "id": "schema./redirect-missing.1",
+      "input": {
+        "op": "schema",
+        "schema": "${BASE}/redirect-missing",
+        "data": "1"
+      },
+      "expect": {
+        "error": {
+          "class": "JSON::Schema::ReadFailed",
+          "message": "Read of URI at ${BASE}/redirect-missing failed"
+        }
+      }
+    },
+    {
+      "id": "schema./missing.1",
+      "input": {
+        "op": "schema",
+        "schema": "${BASE}/missing",
+        "data": "1"
+      },
+      "expect": {
+        "error": {
+          "class": "JSON::Schema::ReadFailed",
+          "message": "Read of URI at ${BASE}/missing failed"
+        }
+      }
+    },
+    {
+      "id": "inline.relative.1",
+      "input": {
+        "op": "schema",
+        "schema": {
+          "id": "${BASE}/dir/root.json",
+          "$ref": "../integer.json"
+        },
+        "data": "1"
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "schema./integer.json.x",
+      "input": {
+        "op": "schema",
+        "schema": "${BASE}/integer.json",
+        "data": "\"x\""
+      },
+      "expect": {
+        "ok": [
+          "The property '#/' of type string did not match the following type: integer in schema ${BASE}/integer.json"
+        ]
+      }
+    },
+    {
+      "id": "schema./dir/root.json.x",
+      "input": {
+        "op": "schema",
+        "schema": "${BASE}/dir/root.json",
+        "data": "\"x\""
+      },
+      "expect": {
+        "ok": [
+          "The property '#/' of type string did not match the following type: integer in schema ${BASE}/integer.json#"
+        ]
+      }
+    },
+    {
+      "id": "schema./dir/id.json.x",
+      "input": {
+        "op": "schema",
+        "schema": "${BASE}/dir/id.json",
+        "data": "\"x\""
+      },
+      "expect": {
+        "ok": [
+          "The property '#/' of type string did not match the following type: integer in schema ${BASE}/integer.json#"
+        ]
+      }
+    },
+    {
+      "id": "schema./fragment.json#/definitions/n.x",
+      "input": {
+        "op": "schema",
+        "schema": "${BASE}/fragment.json#/definitions/n",
+        "data": "\"x\""
+      },
+      "expect": {
+        "ok": []
+      }
+    },
+    {
+      "id": "schema./fragment-ref.json.x",
+      "input": {
+        "op": "schema",
+        "schema": "${BASE}/fragment-ref.json",
+        "data": "\"x\""
+      },
+      "expect": {
+        "ok": [
+          "The property '#/' of type string did not match the following type: integer in schema ${BASE}/fragment.json#"
+        ]
+      }
+    },
+    {
+      "id": "schema./redirect.x",
+      "input": {
+        "op": "schema",
+        "schema": "${BASE}/redirect",
+        "data": "\"x\""
+      },
+      "expect": {
+        "ok": [
+          "The property '#/' of type string did not match the following type: integer in schema ${BASE}/integer.json#"
+        ]
+      }
+    },
+    {
+      "id": "schema./redir/from/start.x",
+      "input": {
+        "op": "schema",
+        "schema": "${BASE}/redir/from/start",
+        "data": "\"x\""
+      },
+      "expect": {
+        "error": {
+          "class": "JSON::Schema::ReadFailed",
+          "message": "Read of URI at ${BASE}/redir/integer.json failed"
+        }
+      }
+    },
+    {
+      "id": "schema./redirect-missing.x",
+      "input": {
+        "op": "schema",
+        "schema": "${BASE}/redirect-missing",
+        "data": "\"x\""
+      },
+      "expect": {
+        "error": {
+          "class": "JSON::Schema::ReadFailed",
+          "message": "Read of URI at ${BASE}/redirect-missing failed"
+        }
+      }
+    },
+    {
+      "id": "schema./missing.x",
+      "input": {
+        "op": "schema",
+        "schema": "${BASE}/missing",
+        "data": "\"x\""
+      },
+      "expect": {
+        "error": {
+          "class": "JSON::Schema::ReadFailed",
+          "message": "Read of URI at ${BASE}/missing failed"
+        }
+      }
+    },
+    {
+      "id": "inline.relative.x",
+      "input": {
+        "op": "schema",
+        "schema": {
+          "id": "${BASE}/dir/root.json",
+          "$ref": "../integer.json"
+        },
+        "data": "\"x\""
+      },
+      "expect": {
+        "ok": [
+          "The property '#/' of type string did not match the following type: integer in schema ${BASE}/integer.json#"
+        ]
+      }
+    },
+    {
+      "id": "read.404",
+      "input": {
+        "op": "schema",
+        "schema": {
+          "$ref": "${BASE}/missing"
+        },
+        "data": {}
+      },
+      "expect": {
+        "error": {
+          "class": "JSON::Schema::ReadFailed",
+          "message": "Read of URI at ${BASE}/missing failed"
+        }
+      }
+    },
+    {
+      "id": "read.refused",
+      "input": {
+        "op": "schema",
+        "schema": {
+          "$ref": "${DEAD}/schema.json"
+        },
+        "data": {}
+      },
+      "expect": {
+        "error": {
+          "class": "Errno::ECONNREFUSED",
+          "message": "Failed to open TCP connection to ${DEAD_AUTH} (Connection refused - connect(2) for \"127.0.0.1\" port ${DEAD_PORT})"
+        }
+      }
+    },
+    {
+      "id": "download./definition.yaml",
+      "input": {
+        "op": "download",
+        "url": "${BASE}/definition.yaml"
+      },
+      "expect": {
+        "ok": {
+          "type": "object",
+          "required": [
+            "name"
+          ]
+        }
+      }
+    },
+    {
+      "id": "fallback./definition.yaml",
+      "input": {
+        "op": "fallback",
+        "url": "${BASE}/definition.yaml",
+        "data": {}
+      },
+      "expect": {
+        "ok": {
+          "valid": false,
+          "errors": [
+            "The property '#/' did not contain a required property of 'name' in schema 0b01a71e-409a-5ef0-9a1a-c6b73812e5d0 (at #/)"
+          ],
+          "warnings": [],
+          "schema_path": null,
+          "error_count": 1,
+          "warning_count": 0
+        }
+      }
+    },
+    {
+      "id": "download./invalid.yaml",
+      "input": {
+        "op": "download",
+        "url": "${BASE}/invalid.yaml"
+      },
+      "expect": {
+        "ok": null
+      }
+    },
+    {
+      "id": "fallback./invalid.yaml",
+      "input": {
+        "op": "fallback",
+        "url": "${BASE}/invalid.yaml",
+        "data": {}
+      },
+      "expect": {
+        "ok": {
+          "valid": true,
+          "errors": [],
+          "warnings": [],
+          "schema_path": null,
+          "error_count": 0,
+          "warning_count": 0
+        }
+      }
+    },
+    {
+      "id": "download./false.yaml",
+      "input": {
+        "op": "download",
+        "url": "${BASE}/false.yaml"
+      },
+      "expect": {
+        "ok": false
+      }
+    },
+    {
+      "id": "fallback./false.yaml",
+      "input": {
+        "op": "fallback",
+        "url": "${BASE}/false.yaml",
+        "data": {}
+      },
+      "expect": {
+        "ok": {
+          "valid": true,
+          "errors": [],
+          "warnings": [],
+          "schema_path": null,
+          "error_count": 0,
+          "warning_count": 0
+        }
+      }
+    },
+    {
+      "id": "download./symbol.yaml",
+      "input": {
+        "op": "download",
+        "url": "${BASE}/symbol.yaml"
+      },
+      "expect": {
+        "ok": "foo"
+      }
+    },
+    {
+      "id": "fallback./symbol.yaml",
+      "input": {
+        "op": "fallback",
+        "url": "${BASE}/symbol.yaml",
+        "data": {}
+      },
+      "expect": {
+        "error": {
+          "class": "JSON::Schema::SchemaParseError",
+          "message": "Invalid schema - must be either a string or a hash"
+        }
+      }
+    },
+    {
+      "id": "download./missing",
+      "input": {
+        "op": "download",
+        "url": "${BASE}/missing"
+      },
+      "expect": {
+        "ok": null
+      }
+    },
+    {
+      "id": "fallback./missing",
+      "input": {
+        "op": "fallback",
+        "url": "${BASE}/missing",
+        "data": {}
+      },
+      "expect": {
+        "ok": {
+          "valid": true,
+          "errors": [],
+          "warnings": [],
+          "schema_path": null,
+          "error_count": 0,
+          "warning_count": 0
+        }
+      }
+    },
+    {
+      "id": "download.refused",
+      "input": {
+        "op": "download",
+        "url": "${DEAD}/schema.yaml"
+      },
+      "expect": {
+        "error": {
+          "class": "Errno::ECONNREFUSED",
+          "message": "Failed to open TCP connection to ${DEAD_AUTH} (Connection refused - connect(2) for \"127.0.0.1\" port ${DEAD_PORT})"
+        }
+      }
+    },
+    {
+      "id": "fallback.refused",
+      "input": {
+        "op": "fallback",
+        "url": "${DEAD}/schema.yaml",
+        "data": {}
+      },
+      "expect": {
+        "error": {
+          "class": "Errno::ECONNREFUSED",
+          "message": "Failed to open TCP connection to ${DEAD_AUTH} (Connection refused - connect(2) for \"127.0.0.1\" port ${DEAD_PORT})"
+        }
+      }
+    }
+  ],
+  "requests": [
+    "/integer.json",
+    "/dir/root.json",
+    "/integer.json",
+    "/dir/id.json",
+    "/integer.json",
+    "/fragment.json",
+    "/fragment-ref.json",
+    "/fragment.json",
+    "/redirect",
+    "/dir/root.json",
+    "/integer.json",
+    "/redir/from/start",
+    "/dir/root.json",
+    "/redir/integer.json",
+    "/redirect-missing",
+    "/missing",
+    "/missing",
+    "/integer.json",
+    "/integer.json",
+    "/dir/root.json",
+    "/integer.json",
+    "/dir/id.json",
+    "/integer.json",
+    "/fragment.json",
+    "/fragment-ref.json",
+    "/fragment.json",
+    "/redirect",
+    "/dir/root.json",
+    "/integer.json",
+    "/redir/from/start",
+    "/dir/root.json",
+    "/redir/integer.json",
+    "/redirect-missing",
+    "/missing",
+    "/missing",
+    "/integer.json",
+    "/missing",
+    "/definition.yaml",
+    "/definition.yaml",
+    "/invalid.yaml",
+    "/invalid.yaml",
+    "/false.yaml",
+    "/false.yaml",
+    "/symbol.yaml",
+    "/symbol.yaml",
+    "/missing",
+    "/missing"
+  ]
+}
