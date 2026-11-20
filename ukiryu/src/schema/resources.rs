@@ -181,6 +181,20 @@ pub(super) fn load_with(
     }
 }
 
+/// Native paths and file URIs have distinct spellings on Windows.
+pub(super) fn path_text(path: &std::path::Path) -> String {
+    path.to_string_lossy().replace('\\', "/")
+}
+
+pub(super) fn file_uri(path: &std::path::Path) -> String {
+    let text = path_text(path);
+    format!(
+        "file://{}{}",
+        if text.starts_with('/') { "" } else { "/" },
+        text
+    )
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -200,18 +214,4 @@ mod tests {
         assert!(matches!(error, SchemaError::Unsupported { feature, .. }
             if feature == "snapshot schema resource"));
     }
-}
-
-/// Native paths and file URIs have distinct spellings on Windows.
-pub(super) fn path_text(path: &std::path::Path) -> String {
-    path.to_string_lossy().replace('\\', "/")
-}
-
-pub(super) fn file_uri(path: &std::path::Path) -> String {
-    let text = path_text(path);
-    format!(
-        "file://{}{}",
-        if text.starts_with('/') { "" } else { "/" },
-        text
-    )
 }
