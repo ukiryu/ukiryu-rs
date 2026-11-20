@@ -105,7 +105,7 @@ fn data_to_oj(d: &Data) -> Outcome {
         Data::Float(f) => Oj::tagged("$float", Oj::Str(float_to_s(*f))),
         Data::String(s) => Oj::Str(s.clone()),
         Data::Symbol(s) => Oj::sym(s.clone()),
-        Data::Date { .. } => {
+        Data::AllocatedDate | Data::Date { .. } => {
             return Err(RowError::harness(
                 "Date has no corpus value encoding (README \"Value encoding\")",
             ))

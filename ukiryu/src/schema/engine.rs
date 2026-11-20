@@ -252,7 +252,7 @@ fn type_of_data(data: &Data) -> &'static str {
         Data::Hash(_) => "object",
         Data::Array(_) => "array",
         Data::Null => "null",
-        Data::Symbol(_) | Data::Date { .. } | Data::Time(_) => "any",
+        Data::AllocatedDate | Data::Symbol(_) | Data::Date { .. } | Data::Time(_) => "any",
     }
 }
 

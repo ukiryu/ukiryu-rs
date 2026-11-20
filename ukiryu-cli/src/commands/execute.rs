@@ -535,7 +535,7 @@ fn ruby_value(data: Data) -> Option<Value> {
         Data::Float(f) => Value::Float(f),
         Data::String(s) => Value::String(s),
         Data::Symbol(s) => Value::Symbol(s),
-        Data::Date { .. } | Data::Time(_) => return None,
+        Data::AllocatedDate | Data::Date { .. } | Data::Time(_) => return None,
         Data::Array(items) => Value::Array(
             items
                 .into_iter()

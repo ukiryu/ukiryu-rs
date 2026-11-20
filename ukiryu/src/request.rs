@@ -206,7 +206,7 @@ fn ruby_value(data: Data) -> Result<Value, RequestError> {
         Data::Float(number) => Value::Float(number),
         Data::String(text) => Value::String(text),
         Data::Symbol(name) => Value::Symbol(name),
-        Data::Date { .. } | Data::Time(_) => {
+        Data::AllocatedDate | Data::Date { .. } | Data::Time(_) => {
             return Err(RequestError::Unsupported {
                 feature: "YAML timestamp".to_owned(),
                 detail: "Date and Time are not permitted request classes".to_owned(),

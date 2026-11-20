@@ -30,10 +30,15 @@ mod engine;
 mod inspect_table;
 mod ip;
 mod json;
+mod malformed;
 mod psych;
 mod resources;
 pub(crate) mod transport;
 mod uri;
+mod value_time;
+
+#[cfg(test)]
+mod value_spelling_tests;
 
 pub mod bundled;
 
@@ -83,6 +88,13 @@ impl SchemaError {
         SchemaError::Unsupported {
             feature: feature.to_owned(),
             detail: detail.into(),
+        }
+    }
+
+    pub(crate) fn ruby(class: &str, message: impl Into<String>) -> Self {
+        Self::Ruby {
+            class: class.to_owned(),
+            message: message.into(),
         }
     }
 
@@ -167,14 +179,20 @@ fn read_text(path: &Path) -> Result<String, SchemaError> {
             errno: "EACCES".to_owned(),
             message: format!("Permission denied @ rb_sysopen - {}", path.display()),
         },
+        _ if e.kind() == std::io::ErrorKind::NotFound => SchemaError::Io {
+            errno: "ENOENT".to_owned(),
+            message: format!(
+                "No such file or directory @ rb_sysopen - {}",
+                path.display()
+            ),
+        },
+        _ if e.raw_os_error() == Some(5) && cfg!(unix) => SchemaError::Io {
+            errno: "EIO".to_owned(),
+            message: format!("Input/output error @ io_fread - {}", path.display()),
+        },
         _ => SchemaError::unsupported("schema file read", format!("{}: {e}", path.display())),
     })?;
-    String::from_utf8(bytes).map_err(|_| {
-        SchemaError::unsupported(
-            "schema file encoding",
-            format!("{} is not UTF-8", path.display()),
-        )
-    })
+    malformed::decode(bytes)
 }
 
 /// `SchemaValidator.load_schema(path)`: `Ok(None)` when no path is given
