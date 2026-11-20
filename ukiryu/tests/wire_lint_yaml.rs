@@ -195,6 +195,62 @@ fn corpus_rows_match_through_the_wire() {
     );
 }
 
+/// Compare the portable text API with both the native loader's exact wire
+/// bytes and the frozen Ruby expectation (including the existing R2 rules).
+fn assert_model_snapshot(row: &Value, rules: &Rules) {
+    let input = &row["input"];
+    let request = json!({
+        "op": "yaml", "method": "model_snapshot", "model": input["model"],
+        "yaml": document(input),
+    });
+    let portable = wire(&request);
+    let native = wire(&json!({
+        "op": "yaml", "method": "model_load", "model": input["model"],
+        "path": input_path(input["file"].as_str().expect("file")),
+    }));
+    assert_eq!(portable.to_string(), native.to_string(), "{}", row["id"]);
+    assert!(
+        rules.judge(row, &outcome(&portable)).is_none(),
+        "{}: {portable}",
+        row["id"]
+    );
+    #[cfg(feature = "wasm")]
+    assert_eq!(
+        ukiryu::wasm::process(&request.to_string()),
+        portable.to_string(),
+        "{}",
+        row["id"]
+    );
+}
+
+#[test]
+fn model_snapshot_three_frozen_examples() {
+    let rows = rows("yaml");
+    let rules = Rules::load();
+    for model in ["Interface", "ImplementationVersion", "ImplementationIndex"] {
+        let row = rows
+            .iter()
+            .find(|r| r["op"] == "yaml.model_load" && r["input"]["model"] == model)
+            .expect("frozen model row");
+        assert_model_snapshot(row, &rules);
+    }
+}
+
+/// CI runs the entire affected slice, failing if its deliberately pinned size
+/// changes. Local focused checks can select the three-example test above.
+#[test]
+fn model_snapshot_all_frozen_rows() {
+    let rules = Rules::load();
+    let rows: Vec<_> = rows("yaml")
+        .into_iter()
+        .filter(|r| r["op"] == "yaml.model_load")
+        .collect();
+    assert_eq!(rows.len(), 62);
+    for row in rows {
+        assert_model_snapshot(&row, &rules);
+    }
+}
+
 /// The replies keep Ruby types the JSON profile of `parse_yaml` refuses.
 #[test]
 fn safe_load_keeps_ruby_types() {

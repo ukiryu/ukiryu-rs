@@ -51,6 +51,27 @@ The reference's JSON transport profile gives Ruby symbols textual values. It is
 separate from the shared corpus's richer typed value profile; neither establishes
 full Ruby API or cross-runtime parity by itself.
 
+## Portable register model snapshots
+
+The wire/WASM `process` entry point accepts supplied YAML without reading a file:
+
+```json
+{"op":"yaml","method":"model_snapshot","model":"Interface","yaml":"name: demo\nversion: '1.0'\n"}
+```
+
+`Interface`, `ImplementationVersion` and `ImplementationIndex` return the same
+class/instance-variable snapshot as native `yaml.model_load` for identical file
+contents. Rust callers can use each model's `from_yaml_str` constructor.
+These constructors preserve the file loader's permitted classes, disabled
+aliases, defaults and key handling, including the String/Symbol key differences
+between these models. `from_register_yaml` has a separate policy.
+The native `model_load` method still takes a path; WASM continues to refuse it.
+`model_read` remains the field view for the serializable Lutaml-style models.
+
+CI compares all 62 frozen `yaml.model_load` rows through both wire methods,
+using the existing R2 projection rules where declared. Node and Chromium also
+check one frozen row for each model class through the built WASM artifact.
+
 ## CLI help wording
 
 The Rust CLI replaces the Ruby CLI's Thor parser with clap, but it keeps

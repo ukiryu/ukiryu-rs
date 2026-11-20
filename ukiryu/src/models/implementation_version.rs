@@ -7,7 +7,7 @@
 //! The `UKIRYU_DEBUG_EXECUTABLE`/`CI` stderr tracing is not reproduced.
 use super::attr::Model;
 use super::error::ModelError;
-use super::interface::{load_yaml_file, register_hash};
+use super::interface::{load_yaml_file, load_yaml_text, register_hash};
 use super::value::Value;
 use super::version_detection::VersionDetection;
 use std::path::Path;
@@ -81,6 +81,12 @@ impl ImplementationVersion {
     /// `ImplementationVersion.from_yaml(path)`.
     pub fn from_yaml(path: &Path) -> Result<ImplementationVersion, ModelError> {
         ImplementationVersion::from_hash(&load_yaml_file(path)?)
+    }
+
+    /// The same model as `from_yaml(path)`, from supplied YAML text.
+    /// Keeps the file-loader policy and String keys (no register symbolization).
+    pub fn from_yaml_str(yaml: &str) -> Result<ImplementationVersion, ModelError> {
+        ImplementationVersion::from_hash(&load_yaml_text(yaml)?)
     }
 
     /// `ImplementationVersion.from_hash(data)`.

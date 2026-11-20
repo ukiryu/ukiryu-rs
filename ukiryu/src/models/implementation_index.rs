@@ -4,7 +4,7 @@
 //! `from_yaml(path)` passes Psych's String-keyed Hash straight through, so
 //! every `data[:key]` lookup misses there, exactly as in the source.
 use super::error::ModelError;
-use super::interface::{load_yaml_file, register_hash};
+use super::interface::{load_yaml_file, load_yaml_text, register_hash};
 use super::value::Value;
 use std::path::Path;
 
@@ -51,6 +51,12 @@ impl ImplementationIndex {
     /// `ImplementationIndex.from_yaml(path)`.
     pub fn from_yaml(path: &Path) -> Result<ImplementationIndex, ModelError> {
         ImplementationIndex::from_hash(&load_yaml_file(path)?)
+    }
+
+    /// The same model as `from_yaml(path)`, from supplied YAML text.
+    /// Keeps the file-loader policy and String keys (no register symbolization).
+    pub fn from_yaml_str(yaml: &str) -> Result<ImplementationIndex, ModelError> {
+        ImplementationIndex::from_hash(&load_yaml_text(yaml)?)
     }
 
     /// `ImplementationIndex.from_hash(data)` (Symbol keys).
