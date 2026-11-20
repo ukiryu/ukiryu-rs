@@ -412,3 +412,27 @@ fn run(schema: &Data, data: &Data, strict: bool) -> Result<Vec<engine::VErr>, Sc
     let data = stringify(data)?;
     engine::fully_validate(&stringified, &uuid, || initialize_data(&data), strict)
 }
+
+/// Validate supplied schema/data with no implicit resource reads or path probes.
+pub fn definition_schema_report_readonly(
+    definition: &Data,
+    schema: &Data,
+) -> Result<DefinitionSchemaReport, SchemaError> {
+    if !matches!(schema, Data::Hash(_)) {
+        return Err(SchemaError::unsupported(
+            "snapshot schema",
+            "schema must be a supplied mapping",
+        ));
+    }
+    let uuid = digest::uuid_v5_nil(&json::dump(schema)?);
+    let schema = stringify(schema)?;
+    let data = stringify(definition)?;
+    // Definition text is already parsed: never apply JSON::Validator's path/URL shortcut.
+    Ok(DefinitionSchemaReport {
+        errors: engine::fully_validate_readonly(&schema, &uuid, || Ok(data), false)?
+            .iter()
+            .map(|e| e.definition_line())
+            .collect(),
+        warnings: Vec::new(),
+    })
+}

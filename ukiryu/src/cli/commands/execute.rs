@@ -6,9 +6,9 @@
 //!
 //! Each handler is a plain function over a typed input that returns a
 //! [`CommandOutcome`]: the ordered writes and the exit status. Rendering goes
-//! through [`ukiryu::render`], tools through the typed [`Tool`] runtime,
-//! requests through [`ukiryu::request`] and processes through
-//! [`ukiryu::executor`]. Nothing here reads process state except the stdin
+//! through [`crate::render`], tools through the typed [`Tool`] runtime,
+//! requests through [`crate::request`] and processes through
+//! [`crate::executor`]. Nothing here reads process state except the stdin
 //! reader the caller passes, files the command names (`stdin=@FILE`,
 //! `--definition`, the request file) and the process the tool runs.
 //!
@@ -69,38 +69,38 @@ pub use cache::{cache, CacheAction, CacheInput};
 pub use run_file::{run_file, RunFileInput};
 
 use super::CommandOutcome;
-use crate::stdin::{self, Param, StdinError};
+use crate::cache::ToolCache;
+use crate::cli::stdin::{self, Param, StdinError};
+use crate::config::{self, OverrideResolver, Values};
+use crate::definition::{
+    DefinitionDocument, DefinitionError, DocumentParseError, Loader, ValidationMode,
+};
+use crate::environment::Environment;
+use crate::executable::DiscoveryContext;
+use crate::execution::results::bytes::ensure_utf8;
+use crate::execution::{InvalidByteSequence, ResultPartsError, Seconds};
+use crate::executor::{self, ExecuteError as ProcessError};
+use crate::extractors::base::ProcessHost;
+use crate::models::attr::Model;
+use crate::models::error::ModelErrorKind;
+use crate::models::tool_definition::ToolDefinition;
+use crate::models::{CommandDefinition, ErrorResponse, ExecutionResultParts, SuccessResponse};
+use crate::register::{self, Register};
+use crate::register_lookup;
+use crate::render::{
+    output_response, render_dry_run, DryRunStyle, InspectValue, OutputFormat, OutputWrite,
+    PaintSupport, RenderError, RenderSettings,
+};
+use crate::runtime::{Clock, Host, Runtime};
+use crate::schema::{safe_load, Data, Permitted, SchemaError};
+use crate::tool::{self, ExecuteSettings, Tool, ToolError, ToolOptions};
+use crate::tool_loader::RegisterSource;
+use crate::types::{ErrorClass, Value};
 use serde_json::Value as Json;
 use std::fmt;
 use std::io::Read;
 use std::rc::Rc;
 use std::sync::Arc;
-use ukiryu::cache::ToolCache;
-use ukiryu::config::{self, OverrideResolver, Values};
-use ukiryu::definition::{
-    DefinitionDocument, DefinitionError, DocumentParseError, Loader, ValidationMode,
-};
-use ukiryu::environment::Environment;
-use ukiryu::executable::DiscoveryContext;
-use ukiryu::execution::results::bytes::ensure_utf8;
-use ukiryu::execution::{InvalidByteSequence, ResultPartsError, Seconds};
-use ukiryu::executor::{self, ExecuteError as ProcessError};
-use ukiryu::extractors::base::ProcessHost;
-use ukiryu::models::attr::Model;
-use ukiryu::models::error::ModelErrorKind;
-use ukiryu::models::tool_definition::ToolDefinition;
-use ukiryu::models::{CommandDefinition, ErrorResponse, ExecutionResultParts, SuccessResponse};
-use ukiryu::register::{self, Register};
-use ukiryu::register_lookup;
-use ukiryu::render::{
-    output_response, render_dry_run, DryRunStyle, InspectValue, OutputFormat, OutputWrite,
-    PaintSupport, RenderError, RenderSettings,
-};
-use ukiryu::runtime::{Clock, Host, Runtime};
-use ukiryu::schema::{safe_load, Data, Permitted, SchemaError};
-use ukiryu::tool::{self, ExecuteSettings, Tool, ToolError, ToolOptions};
-use ukiryu::tool_loader::RegisterSource;
-use ukiryu::types::{ErrorClass, Value};
 
 /// `execute_request`'s `config.timeout || 90`.
 const DEFAULT_TIMEOUT: i64 = 90;
@@ -214,7 +214,7 @@ impl From<RenderError> for ExecuteError {
     fn from(e: RenderError) -> Self {
         // The json gem's GeneratorError, or a model that cannot be emitted.
         match e.kind() {
-            ukiryu::render::RenderErrorKind::Generator => {
+            crate::render::RenderErrorKind::Generator => {
                 ExecuteError::raised("JSON::GeneratorError", e.message())
             }
             _ => ExecuteError::unsupported(format!("response rendering: {}", e.message())),
@@ -416,7 +416,7 @@ impl DefinitionDocument for ToolDocument {
             }
             _ => DocumentParseError::Other(e.message),
         })?;
-        let text = |t: &Option<ukiryu::models::value::Text>| t.as_ref().map(|t| t.to_ruby_s());
+        let text = |t: &Option<crate::models::value::Text>| t.as_ref().map(|t| t.to_ruby_s());
         Ok(ToolDocument {
             name: text(&definition.name),
             version: text(&definition.version),
@@ -449,13 +449,13 @@ impl DefinitionDocument for ToolDocument {
         self.self_uri.as_deref()
     }
 
-    fn resolve_inheritance(&mut self) -> ukiryu::definition::Result<()> {
+    fn resolve_inheritance(&mut self) -> crate::definition::Result<()> {
         self.definition
             .resolve_inheritance()
             .map(|_| ())
             .map_err(|e| {
-                ukiryu::definition::DefinitionError::new(
-                    ukiryu::definition::DefinitionErrorKind::Load,
+                crate::definition::DefinitionError::new(
+                    crate::definition::DefinitionErrorKind::Load,
                     e.message,
                 )
             })
@@ -884,8 +884,8 @@ pub fn exec(
 /// tool cache (`ToolCache`) of this invocation.
 pub(crate) struct Registry {
     path: Option<std::path::PathBuf>,
-    platform: ukiryu::executable::Platform,
-    shell: ukiryu::runtime::ShellName,
+    platform: crate::executable::Platform,
+    shell: crate::runtime::ShellName,
     cache: ToolCache<Rc<Tool>>,
 }
 
@@ -906,7 +906,7 @@ impl Registry {
     pub(crate) fn new(
         ctx: &ExecuteContext,
         config: &OverrideResolver,
-        shell: ukiryu::runtime::ShellName,
+        shell: crate::runtime::ShellName,
     ) -> Registry {
         let configured = config_string(config, "register")
             .map(std::path::PathBuf::from)
@@ -1008,7 +1008,7 @@ fn options_check(
 
 /// The accessors `OptionsBuilder.define_accessors` defines.
 fn setter_names(c: &CommandDefinition) -> Vec<String> {
-    let text = |t: &Option<ukiryu::models::value::Text>| t.as_ref().map(|t| t.to_ruby_s());
+    let text = |t: &Option<crate::models::value::Text>| t.as_ref().map(|t| t.to_ruby_s());
     let mut names = Vec::new();
     names.extend(
         c.arguments
@@ -1159,7 +1159,7 @@ fn show_tool_help(
             }
         }
     };
-    let text = |t: &Option<ukiryu::models::value::Text>| t.as_ref().map(|t| t.to_ruby_s());
+    let text = |t: &Option<crate::models::value::Text>| t.as_ref().map(|t| t.to_ruby_s());
     let profile = tool.definition();
     let name = tool.name().unwrap_or_default();
     out.say("", Color::Clear);

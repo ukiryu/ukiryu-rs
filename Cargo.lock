@@ -472,6 +472,7 @@ name = "ukiryu"
 version = "0.1.0"
 dependencies = [
  "cc",
+ "clap",
  "magnus",
  "num-bigint",
  "num-rational",

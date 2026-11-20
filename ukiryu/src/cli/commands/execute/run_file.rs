@@ -1,6 +1,6 @@
 //! `ukiryu run-file REQUEST_FILE` (`RunFileCommand#run`).
 //!
-//! The request is loaded with [`ukiryu::request::load_execution_request`]
+//! The request is loaded with [`crate::request::load_execution_request`]
 //! and the tool resolved through the register ([`Registry`]).
 //!
 //! Frozen source observation: once the tool and its options object are
@@ -14,10 +14,10 @@ use super::{
     reject_metrics, render, render_use_color, tool_options, truthy, ExecuteContext, ExecuteError,
     Out, Registry, Response,
 };
-use crate::commands::CommandOutcome;
-use ukiryu::models::ErrorResponse;
-use ukiryu::render::{render_dry_run, DryRunStyle, OutputWrite};
-use ukiryu::request::{load_execution_request, RequestError};
+use crate::cli::commands::CommandOutcome;
+use crate::models::ErrorResponse;
+use crate::render::{render_dry_run, DryRunStyle, OutputWrite};
+use crate::request::{load_execution_request, RequestError};
 
 /// `ukiryu run-file REQUEST_FILE` options, as given.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]

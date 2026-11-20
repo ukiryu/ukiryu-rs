@@ -1,8 +1,8 @@
 //! `WhichCommand`: exact name first, then compatible interface/alias
 //! candidates in register order, preferring an available executable.
 use super::*;
-use ukiryu::runtime::ShellName;
-use ukiryu::tool::DefinitionSource;
+use crate::runtime::ShellName;
+use crate::tool::DefinitionSource;
 
 pub fn which(input: WhichInput, ctx: &HandlerContext) -> Result<CommandOutcome, InspectError> {
     let config = ctx.configuration()?;
@@ -165,7 +165,7 @@ pub fn which(input: WhichInput, ctx: &HandlerContext) -> Result<CommandOutcome, 
     if let Some(implements) = tool.definition().implements.as_ref() {
         let value = ModelValue::Array(implements.iter().map(Text::to_ruby_value).collect());
         out.say(
-            &format!("  Implements: {}", ukiryu::types::ruby::inspect(&value)),
+            &format!("  Implements: {}", crate::types::ruby::inspect(&value)),
             Some(Color::White),
         );
     }
