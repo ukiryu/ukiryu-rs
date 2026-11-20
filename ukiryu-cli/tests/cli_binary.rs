@@ -21,21 +21,14 @@
 //!   `info_opts_data/cases.json`, captured from the same oracle in the
 //!   corpus environment.
 //!
-//! Rows are split into three contracts and counted separately:
-//! - source rows: captured from exe/ukiryu and expected byte for byte (or with
-//!   the recorded comparison mode), apart from the recorded deviations below;
-//! - target-trace rows (`__target`, `__fileutils` ids): the designed output
-//!   where the Ruby command crashes on a defect of its own source
-//!   (`ORACLE_DEFECTS`), and every `lint` row (lint is a target addition:
-//!   cli.rb never registers it). These are UNQUALIFIED: they prove the binary
-//!   performs the handler's designed output, not source parity, and the owner
-//!   has not accepted them as #21/#22 success;
-//! - gated rows: paths whose component is not merged (Register.default,
-//!   `validate --executable`, the execute rows the handlers gate), which must
-//!   fail with the gated status and never print a success;
-//! - terminal rows (`pty`): captured with a terminal on stdout. The test
-//!   `terminal_execute_captures_through_the_binary` replays all 12 rows over
-//!   a real PTY with the Python standard library helper.
+//! Author rows come from unmodified pinned Ruby commands. Standalone lint/docs
+//! handlers have their own replay; they are not added as CLI verbs. Every
+//! pipe-based author row compares source output and status. Terminal captures
+//! are replayed by the author handler test.
+//!
+//! Execute terminal rows (`pty`) are captured with a terminal on stdout. The
+//! test `terminal_execute_captures_through_the_binary` replays all 12 rows over
+//! a real PTY with the Python standard library helper.
 //!
 //! Recorded deviations (all decided outside this file):
 //! - shell detection is strict (DECISIONS.md D2): inspect rows with a `note`
@@ -59,7 +52,6 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
-use ukiryu_cli::dispatch::GATED_EXIT;
 
 const BIN: &str = env!("CARGO_BIN_EXE_ukiryu");
 
@@ -409,41 +401,9 @@ fn same_prefix(actual: &str, expected: &str, marker: &str) -> bool {
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
-enum Contract {
-    Source,
-    TargetTrace,
-}
-
-/// The binary's argv for a captured row: exe rows as captured; standalone
-/// LintCommand rows behind the `lint` verb.
+/// Only commands registered by the original CLI run through the binary.
 fn argv(case: &Value) -> Option<Vec<String>> {
-    let args = strings(&case["args"]);
-    match case["runner"].as_str().unwrap() {
-        "exe" => Some(args),
-        "lint" => Some(std::iter::once("lint".to_owned()).chain(args).collect()),
-        _ => None, // docs stays unregistered (root ruling); library tests only.
-    }
-}
-
-fn contract(case: &Value) -> Contract {
-    let id = case["id"].as_str().unwrap();
-    if id.contains("__") || case["runner"] == "lint" {
-        Contract::TargetTrace
-    } else {
-        Contract::Source
-    }
-}
-
-/// Rows whose path reads `Register.default`, which waits for the register
-/// API: the binary must stop with the gated status after the same partial
-/// stdout.
-fn needs_default_register(args: &[String]) -> bool {
-    let all = |verb: &str| {
-        args.first().map(String::as_str) == Some(verb)
-            && args.get(1).map(String::as_str) == Some("all")
-    };
-    all("validate") || (all("lint") && !args.iter().any(|a| a == "--register"))
+    (case["runner"] == "exe").then(|| strings(&case["args"]))
 }
 
 fn author_env(case: &Value, root: &str) -> Vec<(String, String)> {
@@ -453,7 +413,10 @@ fn author_env(case: &Value, root: &str) -> Vec<(String, String)> {
         ("XDG_DATA_DIRS".to_owned(), format!("{root}/sysdata")),
         ("PATH".to_owned(), format!("{root}/bin")),
         ("UKIRYU_REGISTER".to_owned(), format!("{root}/register")),
-        ("TERM".to_owned(), "dumb".to_owned()),
+        (
+            "TERM".to_owned(),
+            if case["pty"] == true { "xterm" } else { "dumb" }.to_owned(),
+        ),
         ("TZ".to_owned(), "UTC".to_owned()),
         ("LANG".to_owned(), "C.UTF-8".to_owned()),
     ];
@@ -461,31 +424,38 @@ fn author_env(case: &Value, root: &str) -> Vec<(String, String)> {
         // D2: Ruby found bash on PATH; the strict contract names the shell.
         env.push(("SHELL".to_owned(), "/bin/bash".to_owned()));
     }
+    if case["suite"] == "tools" {
+        for (key, value) in [
+            ("PATH", format!("{root}/tbin:/usr/bin:/bin")),
+            ("UKIRYU_REGISTER", format!("{root}/regx")),
+            ("SHELL", "/bin/bash".to_owned()),
+        ] {
+            env.retain(|(name, _)| name != key);
+            env.push((key.to_owned(), value));
+        }
+    }
     for (k, v) in case["env"].as_object().unwrap() {
         if k == "RUBYOPT" {
             continue; // capture-only: loads fileutils for the target trace
         }
-        let v = v.as_str().unwrap().replace("{root}", root);
         env.retain(|(name, _)| name != k);
-        env.push((k.clone(), v));
+        if let Some(v) = v.as_str() {
+            env.push((k.clone(), v.replace("{root}", root)));
+        }
     }
     env
 }
 
 /// Replays the author captures of one contract; returns the replayed count.
-fn replay_author(which: Contract) -> usize {
+fn replay_author(name: &str) -> usize {
     let fixture: Value =
-        serde_json::from_str(&std::fs::read_to_string(data_dir().join("cases.json")).unwrap())
-            .unwrap();
+        serde_json::from_str(&std::fs::read_to_string(data_dir().join(name)).unwrap()).unwrap();
     let mtime = UNIX_EPOCH + Duration::from_secs(fixture["fixed_mtime_unix"].as_u64().unwrap());
     let mut failures = Vec::new();
     let mut replayed = 0;
     for case in fixture["cases"].as_array().unwrap() {
         let id = case["id"].as_str().unwrap();
         let mode = case["mode"].as_str().unwrap();
-        if contract(case) != which || matches!(mode, "frozen" | "tty") {
-            continue;
-        }
         let Some(args) = argv(case) else { continue };
         let root_path = scratch(&format!("author-{id}"));
         copy_tree(&data_dir().join("tree"), &root_path, mtime);
@@ -493,28 +463,55 @@ fn replay_author(which: Contract) -> usize {
         std::fs::create_dir_all(root_path.join("bin")).unwrap();
         setup(id, &root_path, mtime);
         let root = root_path.to_string_lossy().into_owned();
+        let args: Vec<String> = args
+            .into_iter()
+            .map(|arg| arg.replace("{root}", &root))
+            .collect();
         let env = author_env(case, &root);
+        if mode == "tty" {
+            let capture = Command::new("/usr/bin/python3")
+                .arg(
+                    Path::new(env!("CARGO_MANIFEST_DIR")).join("../scripts/replay-cli-terminal.py"),
+                )
+                .arg(BIN)
+                .args(&args)
+                .env_clear()
+                .envs(env.iter().map(|(k, v)| (k, v)))
+                .current_dir(&root_path)
+                .output()
+                .unwrap();
+            assert!(
+                capture.status.success(),
+                "{id}: {}",
+                String::from_utf8_lossy(&capture.stderr)
+            );
+            let terminal: Value = serde_json::from_slice(&capture.stdout).unwrap();
+            let expected = case["tty_output"]
+                .as_str()
+                .unwrap()
+                .replace("{root}", &root);
+            assert_eq!(
+                terminal["output"].as_str().unwrap(),
+                expected,
+                "{id}: raw PTY bytes"
+            );
+            assert_eq!(terminal["exit"], case["expect"]["exit"], "{id}: PTY exit");
+            replayed += 1;
+            std::fs::remove_dir_all(&root_path).unwrap();
+            continue;
+        }
         let got = run(&args, &env, &root_path, case["stdin"].as_str());
         replayed += 1;
         let expect = &case["expect"];
-        let exp = |k: &str| expect[k].as_str().unwrap_or("").replace("{root}", &root);
-        let mut fail = |what: String| failures.push(format!("{id}: {what}"));
-
-        if mode == "gated" || needs_default_register(&args) {
-            let want = case["partial_stdout"].as_str().map(str::to_owned);
-            let want = want.unwrap_or_default();
-            if got.code != GATED_EXIT
-                || got.stdout != want
-                || !got.stderr.contains("is not available in this build yet")
-            {
-                fail(format!(
-                    "gated: exit {} out {:?} err {:?}",
-                    got.code, got.stdout, got.stderr
-                ));
+        let exp = |k: &str| {
+            let mut text = expect[k].as_str().unwrap_or("").replace("{root}", &root);
+            for relative in ["defs/invalid_yaml.yaml", "defs/list.yaml"] {
+                let digest = ukiryu::definition::source::sha256_hex(&format!("{root}/{relative}"));
+                text = text.replace(&format!("{{sha256:{relative}}}"), &digest);
             }
-            let _ = std::fs::remove_dir_all(&root_path);
-            continue;
-        }
+            text
+        };
+        let mut fail = |what: String| failures.push(format!("{id}: {what}"));
 
         let (es, ee) = (exp("stdout"), exp("stderr"));
         let prefix = case["prefix"].as_str().unwrap_or("");
@@ -563,7 +560,7 @@ fn replay_author(which: Contract) -> usize {
     }
     assert!(
         failures.is_empty(),
-        "{} of {replayed} {which:?} rows differ:\n{}",
+        "{} of {replayed} source rows differ:\n{}",
         failures.len(),
         failures.join("\n\n")
     );
@@ -572,25 +569,21 @@ fn replay_author(which: Contract) -> usize {
 
 #[test]
 fn author_source_rows_through_the_binary() {
-    let replayed = replay_author(Contract::Source);
+    let replayed = replay_author("cases.json");
     assert!(replayed >= 70, "only {replayed} source rows replayed");
 }
 
-/// UNQUALIFIED: designed outputs where the Ruby source crashes, and the lint
-/// verb (a target addition). Not source parity; the owner decides later.
+#[cfg(target_os = "linux")]
 #[test]
-fn author_target_trace_rows_through_the_binary_unqualified() {
-    let replayed = replay_author(Contract::TargetTrace);
-    assert!(replayed >= 40, "only {replayed} target-trace rows replayed");
+fn describe_and_executable_validation_through_the_binary() {
+    assert_eq!(replay_author("tools_cases.json"), 51);
 }
 
 // ------------------------------------------------------------------ execute
 
-/// Recorded deviation: the YAML diagnostic is the Yeptris parser's, not
-/// libyaml's. An exact Yeptris golden is checked separately; it is not
-/// claimed as Ruby byte parity.
+/// No non-terminal execute rows remain outside the Ruby contract.
 #[cfg(target_os = "linux")]
-const EXECUTE_UNQUALIFIED: [&str; 1] = ["runfile_invalid_yaml"];
+const EXECUTE_UNQUALIFIED: [&str; 0] = [];
 
 /// The environment `capture/cli.rb` gives the Ruby CLI, plus the case's own
 /// variables (`null` removes one).
@@ -805,7 +798,7 @@ fn replay_execute() -> (ExecuteCounts, Vec<String>) {
 
 /// The compiled binary replays the K22 execute captures for exec, run-file
 /// and cache. Terminal rows are counted (they need a pty); all other rows
-/// match the Ruby capture or the separately pinned parser diagnostic.
+/// match the Ruby capture.
 #[cfg(target_os = "linux")]
 #[test]
 fn execute_cases_through_the_binary() {
@@ -814,7 +807,7 @@ fn execute_cases_through_the_binary() {
     assert!(failures.is_empty(), "{}", failures.join("\n\n"));
     assert_eq!(counts.unqualified, EXECUTE_UNQUALIFIED.len(), "{counts:?}");
     assert_eq!(counts.terminal, 12, "{counts:?}");
-    assert_eq!(counts.exact, 91, "{counts:?}");
+    assert_eq!(counts.exact, 92, "{counts:?}");
 }
 
 /// Exercise terminal detection and ANSI output through the actual binary,
@@ -900,18 +893,6 @@ fn simple(args: &[&str]) -> Output {
 }
 
 #[test]
-fn describe_without_a_register_fails_gated() {
-    let got = simple(&["describe", "ls"]);
-    assert_eq!(got.code, GATED_EXIT, "{}", got.stderr);
-    assert_eq!(got.stdout, "");
-    assert!(
-        got.stderr.starts_with("ukiryu: '") && got.stderr.contains("not available"),
-        "{:?}",
-        got.stderr
-    );
-}
-
-#[test]
 fn argument_errors_exit_1_on_stderr() {
     // `docs` stays unregistered, as in the source cli.rb (root ruling).
     for args in [
@@ -928,11 +909,7 @@ fn argument_errors_exit_1_on_stderr() {
 
 #[test]
 fn help_and_version_succeed_on_stdout() {
-    for args in [
-        &["list", "--help"][..],
-        &["exec", "-h"],
-        &["lint", "--help"],
-    ] {
+    for args in [&["list", "--help"][..], &["exec", "-h"]] {
         let got = simple(args);
         assert_eq!(got.code, 0, "{args:?}: {}", got.stderr);
         assert!(got.stdout.contains("Usage"), "{args:?}: {:?}", got.stdout);
@@ -947,11 +924,7 @@ fn help_and_version_succeed_on_stdout() {
     );
     // Thor prints the command list (stdout, status 0) when no command or no
     // subcommand of a group is given (captured: logs/grammar-3.log).
-    let cases: [(&[&str], &str); 3] = [
-        (&[], "validate"),
-        (&["validate"], "file"),
-        (&["lint"], "rules"),
-    ];
+    let cases: [(&[&str], &str); 2] = [(&[], "validate"), (&["validate"], "file")];
     for (args, word) in cases {
         let got = simple(args);
         assert_eq!(got.code, 0, "{args:?}: {}", got.stderr);

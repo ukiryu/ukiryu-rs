@@ -122,9 +122,10 @@ pub fn safe_load(text: &str, policy: LoadPolicy) -> Result<Value, ModelError> {
 /// The libyaml diagnostics that Yeptris reports with libyaml's words and
 /// mark: the flow-sequence parser error and the scanner's mapping-value
 /// error.
-const PSYCH_DIAGNOSTICS: [&str; 2] = [
+const PSYCH_DIAGNOSTICS: [&str; 3] = [
     "did not find expected ',' or ']' while parsing a flow sequence",
     "mapping values are not allowed in this context",
+    "did not find expected node content while parsing a flow node",
 ];
 
 /// The Syntax message for a Yeptris parse failure. A message that is

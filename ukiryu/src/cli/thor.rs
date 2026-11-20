@@ -348,9 +348,6 @@ fn run(args: &[String], columns: Option<&str>) -> Run {
     {
         if HELP_MAPPINGS.contains(&first.as_str()) {
             ("help".to_owned(), &args[1..])
-        } else if first == "lint" {
-            // The port's own `lint` verb; Thor has none.
-            return Run::Done(Preempt::Pass(args.to_vec()));
         } else {
             match resolve(&verb_names(), first) {
                 Resolved::Name(name) => (name, &args[1..]),

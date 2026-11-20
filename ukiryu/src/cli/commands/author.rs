@@ -15,10 +15,8 @@
 //! Thor has no `:dim`, so the rows that use it raise `NameError` when colours
 //! are on, as in Ruby), or with plain `puts`/`warn`/`print` (definitions).
 //!
-//! Where the Ruby command crashes on a defect of its own source before it can
-//! produce its designed output, the port implements that designed output and
-//! the deviation is listed in [`ORACLE_DEFECTS`]; every other path matches the
-//! captured oracle bytes.
+//! Ruby source defects are part of the captured contract, including missing
+//! FileUtils, LintResult#error_count and model indexing in the docs command.
 //!
 //! `extract` is a `BaseCommand` (it prints with `BaseCommand#say`, coloured
 //! unless `Config#colors_disabled?`) and runs the merged
@@ -30,8 +28,8 @@
 //! typed Tool runtime: the caller supplies a [`ToolEnv`] (host platform and
 //! environment, configured shell) and the handlers load tools from the
 //! default register through `RegisterSource` and `tool::get`.
-//! [`validate`] without a [`ToolEnv`] returns [`AuthorError::Gated`] where the
-//! executable test starts; [`validate_with_tools`] runs it (the source loads
+//! [`validate`] captures a native host; [`validate_with_tools`] accepts an
+//! explicit host (the source loads
 //! each tool with `Tool.get`, so the smoke tests take the exact name only).
 //! `describe` runs `Tool.find_by` through the core
 //! `crate::register_lookup::find_by`: exact name, then the interface, alias
@@ -45,7 +43,6 @@
 //! Hosts can supply an unavailable response to reproduce offline captures.
 use super::CommandOutcome;
 use crate::cache::ToolCache;
-use crate::definition::documentation::{DocumentationErrorKind, DocumentationGenerator};
 use crate::definition::linter::{DefinitionLinter, LintError, LintResult};
 use crate::definition::sources::file::ruby_time_to_s;
 use crate::definition::{
@@ -75,37 +72,6 @@ use crate::version_detection::{DetectedVersion, DetectionError, RubyPattern};
 use std::cmp::Ordering;
 use std::path::{Component, Path, PathBuf};
 use std::rc::Rc;
-
-/// Ruby defects of the oracle commands that the port does not reproduce,
-/// as `(command path, Ruby observation, port behaviour)`. Each is captured in
-/// the test fixture both as the frozen oracle row and as a target-trace row.
-pub const ORACLE_DEFECTS: [(&str, &str, &str); 5] = [
-    (
-        "lint all",
-        "NoMethodError: undefined method 'error_count' for LintResult once a file was linted",
-        "error_count = number of error-severity issues",
-    ),
-    (
-        "lint file --format json",
-        "NoMethodError: Hash#to_json when json is not loaded (standalone Thor class)",
-        "LintResult#to_h as JSON",
-    ),
-    (
-        "docs generate / generate-all",
-        "NoMethodError: '[]' for Ukiryu::Models::ToolDefinition (model passed to the Hash generator)",
-        "strict Loader validation, then generation from YAML.safe_load(symbolize_names: true)",
-    ),
-    (
-        "docs generate-all",
-        "NameError: FileUtils not loaded",
-        "creates the output directory",
-    ),
-    (
-        "definitions add / remove",
-        "NameError: FileUtils not loaded by exe/ukiryu",
-        "copies / removes the files",
-    ),
-];
 
 /// Ruby defects of the oracle commands that the handlers reproduce, as
 /// `(command path, Ruby observation)`. Each has a captured oracle row.
@@ -163,11 +129,6 @@ pub enum AuthorError {
     /// The command needs `Register.default` and the caller did not resolve it.
     /// `partial` holds the writes performed before that point.
     RegisterUnavailable { partial: Vec<OutputWrite> },
-    /// A path that waits on a core API that is not merged yet.
-    Gated {
-        feature: &'static str,
-        partial: Vec<OutputWrite>,
-    },
     /// Ruby behaviour a merged core API reports as not reproduced.
     Unsupported {
         detail: String,
@@ -179,7 +140,6 @@ impl std::fmt::Display for AuthorError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             AuthorError::RegisterUnavailable { .. } => f.write_str("default register not resolved"),
-            AuthorError::Gated { feature, .. } => write!(f, "not available yet: {feature}"),
             AuthorError::Unsupported { detail, .. } => write!(f, "unsupported: {detail}"),
         }
     }
@@ -216,7 +176,6 @@ enum Stop {
 
 enum AuthorErrorKind {
     Register,
-    Gated(&'static str),
     Unsupported(String),
 }
 
@@ -339,7 +298,6 @@ impl Out {
                 let partial = self.writes;
                 return Err(match kind {
                     AuthorErrorKind::Register => AuthorError::RegisterUnavailable { partial },
-                    AuthorErrorKind::Gated(feature) => AuthorError::Gated { feature, partial },
                     AuthorErrorKind::Unsupported(detail) => {
                         AuthorError::Unsupported { detail, partial }
                     }
@@ -374,6 +332,28 @@ fn check_enum(out: &mut Out, name: &str, value: &str, allowed: &[&str]) -> Step 
         "Expected '--{name}' to be one of {}; got {value}",
         allowed.join(", ")
     ))
+}
+
+// Unlike the root FriendlyCLI, the standalone Thor classes have no
+// exit_on_failure? override: option errors warn, then exit successfully.
+fn standalone_option_error<T>(out: &mut Out, class: &str, message: &str) -> Step<T> {
+    let _ = out.thor_error::<()>(message);
+    out.stderr(format!("Deprecation warning: Thor exit with status 0 on errors. To keep this behavior, you must define `exit_on_failure?` in `Ukiryu::CliCommands::{class}Command`\nYou can silence deprecations warning by setting the environment variable THOR_SILENCE_DEPRECATION.\n"));
+    Err(Stop::Exit(0))
+}
+
+fn standalone_enum(out: &mut Out, class: &str, name: &str, value: &str, allowed: &[&str]) -> Step {
+    if allowed.contains(&value) {
+        return Ok(());
+    }
+    standalone_option_error(
+        out,
+        class,
+        &format!(
+            "Expected '--{name}' to be one of {}; got {value}",
+            allowed.join(", ")
+        ),
+    )
 }
 
 fn unsupported(detail: impl Into<String>) -> Stop {
@@ -506,6 +486,26 @@ pub struct ValidateInput {
 
 /// `ukiryu validate file|all|string`.
 pub fn validate(input: ValidateInput, ctx: &AuthorContext) -> Result<CommandOutcome, AuthorError> {
+    if input.options.executable || input.options.all {
+        let mut host = Host::native().map_err(|e| AuthorError::Unsupported {
+            detail: e.to_string(),
+            partial: Vec::new(),
+        })?;
+        if let Some(path) = &ctx.discovery.path {
+            host.env = host.env.set("PATH", path);
+        }
+        if let Some(home) = &ctx.discovery.home {
+            host.env = host.env.set("HOME", home);
+        }
+        return validate_with_tools(
+            input,
+            ctx,
+            &ToolEnv {
+                host,
+                configured_shell: None,
+            },
+        );
+    }
     let mut out = Out::new(ctx);
     let result = run_validate(&input, ctx, None, &mut out);
     out.finish(result)
@@ -540,11 +540,7 @@ fn run_validate(
             if (o.executable || o.all) && result.is_valid() {
                 match env {
                     Some(env) => test_executable(out, path, o, ctx, env)?,
-                    None => {
-                        return Err(Stop::Error(AuthorErrorKind::Gated(
-                            "validate --executable/--all executable test (needs a ToolEnv)",
-                        )))
-                    }
+                    None => unreachable!("validate supplies the executable runtime"),
                 }
             }
             Ok(validation_exit(&result, o.strict))
@@ -559,11 +555,7 @@ fn run_validate(
             if o.all || o.executable {
                 match env {
                     Some(env) => test_all_executables(out, o, ctx, env)?,
-                    None => {
-                        return Err(Stop::Error(AuthorErrorKind::Gated(
-                            "validate all --executable/--all executable tests (needs a ToolEnv)",
-                        )))
-                    }
+                    None => unreachable!("validate supplies the executable runtime"),
                 }
             }
             Ok(0)
@@ -752,10 +744,11 @@ pub fn lint(input: LintInput, ctx: &AuthorContext) -> Result<CommandOutcome, Aut
 
 fn run_lint(input: &LintInput, ctx: &AuthorContext, out: &mut Out) -> Step<i32> {
     let format = input.options.format.as_deref().unwrap_or("text");
-    check_enum(out, "format", format, &["text", "json"])?;
+    standalone_enum(out, "Lint", "format", format, &["text", "json"])?;
     if let Some(severity) = input.options.severity.as_deref() {
-        check_enum(
+        standalone_enum(
             out,
+            "Lint",
             "severity",
             severity,
             &["error", "warning", "info", "style"],
@@ -765,7 +758,11 @@ fn run_lint(input: &LintInput, ctx: &AuthorContext, out: &mut Out) -> Step<i32> 
         LintTarget::File { path } => {
             let result = DefinitionLinter::lint_file(path, None).map_err(lint_stop)?;
             if format == "json" {
-                out.say(&result.to_json(), Color::White)?;
+                // The standalone Ruby command never requires json.
+                return Err(raise(
+                    "NoMethodError",
+                    "undefined method 'to_json' for an instance of Hash",
+                ));
             } else {
                 lint_text(out, &result, path)?;
             }
@@ -838,8 +835,11 @@ fn lint_all(out: &mut Out, register: Option<&str>, ctx: &AuthorContext) -> Step<
         total_issues += result.count();
         results.push((file, result));
     }
-    // Target for the oracle's missing LintResult#error_count (ORACLE_DEFECTS).
-    let total_errors: usize = results.iter().map(|(_, r)| r.errors().len()).sum();
+    // Ruby calls the absent #error_count even for a result with no issues.
+    if !results.is_empty() {
+        return Err(raise("NoMethodError", "undefined method 'error_count' for an instance of Ukiryu::Definition::DefinitionLinter::LintResult"));
+    }
+    let total_errors: usize = 0;
     let total_warnings: usize = results
         .iter()
         .map(|(_, r)| r.count_by_severity(&Severity::Warning))
@@ -966,8 +966,9 @@ pub fn docs(input: DocsInput, ctx: &AuthorContext) -> Result<CommandOutcome, Aut
 
 fn run_docs(input: &DocsInput, ctx: &AuthorContext, out: &mut Out) -> Step<i32> {
     let format = input.options.format.as_deref().unwrap_or("markdown");
-    check_enum(
+    standalone_enum(
         out,
+        "Docs",
         "format",
         format,
         &["markdown", "md", "asciidoc", "adoc"],
@@ -997,10 +998,14 @@ fn run_docs(input: &DocsInput, ctx: &AuthorContext, out: &mut Out) -> Step<i32> 
                 Some(raw) => match thor_numeric(raw) {
                     Some(p) => p,
                     None => {
-                        return out.thor_error(&format!(
-                            "Expected numeric value for '--port'; got {}",
-                            ruby_inspect_str(raw)
-                        ))
+                        return standalone_option_error(
+                            out,
+                            "Docs",
+                            &format!(
+                                "Expected numeric value for '--port'; got {}",
+                                ruby_inspect_str(raw)
+                            ),
+                        )
                     }
                 },
             };
@@ -1081,18 +1086,6 @@ fn load_for_docs(file: &str) -> Step<String> {
     String::from_utf8(bytes).map_err(|_| unsupported(format!("{file} is not UTF-8")))
 }
 
-/// `DocumentationGenerator.generate(definition, format:)` on the definition
-/// text; `Ok(Err(message))` is the rescued ArgumentError.
-fn generate_docs(text: &str, format: &str) -> Step<Result<String, String>> {
-    let definition =
-        crate::from_yaml(text).map_err(|e| raise("Psych::SyntaxError", e.to_string()))?;
-    match DocumentationGenerator::generate(&definition, format) {
-        Ok(docs) => Ok(Ok(docs)),
-        Err(e) if e.kind == DocumentationErrorKind::Argument => Ok(Err(e.message)),
-        Err(e) => Err(raise(e.ruby_class(), e.message)),
-    }
-}
-
 fn docs_generate(
     out: &mut Out,
     tool: &str,
@@ -1133,20 +1126,11 @@ fn docs_generate(
         return out.say_error(&format!("No definition file found for {tool} {latest}"));
     };
     let text = load_for_docs(&file)?;
-    let docs = match generate_docs(&text, format)? {
-        Ok(d) => d,
-        Err(message) => return out.say_error(&format!("Error: {message}")),
-    };
-    match options.output.as_deref() {
-        Some(path) => {
-            out.writes.push(OutputWrite::File {
-                path: path.to_owned(),
-                contents: docs,
-            });
-            out.say(&format!("✓ Documentation written to: {path}"), Color::Green)
-        }
-        None => out.say(&docs, Color::White),
-    }
+    let _ = (text, format, options);
+    Err(raise(
+        "NoMethodError",
+        "undefined method '[]' for an instance of Ukiryu::Models::ToolDefinition",
+    ))
 }
 
 fn docs_generate_all(
@@ -1161,38 +1145,11 @@ fn docs_generate_all(
     if !is_dir(&tools_dir) {
         return out.say_error(&format!("Tools directory not found: {tools_dir}"));
     }
-    std::fs::create_dir_all(output_dir)
-        .map_err(|e| unsupported(format!("creating {output_dir}: {e}")))?;
-    let mut count = 0;
-    for file in glob_yaml(&tools_dir, 2) {
-        let parts: Vec<&str> = file.split('/').collect();
-        let tool = parts[parts.len() - 3];
-        let version = parts[parts.len() - 2];
-        let text = load_for_docs(&file)?;
-        let docs = match generate_docs(&text, format)? {
-            Ok(d) => d,
-            Err(message) => {
-                out.say(
-                    &format!("Warning: Could not generate docs for {file}: {message}"),
-                    Color::Yellow,
-                )?;
-                continue;
-            }
-        };
-        let ext = if format == "asciidoc" { "adoc" } else { "md" };
-        let output_file = join(output_dir, &format!("{tool}-{version}.{ext}"));
-        out.writes.push(OutputWrite::File {
-            path: output_file.clone(),
-            contents: docs,
-        });
-        count += 1;
-        out.say(&format!("✓ Generated: {output_file}"), Color::Green)?;
-    }
-    out.say("", Color::Clear)?;
-    out.say(
-        &format!("Generated {count} documentation file(s) in: {output_dir}"),
-        Color::Cyan,
-    )
+    let _ = (output_dir, format);
+    Err(raise(
+        "NameError",
+        "uninitialized constant Ukiryu::CliCommands::DocsCommand::FileUtils",
+    ))
 }
 
 /// `Gem::Version` (rubygems 4.0.3) parsing and `<=>`, for the docs version
@@ -1571,22 +1528,11 @@ fn definitions_add(
         Some(v) => v.to_owned(),
         None => loaded.version.clone().unwrap_or_else(|| "1.0".to_owned()),
     };
-    let tool_dir = join(&discovery.user_definitions_directory(), &tool_name);
-    std::fs::create_dir_all(&tool_dir)
-        .map_err(|e| unsupported(format!("creating {tool_dir}: {e}")))?;
-    let target = join(&tool_dir, &format!("{version}.yaml"));
-    if Path::new(&target).exists() {
-        out.warn(&format!("Error: Definition already exists: {target}"));
-        out.warn("Use --name and --version to specify a different tool/version.");
-        return Err(Stop::Exit(1));
-    }
-    std::fs::copy(&source_path, &target)
-        .map_err(|e| unsupported(format!("copying to {target}: {e}")))?;
-    out.puts("Definition added successfully:");
-    out.puts(&format!("  Tool: {tool_name}"));
-    out.puts(&format!("  Version: {version}"));
-    out.puts(&format!("  Location: {target}"));
-    Ok(0)
+    let _ = (tool_name, version);
+    Err(raise(
+        "NameError",
+        "uninitialized constant Ukiryu::CliCommands::DefinitionsCommand::FileUtils",
+    ))
 }
 
 fn definitions_remove(
@@ -1641,18 +1587,13 @@ fn definitions_remove(
             return Ok(0);
         }
     }
-    for v in &versions {
-        let file = join(&tool_dir, &format!("{v}.yaml"));
-        std::fs::remove_file(&file).map_err(|e| unsupported(format!("removing {file}: {e}")))?;
-        out.puts(&format!("Removed: {tool}/{v}"));
-    }
-    let empty = std::fs::read_dir(&tool_dir)
-        .map(|mut rd| rd.next().is_none())
-        .unwrap_or(false);
-    if empty {
-        std::fs::remove_dir(&tool_dir)
-            .map_err(|e| unsupported(format!("removing {tool_dir}: {e}")))?;
-        out.puts(&format!("Removed empty directory: {tool_dir}"));
+    if !versions.is_empty()
+        || std::fs::read_dir(&tool_dir).is_ok_and(|mut entries| entries.next().is_none())
+    {
+        return Err(raise(
+            "NameError",
+            "uninitialized constant Ukiryu::CliCommands::DefinitionsCommand::FileUtils",
+        ));
     }
     out.puts("Done.");
     Ok(0)
@@ -1752,8 +1693,21 @@ struct ToolDocument {
 impl DefinitionDocument for ToolDocument {
     fn parse_definition(yaml: &str) -> Result<Self, DocumentParseError> {
         let inner = ToolDefinition::from_yaml(yaml).map_err(|e| match e.kind {
-            ModelErrorKind::Syntax | ModelErrorKind::InvalidFormat => {
-                DocumentParseError::Format(e.message)
+            ModelErrorKind::Syntax => {
+                let message = match safe_load(yaml, Permitted::DOCUMENT) {
+                    Err(SchemaError::YamlSyntax { message }) => message,
+                    _ => e.message,
+                };
+                DocumentParseError::Format(format!("input format is invalid, try to pass correct `yaml` format \n{message}\n\n"))
+            }
+            ModelErrorKind::InvalidFormat => {
+                // Lutaml treats a YAML sequence as a collection of models.
+                // A scalar element fails #key? before a ToolDefinition exists.
+                let message = match safe_load(yaml, Permitted::DOCUMENT) {
+                    Ok(Data::Array(values)) if !values.is_empty() => format!("input format is invalid, try to pass correct `yaml` format \nundefined method 'key?' for {}\n\n", data_receiver(values.first())),
+                    _ => e.message,
+                };
+                DocumentParseError::Format(message)
             }
             _ => DocumentParseError::Other(e.message),
         })?;
@@ -2208,8 +2162,24 @@ fn executable_body(
         .clone()
         .or_else(|| ctx.default_register.clone())
         .ok_or(Stop::Error(AuthorErrorKind::Register))?;
+    let name = tool_name_for(path);
+    // Ruby resolves the definition index before asking Runtime for a shell.
+    // Preserve a missing-tool error even when SHELL is absent.
+    let source_register = Register::at(&register);
+    let index = crate::tool_loader::load_implementation_index(&source_register, &name)
+        .map_err(|error| tool_stop(ToolError::from(error)))?;
+    let interface = match index {
+        Some(index) => {
+            crate::tool_loader::load_interface(&source_register, &index.interface.to_ruby_s())
+                .map_err(|error| tool_stop(ToolError::from(error)))?
+        }
+        None => None,
+    };
+    if interface.is_none() {
+        return Err(tool_stop(ToolError::NotFound { name }));
+    }
     let session = Tools::new(env, register)?;
-    let tool = session.get(&tool_name_for(path)).map_err(tool_stop)?;
+    let tool = session.get(&name).map_err(tool_stop)?;
     match tool.executable() {
         Some(exe) => out.say(&format!("✓ Tool found at: {exe}"), Color::Green)?,
         None => {
