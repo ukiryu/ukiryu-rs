@@ -71,6 +71,8 @@ pub enum SchemaError {
     IpAddress { prefix: bool, message: String },
     /// `Errno::*` while reading a schema file.
     Io { errno: String, message: String },
+    /// A measured Ruby exception from malformed schema keyword values.
+    Ruby { class: String, message: String },
     /// Behaviour of the original that this port does not reproduce.
     Unsupported { feature: String, detail: String },
 }
@@ -99,6 +101,7 @@ impl SchemaError {
             }
             .to_owned(),
             SchemaError::Io { errno, .. } => format!("Errno::{errno}"),
+            SchemaError::Ruby { class, .. } => class.clone(),
             SchemaError::Unsupported { .. } => return None,
         })
     }
@@ -111,7 +114,8 @@ impl SchemaError {
             | SchemaError::SchemaParse { message }
             | SchemaError::ReadFailed { message }
             | SchemaError::IpAddress { message, .. }
-            | SchemaError::Io { message, .. } => message.clone(),
+            | SchemaError::Io { message, .. }
+            | SchemaError::Ruby { message, .. } => message.clone(),
             SchemaError::DisallowedClass { class } => {
                 format!("Tried to load unspecified class: {class}")
             }
@@ -336,12 +340,6 @@ fn initialize_data(data: &Data) -> Result<Data, SchemaError> {
     };
     if let Some(parsed) = json::parse(s) {
         return stringify(&parsed);
-    }
-    if s.contains(['\n', '\r']) {
-        return Err(SchemaError::unsupported(
-            "string document",
-            "a multi-line top-level string is resolved as a URI by the gem; not reproduced",
-        ));
     }
     if !uri::addressable_parses(s) {
         return Ok(data.clone());

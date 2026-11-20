@@ -15,7 +15,7 @@ fn scan(
     node: &Data,
     base: &str,
     ids: &mut HashSet<String>,
-    refs: &mut Vec<String>,
+    refs: &mut Vec<(String, bool)>,
 ) -> Result<(), SchemaError> {
     let Data::Hash(pairs) = node else {
         return Ok(());
@@ -28,8 +28,11 @@ fn scan(
     if let Some(Data::String(r)) = get(pairs, "$ref") {
         // Fragment-only references never load a resource.
         if !r.starts_with('#') && !r.is_empty() {
-            refs.push(uri::resolve(&base, r)?);
+            refs.push((uri::resolve(&base, r)?, false));
         }
+    }
+    if let Some(Data::String(reference)) = get(pairs, "extends") {
+        refs.push((uri::resolve(&base, reference)?, true));
     }
     for key in ["definitions", "properties", "patternProperties"] {
         if let Some(Data::Hash(pairs)) = get(pairs, key) {
@@ -123,6 +126,28 @@ pub(super) fn read(reference: &str) -> Result<Data, SchemaError> {
     })
 }
 
+// A String `extends` is eagerly opened even though its validation attribute
+// subsequently reports it as an invalid schema. Non-file URI schemes reach
+// Ruby's ordinary file opener rather than JSON::Schema::Reader's file wrapper.
+fn read_extension(reference: &str) -> Result<Data, SchemaError> {
+    let scheme = uri::split(reference).scheme;
+    if scheme.is_some_and(|s| !["file", "http", "https"].contains(&s))
+        && !(cfg!(windows) && PathBuf::from(reference).is_absolute())
+    {
+        if !std::path::Path::new(reference).exists() {
+            return Err(SchemaError::Io {
+                errno: "ENOENT".into(),
+                message: format!("No such file or directory @ rb_sysopen - {reference}"),
+            });
+        }
+        return Err(SchemaError::unsupported(
+            "extends transport",
+            "an existing non-file URI-named local file needs an oracle probe",
+        ));
+    }
+    read(reference)
+}
+
 pub(super) fn load(root: &Data, base: &str) -> Result<Vec<(String, Data)>, SchemaError> {
     let mut documents: Vec<(String, Data)> = Vec::new();
     loop {
@@ -135,9 +160,9 @@ pub(super) fn load(root: &Data, base: &str) -> Result<Vec<(String, Data)>, Schem
         }
         let missing = refs
             .iter()
-            .map(|r| r.split('#').next().unwrap_or(r))
-            .find(|r| !ids.contains(*r));
-        let Some(name) = missing else {
+            .map(|(r, extension)| (r.split('#').next().unwrap_or(r), *extension))
+            .find(|(r, _)| !ids.contains(*r));
+        let Some((name, extension)) = missing else {
             return Ok(documents);
         };
         if documents.len() >= 128 {
@@ -146,7 +171,14 @@ pub(super) fn load(root: &Data, base: &str) -> Result<Vec<(String, Data)>, Schem
                 "more than 128 external schema documents",
             ));
         }
-        documents.push((name.into(), read(name)?));
+        documents.push((
+            name.into(),
+            if extension {
+                read_extension(name)?
+            } else {
+                read(name)?
+            },
+        ));
     }
 }
 
