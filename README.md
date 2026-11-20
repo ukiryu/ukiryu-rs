@@ -2,7 +2,7 @@
 
 Shared Rust core for the migration in [ukiryu/ukiryu#29](https://github.com/ukiryu/ukiryu/issues/29).
 The workspace contains the core, a thin non-published C-ABI cdylib entry and the
-future Rust CLI. Initial development metadata follows Parsanol: version0.1.0,
+Rust CLI. Initial development metadata follows Parsanol: version0.1.0,
 Rust1.86, shared dependencies and an LTO release profile. Publication is not enabled.
 
 ## Foundation currently implemented
@@ -23,9 +23,9 @@ Development currently pins the exact qualified Yeptris source revision carrying
 float fidelity, explicit emitter options, Rust1.86 compatibility and browser
 build support. This is a source qualification pin; no fixed registry release or
 Ukiryu publication is claimed.
-Only `--version` exists in the CLI foundation. Full models, loaders, schema/type
-validation, shells, process execution, authoring and runtime bindings remain
-tracked migration work; this increment does not complete issue17 or the product.
+The CLI implements the source verbs, with pinned help/parser, execution,
+inspection and authoring captures. Migration acceptance and product release
+remain tracked separately; see the CLI sections below and issue29.
 
 ## Checks
 
@@ -80,12 +80,21 @@ from `ab6df353` (Ruby 4.0.1). Regenerate it from a clean oracle checkout with
 `scripts/capture-cli-lookup.py ORACLE --ruby RUBY --output OUTPUT` using the
 oracle's locked bundle. The tests compare streams and exit codes exactly.
 
-Issue ukiryu/ukiryu#22 remains open: four execute captures include anonymous
-Ruby class addresses in unknown-setter errors. Those paths explicitly refuse
-execution rather than invent a Ruby object address. Invalid request YAML keeps
+Four execute captures include anonymous Ruby class addresses in unknown-setter
+errors. Both runtimes emit their native address; comparisons canonicalize only
+that address token, preserving response fields, diagnostics and exit codes
+(see `ukiryu-cli/tests/execute_data/README.md`). All 12 terminal execution
+captures also run through a real PTY against the compiled binary.
+
+Invalid request YAML keeps
 the mandated Yeptris parser's diagnostic, checked exactly in
 `execute_data/yeptris_diagnostics.json`; the Ruby exit code and diagnostic
 prefix also match. This engine diagnostic is not a Ruby byte-parity claim.
+
+Issue ukiryu/ukiryu#22 still requires owner-controlled release/cutover steps.
+`cli-binaries.yml` builds and verifies five platform candidate archives, but
+does not publish releases. The original Ruby gem still ships `exe/ukiryu`;
+its deprecation shim and removal must be decided at cutover, as the issue states.
 
 ## C boundary
 
