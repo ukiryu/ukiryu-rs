@@ -141,13 +141,19 @@ fn read_extension(reference: &str) -> Result<Data, SchemaError> {
 }
 
 pub(super) fn load(root: &Data, base: &str) -> Result<Vec<(String, Data)>, SchemaError> {
-    load_with(root, base, read)
+    load_with(root, base, |name, extension| {
+        if extension {
+            read_extension(name)
+        } else {
+            read(name)
+        }
+    })
 }
 
 pub(super) fn load_with(
     root: &Data,
     base: &str,
-    read: impl Fn(&str) -> Result<Data, SchemaError>,
+    read: impl Fn(&str, bool) -> Result<Data, SchemaError>,
 ) -> Result<Vec<(String, Data)>, SchemaError> {
     let mut documents: Vec<(String, Data)> = Vec::new();
     loop {
@@ -171,14 +177,28 @@ pub(super) fn load_with(
                 "more than 128 external schema documents",
             ));
         }
-        documents.push((
-            name.into(),
-            if extension {
-                read_extension(name)?
-            } else {
-                read(name)?
-            },
-        ));
+        documents.push((name.into(), read(name, extension)?));
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn string_extends_uses_the_supplied_resource_loader() {
+        let root = json::parse_schema(r#"{"id":"urn:root","extends":"urn:external"}"#).unwrap();
+        let error = load_with(&root, "urn:root", |name, extension| {
+            assert_eq!(name, "urn:external");
+            assert!(extension);
+            Err(SchemaError::unsupported(
+                "snapshot schema resource",
+                "denied",
+            ))
+        })
+        .unwrap_err();
+        assert!(matches!(error, SchemaError::Unsupported { feature, .. }
+            if feature == "snapshot schema resource"));
     }
 }
 

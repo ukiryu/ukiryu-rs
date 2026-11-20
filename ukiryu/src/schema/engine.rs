@@ -172,7 +172,7 @@ fn fully_validate_mode(
     let resources = if host_paths {
         super::resources::load(schema, root_uri)?
     } else {
-        super::resources::load_with(schema, root_uri, |name| {
+        super::resources::load_with(schema, root_uri, |name, _extension| {
             Err(unsupported(
                 "snapshot schema resource",
                 format!("external resource {name:?} is unavailable in read-only rendering"),
