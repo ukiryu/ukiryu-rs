@@ -6,6 +6,7 @@ Reuses the original-command boot and offline-schema policy of the author
 capture. No CLI source is patched. Captures LF/CRLF, validate/lint and text/JSON.
 """
 import argparse
+import concurrent.futures
 import hashlib
 import importlib.util
 import json
@@ -44,8 +45,11 @@ def main():
     ruby = subprocess.check_output([author.RUBY, '-e', 'print RUBY_VERSION'], text=True)
     assert ruby == '4.0.1', ruby
     original_setup = author.setup
-    rows = []
-    gems = []
+    def setup(case, root, mtime):
+        original_setup(case, root, mtime)
+        (root / 'defs/diagnostic.yaml').write_bytes(case['yaml'].encode())
+    author.setup = setup
+    inputs = []
     for name, source in [
         ('flow', 'name: [broken\n'),
         ('indent', 'name: test\n  bad: indent\n'),
@@ -53,20 +57,20 @@ def main():
     ]:
         for newline in ['lf', 'crlf']:
             yaml = source if newline == 'lf' else source.replace('\n', '\r\n')
-            def setup(case, root, mtime):
-                original_setup(case, root, mtime)
-                (root / 'defs/diagnostic.yaml').write_bytes(yaml.encode())
-            author.setup = setup
             for verb in ['validate', 'lint']:
                 for fmt in ['text', 'json']:
                     case = {'id': f'{name}-{newline}-{verb}-{fmt}',
                             'runner': 'exe' if verb == 'validate' else 'lint',
-                            'args': [verb, 'file', 'defs/diagnostic.yaml', '--format', fmt],
+                            'args': ([verb] if verb == 'validate' else []) + ['file', 'defs/diagnostic.yaml', '--format', fmt],
+                            'yaml': yaml,
                             'env': {}, 'stdin': None, 'pty': False, 'mode': 'exact'}
-                    result = author.capture(case, oracle, 1767323045)
-                    gems.append(result['runtime_gems'])
-                    rows.append({'id': case['id'], 'yaml': yaml, 'args': case['args'],
-                                 'expect': {k: result['expect'][k] for k in ['stdout', 'stderr', 'exit']}})
+                    inputs.append(case)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+        results = list(pool.map(lambda c: author.capture(c, oracle, 1767323045), inputs))
+    gems = [r['runtime_gems'] for r in results]
+    rows = [{'id': r['id'], 'yaml': r['yaml'],
+             'args': (['lint'] if r['runner'] == 'lint' else []) + r['args'],
+             'expect': {k: r['expect'][k] for k in ['stdout', 'stderr', 'exit']}} for r in results]
     assert len(rows) == 24 and len({r['id'] for r in rows}) == 24
     assert all(row['expect']['exit'] == 1 for row in rows), 'oracle failed unexpectedly'
     assert all(g == gems[0] for g in gems), 'dependency drift between probes'
