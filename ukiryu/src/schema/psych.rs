@@ -70,6 +70,11 @@ pub fn safe_load(text: &str, permitted: Permitted) -> Result<Data, SchemaError> 
 /// Events in the appended suffix are ignored; no repaired value is returned.
 fn unfinished_flow_sequence(text: &str, message: &str) -> Option<String> {
     use yeptris::event::{EventKind, Puller};
+    // Yeptris's backward end-mark scan counts CRLF as two line breaks,
+    // which can produce line 0 for a scalar before the appended closers.
+    // Normalize only this diagnostic replay; no loaded value is changed.
+    let normalized = text.replace("\r\n", "\n");
+    let text = normalized.as_str();
     let (error_line, error_column) = message
         .strip_prefix("unexpected parser state (line ")?
         .strip_suffix(')')?
@@ -142,8 +147,12 @@ fn unfinished_flow_sequence(text: &str, message: &str) -> Option<String> {
     let needs_node = match frame.last_value {
         None => true,
         Some((line, column)) => {
-            let tail: String = text.split_inclusive('\n').skip(line as usize - 1).collect();
-            let tail: String = tail.chars().skip(column as usize - 1).collect();
+            // An unusable engine mark falls back to the original YAML error.
+            let tail: String = text
+                .split_inclusive('\n')
+                .skip(line.checked_sub(1)? as usize)
+                .collect();
+            let tail: String = tail.chars().skip(column.checked_sub(1)? as usize).collect();
             tail.trim_start().starts_with(',')
         }
     };
