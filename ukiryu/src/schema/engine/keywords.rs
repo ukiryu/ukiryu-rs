@@ -2,6 +2,9 @@
 //! Ruby exceptions for malformed keyword arguments. The fixture is the contract.
 use super::*;
 
+mod decimal;
+use decimal::decimal;
+
 pub(super) fn ruby_error(class: &str, message: impl Into<String>) -> SchemaError {
     SchemaError::Ruby {
         class: class.into(),
@@ -163,8 +166,8 @@ fn pattern_captures(
     text: &str,
 ) -> Result<Option<crate::types::onig::Captures>, SchemaError> {
     regex
-        .captures(text)
-        .ok_or_else(|| unsupported("pattern", "Onigmo match error is not reproduced"))
+        .captures_bytes(text.as_bytes(), crate::types::onig::Encoding::Utf8)
+        .map_err(|error| ruby_error(error.class, error.message))
 }
 
 pub(super) fn pattern_match(regex: &OnigRegex, text: &str) -> Result<bool, SchemaError> {
@@ -266,7 +269,14 @@ impl<'s> Validation<'s> {
             )
         })?;
         let number = decimal(&data.ruby_to_s()?)?.expect("numeric Ruby spelling");
-        if !number.is_multiple_of(&divisor) {
+        // The gem short-circuits a numeric zero before calling BigDecimal#%.
+        // A String that converts to zero still reaches #%, which raises.
+        let numeric_zero = match value {
+            Data::Integer(n) => *n == num_bigint::BigInt::from(0),
+            Data::Float(n) => *n == 0.0,
+            _ => false,
+        };
+        if numeric_zero || !number.is_multiple_of(&divisor)? {
             self.push(
                 ctx,
                 format!(
@@ -490,107 +500,4 @@ impl<'s> Validation<'s> {
             other => Err(no_method(other, "include?")),
         }
     }
-}
-
-// BigDecimal observes decimal Float spelling. Scientific exponents stay
-// symbolic: modular exponentiation avoids allocating a giant power of ten.
-enum Decimal {
-    Finite {
-        coefficient: num_bigint::BigInt,
-        exponent: i64,
-    },
-    Infinity,
-    Nan,
-}
-
-impl Decimal {
-    fn is_multiple_of(&self, divisor: &Self) -> bool {
-        use num_bigint::BigInt;
-        let Self::Finite {
-            coefficient: value,
-            exponent: value_power,
-        } = self
-        else {
-            return false;
-        };
-        let Self::Finite {
-            coefficient: factor,
-            exponent: factor_power,
-        } = divisor
-        else {
-            return matches!(divisor, Self::Infinity) && *value == BigInt::from(0);
-        };
-        if *factor == BigInt::from(0) {
-            return false;
-        }
-        if *value == BigInt::from(0) {
-            return true;
-        }
-        let modulus = if *factor < BigInt::from(0) {
-            -factor
-        } else {
-            factor.clone()
-        };
-        let shift = i128::from(*value_power) - i128::from(*factor_power);
-        if shift >= 0 {
-            (value * BigInt::from(10).modpow(&BigInt::from(shift), &modulus)) % modulus
-                == BigInt::from(0)
-        } else {
-            let digits = value.to_string().len();
-            if -shift > digits as i128 {
-                return false;
-            }
-            let power = u32::try_from(-shift).expect("bounded by input digits");
-            value % (modulus * BigInt::from(10).pow(power)) == BigInt::from(0)
-        }
-    }
-}
-
-fn decimal(text: &str) -> Result<Option<Decimal>, SchemaError> {
-    let text = text.trim_matches(|c: char| c.is_ascii_whitespace());
-    if text == "NaN" {
-        return Ok(Some(Decimal::Nan));
-    }
-    if matches!(text, "Infinity" | "+Infinity" | "-Infinity") {
-        return Ok(Some(Decimal::Infinity));
-    }
-    let mut clean = String::with_capacity(text.len());
-    for (i, c) in text.char_indices() {
-        if c == '_' {
-            if i == 0 || !text.as_bytes()[i - 1].is_ascii_digit() {
-                return Ok(None);
-            }
-        } else {
-            clean.push(c);
-        }
-    }
-    static SYNTAX: std::sync::OnceLock<regex::Regex> = std::sync::OnceLock::new();
-    let syntax = SYNTAX.get_or_init(|| {
-        regex::Regex::new(r"\A[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eEdD][+-]?[0-9]+)?\z")
-            .expect("fixed decimal syntax")
-    });
-    if !syntax.is_match(&clean) {
-        return Ok(None);
-    }
-    let (mantissa, exponent) = match clean.find(['e', 'E', 'd', 'D']) {
-        Some(i) => (&clean[..i], clean[i + 1..].parse::<i64>().ok()),
-        None => (clean.as_str(), Some(0)),
-    };
-    let (digits, scale) = match mantissa.split_once('.') {
-        Some((a, b)) => (
-            format!("{a}{b}"),
-            i64::try_from(b.len()).expect("input length fits address space"),
-        ),
-        None => (mantissa.to_owned(), 0),
-    };
-    let exponent = exponent.and_then(|e| e.checked_sub(scale)).ok_or_else(|| {
-        unsupported(
-            "decimal exponent",
-            "BigDecimal exponent outside signed 64-bit needs an oracle probe",
-        )
-    })?;
-    Ok(Some(Decimal::Finite {
-        coefficient: digits.parse().expect("validated decimal digits"),
-        exponent,
-    }))
 }

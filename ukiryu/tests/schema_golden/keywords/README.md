@@ -38,8 +38,30 @@ cargo test -p ukiryu --locked --features c --test schema_extends
 Existing colon-named local files are tested on Unix; Windows cannot create
 them. Missing-file cases remain covered by `schema_keywords`.
 
-The implementation still explicitly refuses Onigmo runtime match failures and
-decimal exponents outside signed 64-bit. The latter needs BigDecimal resource
-limit behavior: probing a remainder at the extreme negative exponent boundary
-raised `NoMemoryError` in the reference. Resource transport and YAML
+`capture_runtime.rb` adds 478 focused observations of BigDecimal exponent
+boundaries, zero divisors and Onigmo runtime failures. It uses the same clean
+reference, Ruby 4.0.1, BigDecimal 4.1.3 and Fiddle 1.1.8. The fixture records the
+lockfile and generator hashes. Its generator source was committed first as
+`58ce4218b2855b518a676f3b45bbe3cf6be2ea5f`.
+
+```sh
+bundle exec ruby -EUTF-8 /path/to/capture_runtime.rb /tmp/runtime.json
+cargo test -p ukiryu --locked --features c --test schema_runtime
+```
+
+UTF-8 is explicit: Ruby otherwise escapes non-ASCII regexp sources differently
+under an ASCII locale. With that input encoding fixed, captures are identical
+across changed timezone, locale, working directory and wall-clock second.
+Only the test process temporarily sets Onigmo's stack limit to 1000, restoring
+its original limit afterwards. Production keeps the default unlimited limit.
+The runtime errors retain Ruby's class and message, including regexp source,
+literal newlines and escaped slash delimiters.
+
+BigDecimal's exponent overflow/underflow, numeric-zero short circuit and String
+zero-divisor exception are reproduced. Remainders that require multi-exabyte
+quotient or sign-adjustment storage raise the observed `NoMemoryError` without
+initializing that storage: checked capacity reservation fails first. Ordinary
+arithmetic stays symbolic. This fixture does not specify ambient heap exhaustion
+for otherwise representable allocations, user-configured BigDecimal modes,
+Regexp timeouts or non-UTF-8 diagnostic output. Resource transport and YAML
 value-spelling boundaries remain separate work.

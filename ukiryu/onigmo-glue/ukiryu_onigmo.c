@@ -249,3 +249,10 @@ ukiryu_onigmo_free(regex_t *reg)
 {
     onig_free(reg);
 }
+
+/* Runtime error diagnostics use the same table as Ruby's reg_raise. */
+void
+ukiryu_onigmo_error(long long code, unsigned char *message)
+{
+    onig_error_code_to_str(message, (OnigPosition)code);
+}

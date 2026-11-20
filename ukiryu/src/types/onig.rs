@@ -35,6 +35,7 @@ const ENCODING_NONE: u32 = 32;
 
 /// `ONIG_MISMATCH` and `ONIG_MAX_ERROR_MESSAGE_LEN` (onigmo.h).
 const ONIG_MISMATCH: c_longlong = -1;
+const ONIGERR_MEMORY: c_longlong = -5;
 const ONIG_MAX_ERROR_MESSAGE_LEN: usize = 90;
 
 extern "C" {
@@ -55,6 +56,7 @@ extern "C" {
         capacity: c_int,
     ) -> c_longlong;
     fn ukiryu_onigmo_free(reg: *mut c_void);
+    fn ukiryu_onigmo_error(code: c_longlong, message: *mut u8);
 }
 
 /// Onigmo keeps a little global state while it compiles (its one-time
@@ -127,10 +129,13 @@ impl Compiled {
         self.search_bytes(haystack.as_bytes()).ok()
     }
 
-    fn search_bytes(&self, haystack: &[u8]) -> Result<Option<Captures>, String> {
+    fn search_bytes(&self, haystack: &[u8]) -> Result<Option<Captures>, MatchError> {
         let _guard = self.lock.lock().unwrap_or_else(|e| e.into_inner());
         let mut spans: Vec<c_longlong> = vec![-1; self.regions * 2];
-        let capacity = c_int::try_from(self.regions).map_err(|e| e.to_string())?;
+        let capacity = c_int::try_from(self.regions).map_err(|_| MatchError {
+            class: "NoMemoryError",
+            message: "failed to allocate memory".into(),
+        })?;
         // SAFETY: `spans` holds 2 * regions slots, as `capacity` says.
         let r = unsafe {
             ukiryu_onigmo_search(
@@ -145,7 +150,22 @@ impl Compiled {
             return Ok(None);
         }
         if r < 0 {
-            return Err(format!("Onigmo search error {r}"));
+            let mut message = [0u8; ONIG_MAX_ERROR_MESSAGE_LEN];
+            // SAFETY: the buffer has Onigmo's documented maximum size;
+            // runtime error codes do not require compile-time ErrorInfo.
+            unsafe { ukiryu_onigmo_error(r, message.as_mut_ptr()) };
+            let end = message
+                .iter()
+                .position(|&b| b == 0)
+                .unwrap_or(message.len());
+            return Err(MatchError {
+                class: if r == ONIGERR_MEMORY {
+                    "NoMemoryError"
+                } else {
+                    "RegexpError"
+                },
+                message: String::from_utf8_lossy(&message[..end]).into_owned(),
+            });
         }
         let groups = spans
             .chunks(2)
@@ -301,10 +321,7 @@ impl OnigRegex {
                 })?;
             return compiled
                 .search_bytes(haystack)
-                .map_err(|message| MatchError {
-                    class: "RuntimeError",
-                    message,
-                });
+                .map_err(|error| self.match_error(error));
         }
         let text = std::str::from_utf8(haystack).map_err(|e| MatchError {
             class: "ArgumentError",
@@ -316,10 +333,25 @@ impl OnigRegex {
                 message: "unable to prepare regexp encoding".into(),
             })?
             .search_bytes(haystack)
-            .map_err(|message| MatchError {
-                class: "RuntimeError",
-                message,
-            })
+            .map_err(|error| self.match_error(error))
+    }
+
+    fn match_error(&self, mut error: MatchError) -> MatchError {
+        if error.class == "RegexpError" {
+            // Ruby appends the regexp source with escaped delimiters;
+            // existing escapes and literal control characters stay intact.
+            let mut source = String::new();
+            let mut escaped = false;
+            for c in self.source.chars() {
+                if c == '/' && !escaped {
+                    source.push('\\');
+                }
+                source.push(c);
+                escaped = c == '\\' && !escaped;
+            }
+            error.message.push_str(&format!(": /{source}/"));
+        }
+        error
     }
 
     /// `haystack =~ self` as a boolean; `None` when Onigmo reports an error.
