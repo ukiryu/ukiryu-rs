@@ -10,7 +10,8 @@ require 'open3'
 # Freeze the ambient timezone because Psych uses getlocal for unzoned Time.
 ENV['TZ'] = 'UTC'
 port_root = File.expand_path('../../../..', __dir__)
-source_commit, source_status = Open3.capture2('git', '-C', port_root, 'rev-parse', 'HEAD')
+source_paths = %w[ukiryu/src/schema ukiryu/src/types/ruby.rs ukiryu/tests/schema_golden/value-spelling/capture.rb ukiryu/tests/schema_golden/value-spelling/capture_diagnostics.rb ukiryu/tests/schema_golden/value-spelling/inputs.json ukiryu/tests/schema_golden/value-spelling/diagnostic-inputs.json]
+source_commit, source_status = Open3.capture2('git', '-C', port_root, 'log', '-1', '--format=%H', '--', *source_paths)
 raise 'no port source commit' unless source_status.success?
 
 root = Gem.loaded_specs.fetch('ukiryu').full_gem_path
