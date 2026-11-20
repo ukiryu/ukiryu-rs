@@ -20,7 +20,7 @@ pub(super) fn class_name(value: &Data) -> &'static str {
         Data::Array(_) => "Array",
         Data::Hash(_) => "Hash",
         Data::Symbol(_) => "Symbol",
-        Data::Date { .. } => "Date",
+        Data::Date { .. } | Data::AllocatedDate => "Date",
         Data::Time(_) => "Time",
     }
 }
