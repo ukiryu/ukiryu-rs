@@ -210,7 +210,9 @@ impl DefinitionDocument for TDef {
     fn self_uri(&self) -> Option<&str> {
         None
     }
-    fn resolve_inheritance(&mut self) {}
+    fn resolve_inheritance(&mut self) -> ukiryu::definition::Result<()> {
+        Ok(())
+    }
 }
 
 struct World {

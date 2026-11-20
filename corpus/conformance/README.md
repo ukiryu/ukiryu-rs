@@ -196,6 +196,16 @@ full error class remain exact. A different platform value is not
 normalized; negative controls require that wrong field to fail. This is
 host-context normalization and does not settle decision D2.
 
+The CLI execution goldens in `ukiryu-cli/tests/execute_data/cases.json`
+are replayed by the separate `ukiryu-cli/tests/execute.rs` runner. That runner
+canonicalizes only the hexadecimal address in anonymous-class inspect tokens
+`#<Class:0x[0-9a-fA-F]+>` on both sides of comparisons, including the four
+rescued unknown-setter errors. All exception classes, members, context,
+response fields and exit codes remain exact. See
+[`execute_data/README.md`](../../ukiryu-cli/tests/execute_data/README.md)
+for the rule, negative controls and pinned-Ruby recapture command. This does
+not change comparisons for the shared corpus rows above or runtime output.
+
 ## Applicability
 
 Every row declares `applicability.platforms` (a non-empty subset of

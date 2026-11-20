@@ -449,8 +449,16 @@ impl DefinitionDocument for ToolDocument {
         self.self_uri.as_deref()
     }
 
-    fn resolve_inheritance(&mut self) {
-        self.definition.resolve_inheritance();
+    fn resolve_inheritance(&mut self) -> ukiryu::definition::Result<()> {
+        self.definition
+            .resolve_inheritance()
+            .map(|_| ())
+            .map_err(|e| {
+                ukiryu::definition::DefinitionError::new(
+                    ukiryu::definition::DefinitionErrorKind::Load,
+                    e.message,
+                )
+            })
     }
 }
 
@@ -983,8 +991,16 @@ fn options_check(
     };
     let names = setter_names(definition);
     if let Some(key) = setter_keys.iter().find(|k| !names.iter().any(|n| n == *k)) {
-        return Err(ExecuteError::unsupported(format!(
-            "parameter '{key}' has no setter on the options class: the source's NoMethodError names an anonymous class by address"
+        // OptionsBuilder's anonymous class has no such setter. The source
+        // rescues NoMethodError into an error response (CLI status remains 0).
+        // Use the native definition's identity for the volatile class address;
+        // only the comparison layer canonicalizes it, never runtime output.
+        return Ok(Some(ErrorResponse::from_message(
+            &format!(
+                "Unexpected error: NoMethodError: undefined method '{key}=' for an instance of #<Class:0x{:016x}>",
+                std::ptr::from_ref(definition) as usize
+            ),
+            1,
         )));
     }
     Ok(None)
@@ -994,12 +1010,31 @@ fn options_check(
 fn setter_names(c: &CommandDefinition) -> Vec<String> {
     let text = |t: &Option<ukiryu::models::value::Text>| t.as_ref().map(|t| t.to_ruby_s());
     let mut names = Vec::new();
-    names.extend(c.arguments.iter().flatten().filter_map(|a| text(&a.name)));
-    names.extend(c.options.iter().flatten().filter_map(|o| text(&o.name)));
-    names.extend(c.flags.iter().flatten().filter_map(|f| text(&f.name)));
+    names.extend(
+        c.arguments
+            .iter()
+            .flatten()
+            .flatten()
+            .filter_map(|a| text(&a.name)),
+    );
+    names.extend(
+        c.options
+            .iter()
+            .flatten()
+            .flatten()
+            .filter_map(|o| text(&o.name)),
+    );
+    names.extend(
+        c.flags
+            .iter()
+            .flatten()
+            .flatten()
+            .filter_map(|f| text(&f.name)),
+    );
     names.extend(
         c.post_options
             .iter()
+            .flatten()
             .flatten()
             .filter_map(|o| text(&o.name)),
     );

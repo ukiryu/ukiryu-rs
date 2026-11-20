@@ -256,7 +256,8 @@ fn loader_conversion_over_register_fixtures() {
                         &call["hash"],
                         &hash_of(&tool),
                     );
-                    tool.resolve_inheritance();
+                    tool.resolve_inheritance()
+                        .expect("oracle inheritance succeeds");
                     converted += 1;
                     c.eq(
                         || format!("{tag} result hash"),

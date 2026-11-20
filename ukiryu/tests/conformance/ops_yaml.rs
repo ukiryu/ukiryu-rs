@@ -223,7 +223,11 @@ fn detection_snapshot(vd: &VersionDetection) -> Oj {
                 "@detection_methods",
                 match &vd.detection_methods {
                     None => Oj::Null,
-                    Some(ms) => Oj::Arr(ms.iter().map(method_snapshot).collect()),
+                    Some(ms) => Oj::Arr(
+                        ms.iter()
+                            .map(|m| m.as_ref().map_or(Oj::Null, method_snapshot))
+                            .collect(),
+                    ),
                 },
             ),
             ("@modern_threshold", text(vd.modern_threshold.as_ref())),

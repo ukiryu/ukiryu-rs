@@ -43,7 +43,7 @@ pub struct PlatformProfile {
         serialize_with = "ser_model_list",
         skip_serializing_if = "omit_list"
     )]
-    pub commands: Option<Vec<CommandDefinition>>,
+    pub commands: Option<Vec<Option<CommandDefinition>>>,
     #[serde(default, deserialize_with = "d::opt", skip_serializing_if = "omit_opt")]
     pub inherits: Option<Text>,
     /// Raw routing table (YAML key `routing`).
@@ -135,20 +135,23 @@ impl PlatformProfile {
     }
 
     /// `#command(name)` (the last command with that name wins).
-    pub fn command(&self, name: &str) -> Option<&CommandDefinition> {
+    pub fn command(&self, name: &str) -> Result<Option<&CommandDefinition>, ModelError> {
         super::command_definition::index_lookup(&self.commands, name, |c| &c.name)
     }
 
     /// `#command_names` (unique names, first-seen order).
-    pub fn command_names(&self) -> Vec<Value> {
+    pub fn command_names(&self) -> Result<Vec<Value>, ModelError> {
         let mut out: Vec<Value> = Vec::new();
         for c in self.commands.iter().flatten() {
+            let c = c
+                .as_ref()
+                .ok_or_else(|| ModelError::no_method("name", &Value::Nil))?;
             let key = c.name.as_ref().map_or(Value::Nil, Text::to_ruby_value);
             if !out.contains(&key) {
                 out.push(key);
             }
         }
-        out
+        Ok(out)
     }
 
     /// `#universal?` (no platform and no shell restriction).

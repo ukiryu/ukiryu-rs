@@ -2,10 +2,11 @@
 use super::argument_definition::ArgumentDefinition;
 use super::attr::{de_fns as d, omit_list, omit_model, omit_opt, ser_model_list, Attr, Model};
 use super::env_var_definition::EnvVarDefinition;
+use super::error::ModelError;
 use super::exit_codes::ExitCodes;
 use super::flag_definition::FlagDefinition;
 use super::option_definition::OptionDefinition;
-use super::value::Text;
+use super::value::{Text, Value};
 use crate::command_builder::ruby_sort_by;
 use serde::{Deserialize, Serialize};
 
@@ -31,35 +32,35 @@ pub struct CommandDefinition {
         serialize_with = "ser_model_list",
         skip_serializing_if = "omit_list"
     )]
-    pub options: Option<Vec<OptionDefinition>>,
+    pub options: Option<Vec<Option<OptionDefinition>>>,
     #[serde(
         default,
         deserialize_with = "d::model_list",
         serialize_with = "ser_model_list",
         skip_serializing_if = "omit_list"
     )]
-    pub flags: Option<Vec<FlagDefinition>>,
+    pub flags: Option<Vec<Option<FlagDefinition>>>,
     #[serde(
         default,
         deserialize_with = "d::model_list",
         serialize_with = "ser_model_list",
         skip_serializing_if = "omit_list"
     )]
-    pub arguments: Option<Vec<ArgumentDefinition>>,
+    pub arguments: Option<Vec<Option<ArgumentDefinition>>>,
     #[serde(
         default,
         deserialize_with = "d::model_list",
         serialize_with = "ser_model_list",
         skip_serializing_if = "omit_list"
     )]
-    pub post_options: Option<Vec<OptionDefinition>>,
+    pub post_options: Option<Vec<Option<OptionDefinition>>>,
     #[serde(
         default,
         deserialize_with = "d::model_list",
         serialize_with = "ser_model_list",
         skip_serializing_if = "omit_list"
     )]
-    pub env_vars: Option<Vec<EnvVarDefinition>>,
+    pub env_vars: Option<Vec<Option<EnvVarDefinition>>>,
     #[serde(
         default,
         deserialize_with = "d::model",
@@ -122,15 +123,20 @@ pub(crate) fn present(v: &Option<Text>) -> bool {
 
 /// The `to_h { |x| [x.name, x] }[name.to_s]` index: the last duplicate wins.
 pub(crate) fn index_lookup<'a, T>(
-    items: &'a Option<Vec<T>>,
+    items: &'a Option<Vec<Option<T>>>,
     name: &str,
     key: impl Fn(&T) -> &Option<Text>,
-) -> Option<&'a T> {
-    items
-        .as_ref()?
-        .iter()
-        .rev()
-        .find(|item| key(item).as_ref().is_some_and(|t| t.eq_str(name)))
+) -> Result<Option<&'a T>, ModelError> {
+    let mut found = None;
+    for item in items.iter().flatten() {
+        let item = item
+            .as_ref()
+            .ok_or_else(|| ModelError::no_method("name", &Value::Nil))?;
+        if key(item).as_ref().is_some_and(|t| t.eq_str(name)) {
+            found = Some(item);
+        }
+    }
+    Ok(found)
 }
 
 impl CommandDefinition {
@@ -145,32 +151,35 @@ impl CommandDefinition {
     }
 
     /// `#option(name)`
-    pub fn option(&self, name: &str) -> Option<&OptionDefinition> {
+    pub fn option(&self, name: &str) -> Result<Option<&OptionDefinition>, ModelError> {
         index_lookup(&self.options, name, |o| &o.name)
     }
 
     /// `#flag(name)`
-    pub fn flag(&self, name: &str) -> Option<&FlagDefinition> {
+    pub fn flag(&self, name: &str) -> Result<Option<&FlagDefinition>, ModelError> {
         index_lookup(&self.flags, name, |f| &f.name)
     }
 
     /// `#argument(name)`
-    pub fn argument(&self, name: &str) -> Option<&ArgumentDefinition> {
+    pub fn argument(&self, name: &str) -> Result<Option<&ArgumentDefinition>, ModelError> {
         index_lookup(&self.arguments, name, |a| &a.name)
     }
 
     /// `#last_argument`
     pub fn last_argument(&self) -> Option<&ArgumentDefinition> {
-        self.arguments.as_ref()?.iter().find(|a| a.is_last())
+        self.arguments
+            .iter()
+            .flatten()
+            .flatten()
+            .find(|a| a.is_last())
     }
 
-    /// `#regular_arguments`: non-`last` arguments ordered by
-    /// `sort_by(&:numeric_position)`. MRI's `sort_by` is not stable, so
-    /// arguments that share a position keep MRI's order, not source order.
+    /// `#regular_arguments`: Ruby compacts nils before sorting.
     pub fn regular_arguments(&self) -> Vec<&ArgumentDefinition> {
-        let args: Vec<&ArgumentDefinition> = self
+        let args = self
             .arguments
             .iter()
+            .flatten()
             .flatten()
             .filter(|a| !a.is_last())
             .collect();

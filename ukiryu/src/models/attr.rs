@@ -16,6 +16,9 @@ use serde::{Deserialize, Serialize, Serializer};
 use std::fmt;
 use std::marker::PhantomData;
 
+/// An integer collection retains nil items and raw Hash elements in its readers.
+pub type IntegerList = Option<Vec<Option<Attr<i64>>>>;
+
 /// An attribute that declares a lutaml `default:`.
 #[derive(Clone, Debug, PartialEq)]
 pub enum Attr<T> {
@@ -26,14 +29,24 @@ pub enum Attr<T> {
     Null,
     /// Assigned, or filled from the default while parsing YAML.
     Set(T),
+    /// Lutaml retains the reader value even when serialization casts it differently.
+    Raw { value: Value, serialized: Value },
 }
 
 impl<T> Attr<T> {
-    /// The attribute reader (`nil` is `None`).
+    /// The typed attribute view. Raw values are available through `raw_value`.
     pub fn get(&self) -> Option<&T> {
         match self {
             Attr::Default(v) | Attr::Set(v) => Some(v),
-            Attr::Null => None,
+            Attr::Null | Attr::Raw { .. } => None,
+        }
+    }
+
+    /// The uncast reader value, when Lutaml retains an object outside `T`.
+    pub fn raw_value(&self) -> Option<&Value> {
+        match self {
+            Attr::Raw { value, .. } => Some(value),
+            _ => None,
         }
     }
 
@@ -59,12 +72,64 @@ impl<T> Attr<T> {
     }
 }
 
+/// A declared scalar's Ruby reader value (distinct from output casting).
+pub trait ReaderValue {
+    fn reader_value(&self) -> Value;
+}
+impl ReaderValue for i64 {
+    fn reader_value(&self) -> Value {
+        Value::int(*self)
+    }
+}
+impl ReaderValue for bool {
+    fn reader_value(&self) -> Value {
+        Value::Bool(*self)
+    }
+}
+impl ReaderValue for f64 {
+    fn reader_value(&self) -> Value {
+        Value::Float(*self)
+    }
+}
+impl ReaderValue for Text {
+    fn reader_value(&self) -> Value {
+        self.to_ruby_value()
+    }
+}
+impl ReaderValue for Value {
+    fn reader_value(&self) -> Value {
+        self.clone()
+    }
+}
+impl<T: ReaderValue> Attr<T> {
+    /// The actual Ruby reader, including retained raw values and nil.
+    pub fn to_ruby_value(&self) -> Value {
+        match self {
+            Attr::Default(v) | Attr::Set(v) => v.reader_value(),
+            Attr::Null => Value::Nil,
+            Attr::Raw { value, .. } => value.clone(),
+        }
+    }
+}
+impl fmt::Display for Attr<i64> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(&self.to_ruby_value().to_ruby_s())
+    }
+}
+
 impl<T: Omit> Attr<T> {
     pub fn omit(&self) -> bool {
         match self {
             Attr::Set(v) => v.omit(),
+            Attr::Raw { serialized, .. } => serialized.omit(),
             _ => true,
         }
+    }
+}
+
+impl<T: Omit> Omit for Attr<T> {
+    fn omit(&self) -> bool {
+        Attr::omit(self)
     }
 }
 
@@ -72,6 +137,7 @@ impl<T: Serialize> Serialize for Attr<T> {
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         match self {
             Attr::Set(v) => v.serialize(serializer),
+            Attr::Raw { serialized, .. } => serialized.serialize(serializer),
             _ => serializer.serialize_none(),
         }
     }
@@ -79,10 +145,7 @@ impl<T: Serialize> Serialize for Attr<T> {
 
 impl<'de, T: Coerce> Deserialize<'de> for Attr<T> {
     fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
-        Ok(match T::coerce(d)? {
-            Some(v) => Attr::Set(v),
-            None => Attr::Null,
-        })
+        T::coerce_attr(d)
     }
 }
 
@@ -140,12 +203,13 @@ pub(crate) fn omit_model<T: Serialize>(v: &Option<Box<T>>) -> bool {
 /// mapping are dropped, while the key itself stays (lutaml checks the
 /// Ruby Array, which is not empty).
 pub(crate) fn ser_model_list<T: Serialize, S: Serializer>(
-    v: &Option<Vec<T>>,
+    v: &Option<Vec<Option<T>>>,
     s: S,
 ) -> Result<S::Ok, S::Error> {
     use serde::ser::SerializeSeq;
     let items: Vec<&T> = v
         .iter()
+        .flatten()
         .flatten()
         .filter(|m| {
             !matches!(yeptris::to_value(*m), Ok(yeptris::Value::Mapping(map)) if map.0.is_empty())
@@ -159,11 +223,8 @@ pub(crate) fn ser_model_list<T: Serialize, S: Serializer>(
 }
 
 /// Serializes an Integer collection, dropping the `nil`s lutaml drops.
-pub(crate) fn ser_int_list<S: Serializer>(
-    v: &Option<Vec<Option<i64>>>,
-    s: S,
-) -> Result<S::Ok, S::Error> {
-    let items: Vec<i64> = v.iter().flatten().flatten().copied().collect();
+pub(crate) fn ser_int_list<S: Serializer>(v: &IntegerList, s: S) -> Result<S::Ok, S::Error> {
+    let items: Vec<&Attr<i64>> = v.iter().flatten().flatten().filter(|a| !a.omit()).collect();
     items.serialize(s)
 }
 
@@ -184,6 +245,13 @@ fn drain_map<'de, A: MapAccess<'de>>(mut map: A) -> Result<(), A::Error> {
 /// Lutaml type casting for one attribute value. `Ok(None)` is `nil`.
 pub trait Coerce: Sized {
     fn coerce<'de, D: Deserializer<'de>>(d: D) -> Result<Option<Self>, D::Error>;
+    /// Attribute storage can retain values outside the declared scalar type.
+    fn coerce_attr<'de, D: Deserializer<'de>>(d: D) -> Result<Attr<Self>, D::Error> {
+        Ok(match Self::coerce(d)? {
+            Some(v) => Attr::Set(v),
+            None => Attr::Null,
+        })
+    }
     /// Casting of one element of a collection attribute.
     fn coerce_item<'de, D: Deserializer<'de>>(d: D) -> Result<Option<Self>, D::Error> {
         Self::coerce(d)
@@ -203,6 +271,19 @@ impl Coerce for Text {
             .map(Some)
             .map_err(|e| de::Error::custom(e.kind.tag(&e.message)))
     }
+}
+
+/// Apply scalar coercion through the same Yeptris serde path as model loading.
+fn cast_value<T: Coerce>(v: &Value) -> Result<Option<T>, String> {
+    struct Cast<T>(Option<T>);
+    impl<'de, T: Coerce> Deserialize<'de> for Cast<T> {
+        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+            T::coerce(d).map(Cast)
+        }
+    }
+    yeptris::from_value::<Cast<T>>(&v.to_yaml_value())
+        .map(|v| v.0)
+        .map_err(|e| e.to_string())
 }
 
 struct IntVisitor {
@@ -270,6 +351,21 @@ impl<'de> Visitor<'de> for IntVisitor {
 }
 
 impl Coerce for i64 {
+    fn coerce_attr<'de, D: Deserializer<'de>>(d: D) -> Result<Attr<Self>, D::Error> {
+        let v = Value::deserialize(d)?;
+        match v {
+            Value::Array(_) => Ok(Attr::Raw {
+                value: v,
+                serialized: Value::Nil,
+            }),
+            Value::Hash(_) => Ok(Attr::Raw {
+                value: v.clone(),
+                serialized: v,
+            }),
+            _ => cast_value::<Self>(&v).map(|v| v.map_or(Attr::Null, Attr::Set)),
+        }
+        .map_err(de::Error::custom)
+    }
     fn coerce<'de, D: Deserializer<'de>>(d: D) -> Result<Option<Self>, D::Error> {
         d.deserialize_any(IntVisitor { item: false })
     }
@@ -399,9 +495,56 @@ impl<'de> Visitor<'de> for BoolVisitor {
 }
 
 impl Coerce for bool {
+    fn coerce_attr<'de, D: Deserializer<'de>>(d: D) -> Result<Attr<Self>, D::Error> {
+        let v = Value::deserialize(d)?;
+        Ok(match &v {
+            Value::Nil => Attr::Null,
+            Value::Bool(b) => Attr::Set(*b),
+            _ => match bool_from_text(&v.to_ruby_s()) {
+                Some(b) => Attr::Set(b),
+                None => Attr::Raw {
+                    value: v.clone(),
+                    serialized: v,
+                },
+            },
+        })
+    }
     fn coerce<'de, D: Deserializer<'de>>(d: D) -> Result<Option<Self>, D::Error> {
         d.deserialize_any(BoolVisitor)
     }
+}
+
+impl Coerce for Attr<i64> {
+    fn coerce<'de, D: Deserializer<'de>>(d: D) -> Result<Option<Self>, D::Error> {
+        Ok(match i64::coerce_attr(d)? {
+            Attr::Null => None,
+            a => Some(a),
+        })
+    }
+    fn coerce_item<'de, D: Deserializer<'de>>(d: D) -> Result<Option<Self>, D::Error> {
+        let v = Value::deserialize(d)?;
+        match v {
+            Value::Hash(_) => Ok(Some(Attr::Raw {
+                value: v.clone(),
+                serialized: v,
+            })),
+            _ => cast_value_item::<i64>(&v)
+                .map(|v| v.map(Attr::Set))
+                .map_err(de::Error::custom),
+        }
+    }
+}
+
+fn cast_value_item<T: Coerce>(v: &Value) -> Result<Option<T>, String> {
+    struct Item<T>(Option<T>);
+    impl<'de, T: Coerce> Deserialize<'de> for Item<T> {
+        fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+            T::coerce_item(d).map(Item)
+        }
+    }
+    yeptris::from_value::<Item<T>>(&v.to_yaml_value())
+        .map(|v| v.0)
+        .map_err(|e| e.to_string())
 }
 
 /// `Lutaml::Model::Type::Hash.cast`: a mapping, or an Array of pairs (`to_h`).
@@ -526,8 +669,8 @@ pub(crate) mod de_fns {
     }
 
     /// `:integer, collection: true` (uncastable items read as `nil`).
-    pub fn int_list<'de, D: Deserializer<'de>>(d: D) -> Result<Option<Vec<Option<i64>>>, D::Error> {
-        list_raw::<D, i64>(d)
+    pub fn int_list<'de, D: Deserializer<'de>>(d: D) -> Result<IntegerList, D::Error> {
+        list_raw::<D, Attr<i64>>(d)
     }
 
     /// The default for an absent `initialize_empty: true` collection.
@@ -593,25 +736,10 @@ pub(crate) mod de_fns {
             .map(Box::new))
     }
 
-    struct ModelItemSeed<T>(PhantomData<T>);
-
-    impl<'de, T: DeserializeOwned> DeserializeSeed<'de> for ModelItemSeed<T> {
-        type Value = T;
-        fn deserialize<D: Deserializer<'de>>(self, d: D) -> Result<T, D::Error> {
-            match d.deserialize_option(ModelVisitor::<T>(PhantomData))? {
-                Some(v) => Ok(v),
-                None => Err(err(
-                    ModelErrorKind::Unsupported,
-                    "a null item in a model collection is kept as nil by lutaml",
-                )),
-            }
-        }
-    }
-
     struct ModelListVisitor<T>(PhantomData<T>);
 
-    impl<'de, T: DeserializeOwned> Visitor<'de> for ModelListVisitor<T> {
-        type Value = Option<Vec<T>>;
+    impl<'de, T: DeserializeOwned + Default> Visitor<'de> for ModelListVisitor<T> {
+        type Value = Option<Vec<Option<T>>>;
         fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
             f.write_str("a sequence of mappings")
         }
@@ -625,14 +753,33 @@ pub(crate) mod de_fns {
             d.deserialize_any(self)
         }
         fn visit_seq<A: SeqAccess<'de>>(self, mut seq: A) -> Result<Self::Value, A::Error> {
-            let mut out = Vec::new();
-            while let Some(item) = seq.next_element_seed(ModelItemSeed::<T>(PhantomData))? {
-                out.push(item);
+            let mut raw = Vec::new();
+            while let Some(item) = seq.next_element::<Option<yeptris::Value>>()? {
+                raw.push(item);
             }
-            Ok(Some(out))
+            // Lutaml's collection cast retains nils. If any item is nil,
+            // empty model hashes use constructor defaults (implicit), while
+            // nonempty hashes keep the normal parsed defaults. Measured at
+            // ab6df353; the frozen null_item rows cover all ten collections.
+            let has_nil = raw.iter().any(Option::is_none);
+            let items = raw
+                .into_iter()
+                .map(|v| match v {
+                    None => Ok(None),
+                    Some(yeptris::Value::Mapping(m)) if has_nil && m.0.is_empty() => {
+                        Ok(Some(T::default()))
+                    }
+                    Some(v) => yeptris::from_value::<T>(&v)
+                        .map(Some)
+                        .map_err(de::Error::custom),
+                })
+                .collect::<Result<Vec<_>, _>>()?;
+            Ok(Some(items))
         }
         fn visit_map<A: MapAccess<'de>>(self, map: A) -> Result<Self::Value, A::Error> {
-            Ok(Some(vec![T::deserialize(MapAccessDeserializer::new(map))?]))
+            Ok(Some(vec![Some(T::deserialize(
+                MapAccessDeserializer::new(map),
+            )?)]))
         }
         fn visit_bool<E: de::Error>(self, _v: bool) -> Result<Self::Value, E> {
             Err(invalid_format())
@@ -652,9 +799,9 @@ pub(crate) mod de_fns {
     }
 
     /// A collection of nested models (a single mapping wraps into one item).
-    pub fn model_list<'de, D: Deserializer<'de>, T: DeserializeOwned>(
+    pub fn model_list<'de, D: Deserializer<'de>, T: DeserializeOwned + Default>(
         d: D,
-    ) -> Result<Option<Vec<T>>, D::Error> {
+    ) -> Result<Option<Vec<Option<T>>>, D::Error> {
         d.deserialize_option(ModelListVisitor::<T>(PhantomData))
     }
 

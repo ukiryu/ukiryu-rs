@@ -33,16 +33,16 @@ pub struct ArgumentDefinition {
     #[serde(default = "default_false", skip_serializing_if = "Attr::omit")]
     pub variadic: Attr<bool>,
     #[serde(default, deserialize_with = "d::opt", skip_serializing_if = "omit_opt")]
-    pub min: Option<i64>,
+    pub min: Option<Attr<i64>>,
     #[serde(default, deserialize_with = "d::opt", skip_serializing_if = "omit_opt")]
-    pub max: Option<i64>,
+    pub max: Option<Attr<i64>>,
     #[serde(
         default,
         deserialize_with = "d::int_list",
         serialize_with = "ser_int_list",
         skip_serializing_if = "omit_list"
     )]
-    pub size: Option<Vec<Option<i64>>>,
+    pub size: Option<Vec<Option<Attr<i64>>>>,
     #[serde(default, deserialize_with = "d::opt", skip_serializing_if = "omit_opt")]
     pub of: Option<Text>,
     #[serde(
@@ -51,7 +51,7 @@ pub struct ArgumentDefinition {
         serialize_with = "ser_int_list",
         skip_serializing_if = "omit_list"
     )]
-    pub range: Option<Vec<Option<i64>>>,
+    pub range: Option<Vec<Option<Attr<i64>>>>,
     #[serde(
         default,
         deserialize_with = "d::text_list",
@@ -106,13 +106,18 @@ pub(crate) fn opt_value(v: Option<&Text>) -> Value {
     v.map_or(Value::Nil, Text::to_ruby_value)
 }
 
-pub(crate) fn int_list_value(v: &Option<Vec<Option<i64>>>) -> Value {
+pub(crate) fn int_list_value(v: &Option<Vec<Option<Attr<i64>>>>) -> Value {
     match v {
         None => Value::Nil,
         Some(items) => Value::Array(
             items
                 .iter()
-                .map(|i| i.map_or(Value::Nil, Value::int))
+                .map(|i| {
+                    i.as_ref().map_or(Value::Nil, |a| match a {
+                        Attr::Raw { value, .. } => value.clone(),
+                        _ => a.get().map_or(Value::Nil, |n| Value::int(*n)),
+                    })
+                })
                 .collect(),
         ),
     }
@@ -171,8 +176,16 @@ impl ArgumentDefinition {
             "required" => self.required.get().map_or(Value::Nil, |b| Value::Bool(*b)),
             "position" => opt_value(self.position.get()),
             "variadic" => self.variadic.get().map_or(Value::Nil, |b| Value::Bool(*b)),
-            "min" => self.min.map_or(Value::Nil, Value::int),
-            "max" => self.max.map_or(Value::Nil, Value::int),
+            "min" => self.min.as_ref().map_or(Value::Nil, |a| {
+                a.raw_value()
+                    .cloned()
+                    .unwrap_or_else(|| a.get().map_or(Value::Nil, |n| Value::int(*n)))
+            }),
+            "max" => self.max.as_ref().map_or(Value::Nil, |a| {
+                a.raw_value()
+                    .cloned()
+                    .unwrap_or_else(|| a.get().map_or(Value::Nil, |n| Value::int(*n)))
+            }),
             "size" => int_list_value(&self.size),
             "of" => opt_value(self.of.as_ref()),
             "range" => int_list_value(&self.range),

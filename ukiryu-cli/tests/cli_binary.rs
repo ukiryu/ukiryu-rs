@@ -33,15 +33,22 @@
 //!   set `SHELL=/bin/bash` where Ruby searched PATH for bash;
 //! - argument errors print clap's wording; only the status (1) is compared;
 //! - the persistent config.yml is compared as YAML data, and YAML engine
-//!   messages by their recorded prefix.
+//!   messages by their recorded prefix;
+//! - anonymous class addresses use the comparison-only canonicalization
+//!   documented in `execute_data/README.md` (shared with `execute.rs`).
 #![cfg(unix)]
+
+#[cfg(target_os = "linux")]
+#[path = "execute_data/comparison.rs"]
+mod comparison;
+#[cfg(target_os = "linux")]
+use comparison::canonical_addresses;
 
 use serde_json::Value;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
-use ukiryu_cli::dispatch::GATED_EXIT;
 
 const BIN: &str = env!("CARGO_BIN_EXE_ukiryu");
 #[cfg(target_os = "linux")]
@@ -541,16 +548,9 @@ fn describe_and_executable_validation_through_the_binary() {
     assert_eq!(replay_author("tools_cases.json"), 51);
 }
 
-const EXECUTE_GATED: [&str; 4] = [
-    "exec_register_unknown_param",
-    "runfile_execute",
-    "runfile_execute_json",
-    "runfile_execute_table",
-];
+// ------------------------------------------------------------------ execute
 
-/// Recorded deviation: the YAML diagnostic is the Yeptris parser's, not
-/// libyaml's. An exact Yeptris golden is checked separately; it is not
-/// claimed as Ruby byte parity.
+/// No non-terminal execute rows remain outside the Ruby contract.
 #[cfg(target_os = "linux")]
 const EXECUTE_UNQUALIFIED: [&str; 0] = [];
 
@@ -646,7 +646,9 @@ fn response_json(text: &str) -> Option<Value> {
 /// Equal stdout: bytes, except YAML responses (by value).
 #[cfg(target_os = "linux")]
 fn same_stdout(want: &str, got: &str) -> bool {
-    match (response_yaml(want), response_yaml(got)) {
+    let want = canonical_addresses(want);
+    let got = canonical_addresses(got);
+    match (response_yaml(&want), response_yaml(&got)) {
         (Some(a), Some(b)) => a == b,
         _ => want == got,
     }
@@ -656,10 +658,14 @@ fn same_stdout(want: &str, got: &str) -> bool {
 #[cfg(target_os = "linux")]
 fn same_file(want: &Option<String>, got: &Option<String>) -> bool {
     match (want, got) {
-        (Some(a), Some(b)) => match (response_json(a), response_json(b)) {
-            (Some(x), Some(y)) => x == y,
-            _ => a == b,
-        },
+        (Some(a), Some(b)) => {
+            let a = canonical_addresses(a);
+            let b = canonical_addresses(b);
+            match (response_json(&a), response_json(&b)) {
+                (Some(x), Some(y)) => x == y,
+                _ => a == b,
+            }
+        }
         (a, b) => a == b,
     }
 }
@@ -669,7 +675,6 @@ fn same_file(want: &Option<String>, got: &Option<String>) -> bool {
 #[derive(Default, Debug, PartialEq)]
 struct ExecuteCounts {
     exact: usize,
-    gated: usize,
     unqualified: usize,
     terminal: usize,
 }
@@ -710,17 +715,6 @@ fn replay_execute() -> (ExecuteCounts, Vec<String>) {
             .unwrap_or_default();
         let _ = std::fs::remove_dir_all(&root);
 
-        if EXECUTE_GATED.contains(&id) {
-            if got.code == GATED_EXIT && stderr.contains("not available") {
-                counts.gated += 1;
-            } else {
-                failures.push(format!(
-                    "{id}: expected the gated status {GATED_EXIT}, got {} with stderr {stderr:?}",
-                    got.code
-                ));
-            }
-            continue;
-        }
         if EXECUTE_UNQUALIFIED.contains(&id) {
             let diagnostics: Value =
                 serde_json::from_str(include_str!("execute_data/yeptris_diagnostics.json"))
@@ -755,7 +749,7 @@ fn replay_execute() -> (ExecuteCounts, Vec<String>) {
                 .zip(&files)
                 .all(|((wn, wc), (gn, gc))| wn == gn && same_file(wc, gc));
         if i64::from(got.code) == case["status"].as_i64().unwrap()
-            && stderr == want_stderr
+            && canonical_addresses(&stderr) == canonical_addresses(&want_stderr)
             && same_stdout(&want_stdout, &stdout)
             && files_match
         {
@@ -772,18 +766,66 @@ fn replay_execute() -> (ExecuteCounts, Vec<String>) {
 }
 
 /// The compiled binary replays the K22 execute captures for exec, run-file
-/// and cache. Gated rows must be gated (counted), terminal rows are counted
-/// (they need a pty), every other row must match the Ruby capture.
+/// and cache. Terminal rows are counted (they need a pty); all other rows
+/// match the Ruby capture.
 #[cfg(target_os = "linux")]
 #[test]
 fn execute_cases_through_the_binary() {
     let (counts, failures) = replay_execute();
     eprintln!("execute rows through the binary: {counts:?}");
     assert!(failures.is_empty(), "{}", failures.join("\n\n"));
-    assert_eq!(counts.gated, EXECUTE_GATED.len(), "{counts:?}");
     assert_eq!(counts.unqualified, EXECUTE_UNQUALIFIED.len(), "{counts:?}");
     assert_eq!(counts.terminal, 12, "{counts:?}");
-    assert_eq!(counts.exact, 88, "{counts:?}");
+    assert_eq!(counts.exact, 92, "{counts:?}");
+}
+
+/// The binary comparator permits address variation but keeps every diagnostic
+/// and response field exact across YAML, JSON and table responses.
+#[cfg(target_os = "linux")]
+#[test]
+fn anonymous_error_comparison_preserves_response_fields() {
+    let data: Value = serde_json::from_str(include_str!("execute_data/cases.json")).unwrap();
+    for id in [
+        "exec_register_unknown_param",
+        "runfile_execute",
+        "runfile_execute_json",
+        "runfile_execute_table",
+    ] {
+        let case = data["cases"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|c| c["id"] == id)
+            .unwrap();
+        let want = case["stdout"].as_str().unwrap();
+        let varied = canonical_addresses(want).replace("0x<address>", "0xABC123");
+        assert!(same_stdout(want, &varied), "{id}");
+        assert!(
+            same_file(&Some(want.to_owned()), &Some(varied.clone())),
+            "{id}"
+        );
+        for (from, to) in [
+            ("NoMethodError", "ArgumentError"),
+            ("undefined method", "unknown method"),
+            ("for an instance", "for a class"),
+            ("Class:", "OtherClass:"),
+            ("bogus=", "different="),
+            ("stdin=", "different="),
+            ("exit_code: 1", "exit_code: 2"),
+            ("\"exit_code\": 1", "\"exit_code\": 2"),
+            ("status: error", "status: success"),
+            ("\"status\": \"error\"", "\"status\": \"success\""),
+        ] {
+            if varied.contains(from) {
+                let changed = varied.replace(from, to);
+                assert!(!same_stdout(want, &changed), "{id}: {from}");
+                assert!(
+                    !same_file(&Some(want.to_owned()), &Some(changed)),
+                    "{id}: {from}"
+                );
+            }
+        }
+    }
 }
 
 // ------------------------------------------------------------------ grammar

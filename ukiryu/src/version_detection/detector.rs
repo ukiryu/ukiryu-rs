@@ -9,6 +9,8 @@ use std::fmt;
 /// An error `detect_with_methods` (and so `Tool#detect_version`) lets escape.
 #[derive(Debug)]
 pub enum DetectionError {
+    /// A model reader raised on a retained nil collection entry.
+    Model(crate::models::ModelError),
     /// A command method's pattern this port cannot reproduce.
     Pattern(PatternError),
     /// `ManPageParser.parse_date` raised; the source does not rescue it in
@@ -22,6 +24,7 @@ impl DetectionError {
     /// have no Ruby counterpart (Ruby itself rescues or accepts them).
     pub fn ruby_class(&self) -> Option<&'static str> {
         match self {
+            DetectionError::Model(e) => Some(e.ruby_class()),
             DetectionError::Pattern(_) => None,
             DetectionError::ManPage(e) => Some(e.ruby_class()),
         }
@@ -31,6 +34,7 @@ impl DetectionError {
 impl fmt::Display for DetectionError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            DetectionError::Model(e) => f.write_str(&e.message),
             DetectionError::Pattern(e) => write!(f, "{e}"),
             DetectionError::ManPage(e) => write!(f, "{e}"),
         }
@@ -40,6 +44,7 @@ impl fmt::Display for DetectionError {
 impl std::error::Error for DetectionError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         match self {
+            DetectionError::Model(e) => Some(e),
             DetectionError::Pattern(e) => Some(e),
             DetectionError::ManPage(e) => Some(e),
         }
