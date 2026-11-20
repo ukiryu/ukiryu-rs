@@ -44,7 +44,7 @@ def main():
     os.environ.update(BUNDLE_GEMFILE=str(oracle / 'Gemfile'), BUNDLE_FROZEN='true')
     ruby = subprocess.check_output([author.RUBY, '-e', 'print RUBY_VERSION'], text=True)
     assert ruby == '4.0.1', ruby
-    psych = subprocess.check_output([author.RUBY, '-ryaml', '-e', 'print Psych::VERSION'], text=True)
+    psych = subprocess.check_output([author.RUBY, '-rbundler/setup', '-ryaml', '-e', 'print Psych::VERSION'], text=True)
     assert psych == '5.3.1', psych
     original_setup = author.setup
     def setup(case, root, mtime):
