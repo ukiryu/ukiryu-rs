@@ -9,6 +9,8 @@ require 'open3'
 
 # Freeze the ambient timezone because Psych uses getlocal for unzoned Time.
 ENV['TZ'] = 'UTC'
+Encoding.default_external = Encoding::UTF_8
+Encoding.default_internal = nil
 port_root = File.expand_path('../../../..', __dir__)
 source_paths = %w[ukiryu/src/schema ukiryu/src/types/ruby.rs ukiryu/tests/schema_golden/value-spelling/capture.rb ukiryu/tests/schema_golden/value-spelling/capture_diagnostics.rb ukiryu/tests/schema_golden/value-spelling/inputs.json ukiryu/tests/schema_golden/value-spelling/diagnostic-inputs.json]
 source_commit, source_status = Open3.capture2('git', '-C', port_root, 'log', '-1', '--format=%H', '--', *source_paths)
@@ -49,6 +51,7 @@ raise 'empty diagnostics' if rows.empty?
 payload = JSON.pretty_generate(rows) + "\n"
 File.write(ARGV.fetch(0), payload)
 File.write(ARGV.fetch(0) + '.provenance.json', JSON.pretty_generate({
+  'default_external' => Encoding.default_external.to_s, 'default_internal' => Encoding.default_internal&.to_s,
   'source_commit' => source_commit.strip, 'oracle' => rev.strip, 'clean' => true, 'ruby' => RUBY_DESCRIPTION,
   'psych' => Psych::VERSION, 'json' => JSON::VERSION, 'json-schema' => Gem.loaded_specs.fetch('json-schema').version.to_s,
   'lock_sha256' => Digest::SHA256.file(File.join(root, 'Gemfile.lock')).hexdigest,

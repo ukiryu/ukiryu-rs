@@ -4,7 +4,7 @@ These frozen outputs come from the clean `ukiryu/ukiryu` reference at
 `ab6df353c6dc2d7faf7817a86aafcafa82579896`, with Ruby 4.0.1,
 Psych 5.3.1, date 3.5.1, json 3.1.0 and json-schema 6.2.1. The sidecars
 record the bundle lock, input, generator and payload hashes and the port's
-source commit. The generators fix `TZ=UTC`; a timezone-less YAML timestamp
+source commit. The generators fix `TZ=UTC` and the external encoding to UTF-8; a timezone-less YAML timestamp
 is constructed in UTC and then displayed in the process's local zone.
 
 From the port root, with the pinned reference bundle installed:
