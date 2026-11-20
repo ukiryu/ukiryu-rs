@@ -14,6 +14,13 @@ uint32_t ukiryu_abi_version(void);
  * Replies are {"ok":true,...} or {"ok":false,"error":{"code":...}}; see the
  * core crate's wire module for each operation and the value encoding. */
 char *ukiryu_json(const uint8_t *input, size_t length);
+/* CLI dispatcher capture. Same input span/reply ownership as ukiryu_json.
+ * Request: {"argv":[...],"platform":"linux|macos|windows","env":{...}}.
+ * argv omits the program name; env is a complete host snapshot. Reply:
+ * {"ok":true,"value":{"stdout":"...","stderr":"...","exit":0}}.
+ * No ENV/cwd mutation; relative paths, files and subprocesses remain real.
+ * stdin is empty. Exported by the ukiryu-ffi library (not core-only builds). */
+char *ukiryu_cli_json(const uint8_t *input, size_t length);
 void ukiryu_free(char *reply);
 #ifdef __cplusplus
 }

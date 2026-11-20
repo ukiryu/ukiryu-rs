@@ -7,7 +7,12 @@ license.workspace = true
 publish = false
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 ukiryu = { path = "../ukiryu", features = ["c"] }
+ukiryu-cli = { path = "../ukiryu-cli" }
+
+[dev-dependencies]
+libloading = "0.8"
+serde_json.workspace = true

@@ -48,7 +48,7 @@ where
     I: IntoIterator<Item = T>,
     T: Into<OsString> + Clone,
 {
-    let mut io = ProcessIo;
+    let mut io = ProcessIo::default();
     run_with(args, &mut io)
 }
 
@@ -69,28 +69,26 @@ where
         .collect::<Option<Vec<String>>>()
     {
         None => args,
-        Some(words) => {
-            match crate::thor::preempt(&words, std::env::var("THOR_COLUMNS").ok().as_deref()) {
-                crate::thor::Preempt::Output {
-                    stdout,
-                    stderr,
-                    code,
-                } => {
-                    if !stdout.is_empty() {
-                        let _ = io.perform(&[OutputWrite::Stdout(stdout)]);
-                    }
-                    if !stderr.is_empty() {
-                        io.stderr(&stderr);
-                    }
-                    return code;
+        Some(words) => match crate::thor::preempt(&words, io.env("THOR_COLUMNS").as_deref()) {
+            crate::thor::Preempt::Output {
+                stdout,
+                stderr,
+                code,
+            } => {
+                if !stdout.is_empty() {
+                    let _ = io.perform(&[OutputWrite::Stdout(stdout)]);
                 }
-                crate::thor::Preempt::Pass(words) => {
-                    let mut passed = vec![args[0].clone()];
-                    passed.extend(words.into_iter().map(OsString::from));
-                    passed
+                if !stderr.is_empty() {
+                    io.stderr(&stderr);
                 }
+                return code;
             }
-        }
+            crate::thor::Preempt::Pass(words) => {
+                let mut passed = vec![args[0].clone()];
+                passed.extend(words.into_iter().map(OsString::from));
+                passed
+            }
+        },
     };
     let matches = match crate::arguments::command().try_get_matches_from(args) {
         Ok(matches) => matches,
@@ -109,9 +107,7 @@ where
                 .find_subcommand_mut(verb)
                 .map(|sub| sub.render_help().to_string())
                 .unwrap_or_default();
-            let mut out = io::stdout().lock();
-            let _ = out.write_all(help.as_bytes());
-            let _ = out.flush();
+            let _ = io.perform(&[OutputWrite::Stdout(help)]);
             0
         }
         Err(Failure::Message(message)) => {
@@ -133,23 +129,21 @@ fn parse_error(error: clap::Error, io: &mut ProcessIo) -> i32 {
                 io.stderr(&format!("Could not find command \"{name}\".\n"));
                 return 1;
             }
-            let _ = error.print();
+            io.print_error(&error);
             1
         }
         ErrorKind::DisplayHelp | ErrorKind::DisplayVersion => {
-            let _ = error.print();
+            io.print_error(&error);
             0
         }
         // Thor prints the command list on stdout and succeeds when no
         // command is given.
         ErrorKind::DisplayHelpOnMissingArgumentOrSubcommand => {
-            let mut out = io::stdout().lock();
-            let _ = write!(out, "{}", error.render());
-            let _ = out.flush();
+            let _ = io.perform(&[OutputWrite::Stdout(error.to_string())]);
             0
         }
         _ => {
-            let _ = error.print();
+            io.print_error(&error);
             1
         }
     }
@@ -174,16 +168,19 @@ fn gated(io: &mut ProcessIo, what: &str, needs: &str) -> i32 {
 
 fn dispatch(verb: &str, sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Failure> {
     match verb {
-        "version" => inspect_outcome(inspect::version(VersionInput, &handler_context(None)?), io),
+        "version" => inspect_outcome(
+            inspect::version(VersionInput, &io.handler_context(None)?),
+            io,
+        ),
         "system" => {
-            let ctx = handler_context(text(sub, "register")?)?;
+            let ctx = io.handler_context(text(sub, "register")?)?;
             let input = SystemInput {
                 subcommand: text(sub, "subcommand")?,
             };
             inspect_outcome(inspect::system(input, &ctx), io)
         }
         "config" => {
-            let ctx = handler_context(text(sub, "register")?)?;
+            let ctx = io.handler_context(text(sub, "register")?)?;
             let input = ConfigInput::from_arguments(
                 text(sub, "action")?.as_deref(),
                 text(sub, "key")?.as_deref(),
@@ -200,10 +197,10 @@ fn dispatch(verb: &str, sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Fai
             // command's usage): `ThorExt` turns the missing argument into
             // `help`, whatever other options were given.
             let Some(tool) = text(sub, "tool")? else {
-                let help = thor_command_list(std::env::var("THOR_COLUMNS").ok().as_deref());
+                let help = thor_command_list(io.env("THOR_COLUMNS").as_deref());
                 return Ok(io.perform(&[OutputWrite::Stdout(help)]).unwrap_or(0));
             };
-            let ctx = handler_context(text(sub, "register")?)?;
+            let ctx = io.handler_context(text(sub, "register")?)?;
             let input = InfoInput {
                 tool,
                 all: flag(sub, "all"),
@@ -211,7 +208,7 @@ fn dispatch(verb: &str, sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Fai
             inspect_outcome(inspect::info(input, &ctx), io)
         }
         "opts" => {
-            let ctx = handler_context(text(sub, "register")?)?;
+            let ctx = io.handler_context(text(sub, "register")?)?;
             let input = OptsInput {
                 tool: text(sub, "tool")?.unwrap_or_default(),
                 command: text(sub, "command")?,
@@ -219,11 +216,11 @@ fn dispatch(verb: &str, sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Fai
             inspect_outcome(inspect::opts(input, &ctx), io)
         }
         "list" => {
-            let ctx = handler_context(text(sub, "register")?)?;
+            let ctx = io.handler_context(text(sub, "register")?)?;
             inspect_outcome(inspect::list(&ctx), io)
         }
         "commands" => {
-            let ctx = handler_context(text(sub, "register")?)?;
+            let ctx = io.handler_context(text(sub, "register")?)?;
             let input = CommandsInput {
                 tool: required(sub, "tool")?,
             };
@@ -231,7 +228,7 @@ fn dispatch(verb: &str, sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Fai
         }
         "register" => {
             // `RegisterCommand` takes no `--register` option.
-            let ctx = handler_context(None)?;
+            let ctx = io.handler_context(None)?;
             let input = RegisterInput {
                 subcommand: text(sub, "subcommand")?,
                 force: flag(sub, "force"),
@@ -240,7 +237,7 @@ fn dispatch(verb: &str, sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Fai
         }
         "resolve" => {
             // `ResolveCommand` takes no `--register` option.
-            let ctx = handler_context(None)?;
+            let ctx = io.handler_context(None)?;
             let input = ResolveInput {
                 tool: required(sub, "tool")?,
                 constraint: text(sub, "version-constraint")?,
@@ -255,7 +252,7 @@ fn dispatch(verb: &str, sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Fai
         "run-file" => run_file(sub, io),
         "cache" => cache(sub, io),
         "which" => {
-            let ctx = handler_context(text(sub, "register")?)?;
+            let ctx = io.handler_context(text(sub, "register")?)?;
             let input = WhichInput {
                 identifier: required(sub, "identifier")?,
                 platform: text(sub, "platform")?,
@@ -299,31 +296,6 @@ fn flag(matches: &ArgMatches, id: &str) -> bool {
         .flatten()
         .copied()
         .unwrap_or(false)
-}
-
-fn handler_context(register: Option<String>) -> Result<HandlerContext, Failure> {
-    HandlerContext::native(register).map_err(|e| Failure::Message(format!("ukiryu: {e}")))
-}
-
-/// `Thor::Shell::Color#can_display_colors?`: stdout is a terminal, `TERM` is
-/// not `dumb`, and `NO_COLOR` is unset or empty.
-fn thor_colors() -> bool {
-    io::stdout().is_terminal()
-        && std::env::var_os("TERM").is_none_or(|term| term != "dumb")
-        && std::env::var_os("NO_COLOR").is_none_or(|v| v.is_empty())
-}
-
-/// The process facts the authoring verbs read. `Register.default` is resolved
-/// by the register owner and is not available yet, so the verbs that need it
-/// report [`AuthorError::RegisterUnavailable`].
-fn author_context(config_colors_disabled: bool) -> AuthorContext {
-    AuthorContext {
-        thor_colors: thor_colors(),
-        discovery: DiscoveryEnv::from_process(),
-        schema_path_env: std::env::var("UKIRYU_SCHEMA_PATH").ok(),
-        default_register: None,
-        config_colors_disabled,
-    }
 }
 
 /// `Ukiryu::Config.instance` with `--register` applied (BaseCommand), for the
@@ -373,14 +345,15 @@ fn validate(sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Failure> {
         all: flag(leaf, "all"),
         register: text(leaf, "register")?,
     };
-    let mut ctx = author_context(false);
+    let mut ctx = io.author_context(false);
     if target == ValidateTarget::All {
-        let register = ukiryu::register::DiscoveryContext::from_process(None)
+        let register = io
+            .register_context()
             .discover(&ukiryu::register::Git::default())
             .map_err(|e| Failure::Message(format!("[{}] {}", e.class_name(), e)))?;
         ctx.default_register = Some(register.path().to_string_lossy().into_owned());
     } else {
-        ctx.default_register = std::env::var("UKIRYU_REGISTER").ok();
+        ctx.default_register = io.env("UKIRYU_REGISTER");
     }
     if !options.executable && !options.all {
         return author_outcome(
@@ -389,7 +362,7 @@ fn validate(sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Failure> {
             io,
         );
     }
-    let host = Host::native().map_err(|e| Failure::Message(format!("ukiryu: {e}")))?;
+    let host = io.host()?;
     let config = configuration(&host)?;
     ctx.config_colors_disabled = config.resolve("use_color") == Some(&Value::Bool(false));
     let env = ToolEnv {
@@ -434,8 +407,8 @@ fn definitions(sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Failure> {
             })
         }
     };
-    let ctx = author_context(false);
-    let mut confirm = StdinConfirm { io: ProcessIo };
+    let ctx = io.author_context(false);
+    let mut confirm = StdinConfirm { io };
     let result = author::definitions(input, &ctx, &mut confirm);
     author_outcome("definitions", result, io)
 }
@@ -447,7 +420,7 @@ fn extract(sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Failure> {
         method: text(sub, "method")?,
         verbose: flag(sub, "verbose"),
     };
-    let host = Host::native().map_err(|e| Failure::Message(format!("ukiryu: {e}")))?;
+    let host = io.host()?;
     let config = configuration(&host)?;
     let colors_disabled = config.resolve("use_color") == Some(&Value::Bool(false));
     let configured_shell = config
@@ -461,7 +434,7 @@ fn extract(sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Failure> {
         .shell()
         .map_err(|e| Failure::Message(format!("[Ukiryu::Errors::UnknownShellError] {e}")))?;
     let mut process = ProcessHost::new(Environment::new(), shell);
-    let ctx = author_context(colors_disabled);
+    let ctx = io.author_context(colors_disabled);
     author_outcome("extract", author::extract(input, &ctx, &mut process), io)
 }
 
@@ -473,7 +446,7 @@ fn describe(sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Failure> {
         command: text(sub, "command")?,
         register: text(sub, "register")?,
     };
-    let host = Host::native().map_err(|e| Failure::Message(format!("ukiryu: {e}")))?;
+    let host = io.host()?;
     let config = configuration(&host)?;
     let colors_disabled = config.resolve("use_color") == Some(&Value::Bool(false));
     let configured_shell = config
@@ -484,7 +457,7 @@ fn describe(sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Failure> {
         host,
         configured_shell,
     };
-    let mut ctx = author_context(colors_disabled);
+    let mut ctx = io.author_context(colors_disabled);
     ctx.default_register = match input
         .register
         .as_ref()
@@ -492,7 +465,8 @@ fn describe(sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Failure> {
     {
         Some(path) => Some(path.clone()),
         None => {
-            let register = ukiryu::register::DiscoveryContext::from_process(None)
+            let register = io
+                .register_context()
                 .discover(&ukiryu::register::Git::default())
                 .map_err(|e| Failure::Message(format!("[{}] {}", e.class_name(), e)))?;
             Some(register.path().to_string_lossy().into_owned())
@@ -504,10 +478,10 @@ fn describe(sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Failure> {
 /// The process facts `exec`, `run-file` and `cache` read. The `paint` gem is
 /// taken as available, as in the captures (the Ruby CLI ran with it
 /// installed).
-fn execute_context() -> Result<ExecuteContext, Failure> {
+fn execute_context(io: &ProcessIo) -> Result<ExecuteContext, Failure> {
     Ok(ExecuteContext {
-        host: Host::native().map_err(|e| Failure::Message(format!("ukiryu: {e}")))?,
-        stdout_tty: io::stdout().is_terminal(),
+        host: io.host()?,
+        stdout_tty: io.stdout_tty(),
         paint: PaintSupport::AVAILABLE,
     })
 }
@@ -538,8 +512,12 @@ fn exec(sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Failure> {
         stdin: flag(sub, "stdin"),
         raw: flag(sub, "raw"),
     };
-    let ctx = execute_context()?;
-    let result = execute::exec(input, &ctx, &mut io::stdin().lock());
+    let ctx = execute_context(io)?;
+    let result = if io.captured.is_some() {
+        execute::exec(input, &ctx, &mut io::Cursor::new(Vec::<u8>::new()))
+    } else {
+        execute::exec(input, &ctx, &mut io::stdin().lock())
+    };
     execute_outcome("exec", result, io)
 }
 
@@ -552,7 +530,7 @@ fn run_file(sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Failure> {
         dry_run: flag(sub, "dry-run"),
         shell: text(sub, "shell")?,
     };
-    let ctx = execute_context()?;
+    let ctx = execute_context(io)?;
     execute_outcome("run-file", execute::run_file(input, &ctx), io)
 }
 
@@ -570,7 +548,7 @@ fn cache(sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Failure> {
         dry_run: flag(leaf, "dry-run"),
         verbose: flag(leaf, "verbose"),
     };
-    let ctx = execute_context()?;
+    let ctx = execute_context(io)?;
     let definitions: DefinitionCache<DefinitionMetadata> = DefinitionCache::default();
     execute_outcome("cache", execute::cache(input, &ctx, &definitions), io)
 }
@@ -661,9 +639,92 @@ fn author_outcome(
 // ------------------------------------------------------------------ output
 
 /// The process's stdout, stderr and filesystem.
-struct ProcessIo;
+#[derive(Default)]
+struct ProcessIo {
+    captured: Option<crate::capture::CapturedOutput>,
+    host: Option<Host>,
+}
+
+/// Run the same dispatcher as the executable, with explicit process facts and
+/// captured output. This never changes ENV, cwd, or process file descriptors.
+pub fn capture<I, T>(args: I, host: Host) -> crate::capture::CapturedOutput
+where
+    I: IntoIterator<Item = T>,
+    T: Into<OsString> + Clone,
+{
+    let mut io = ProcessIo {
+        captured: Some(crate::capture::CapturedOutput::default()),
+        host: Some(host),
+    };
+    let code = run_with(args, &mut io);
+    let mut output = io.captured.expect("capture sink remains installed");
+    output.exit = code;
+    output
+}
 
 impl ProcessIo {
+    fn host(&self) -> Result<Host, Failure> {
+        self.host
+            .clone()
+            .map(Ok)
+            .unwrap_or_else(|| Host::native().map_err(|e| Failure::Message(format!("ukiryu: {e}"))))
+    }
+
+    fn env(&self, key: &str) -> Option<String> {
+        match &self.host {
+            Some(host) => host.env.get(key).map(str::to_owned),
+            None => std::env::var(key).ok(),
+        }
+    }
+
+    fn stdout_tty(&self) -> bool {
+        self.captured.is_none() && io::stdout().is_terminal()
+    }
+
+    fn handler_context(&self, register: Option<String>) -> Result<HandlerContext, Failure> {
+        Ok(HandlerContext {
+            host: self.host()?,
+            register,
+        })
+    }
+
+    fn register_context(&self) -> ukiryu::register::DiscoveryContext {
+        let Some(host) = &self.host else {
+            return ukiryu::register::DiscoveryContext::from_process(None);
+        };
+        ukiryu::register::DiscoveryContext {
+            env_register: self.env("UKIRYU_REGISTER").map(OsString::from),
+            dev_path: None,
+            home: self
+                .env("HOME")
+                .filter(|home| !home.is_empty())
+                .or_else(|| {
+                    (host.platform == ukiryu::runtime::Platform::Windows)
+                        .then(|| self.env("USERPROFILE").filter(|home| !home.is_empty()))
+                        .flatten()
+                })
+                .map(std::path::PathBuf::from),
+        }
+    }
+
+    fn author_context(&self, config_colors_disabled: bool) -> AuthorContext {
+        AuthorContext {
+            thor_colors: self.stdout_tty()
+                && self.env("TERM").is_none_or(|v| v != "dumb")
+                && self.env("NO_COLOR").is_none_or(|v| v.is_empty()),
+            discovery: DiscoveryEnv {
+                home: self.env("HOME"),
+                xdg_data_home: self.env("XDG_DATA_HOME"),
+                xdg_data_dirs: self.env("XDG_DATA_DIRS"),
+                path: self.env("PATH"),
+                opt_root: "/opt".to_owned(),
+            },
+            schema_path_env: self.env("UKIRYU_SCHEMA_PATH"),
+            default_register: None,
+            config_colors_disabled,
+        }
+    }
+
     /// Perform `writes` in order. Returns `Some(1)` after reporting the first
     /// write that failed (later writes are not attempted, as the source's
     /// exception stops the command), `None` when all succeeded.
@@ -671,10 +732,18 @@ impl ProcessIo {
         for write in writes {
             let result = match write {
                 OutputWrite::Stdout(text) => {
+                    if let Some(captured) = &mut self.captured {
+                        captured.stdout.push_str(text);
+                        continue;
+                    }
                     let mut out = io::stdout().lock();
                     out.write_all(text.as_bytes()).and_then(|()| out.flush())
                 }
                 OutputWrite::Stderr(text) => {
+                    if let Some(captured) = &mut self.captured {
+                        captured.stderr.push_str(text);
+                        continue;
+                    }
                     let mut err = io::stderr().lock();
                     err.write_all(text.as_bytes()).and_then(|()| err.flush())
                 }
@@ -692,7 +761,21 @@ impl ProcessIo {
         None
     }
 
+    fn print_error(&mut self, error: &clap::Error) {
+        if self.captured.is_none() {
+            let _ = error.print();
+        } else if error.use_stderr() {
+            self.stderr(&error.to_string());
+        } else {
+            let _ = self.perform(&[OutputWrite::Stdout(error.to_string())]);
+        }
+    }
+
     fn stderr(&mut self, text: &str) {
+        if let Some(captured) = &mut self.captured {
+            captured.stderr.push_str(text);
+            return;
+        }
         let mut err = io::stderr().lock();
         let _ = err.write_all(text.as_bytes());
         let _ = err.flush();
@@ -711,14 +794,17 @@ fn file_error(error: &io::Error, path: &str) -> String {
 }
 
 /// `definitions remove` confirmation: show the prompt, then `$stdin.gets`.
-struct StdinConfirm {
-    io: ProcessIo,
+struct StdinConfirm<'a> {
+    io: &'a mut ProcessIo,
 }
 
-impl Confirm for StdinConfirm {
+impl Confirm for StdinConfirm<'_> {
     fn ask(&mut self, shown: Vec<OutputWrite>) -> Option<String> {
         if self.io.perform(&shown).is_some() {
             // The prompt could not be written; answer as at end of input.
+            return None;
+        }
+        if self.io.captured.is_some() {
             return None;
         }
         let mut line = String::new();
