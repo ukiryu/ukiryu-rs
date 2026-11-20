@@ -11,7 +11,7 @@
 //! | `resolve_config` | `Config` resolution |
 //! | `parse_yaml` | YAML through the core's YAML engine, as JSON |
 //! | `escape` | shell formatting ([`portable`]) |
-//! | `resolve` | version extraction, range matching, version-spec routing, `Tool.get` ([`ops`]) |
+//! | `resolve` | version extraction, range matching, version-spec routing, strict shell detection, `Tool.get` ([`ops`]) |
 //! | `build` | `Tool#execute` up to the executor: argv, env, stdin, executable ([`ops`]) |
 //! | `validate` | `Type.validate`, `DefinitionValidator.validate_string` ([`ops`]) |
 //! | `schema` | `SchemaValidator.validate_profile`, `JSON::Validator.fully_validate` ([`ops`]) |
