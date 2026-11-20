@@ -9,6 +9,8 @@ require 'open3'
 root = ARGV.fetch(0)
 revision = Open3.capture2('git', '-C', root, 'rev-parse', 'HEAD').first.strip
 raise 'oracle drift' unless revision == 'ab6df353c6dc2d7faf7817a86aafcafa82579896' && Open3.capture2('git', '-C', root, 'status', '--porcelain').first.empty?
+raise 'loaded oracle mismatch' unless File.realpath(Gem.loaded_specs.fetch('ukiryu').full_gem_path) == File.realpath(root)
+raise 'oracle runtime drift' unless RUBY_ENGINE == 'ruby' && RUBY_VERSION == '4.0.1' && Gem.loaded_specs.fetch('json-schema').version.to_s == '6.2.1'
 server = TCPServer.new('127.0.0.1', 0)
 base = "http://127.0.0.1:#{server.addr[1]}"
 refused = TCPServer.new('127.0.0.1', 0)
