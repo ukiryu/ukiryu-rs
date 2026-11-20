@@ -21,6 +21,10 @@
 //! case must match exactly after the documented canonicalization.
 #![cfg(target_os = "linux")]
 
+#[path = "execute_data/comparison.rs"]
+mod comparison;
+use comparison::canonical_addresses;
+
 use serde_json::Value as Json;
 use std::ffi::OsString;
 use std::fs;
@@ -168,27 +172,6 @@ fn apply(writes: &[OutputWrite], pty: bool, shown: &mut Shown) {
             OutputWrite::File { path, contents } => fs::write(path, contents).unwrap(),
         }
     }
-}
-
-/// Only anonymous Ruby class inspect addresses vary per process. Do not
-/// mask named classes, ordinary hexadecimal values, members or context.
-fn canonical_addresses(text: &str) -> String {
-    const PREFIX: &str = "#<Class:0x";
-    let mut result = String::new();
-    let mut rest = text;
-    while let Some(start) = rest.find(PREFIX) {
-        let after = &rest[start + PREFIX.len()..];
-        let length = after.bytes().take_while(u8::is_ascii_hexdigit).count();
-        result.push_str(&rest[..start + PREFIX.len()]);
-        if length > 0 && after[length..].starts_with('>') {
-            result.push_str("<address>");
-            rest = &after[length..];
-        } else {
-            rest = after;
-        }
-    }
-    result.push_str(rest);
-    result
 }
 
 /// Masks the values of timing fields, whose values differ per run.
