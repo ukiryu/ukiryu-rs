@@ -16,7 +16,7 @@
 //! here re-encodes, appends or strips bytes (no newline translation).
 use crate::commands::author::{
     self, AuthorContext, AuthorError, Confirm, DefinitionsInput, DescribeInput, ExtractInput,
-    LintInput, LintOptions, LintTarget, ToolEnv, ValidateInput, ValidateOptions, ValidateTarget,
+    ToolEnv, ValidateInput, ValidateOptions, ValidateTarget,
 };
 use crate::commands::execute::{
     self, CacheAction, CacheInput, ExecInput, ExecuteContext, ExecuteError, RunFileInput,
@@ -248,7 +248,6 @@ fn dispatch(verb: &str, sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Fai
             inspect_outcome(inspect::resolve(input, &ctx), io)
         }
         "validate" => validate(sub, io),
-        "lint" => lint(sub, io),
         "definitions" => definitions(sub, io),
         "extract" => extract(sub, io),
         "describe" => describe(sub, io),
@@ -374,41 +373,35 @@ fn validate(sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Failure> {
         all: flag(leaf, "all"),
         register: text(leaf, "register")?,
     };
-    let ctx = author_context(false);
+    let mut ctx = author_context(false);
+    if target == ValidateTarget::All {
+        let register = ukiryu::register::DiscoveryContext::from_process(None)
+            .discover(&ukiryu::register::Git::default())
+            .map_err(|e| Failure::Message(format!("[{}] {}", e.class_name(), e)))?;
+        ctx.default_register = Some(register.path().to_string_lossy().into_owned());
+    } else {
+        ctx.default_register = std::env::var("UKIRYU_REGISTER").ok();
+    }
+    if !options.executable && !options.all {
+        return author_outcome(
+            "validate",
+            author::validate(ValidateInput { target, options }, &ctx),
+            io,
+        );
+    }
+    let host = Host::native().map_err(|e| Failure::Message(format!("ukiryu: {e}")))?;
+    let config = configuration(&host)?;
+    ctx.config_colors_disabled = config.resolve("use_color") == Some(&Value::Bool(false));
+    let env = ToolEnv {
+        configured_shell: config
+            .resolve("shell")
+            .and_then(Value::as_str)
+            .map(str::to_owned),
+        host,
+    };
     author_outcome(
         "validate",
-        author::validate(ValidateInput { target, options }, &ctx),
-        io,
-    )
-}
-
-/// `lint` is a target addition (not registered in the source cli.rb).
-fn lint(sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Failure> {
-    let (target, leaf) = match sub.subcommand() {
-        Some(("file", leaf)) => (
-            LintTarget::File {
-                path: required(leaf, "path")?,
-            },
-            leaf,
-        ),
-        Some(("all", leaf)) => (
-            LintTarget::All {
-                register: text(leaf, "register")?,
-            },
-            leaf,
-        ),
-        Some(("rules", leaf)) => (LintTarget::Rules, leaf),
-        _ => return Err(Failure::Help("lint")),
-    };
-    let options = LintOptions {
-        verbose: flag(leaf, "verbose"),
-        format: text(leaf, "format")?,
-        severity: text(leaf, "severity")?,
-    };
-    let ctx = author_context(false);
-    author_outcome(
-        "lint",
-        author::lint(LintInput { target, options }, &ctx),
+        author::validate_with_tools(ValidateInput { target, options }, &ctx, &env),
         io,
     )
 }
@@ -491,7 +484,20 @@ fn describe(sub: &ArgMatches, io: &mut ProcessIo) -> Result<i32, Failure> {
         host,
         configured_shell,
     };
-    let ctx = author_context(colors_disabled);
+    let mut ctx = author_context(colors_disabled);
+    ctx.default_register = match input
+        .register
+        .as_ref()
+        .filter(|p| std::path::Path::new(p).is_dir())
+    {
+        Some(path) => Some(path.clone()),
+        None => {
+            let register = ukiryu::register::DiscoveryContext::from_process(None)
+                .discover(&ukiryu::register::Git::default())
+                .map_err(|e| Failure::Message(format!("[{}] {}", e.class_name(), e)))?;
+            Some(register.path().to_string_lossy().into_owned())
+        }
+    };
     author_outcome("describe", author::describe(input, &ctx, &env), io)
 }
 
@@ -631,13 +637,6 @@ fn author_outcome(
 ) -> Result<i32, Failure> {
     let (partial, what, needs) = match result {
         Ok(outcome) => return Ok(io.perform(&outcome.writes).unwrap_or(outcome.exit_code)),
-        Err(AuthorError::Gated { feature, partial }) => (partial, format!("{verb} ({feature})"), {
-            if feature.contains("describe") {
-                "the tool API"
-            } else {
-                "the tool and executor APIs"
-            }
-        }),
         Err(AuthorError::RegisterUnavailable { partial }) => (
             partial,
             verb.to_owned(),

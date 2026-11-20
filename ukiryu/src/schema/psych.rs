@@ -51,12 +51,106 @@ pub fn safe_load(text: &str, permitted: Permitted) -> Result<Data, SchemaError> 
     {
         return Ok(Data::Null);
     }
-    let doc = Document::parse(text.as_bytes()).map_err(|e| SchemaError::YamlSyntax {
-        message: crate::models::safe_load::syntax_message(e.message().unwrap_or(&e.to_string())),
+    let doc = Document::parse(text.as_bytes()).map_err(|e| {
+        let message = e.message().unwrap_or(&e.to_string()).to_owned();
+        SchemaError::YamlSyntax {
+            message: unfinished_flow_sequence(text, &message)
+                .unwrap_or_else(|| crate::models::safe_load::syntax_message(&message)),
+        }
     })?;
     match doc.first_root() {
         None => Ok(Data::Null),
         Some(root) => node_to_data(root, permitted),
+    }
+}
+
+/// Recover a flow-sequence EOF context using the engine's node marks.
+/// Appended closers let the pull parser expose buffered original nodes (a
+/// nested collection may not have produced an event before the original EOF).
+/// Events in the appended suffix are ignored; no repaired value is returned.
+fn unfinished_flow_sequence(text: &str, message: &str) -> Option<String> {
+    use yeptris::event::{EventKind, Puller};
+    let (error_line, error_column) = message
+        .strip_prefix("unexpected parser state (line ")?
+        .strip_suffix(')')?
+        .split_once(", column ")?;
+    let error_line: u32 = error_line.parse().ok()?;
+    let error_column: u32 = error_column.parse().ok()?;
+    let eof = (
+        text.bytes().filter(|b| *b == b'\n').count() as u32 + 1,
+        text.rsplit('\n').next()?.chars().count() as u32 + 1,
+    );
+    let mut repaired = text.to_owned();
+    repaired.push('\n');
+    repaired.extend(std::iter::repeat_n(
+        ' ',
+        text.lines().map(str::len).max().unwrap_or(0),
+    ));
+    // This is an upper bound, including quoted '[' characters. Any extra
+    // closers occur after EOF and are never used to infer original nodes.
+    repaired.extend(std::iter::repeat_n(
+        ']',
+        text.bytes().filter(|b| *b == b'[').count(),
+    ));
+    let mut puller = Puller::new(repaired.as_bytes()).ok()?;
+    struct Frame {
+        kind: EventKind,
+        flow: bool,
+        line: u32,
+        column: u32,
+        last_value: Option<(u32, u32)>,
+    }
+    let mut open: Vec<Frame> = Vec::new();
+    for event in puller.events() {
+        let event = match event {
+            Ok(event) => event,
+            Err(_) => break,
+        };
+        if (event.line(), event.col()) >= eof {
+            break;
+        }
+        match event.kind() {
+            EventKind::SequenceStart | EventKind::MappingStart => {
+                open.push(Frame {
+                    kind: event.kind(),
+                    flow: event.flow(),
+                    line: event.line(),
+                    column: event.col(),
+                    last_value: None,
+                });
+            }
+            EventKind::SequenceEnd | EventKind::MappingEnd => {
+                open.pop();
+                if let Some(parent) = open.last_mut() {
+                    parent.last_value = Some((event.end_line(), event.end_col()));
+                }
+            }
+            EventKind::Scalar | EventKind::Alias => {
+                if let Some(parent) = open.last_mut() {
+                    parent.last_value = Some((event.end_line(), event.end_col()));
+                }
+            }
+            _ => {}
+        }
+    }
+    let frame = open.last()?;
+    if frame.kind != EventKind::SequenceStart || !frame.flow {
+        return None;
+    }
+    let line = frame.line;
+    let column = frame.column;
+    let needs_node = match frame.last_value {
+        None => true,
+        Some((line, column)) => {
+            let tail: String = text.split_inclusive('\n').skip(line as usize - 1).collect();
+            let tail: String = tail.chars().skip(column as usize - 1).collect();
+            tail.trim_start().starts_with(',')
+        }
+    };
+    if needs_node {
+        Some(format!("(<unknown>): did not find expected node content while parsing a flow node at line {error_line} column {error_column}"))
+    } else {
+        Some(format!("(<unknown>): did not find expected ',' or ']' while parsing a flow sequence at line {line} column {column}"))
     }
 }
 

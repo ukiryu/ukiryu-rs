@@ -3,7 +3,7 @@
 //!
 //! `author_data/tools_cases.json` is captured from the pinned Ruby oracle
 //! (ukiryu/ukiryu ab6df353) through `exe/ukiryu` by
-//! `handoffs/batch-09/B10-CLI-AUTHOR-REMAINDER/capture/cap.rb`, against a copy
+//! `scripts/capture-author-reference.py`, against a copy
 //! of `author_data/tree` (the `regx` register, the fake tools in `tbin` and
 //! the definitions under `smoke` and `fall`) with every file mtime set to
 //! 2026-01-02 03:04:05 UTC and an isolated environment. Each case is replayed
@@ -238,7 +238,8 @@ fn tool_handlers_match_the_oracle_captures() {
                     let tty = case["tty_output"]
                         .as_str()
                         .unwrap()
-                        .replace("{root}", &root);
+                        .replace("{root}", &root)
+                        .replace("\r\n", "\n");
                     let both = format!("{stdout}{stderr}");
                     if both != tty {
                         fail(format!("tty output\n{both:?}\nexpected\n{tty:?}"));
