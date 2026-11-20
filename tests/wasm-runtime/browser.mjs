@@ -8,6 +8,12 @@ const files = new Map([
   ['/escape.mjs', ['tests/wasm-runtime/escape.mjs', 'text/javascript']],
   ...['corpus/conformance/cases/escape.jsonl','corpus/conformance/manifest.json','tests/escape-wire/supplemental.jsonl','tests/escape-wire/provenance.json'].map(path => ['/' + path, [path, 'application/json']]),
   ...['corpus/conformance/inputs/profiles/inkscape_1.0.yaml','ukiryu/tests/conformance/emitter/yaml.roundtrip.profiles-inkscape-1-0.yaml'].map(path => ['/' + path, [path, 'text/plain; charset=utf-8']]),
+  ['/model-snapshot.mjs', ['tests/wasm-runtime/model-snapshot.mjs', 'text/javascript']],
+  ...['corpus/conformance/cases/yaml.jsonl',
+    'corpus/conformance/inputs/register/interfaces/bzip2.yaml',
+    'corpus/conformance/inputs/register/tools/bzip2_busybox/default/1.0.yaml',
+    'corpus/conformance/inputs/register/tools/bzip2_busybox/index.yaml',
+  ].map(path => ['/' + path, [path, 'text/plain; charset=utf-8']]),
   ['/cases.mjs', ['tests/wasm-runtime/cases.mjs', 'text/javascript']],
 ]);
 const server = createServer(async (req, res) => {
@@ -31,6 +37,8 @@ try {
     const wasm = await module.default();
     const {check, checkEmitter} = await import('/cases.mjs');
     const text = async path => { const response = await fetch('/' + path); if (!response.ok) throw new Error(path); return response.text(); };
+    const {loadModelSnapshots, checkModelSnapshots} = await import('/model-snapshot.mjs');
+    const snapshots = checkModelSnapshots(module, await loadModelSnapshots(text));
     const emitter = checkEmitter(module, await text('corpus/conformance/inputs/profiles/inkscape_1.0.yaml'), await text('ukiryu/tests/conformance/emitter/yaml.roundtrip.profiles-inkscape-1-0.yaml'));
     const {loadEscape, checkEscape} = await import('/escape.mjs');
     const rows = await loadEscape(async path => { const response = await fetch('/' + path); if (!response.ok) throw new Error(path); return response.text(); }, async text => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)))].map(x => x.toString(16).padStart(2,'0')).join(''));
@@ -38,12 +46,13 @@ try {
     const before = wasm.memory.buffer.byteLength;
     const count = check(module);
     const after = wasm.memory.buffer.byteLength;
-    return {before, after, count, repeated: check(module), escape, escapeRepeated: checkEscape(module, rows), emitter};
+    return {snapshots, before, after, count, repeated: check(module), escape, escapeRepeated: checkEscape(module, rows), emitter};
   });
   assert(result.after > result.before, 'large YAML must exercise WebAssembly memory growth');
   assert.equal(result.count, result.repeated);
   assert.deepEqual(result.escape, result.escapeRepeated);
   assert.equal(result.emitter, 2);
+  assert.equal(result.snapshots, 3);
   console.log(`Chromium ${browser.version()}: ${JSON.stringify(result)}`);
 } finally {
   await browser?.close();

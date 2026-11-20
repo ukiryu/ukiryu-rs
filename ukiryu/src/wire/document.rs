@@ -111,6 +111,9 @@ pub enum YamlRequest {
     /// and its instance variables sorted by name (`instance_variables.sort`).
     #[cfg(not(target_arch = "wasm32"))]
     ModelLoad { model: String, path: String },
+    /// The `model_load` class/instance-variable snapshot from supplied YAML,
+    /// using the same loader policy without filesystem access (also on WASM).
+    ModelSnapshot { model: String, yaml: String },
     /// `Ukiryu::Models::<model>.from_yaml(yaml).to_yaml` for a lutaml model
     /// (`ToolDefinition`), emitted by the core's Yeptris engine.
     ModelToYaml { model: String, yaml: String },
@@ -131,6 +134,7 @@ pub fn yaml(request: YamlRequest) -> Json {
             .and_then(|v| encoded(&v)),
         #[cfg(not(target_arch = "wasm32"))]
         YamlRequest::ModelLoad { model, path } => snapshot::load(&model, &path),
+        YamlRequest::ModelSnapshot { model, yaml } => snapshot::from_text(&model, &yaml),
         YamlRequest::ModelToYaml { model, yaml } => model_yaml(&model, &yaml),
         YamlRequest::ModelRead { model, yaml } => model_read(&model, &yaml),
         YamlRequest::ModelDump { model, value } => model_dump(&model, &value.0),
@@ -257,8 +261,8 @@ fn data_value(d: &Data) -> Result<Value, Json> {
     })
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 mod snapshot {
+    #[cfg(not(target_arch = "wasm32"))]
     use std::path::Path;
 
     use serde_json::{json, Value as Json};
@@ -270,6 +274,7 @@ mod snapshot {
         VersionDetectionMethod,
     };
 
+    #[cfg(not(target_arch = "wasm32"))]
     pub fn load(model: &str, path: &str) -> Result<Json, Json> {
         let path = Path::new(path);
         match model {
@@ -280,6 +285,21 @@ mod snapshot {
                 .map_err(|e| model_error(&e))
                 .and_then(|v| version(&v)),
             "ImplementationIndex" => ImplementationIndex::from_yaml(path)
+                .map_err(|e| model_error(&e))
+                .and_then(|i| index(&i)),
+            other => Err(unknown_model(other)),
+        }
+    }
+
+    pub fn from_text(model: &str, yaml: &str) -> Result<Json, Json> {
+        match model {
+            "Interface" => Interface::from_yaml_str(yaml)
+                .map_err(|e| model_error(&e))
+                .and_then(|i| interface(&i)),
+            "ImplementationVersion" => ImplementationVersion::from_yaml_str(yaml)
+                .map_err(|e| model_error(&e))
+                .and_then(|v| version(&v)),
+            "ImplementationIndex" => ImplementationIndex::from_yaml_str(yaml)
                 .map_err(|e| model_error(&e))
                 .and_then(|i| index(&i)),
             other => Err(unknown_model(other)),

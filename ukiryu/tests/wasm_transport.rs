@@ -49,3 +49,55 @@ fn model_load_is_native_only() {
     assert_eq!(result["ok"], false);
     assert_eq!(result["error"]["code"], "UNSUPPORTED_CAPABILITY");
 }
+
+/// File-loader semantics are preserved without accepting filesystem inputs.
+#[test]
+fn model_snapshot_preserves_loader_policies() {
+    let call = |model: &str, yaml: &str| -> serde_json::Value {
+        let request = serde_json::json!({"op": "yaml", "method": "model_snapshot", "model": model, "yaml": yaml});
+        serde_json::from_str(&ukiryu::wasm::process(&request.to_string())).unwrap()
+    };
+    for model in ["Interface", "ImplementationVersion", "ImplementationIndex"] {
+        let field = if model == "ImplementationVersion" {
+            "implements"
+        } else {
+            "name"
+        };
+        let plain = call(model, &format!("{field}: demo\n"));
+        assert_eq!(plain["ok"], true, "{plain}");
+        let symbol = call(model, &format!("!ruby/symbol {field}: demo\n"));
+        assert_eq!(symbol["ok"], true, "{symbol}");
+        let ivar = format!("@{field}");
+        assert_eq!(symbol["value"]["ivars"][&ivar], "demo");
+        if model == "Interface" {
+            assert_eq!(plain["value"]["ivars"][&ivar], "demo");
+        } else {
+            assert_eq!(plain["value"]["ivars"][&ivar], serde_json::Value::Null);
+        }
+        for (yaml, class) in [
+            (
+                "aliases: &aliases [demo]\nother: *aliases\n",
+                "Psych::AliasesNotEnabled",
+            ),
+            ("date: !!timestamp 2026-01-01\n", "Psych::DisallowedClass"),
+            ("!ruby/object:Unknown {}\n", "Psych::DisallowedClass"),
+            ("[broken", "Psych::SyntaxError"),
+            ("", "NoMethodError"),
+        ] {
+            let reply = call(model, yaml);
+            assert_eq!(reply["ok"], false, "{model}: {yaml}: {reply}");
+            assert_eq!(reply["error"]["source_class"], class, "{reply}");
+        }
+    }
+    let a = call("Interface", "name: first\n");
+    let b = call("Interface", "name: second\n");
+    assert_ne!(a, b);
+    assert_eq!(
+        call("Nope", "name: demo\n")["error"]["code"],
+        "INVALID_ARGUMENT"
+    );
+    let request = serde_json::json!({"op": "yaml", "method": "model_snapshot", "model": "Interface", "path": "/etc/passwd"});
+    let reply: serde_json::Value =
+        serde_json::from_str(&ukiryu::wasm::process(&request.to_string())).unwrap();
+    assert_eq!(reply["ok"], false);
+}

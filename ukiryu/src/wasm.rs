@@ -25,7 +25,7 @@ pub fn process(input: &str) -> String {
     let response = match serde_json::from_str::<serde_json::Value>(input) {
         Ok(request) => match request.get("op").and_then(|op| op.as_str()) {
             // `yaml` `model_load` reads the file at `path`; the other
-            // document methods take their text in the request.
+            // document methods (including `model_snapshot`) take text in the request.
             Some("yaml") if request.get("method").and_then(|m| m.as_str()) == Some("model_load") => {
                 crate::wire::failure(
                     "UNSUPPORTED_CAPABILITY",

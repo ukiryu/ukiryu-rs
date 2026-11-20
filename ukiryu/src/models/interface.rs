@@ -32,7 +32,12 @@ pub(crate) fn load_yaml_file(path: &Path) -> Result<Value, ModelError> {
             ),
         )
     })?;
-    safe_load(&text, LoadPolicy::MODEL_FILE)
+    load_yaml_text(&text)
+}
+
+/// The file-loader policy applied to supplied text, without filesystem access.
+pub(crate) fn load_yaml_text(text: &str) -> Result<Value, ModelError> {
+    safe_load(text, LoadPolicy::MODEL_FILE)
 }
 
 /// The register's effective load path (`Register#load_interface`,
@@ -112,6 +117,13 @@ impl Interface {
     pub fn from_yaml(path: &Path) -> Result<Interface, ModelError> {
         let data = load_yaml_file(path)?;
         Interface::from_hash(&symbolize(&data)?)
+    }
+
+    /// The same model as `from_yaml(path)`, from supplied YAML text.
+    /// File-loader permissions and key symbolization are preserved; aliases
+    /// remain disabled, unlike `from_register_yaml`.
+    pub fn from_yaml_str(yaml: &str) -> Result<Interface, ModelError> {
+        Interface::from_hash(&symbolize(&load_yaml_text(yaml)?)?)
     }
 
     /// `Interface.from_hash(data)` (Symbol keys).
