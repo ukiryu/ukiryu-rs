@@ -700,6 +700,10 @@ impl ProcessIo {
                 opt_root: "/opt".to_owned(),
             },
             schema_path_env: self.env("UKIRYU_SCHEMA_PATH"),
+            remote_schema: self
+                .env("UKIRYU_REMOTE_SCHEMA_URL")
+                .map(ukiryu::definition::definition_validator::RemoteSchemaSource::Url)
+                .unwrap_or_default(),
             default_register: None,
             config_colors_disabled,
         }

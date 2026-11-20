@@ -163,7 +163,12 @@ pub(crate) fn fully_validate(
     v.walked.insert(schema as *const Data);
     v.build(&root)?;
     for (name, node) in &resources {
-        let resource = v.new_schema(node, Rc::from(name.as_str()), Dialect::Draft6)?;
+        let resource_uri = if super::transport::is_http(name) {
+            format!("{name}#")
+        } else {
+            name.clone()
+        };
+        let resource = v.new_schema(node, Rc::from(resource_uri.as_str()), Dialect::Draft6)?;
         v.schemas.borrow_mut().insert(
             name.trim_end_matches('#').to_owned(),
             (node, resource.dialect),
@@ -386,18 +391,35 @@ impl<'s> Validation<'s> {
     }
 
     fn check_local_ref(&self, r: &Data) -> Result<(), SchemaError> {
-        let Data::String(s) = r else {
-            return Err(unsupported(
-                "$ref",
-                "a non-string $ref raises TypeError; not reproduced",
-            ));
+        let Data::String(_) = r else {
+            let (class, message) = match r {
+                Data::Null | Data::Bool(false) => (
+                    "NoMethodError",
+                    "undefined method 'normalize_ref' for nil".into(),
+                ),
+                other => (
+                    "TypeError",
+                    format!(
+                        "Can't convert {} into String.",
+                        match other {
+                            Data::Integer(_) => "Integer",
+                            Data::Float(_) => "Float",
+                            Data::Bool(true) => "TrueClass",
+                            Data::Array(_) => "Array",
+                            Data::Hash(_) => "Hash",
+                            Data::Symbol(_) => "Symbol",
+                            Data::Date { .. } => "Date",
+                            Data::Time(_) => "Time",
+                            _ => unreachable!(),
+                        }
+                    ),
+                ),
+            };
+            return Err(SchemaError::Ruby {
+                class: class.into(),
+                message,
+            });
         };
-        if s.contains(['\n', '\r']) {
-            return Err(unsupported(
-                "$ref",
-                "multiline schema references are not reproduced",
-            ));
-        }
         Ok(())
     }
 
@@ -844,23 +866,58 @@ impl<'s> Validation<'s> {
             target_uri.to_string()
         };
         let mut path = String::new();
+        let mut string_target: Option<String> = None;
         for seg in fragment.split('/') {
             if seg.is_empty() {
                 continue;
             }
             let seg = seg.replace("~0", "~").replace("~1", "/");
-            let next = match target {
-                Data::Array(items) => {
-                    let i = to_i(&seg);
-                    let idx = if i < 0 { items.len() as i64 + i } else { i };
-                    usize::try_from(idx).ok().and_then(|i| items.get(i))
+            let next = if let Some(text) = &string_target {
+                if text.contains(&seg) {
+                    string_target = Some(seg.clone());
+                    Some(target)
+                } else {
+                    None
                 }
-                Data::Hash(pairs) => get(pairs, &seg),
-                _ => {
-                    return Err(unsupported(
-                        "$ref",
-                        "a reference through a scalar is not reproduced",
-                    ))
+            } else {
+                match target {
+                    Data::Array(items) => {
+                        let i = to_i(&seg);
+                        let idx = if i < 0 { items.len() as i64 + i } else { i };
+                        usize::try_from(idx).ok().and_then(|i| items.get(i))
+                    }
+                    Data::Hash(pairs) => get(pairs, &seg),
+                    Data::Integer(_) => {
+                        return Err(SchemaError::Ruby {
+                            class: "TypeError".into(),
+                            message: "no implicit conversion of String into Integer".into(),
+                        });
+                    }
+                    Data::String(text) => {
+                        // Ruby String#[] with a string argument is a substring lookup.
+                        if text.contains(&seg) {
+                            string_target = Some(seg.clone());
+                            Some(target)
+                        } else {
+                            None
+                        }
+                    }
+                    other => {
+                        let receiver = match other {
+                            Data::Float(_) => "an instance of Float",
+                            Data::Bool(true) => "true",
+                            Data::Bool(false) => "false",
+                            Data::Null => "nil",
+                            Data::Symbol(_) => "an instance of Symbol",
+                            Data::Date { .. } => "an instance of Date",
+                            Data::Time(_) => "an instance of Time",
+                            _ => unreachable!(),
+                        };
+                        return Err(SchemaError::Ruby {
+                            class: "NoMethodError".into(),
+                            message: format!("undefined method '[]' for {receiver}"),
+                        });
+                    }
                 }
             };
             path.push('/');
@@ -876,6 +933,12 @@ impl<'s> Validation<'s> {
                     })
                 }
             }
+        }
+        if string_target.is_some() {
+            return Err(SchemaError::Ruby {
+                class: "NoMethodError".into(),
+                message: "undefined method 'each' for an instance of String".into(),
+            });
         }
         let uri = if resolved.contains('#') {
             format!("{}#", target_uri.trim_end_matches('#'))

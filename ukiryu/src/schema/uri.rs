@@ -172,11 +172,40 @@ pub(crate) fn addressable_parses(s: &str) -> bool {
 /// Resolve a schema URI reference. Relative schema identifiers stay relative,
 /// as Addressable does when the parent is a generated UUID, not a file URI.
 pub(super) fn resolve(base: &str, reference: &str) -> Result<String, super::SchemaError> {
-    if reference.contains(['\r', '\n']) || !addressable_parses(reference) {
-        return Err(super::SchemaError::unsupported(
-            "schema URI",
-            "invalid or multiline URI",
-        ));
+    if !addressable_parses(reference) {
+        let p = split(reference);
+        let message = if let Some(scheme) = p.scheme.filter(|scheme| {
+            let mut chars = scheme.chars();
+            !chars.next().is_some_and(|c| c.is_ascii_alphabetic())
+                || !chars.all(|c| c.is_ascii_alphanumeric() || "+-.".contains(c))
+        }) {
+            format!("Invalid scheme format: '{scheme}'")
+        } else if let Some(host) = p.authority.map(host_of).filter(|h| {
+            h.chars()
+                .any(|c| "<>{}/\\?#@\"".contains(c) || c.is_whitespace())
+        }) {
+            format!("Invalid character in host: '{host}'")
+        } else if let Some(port) = p.authority.and_then(|a| port_start(a).map(|i| &a[i + 1..])) {
+            format!("Invalid port number: {}", super::data::inspect_str(port))
+        } else if p
+            .scheme
+            .is_some_and(|s| IP_BASED.contains(&s.to_ascii_lowercase().as_str()))
+            && p.authority.is_none_or(str::is_empty)
+            && p.path.is_empty()
+        {
+            format!("Absolute URI missing hierarchical segment: '{reference}'")
+        } else if p.scheme.is_none() && !p.path.starts_with('/') && p.path.contains(':') {
+            format!("Cannot assemble URI string with ambiguous path: '{reference}'")
+        } else {
+            return Err(super::SchemaError::unsupported(
+                "schema URI",
+                "unmeasured Addressable URI diagnostic",
+            ));
+        };
+        return Err(super::SchemaError::Ruby {
+            class: "JSON::Schema::UriError".into(),
+            message,
+        });
     }
     let r = split(reference);
     if r.scheme.is_some() {

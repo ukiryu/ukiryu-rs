@@ -84,7 +84,14 @@ fn run(
         Some(s) => s.map(str::to_owned),
         None => input["schema"].as_str().map(input_path),
     };
-    definition_validator::validate_string_report(&text, schema.as_deref(), &ValidatorEnv::default())
+    definition_validator::validate_string_report(
+        &text,
+        schema.as_deref(),
+        &ValidatorEnv {
+            remote_schema: definition_validator::RemoteSchemaSource::Unavailable,
+            ..ValidatorEnv::default()
+        },
+    )
 }
 
 #[test]
