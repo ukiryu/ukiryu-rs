@@ -18,6 +18,7 @@ clap = { version = "=4.5.32", default-features = false, features = ["std", "help
 # exposes them) and keep the persistent config.yml in order through the pinned
 # Yeptris tree; both are existing workspace dependencies of the core crate.
 serde_json.workspace = true
+serde.workspace = true
 yeptris.workspace = true
 
 [dev-dependencies]

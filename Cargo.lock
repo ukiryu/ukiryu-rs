@@ -743,6 +743,7 @@ name = "ukiryu-cli"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "serde",
  "serde_json",
  "ukiryu",
  "yeptris",
@@ -752,7 +753,10 @@ dependencies = [
 name = "ukiryu-ffi"
 version = "0.1.0"
 dependencies = [
+ "libloading",
+ "serde_json",
  "ukiryu",
+ "ukiryu-cli",
 ]
 
 [[package]]
