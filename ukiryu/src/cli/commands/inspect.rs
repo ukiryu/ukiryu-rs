@@ -41,25 +41,25 @@
 //!   error where the source falls back to `/etc/shells`/`sh`/`cmd`.
 
 use super::CommandOutcome;
+use crate::cache::ToolCache;
+use crate::config::{self, ConversionError, OverrideResolver, Values};
+use crate::definition::{DefinitionMetadata, Discovery, DiscoveryEnv, VersionResolver};
+use crate::environment::Environment;
+use crate::executable::{find_in_path, DiscoveryContext, Platform};
+use crate::extractors::base::ProcessHost;
+use crate::extractors::man::{FileSystem, ManPageParser};
+use crate::models::{Attr, CommandDefinition, Text, Value as ModelValue};
+use crate::register::{self, Git, Register};
+use crate::register_lookup::{self, LookupError};
+use crate::render::OutputWrite;
+use crate::runtime::{Clock, Host, HostError, Runtime, ShellError};
+use crate::tool::{self, Tool, ToolError, ToolOptions};
+use crate::tool_loader::RegisterSource;
 use serde_json::Value;
 use std::ffi::OsString;
 use std::fmt;
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
-use ukiryu::cache::ToolCache;
-use ukiryu::config::{self, ConversionError, OverrideResolver, Values};
-use ukiryu::definition::{DefinitionMetadata, Discovery, DiscoveryEnv, VersionResolver};
-use ukiryu::environment::Environment;
-use ukiryu::executable::{find_in_path, DiscoveryContext, Platform};
-use ukiryu::extractors::base::ProcessHost;
-use ukiryu::extractors::man::{FileSystem, ManPageParser};
-use ukiryu::models::{Attr, CommandDefinition, Text, Value as ModelValue};
-use ukiryu::register::{self, Git, Register};
-use ukiryu::register_lookup::{self, LookupError};
-use ukiryu::render::OutputWrite;
-use ukiryu::runtime::{Clock, Host, HostError, Runtime, ShellError};
-use ukiryu::tool::{self, Tool, ToolError, ToolOptions};
-use ukiryu::tool_loader::RegisterSource;
 
 /// The process facts a handler reads, captured once by the caller.
 #[derive(Clone, Debug)]
@@ -702,7 +702,7 @@ fn ensure_dir(dir: &str) {
 fn dump(map: yeptris::Mapping) -> Result<String, InspectError> {
     let mut text = yeptris::to_string_with(
         &yeptris::Value::Mapping(map),
-        &ukiryu::render::yaml_emit_options(),
+        &crate::render::yaml_emit_options(),
     )
     .map_err(|e| InspectError::Emit(e.to_string()))?;
     text.push('\n');
@@ -1180,7 +1180,7 @@ pub fn commands(
     ctx: &HandlerContext,
 ) -> Result<CommandOutcome, InspectError> {
     let config = ctx.configuration()?;
-    let mut out = Out::new(colors_disabled(&config));
+    let out = Out::new(colors_disabled(&config));
     let register = setup_register(ctx, &config)
         .map_err(|f| f.into_error(Vec::new()))?
         .register;
@@ -1193,6 +1193,14 @@ pub fn commands(
     let tool = get_tool(ctx, &register, &ToolCache::new(), &options, &input.tool)
         .map_err(|e| tool_failure(&e, Vec::new()))?;
 
+    commands_loaded(input, &tool, out)
+}
+
+fn commands_loaded(
+    input: CommandsInput,
+    tool: &Tool,
+    mut out: Out,
+) -> Result<CommandOutcome, InspectError> {
     out.say(&format!("Commands for {}:", input.tool), Some(Color::Cyan));
     let mut grouped: Vec<(Option<String>, Vec<&CommandDefinition>)> = Vec::new();
     for command in tool.commands() {
@@ -1573,7 +1581,7 @@ fn join_texts(items: &[Text], separator: &str) -> String {
         .map(|item| match item {
             Text::Str(s) => s.clone(),
             Text::Nil => String::new(),
-            Text::List(inner) => ukiryu::types::ruby::join(inner, separator),
+            Text::List(inner) => crate::types::ruby::join(inner, separator),
             Text::Hash(_) => item.to_ruby_s(),
         })
         .collect();
@@ -1667,6 +1675,17 @@ pub fn info(input: InfoInput, ctx: &HandlerContext) -> Result<CommandOutcome, In
         out.say(&format!("Tool: {shown}"), Some(Color::Cyan));
     }
 
+    info_details(&tool, out, |tool, writes| {
+        tool_version(tool, &options, writes)
+    })
+}
+
+fn info_details(
+    tool: &Tool,
+    mut out: Out,
+    version: impl FnOnce(&Tool, &mut Vec<OutputWrite>) -> Result<Option<String>, InspectError>,
+) -> Result<CommandOutcome, InspectError> {
+    let profile = tool.definition();
     let or_na = |value: &Option<Text>| txt(value).unwrap_or_else(|| "N/A".to_owned());
     out.say(
         &format!("Display Name: {}", or_na(&profile.display_name)),
@@ -1737,8 +1756,7 @@ pub fn info(input: InfoInput, ctx: &HandlerContext) -> Result<CommandOutcome, In
 
     out.clear();
     if tool.is_available() {
-        let version =
-            tool_version(&tool, &options, &mut out.writes)?.unwrap_or_else(|| "unknown".to_owned());
+        let version = version(tool, &mut out.writes)?.unwrap_or_else(|| "unknown".to_owned());
         out.say("Status: INSTALLED", Some(Color::Green));
         out.say(
             &format!("Executable: {}", tool.executable().unwrap_or_default()),
@@ -1756,10 +1774,19 @@ pub fn opts(input: OptsInput, ctx: &HandlerContext) -> Result<CommandOutcome, In
     let config = ctx.configuration()?;
     let out = Out::new(colors_disabled(&config));
     let name = input.tool.as_str();
-    let Found { tool, mut out, .. } = match find_tool("opts", name, ctx, &config, out)? {
+    let Found { tool, out, .. } = match find_tool("opts", name, ctx, &config, out)? {
         Ok(found) => found,
         Err(outcome) => return Ok(outcome),
     };
+    opts_loaded(input, &tool, out)
+}
+
+fn opts_loaded(
+    input: OptsInput,
+    tool: &Tool,
+    mut out: Out,
+) -> Result<CommandOutcome, InspectError> {
+    let name = input.tool.as_str();
     let Some(commands) = tool.command_profile().commands.as_deref() else {
         return Ok(out.error(&format!("No commands defined for {name}")));
     };
@@ -2160,19 +2187,7 @@ pub fn resolve(input: ResolveInput, ctx: &HandlerContext) -> Result<CommandOutco
     let definitions = discovery.definitions_for(tool);
 
     if definitions.is_empty() {
-        out.say(&format!("Resolution for: {tool}"), Some(Color::Cyan));
-        out.clear();
-        out.say(
-            &format!("✗ No definitions found for '{tool}'"),
-            Some(Color::Red),
-        );
-        out.clear();
-        out.say("To see available tools:", Some(Color::Cyan));
-        out.say("  ukiryu list", Some(Color::White));
-        out.clear();
-        out.say("To search for definitions:", Some(Color::Cyan));
-        out.say("  ukiryu definitions list", Some(Color::White));
-        return Ok(out.exit(1));
+        return Ok(resolve_missing(&input.tool, out));
     }
 
     out.say(&format!("Resolution for: {tool}"), Some(Color::Cyan));
@@ -2309,4 +2324,82 @@ fn definition_mtime(
         Err(before) => -(before.duration().as_secs() as i64),
     };
     Ok(format!("{} +0000", civil_time(seconds)))
+}
+
+fn resolve_missing(tool: &str, mut out: Out) -> CommandOutcome {
+    out.say(&format!("Resolution for: {tool}"), Some(Color::Cyan));
+    out.clear();
+    out.say(
+        &format!("✗ No definitions found for '{tool}'"),
+        Some(Color::Red),
+    );
+    out.clear();
+    out.say("To see available tools:", Some(Color::Cyan));
+    out.say("  ukiryu list", Some(Color::White));
+    out.clear();
+    out.say("To search for definitions:", Some(Color::Cyan));
+    out.say("  ukiryu definitions list", Some(Color::White));
+    out.exit(1)
+}
+
+/// Render an already-loaded tool using the native CLI formatters. No discovery.
+pub(crate) fn from_snapshot(
+    verb: &str,
+    name: String,
+    command: Option<String>,
+    tool: Option<&Tool>,
+    names: &[String],
+    colors_off: bool,
+    version: Option<String>,
+) -> Result<CommandOutcome, InspectError> {
+    let mut out = Out::new(colors_off);
+    if verb == "resolve" {
+        return Ok(resolve_missing(&name, out));
+    }
+    let Some(tool) = tool else {
+        return Ok(if verb == "commands" {
+            CommandOutcome {
+                writes: vec![OutputWrite::Stderr(format!(
+                    "[Ukiryu::Errors::ToolNotFoundError] Tool not found: {name}\n"
+                ))],
+                exit_code: 1,
+            }
+        } else {
+            out.error(&format!(
+                "Tool not found: {name}\nAvailable tools: {}",
+                names.join(", ")
+            ))
+        });
+    };
+    match verb {
+        "commands" => commands_loaded(CommandsInput { tool: name }, tool, out),
+        "opts" => opts_loaded(
+            OptsInput {
+                tool: name,
+                command,
+            },
+            tool,
+            out,
+        ),
+        "info" => {
+            out.clear();
+            out.say(
+                &format!("Tool: {}", txt(&tool.definition().name).unwrap_or(name)),
+                Some(Color::Cyan),
+            );
+            info_details(tool, out, |_, _| Ok(version))
+        }
+        _ => unreachable!("snapshot dispatcher checks supported verbs"),
+    }
+}
+
+/// The same Config color choice, using only explicit environment values.
+pub(crate) fn snapshot_colors(host: &Host) -> Result<bool, InspectError> {
+    Ok(colors_disabled(
+        &HandlerContext {
+            host: host.clone(),
+            register: None,
+        }
+        .configuration()?,
+    ))
 }
