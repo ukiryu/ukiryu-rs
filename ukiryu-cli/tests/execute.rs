@@ -14,10 +14,11 @@
 //! Timing fields (`started_at`, `finished_at`, `duration_seconds`,
 //! `formatted_duration`, the table's `Duration:`) are masked on both sides.
 //!
-//! Cases listed in [`OPEN`] must end in `Gated`/`Unsupported`; cases in
+//! Anonymous class addresses (`#<Class:0x...>`) are canonicalized only
+//! during comparison; see `execute_data/README.md`. Cases in
 //! [`YEPTRIS_DIAGNOSTICS`] keep separate exact target parser diagnostics;
 //! their exit status and diagnostic prefix still match Ruby. Every other
-//! case must match exactly.
+//! case must match exactly after the documented canonicalization.
 #![cfg(target_os = "linux")]
 
 use serde_json::Value as Json;
@@ -34,27 +35,6 @@ use ukiryu_cli::commands::execute::{
     self, CacheAction, CacheInput, ExecInput, ExecuteContext, ExecuteError, RunFileInput,
 };
 use ukiryu_cli::commands::CommandOutcome;
-
-/// Cases that need behaviour this port does not reproduce yet; each must
-/// end in `ExecuteError::Gated` or `ExecuteError::Unsupported`.
-const OPEN: &[(&str, &str)] = &[
-    (
-        "exec_register_unknown_param",
-        "NoMethodError names an anonymous options class by address",
-    ),
-    (
-        "runfile_execute",
-        "NoMethodError for stdin= names an anonymous options class by address",
-    ),
-    (
-        "runfile_execute_json",
-        "NoMethodError for stdin= names an anonymous options class by address",
-    ),
-    (
-        "runfile_execute_table",
-        "NoMethodError for stdin= names an anonymous options class by address",
-    ),
-];
 
 /// Exact diagnostics from the mandated Yeptris parser, recorded separately
 /// from the frozen libyaml observations. These are target checks, not byte parity.
@@ -190,6 +170,27 @@ fn apply(writes: &[OutputWrite], pty: bool, shown: &mut Shown) {
     }
 }
 
+/// Only anonymous Ruby class inspect addresses vary per process. Do not
+/// mask named classes, ordinary hexadecimal values, members or context.
+fn canonical_addresses(text: &str) -> String {
+    const PREFIX: &str = "#<Class:0x";
+    let mut result = String::new();
+    let mut rest = text;
+    while let Some(start) = rest.find(PREFIX) {
+        let after = &rest[start + PREFIX.len()..];
+        let length = after.bytes().take_while(u8::is_ascii_hexdigit).count();
+        result.push_str(&rest[..start + PREFIX.len()]);
+        if length > 0 && after[length..].starts_with('>') {
+            result.push_str("<address>");
+            rest = &after[length..];
+        } else {
+            rest = after;
+        }
+    }
+    result.push_str(rest);
+    result
+}
+
 /// Masks the values of timing fields, whose values differ per run.
 fn mask(text: &str) -> String {
     const KEYS: [&str; 4] = [
@@ -254,12 +255,16 @@ fn json_values(text: &str) -> Option<Json> {
 /// Equal output: bytes, except YAML responses (by value) and JSON files
 /// (timing masked).
 fn same(want: &Shown, got: &Shown) -> bool {
-    if want.status != got.status || want.stderr != got.stderr {
+    if want.status != got.status
+        || canonical_addresses(&want.stderr) != canonical_addresses(&got.stderr)
+    {
         return false;
     }
-    let stdout = match (yaml_values(&want.stdout), yaml_values(&got.stdout)) {
+    let want_stdout = canonical_addresses(&want.stdout);
+    let got_stdout = canonical_addresses(&got.stdout);
+    let stdout = match (yaml_values(&want_stdout), yaml_values(&got_stdout)) {
         (Some(a), Some(b)) => a == b,
-        _ => want.stdout == got.stdout,
+        _ => want_stdout == got_stdout,
     };
     stdout
         && want.files.len() == got.files.len()
@@ -270,10 +275,14 @@ fn same(want: &Shown, got: &Shown) -> bool {
             .all(|((wn, wc), (gn, gc))| {
                 wn == gn
                     && match (wc, gc) {
-                        (Some(a), Some(b)) => match (json_values(a), json_values(b)) {
-                            (Some(x), Some(y)) => x == y,
-                            _ => a == b,
-                        },
+                        (Some(a), Some(b)) => {
+                            let a = canonical_addresses(a);
+                            let b = canonical_addresses(b);
+                            match (json_values(&a), json_values(&b)) {
+                                (Some(x), Some(y)) => x == y,
+                                _ => a == b,
+                            }
+                        }
                         (a, b) => a == b,
                     }
             })
@@ -382,7 +391,8 @@ fn execute_cases_match_ruby_captures() {
     let all = data["cases"].as_array().unwrap();
     let base = std::env::temp_dir().join(format!("ukiryu-cli-execute-{}", std::process::id()));
     let mut failures = Vec::new();
-    let mut counts = [0usize; 3];
+    assert_eq!(all.len(), 104, "deliberate corpus count changes only");
+    let mut counts = [0usize; 2];
     for case in all {
         let id = case["id"].as_str().unwrap();
         let root = base.join(id);
@@ -391,18 +401,10 @@ fn execute_cases_match_ruby_captures() {
         for d in ["home", "xdg", "sysdata"] {
             fs::create_dir_all(root.join(d)).unwrap();
         }
-        let open = OPEN.iter().any(|(c, _)| *c == id);
         let diagnostics: Json = serde_json::from_str(YEPTRIS_DIAGNOSTICS).unwrap();
         let diagnostic = diagnostics.get(id);
         match run_case(case, &root) {
-            Outcome::Open(reason) if open => {
-                counts[1] += 1;
-                eprintln!("open {id}: {reason}");
-            }
             Outcome::Open(reason) => failures.push(format!("{id}: not handled: {reason}")),
-            Outcome::Shown(_) if open => {
-                failures.push(format!("{id}: listed as open but produced an outcome"))
-            }
             Outcome::Shown(shown) if diagnostic.is_some() => {
                 let want = expected(case);
                 assert_eq!(shown.status, want.status, "{id}");
@@ -412,10 +414,21 @@ fn execute_cases_match_ruby_captures() {
                     "{id}"
                 );
                 assert_eq!(shown.stderr, diagnostic.unwrap().as_str().unwrap(), "{id}");
-                counts[2] += 1;
+                counts[1] += 1;
             }
             Outcome::Shown(shown) => {
                 let want = expected(case);
+                if want.stdout.contains("#<Class:0x") {
+                    assert!(
+                        !shown.stdout.contains("<address>"),
+                        "{id}: runtime must retain its address"
+                    );
+                    assert_ne!(
+                        canonical_addresses(&shown.stdout),
+                        shown.stdout,
+                        "{id}: runtime must emit an anonymous-class address"
+                    );
+                }
                 if same(&want, &shown) {
                     counts[0] += 1;
                 } else {
@@ -429,12 +442,88 @@ fn execute_cases_match_ruby_captures() {
     std::env::set_current_dir(env!("CARGO_MANIFEST_DIR")).unwrap();
     let _ = fs::remove_dir_all(&base);
     eprintln!(
-        "execute cases: {} exact, {} open, {} unqualified, {} failing of {}",
+        "execute cases: {} canonical matches, {} parser diagnostics, {} failing of {}",
         counts[0],
         counts[1],
-        counts[2],
         failures.len(),
         all.len()
     );
     assert!(failures.is_empty(), "{}", failures.join("\n\n"));
+}
+
+#[test]
+fn anonymous_address_canonicalization_preserves_error_contract() {
+    let data = cases();
+    let all = data["cases"].as_array().unwrap();
+    let ids = [
+        "exec_register_unknown_param",
+        "runfile_execute",
+        "runfile_execute_json",
+        "runfile_execute_table",
+    ];
+    for id in ids {
+        let case = all.iter().find(|c| c["id"] == id).unwrap();
+        let want = expected(case);
+        let make = |stdout, status| Shown {
+            stdout,
+            stderr: want.stderr.clone(),
+            status,
+            files: Vec::new(),
+        };
+        let varied = canonical_addresses(&want.stdout).replace("0x<address>", "0xABC123");
+        assert!(same(&want, &make(varied.clone(), want.status)), "{id}");
+        for (from, to) in [
+            ("NoMethodError", "ArgumentError"),
+            ("undefined method", "unknown method"),
+            ("for an instance", "for a class"),
+            ("Class:", "OtherClass:"),
+        ] {
+            assert!(
+                !same(&want, &make(varied.replace(from, to), want.status)),
+                "{id}: {from}"
+            );
+        }
+        let member = if id.starts_with("exec_") {
+            "bogus"
+        } else {
+            "stdin"
+        };
+        assert!(
+            !same(
+                &want,
+                &make(varied.replace(member, "different"), want.status)
+            ),
+            "{id}: setter"
+        );
+        assert!(!same(&want, &make(varied, want.status + 1)), "{id}: status");
+        if !id.ends_with("table") {
+            for (from, to) in [
+                ("exit_code: 1", "exit_code: 2"),
+                ("\"exit_code\": 1", "\"exit_code\": 2"),
+                ("status: error", "status: success"),
+                ("\"status\": \"error\"", "\"status\": \"success\""),
+            ] {
+                if want.stdout.contains(from) {
+                    assert!(
+                        !same(&want, &make(want.stdout.replace(from, to), want.status)),
+                        "{id}: {from}"
+                    );
+                }
+            }
+        }
+    }
+    for literal in [
+        "0x123",
+        "#<Tool:0x123>",
+        "#<Class:0x>",
+        "#<Class:0x12G>",
+        "#<Class:0x12",
+        "#<NamedClass:0x12>",
+    ] {
+        assert_eq!(canonical_addresses(literal), literal);
+    }
+    assert_eq!(
+        canonical_addresses("#<Class:0x1> #<Class:0xAbC>"),
+        "#<Class:0x<address>> #<Class:0x<address>>"
+    );
 }
