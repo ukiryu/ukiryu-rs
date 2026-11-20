@@ -7,11 +7,6 @@
 //! on its full `to_h`, `to_s`, `has_issues?` and `has_errors?`, and each
 //! Ruby exception on its class and message.
 //!
-//! Declared differences (asserted, not skipped):
-//! - YAML syntax errors: the text after `Invalid YAML: ` is the YAML
-//!   engine's message, not libyaml's, so only the prefix, the class and the
-//!   result shape are compared.
-//!
 //! YAML merge keys use the captured outcomes too: aliases raise
 //! `Psych::AliasesNotEnabled`, while inline mappings are merged before linting.
 use serde_json::Value;
@@ -22,9 +17,6 @@ use ukiryu::definition::linter::{
 use ukiryu::definition::{LintIssue, Severity};
 
 const FIXTURE: &str = include_str!("../src/definition/linter/fixtures/oracle.json");
-
-/// Cases whose YAML the Ruby loader rejects with `Psych::SyntaxError`.
-const SYNTAX_CASES: &[&str] = &["spec_invalid_yaml_indent", "spec_invalid_yaml_colon"];
 
 fn fixture() -> Value {
     serde_json::from_str(FIXTURE).expect("fixture parses")
@@ -78,13 +70,7 @@ fn subst_value(v: &Value, sub: &dyn Fn(&str) -> String) -> Value {
 }
 
 /// Compare one Rust outcome with one captured Ruby outcome.
-fn check(
-    ctx: &str,
-    want: &Value,
-    got: &Result<LintResult, LintError>,
-    path: Option<&str>,
-    syntax: bool,
-) {
+fn check(ctx: &str, want: &Value, got: &Result<LintResult, LintError>, path: Option<&str>) {
     let sub = |s: &str| match path {
         Some(p) => s.replace("{path}", p),
         None => s.to_owned(),
@@ -103,40 +89,20 @@ fn check(
             );
             let want_h = subst_value(&want["to_h"], &sub);
             let got_h = to_value(&res.to_h());
-            if syntax {
-                assert_eq!(res.count(), 1, "{ctx}: one issue");
-                let msg = &res.issues[0].message;
-                assert!(msg.starts_with("Invalid YAML: "), "{ctx}: {msg}");
-                assert!(
-                    want_h["issues"][0]["message"]
-                        .as_str()
-                        .unwrap()
-                        .starts_with("Invalid YAML: "),
-                    "{ctx}: oracle message"
-                );
-                let mut g = got_h.clone();
-                let mut w = want_h.clone();
-                g["issues"][0]["message"] = Value::Null;
-                w["issues"][0]["message"] = Value::Null;
-                assert_eq!(g, w, "{ctx}: to_h apart from the engine message");
-            } else {
-                assert_eq!(got_h, want_h, "{ctx}: to_h");
-                assert_eq!(
-                    res.to_string(),
-                    sub(want["to_s"].as_str().unwrap()),
-                    "{ctx}: to_s"
-                );
-            }
+            assert_eq!(got_h, want_h, "{ctx}: to_h");
+            assert_eq!(
+                res.to_string(),
+                sub(want["to_s"].as_str().unwrap()),
+                "{ctx}: to_s"
+            );
         }
         ("raised", Err(LintError::Raised { class, message })) => {
             assert_eq!(class, want["class"].as_str().unwrap(), "{ctx}: class");
-            if !syntax {
-                assert_eq!(
-                    message,
-                    &sub(want["message"].as_str().unwrap()),
-                    "{ctx}: message"
-                );
-            }
+            assert_eq!(
+                message,
+                &sub(want["message"].as_str().unwrap()),
+                "{ctx}: message"
+            );
         }
         (kind, got) => panic!("{ctx}: oracle {kind} {want}, port {got:?}"),
     }
@@ -156,7 +122,6 @@ fn oracle_cases_lint_lint_string_lint_file_and_cli_exit() {
         let yaml = case["yaml"].as_str().unwrap();
         let rules = rule_filter(&case["rules"]);
         let rules = rules.as_ref();
-        let syntax = SYNTAX_CASES.contains(&id);
         let path = dir.join(format!("case{i}.yaml"));
         std::fs::write(&path, yaml).unwrap();
         let path_s = path.display().to_string();
@@ -166,20 +131,18 @@ fn oracle_cases_lint_lint_string_lint_file_and_cli_exit() {
         let lint_file = DefinitionLinter::lint_file(&path, rules);
 
         let o = |api: &str| &outcomes[case[api].as_u64().unwrap() as usize];
-        check(&format!("{id} lint"), o("lint"), &lint, None, syntax);
+        check(&format!("{id} lint"), o("lint"), &lint, None);
         check(
             &format!("{id} lint_string"),
             o("lint_string"),
             &lint_string,
             None,
-            syntax,
         );
         check(
             &format!("{id} lint_file"),
             o("lint_file"),
             &lint_file,
             Some(&path_s),
-            syntax,
         );
         compared += 3;
 
@@ -192,16 +155,14 @@ fn oracle_cases_lint_lint_string_lint_file_and_cli_exit() {
                     let res = lint_file.as_ref().expect("cli exit implies a result");
                     let exit = n.as_u64().unwrap();
                     assert_eq!(u64::from(res.has_errors()), exit, "{id}: cli exit");
-                    if !syntax {
-                        assert_eq!(
-                            format!("{}\n", res.to_json()),
-                            cli_out["stdout"]
-                                .as_str()
-                                .unwrap()
-                                .replace("{path}", &path_s),
-                            "{id}: cli json"
-                        );
-                    }
+                    assert_eq!(
+                        format!("{}\n", res.to_json()),
+                        cli_out["stdout"]
+                            .as_str()
+                            .unwrap()
+                            .replace("{path}", &path_s),
+                        "{id}: cli json"
+                    );
                 }
                 raised => {
                     let Err(LintError::Raised { class, .. }) = &lint_file else {
@@ -231,13 +192,7 @@ fn lint_file_filesystem_outcomes() {
 
     // Relative path, as the Ruby spec uses it.
     let got = DefinitionLinter::lint_file("nonexistent.yaml", None);
-    check(
-        "not_found_relative",
-        o("not_found_relative"),
-        &got,
-        None,
-        false,
-    );
+    check("not_found_relative", o("not_found_relative"), &got, None);
     let want_cli = fx["fs_cli"]["not_found_relative"]["stdout"]
         .as_str()
         .unwrap()
@@ -253,7 +208,6 @@ fn lint_file_filesystem_outcomes() {
         o("not_found_absolute"),
         &got,
         Some(&missing.display().to_string()),
-        false,
     );
 
     #[cfg(unix)]
@@ -264,7 +218,6 @@ fn lint_file_filesystem_outcomes() {
             o("directory"),
             &got,
             Some(&dir.display().to_string()),
-            false,
         );
         let file = dir.join("case0.yaml");
         std::fs::write(&file, "name: x\n").unwrap();
@@ -275,7 +228,6 @@ fn lint_file_filesystem_outcomes() {
             o("not_a_directory"),
             &got,
             Some(&notdir.display().to_string()),
-            false,
         );
     }
     let _ = std::fs::remove_dir_all(&dir);
@@ -316,7 +268,7 @@ fn lint_result_on_built_issues() {
             })
             .collect();
         let res = LintResult::new(issues);
-        check(name, &b["result"], &Ok(res.clone()), None, false);
+        check(name, &b["result"], &Ok(res.clone()), None);
         for (sev, n) in b["count_by_severity"].as_object().unwrap() {
             assert_eq!(
                 res.count_by_severity(&severity(sev)) as u64,

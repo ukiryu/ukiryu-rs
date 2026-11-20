@@ -1,0 +1,14 @@
+{
+  "oracle": "ab6df353c6dc2d7faf7817a86aafcafa82579896",
+  "oracle_clean": true,
+  "source_commit": "613c3d3b66949c277e4d04c87d4f720b86e5e579",
+  "ruby": "4.0.1",
+  "psych": "5.3.1",
+  "timezone": "UTC",
+  "locale": "C.UTF-8",
+  "oracle_lock_sha256": "4efcb682d019f001185b2c36b883401ee4abf98e9f0f0f36c52947391c5244a7",
+  "bundler_frozen": true,
+  "generator_sha256": "444db49956ab7d1fc9da3c0b780b68d4dff8ec694abaab324e3cbdaea26b2b73",
+  "author_generator_sha256": "e982934f9fd117c7243d4d40fe726620b065b29c3e6676da3f873caf36c0e4ca",
+  "payload_sha256": "67c6d6e274939f3f11e33f09c126ca9247cb3b5f20a4258f0951395e55a97af2"
+}

@@ -19,8 +19,7 @@
 //!   (Ruby 4.0 wording).
 //! - `lint_file` turns only a missing file and YAML syntax errors into an
 //!   issue; other file errors and `Psych::AliasesNotEnabled` are raised.
-//! - The text after `Invalid YAML: ` is the YAML engine's message, not
-//!   libyaml's.
+//! - Recognized YAML syntax diagnostics use the pinned Psych wording and marks.
 use super::lint_issue::{LintIssue, LintIssueHash, Severity};
 use super::ruby_split;
 use super::version_resolver::VersionResolver;
