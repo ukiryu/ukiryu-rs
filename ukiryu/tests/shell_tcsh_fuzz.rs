@@ -90,7 +90,11 @@ fn quote_decodes_back_to_the_input() {
         let value = rng.string(16);
         let quoted = sh.quote(&value);
         assert!(quoted.starts_with('\'') && quoted.ends_with('\''));
-        assert_eq!(decode_words(&quoted), [value.clone()], "value={value:?}");
+        assert_eq!(
+            decode_words(&quoted),
+            std::slice::from_ref(&value),
+            "value={value:?}"
+        );
         assert_eq!(sh.format_path(&value), value);
     }
 }
